@@ -101,14 +101,14 @@ export default class Framebuffer {
         let framebufferIndex = xpos + ypos * this.width;
         let textureIndex = (((ypos * 1.0) | 0) & 31) * texture.width;
         let textureForwardDifference = texture.width / dist;
-
+        let hightlight = scale * scale * scale * scale * scale * scale * scale * scale * scale * scale * scale * 115;
+        
         for (let j = 0; j < dist; j++) {
             let color = texture.texture[textureIndex | 0];
 
-            let hightlight = scale *scale *scale *scale *scale *scale *scale *scale *scale*scale *scale*115;
-            let r = Math.min(((color >> 0 & 0xff) * scale) + hightlight ,255) | 0;
-            let g =  Math.min(((color >> 8 & 0xff) * scale) + hightlight,255) | 0;
-            let b =  Math.min(((color >> 16 & 0xff) * scale) + hightlight,255) | 0;
+            let r = Math.min(((color >> 0 & 0xff) * scale) + hightlight, 255);
+            let g = Math.min(((color >> 8 & 0xff) * scale) + hightlight, 255);
+            let b = Math.min(((color >> 16 & 0xff) * scale) + hightlight, 255);
 
             this.framebuffer[framebufferIndex] = r | g << 8 | b << 16 | 255 << 24;
 
