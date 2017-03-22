@@ -6,7 +6,7 @@ module.exports = {
     },
     output: {
         filename: '[name].bundle.js',
-        path: './dist'
+        path: __dirname + '/dist'
     },
     resolve: {
         extensions: ['.ts']

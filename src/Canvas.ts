@@ -35,8 +35,8 @@ export class Canvas {
     }
 
     public render(): void {
-        this.framebuffer.draw();
-        this.framebuffer.drawTexture(50, -48 / 2, this.texture);
+        this.framebuffer.draw(this.texture);
+        // this.framebuffer.drawTexture(50, -48 / 2, this.texture);
     }
 
     getImageData(image: HTMLImageElement): Uint32Array {
@@ -49,7 +49,9 @@ export class Canvas {
         let conv = new Uint32Array(data.length / 4);
         let c = 0;
         for (let i = 0; i < data.length; i += 4) {
-            conv[c] = (data[i + 3] << 24) | (data[i + 2] << 16) | (data[i + 1] << 8) | data[i + 0];
+           // conv[c] = (data[i + 3] << 24) | (data[i + 2] << 16) | (data[i + 1] << 8) | data[i + 0];
+            conv[c] = (255 << 24) | (data[i + 2] << 16) | (data[i + 1] << 8) | data[i + 0];
+            
             c++;
         }
         return conv;
@@ -64,7 +66,7 @@ export class Canvas {
             this.texture.height = img.height;
             this.renderLoop();
         });
-        img.src = "ball.png";
+        img.src = "stone.png";
     }
 
     public display(): void {
