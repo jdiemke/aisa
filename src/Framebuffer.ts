@@ -34,12 +34,8 @@ export default class Framebuffer {
         }
     }
 
-    public clearCol(col: number) {
-        let color: number = col;
-        let count: number = this.width * this.height;
-        for (let i = 0; i < count; i++) {
-            this.framebuffer[i] = color;
-        }
+    public clearCol(color: number) {
+        this.framebuffer.fill(color);
     }
 
     public drawPixel(x: number, y: number, color: number) {
@@ -96,13 +92,15 @@ export default class Framebuffer {
 
     /**
      * Span Renderer
+     * 
+     * http://stackoverflow.com/questions/27639005/how-to-copy-static-files-to-build-directory-with-webpack
      */
     drawSpan(dist: number, xpos: number, ypos: number, scale: number, texture: Texture) {
         let framebufferIndex = xpos + ypos * this.width;
-        let textureIndex = (((ypos * 1.0) | 0) & 31) * texture.width;
+        let textureIndex = (((ypos - Date.now() * 0.029) | 0) & 0xff) * texture.width;
         let textureForwardDifference = texture.width / dist;
-        let hightlight = scale * scale * scale * scale * scale * scale * scale * scale * scale * scale * scale * 115;
-        
+        let hightlight = Math.pow(scale, 11) * 115;
+
         for (let j = 0; j < dist; j++) {
             let color = texture.texture[textureIndex | 0];
 
@@ -116,9 +114,37 @@ export default class Framebuffer {
             textureIndex += textureForwardDifference;
         }
     }
+    public drawTriangle() {
+        let x1 = this.width / 2;
+        let y1 = this.height / 2;
+        let x2 = this.width / 2 + Math.sin(Date.now() * 0.0002) * 100;
+        let y2 = this.height / 2 + Math.cos(Date.now() * 0.0002) * 100;
+
+        let xdist = x2 - x1;
+        let ydist = (y2 - y1);
+
+        let steigung = ydist / xdist;
+
+        let color = 255 | 0 << 8 | 255 << 16 | 255 << 24;
+        if (Math.abs(steigung) <= 1) {
+            let ystep = ydist / xdist;
+            for (let i = 0; i < xdist; i++) {
+                this.drawPixel(x1 | 0, y1 | 0, color);
+                x1++;
+                y1 += ystep;
+            }
+        } else {
+            let xstep = xdist / ydist;
+            for (let i = 0; i < ydist; i++) {
+                this.drawPixel(x1 | 0, y1 | 0, color);
+                x1 += xstep;
+                y1++;
+            }
+        }
+    }
 
     draw(texture: Texture) {
-        this.clearCol(120 << 16 | 120 << 8 | 120 << 0 | 255 << 24)
+        this.clearCol(80 << 16 | 80 << 8 | 99 << 0 | 255 << 24)
         let a = Date.now() * 0.001;
         for (let i = 0; i < 200; i++) {
             let xoff = (Math.sin(a + i * 0.01) * 50) | 0;

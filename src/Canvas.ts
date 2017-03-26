@@ -1,7 +1,7 @@
 import Framebuffer from './Framebuffer';
 import Texture from './Texture';
 
-
+declare function require(string): string;
 
 export class Canvas {
 
@@ -36,8 +36,9 @@ export class Canvas {
 
     public render(): void {
         this.framebuffer.draw(this.texture);
-        // this.framebuffer.drawTexture(50, -48 / 2, this.texture);
     }
+
+
 
     getImageData(image: HTMLImageElement): Uint32Array {
         let canvas: HTMLCanvasElement = document.createElement('canvas');
@@ -66,7 +67,7 @@ export class Canvas {
             this.texture.height = img.height;
             this.renderLoop();
         });
-        img.src = "stone.png";
+        img.src = require("./assets/logo.png");
     }
 
     public display(): void {
