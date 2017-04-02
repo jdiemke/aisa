@@ -35,6 +35,7 @@ export class Canvas {
     }
 
     public render(): void {
+        this.framebuffer.drawRotoZoomer(this.texture);
         this.framebuffer.draw(this.texture);
     }
 
@@ -50,9 +51,9 @@ export class Canvas {
         let conv = new Uint32Array(data.length / 4);
         let c = 0;
         for (let i = 0; i < data.length; i += 4) {
-           // conv[c] = (data[i + 3] << 24) | (data[i + 2] << 16) | (data[i + 1] << 8) | data[i + 0];
+            // conv[c] = (data[i + 3] << 24) | (data[i + 2] << 16) | (data[i + 1] << 8) | data[i + 0];
             conv[c] = (255 << 24) | (data[i + 2] << 16) | (data[i + 1] << 8) | data[i + 0];
-            
+
             c++;
         }
         return conv;

@@ -54,6 +54,7 @@ class Application {
         let canvas: AISA.Canvas = new AISA.Canvas(640, 400);
         canvas.appendTo(document.getElementById('aisa'));
         canvas.init();
+
         // TODO: copy image file into dist
 
        // let preloader = new ImagePreloader();

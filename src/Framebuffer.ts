@@ -10,6 +10,9 @@ export default class Framebuffer {
     private framebuffer: Uint32Array;
     private unsignedIntArray: Uint8ClampedArray;
 
+    private sinLUT: Array<number>;
+    private cosLUT: Array<number>;
+
     constructor(width: number, height: number) {
         this.width = width;
         this.height = height;
@@ -19,6 +22,14 @@ export default class Framebuffer {
         this.unsignedIntArray = new Uint8ClampedArray(arrayBuffer);
 
         this.framebuffer = new Uint32Array(arrayBuffer);
+        this.sinLUT = new Array<number>();
+        this.cosLUT = new Array<number>();
+
+        for (let i = 0; i < 512; i++) {
+            this.sinLUT.push(Math.sin(Math.PI * 2.0 / 512 * i));
+            this.cosLUT.push(Math.cos(Math.PI * 2.0 / 512 * i));
+        }
+
     }
 
     public getImageData(): ImageData {
@@ -143,8 +154,49 @@ export default class Framebuffer {
         }
     }
 
+    /**
+     * TODO:
+     * - adjust method in order to have window coordinates as parameter
+     *   that gonna be used to define the area to be displayed
+     */
+    drawRotoZoomer(texture: Texture) {
+        let scale = Math.sin(Date.now() * 0.0005) + 1.1;
+
+        // works but lags due to limited precision!!!
+        // let yStepX = this.sinLUT[((Date.now() * 0.0003 * 512 / (Math.PI * 2)) & 0x1ff) | 0] * scale;//Math.sin(Date.now() * 0.0003) * scale;
+        // let yStepY = this.cosLUT[((Date.now() * 0.0003 * 512 / (Math.PI * 2)) & 0x1ff) | 0] * scale;
+
+        let yStepX = Math.sin(Date.now() * 0.0003) * scale;
+        let yStepY = Math.cos(Date.now() * 0.0003) * scale;
+
+        let xStepX = yStepY;
+        let xStepY = -yStepX;
+
+        let texYCoord = Math.sin(Date.now() * 0.0002) * 512;
+        let texXCoord = Math.cos(Date.now() * 0.0002) * 512;
+
+        let texYCoordInner = 0;
+        let texXCoordInner = 0;
+        let framebufferPos = 0;
+
+        for (let y = 0; y < 200; y++) {
+            texXCoordInner = texXCoord;
+            texYCoordInner = texYCoord;
+
+            for (let x = 0; x < 320; x++) {
+                this.framebuffer[framebufferPos++] = texture.texture[(texXCoordInner & 63) + (texYCoordInner & 0xff) * 64];
+
+                texXCoordInner += xStepX;
+                texYCoordInner += xStepY;
+            }
+
+            texXCoord += yStepX;
+            texYCoord += yStepY;
+        }
+    }
+
     draw(texture: Texture) {
-        this.clearCol(80 << 16 | 80 << 8 | 99 << 0 | 255 << 24)
+        // this.clearCol(80 << 16 | 80 << 8 | 99 << 0 | 255 << 24)
         let a = Date.now() * 0.001;
         for (let i = 0; i < 200; i++) {
             let xoff = (Math.sin(a + i * 0.01) * 50) | 0;
@@ -155,7 +207,6 @@ export default class Framebuffer {
             let x4 = (Math.sin(Math.PI * 2 / 4 * 3 + rot) * 32) | 0;
 
             if (x2 > x1) {
-                //   this.drawRect(x1 + 120 + xoff, i, x2 - x1, this.toColor(Math.max(0, Math.round((255 * Math.sin(Math.PI * 2 / 4 * 1.5 + rot))))));
                 let scale = Math.max(0, Math.sin(Math.PI * 2 / 4 * 1.5 + rot));
                 let dist = x2 - x1;
                 let xPos = x1 + 120 + xoff;
@@ -163,7 +214,6 @@ export default class Framebuffer {
             }
 
             if (x3 > x2) {
-                // this.drawRect(x2 + 120 + xoff, i, x3 - x2, this.toColor(Math.max(0, Math.round((255 * Math.sin(Math.PI * 2 / 4 * 2.5 + rot))))));
                 let scale = Math.max(0, Math.sin(Math.PI * 2 / 4 * 2.5 + rot));
                 let dist = x3 - x2;
                 let xPos = x2 + 120 + xoff;
@@ -171,7 +221,6 @@ export default class Framebuffer {
             }
 
             if (x4 > x3) {
-                // this.drawRect(x3 + 120 + xoff, i, x4 - x3, this.toColor(Math.max(0, Math.round((255 * Math.sin(Math.PI * 2 / 4 * 3.5 + rot))))));
                 let scale = Math.max(0, Math.sin(Math.PI * 2 / 4 * 3.5 + rot));
                 let dist = x4 - x3;
                 let xPos = x3 + 120 + xoff;
@@ -179,7 +228,6 @@ export default class Framebuffer {
             }
 
             if (x1 > x4) {
-                // this.drawRect(x4 + 120 + xoff, i, x1 - x4, this.toColor(Math.max(0, Math.round((255 * Math.sin(Math.PI * 2 / 4 * 4.5 + rot))))));
                 let scale = Math.max(0, Math.sin(Math.PI * 2 / 4 * 4.5 + rot));
                 let dist = x1 - x4;
                 let xPos = x4 + 120 + xoff;
