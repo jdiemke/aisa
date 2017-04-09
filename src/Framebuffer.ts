@@ -1,4 +1,7 @@
 import Texture from './Texture';
+import Point from './Point';
+import Vector3 from './Vector3f';
+import Matrix3 from './Matrix3';
 
 export default class Framebuffer {
 
@@ -125,39 +128,130 @@ export default class Framebuffer {
             textureIndex += textureForwardDifference;
         }
     }
-    public drawTriangle() {
-        let x1 = this.width / 2;
-        let y1 = this.height / 2;
-        let x2 = this.width / 2 + Math.sin(Date.now() * 0.0002) * 100;
-        let y2 = this.height / 2 + Math.cos(Date.now() * 0.0002) * 100;
 
-        let xdist = x2 - x1;
-        let ydist = (y2 - y1);
+    // TODO: optimize with vertex arrays
+    public scene8(elapsedTime: number): void {
+       // this.clear();
 
-        let steigung = ydist / xdist;
+        let points: Array<Vector3> = new Array<Vector3>();
+        let index: Array<number> = new Array<number>();
+
+        index.push(0);
+        index.push(1);
+
+        index.push(1);
+        index.push(2);
+
+        index.push(2);
+        index.push(3);
+
+        index.push(3);
+        index.push(0);
+
+        //
+        index.push(4);
+        index.push(5);
+
+        index.push(5);
+        index.push(6);
+
+        index.push(6);
+        index.push(7);
+
+        index.push(7);
+        index.push(4);
+
+        //
+        index.push(0);
+        index.push(7);
+
+        index.push(1);
+        index.push(6);
+
+        index.push(2);
+        index.push(5);
+
+        index.push(3);
+        index.push(4);
+
+        let scale = 0.8;
+        // face
+        points.push(new Vector3( 1.0, 1.0,-1.0).mult(1.0+scale));
+        points.push(new Vector3(-1.0, 1.0,-1.0).mult(1.0+scale));
+        points.push(new Vector3(-1.0, 1.0, 1.0).mult(1.0+scale));
+        points.push(new Vector3( 1.0, 1.0, 1.0).mult(1.0+scale));
+
+        // face
+        points.push(new Vector3(1.0, -1.0, 1.0).mult(1.0+scale));
+        points.push(new Vector3(-1.0,-1.0, 1.0).mult(1.0+scale));
+        points.push(new Vector3(-1.0,-1.0,-1.0).mult(1.0+scale));
+        points.push(new Vector3( 1.0,-1.0,-1.0).mult(1.0+scale));
+
+        let rotMat = Matrix3.constructYRotationMatrix(elapsedTime * 0.05);
+        rotMat = rotMat.multiplyMatrix(Matrix3.constructXRotationMatrix(elapsedTime * 0.05));
+
+        let points2: Array<Vector3> = new Array<Vector3>();
+        points.forEach(element => {
+            let transformed = rotMat.multiply(element);
+
+            let x = transformed.x-0;
+            let y = transformed.y;
+            let z = transformed.z - 6 +Math.sin(elapsedTime);
+            let xx = 320 / 2 + (x / (-z * 0.0078));
+            let yy = 200 / 2 - (y / (-z * 0.0078));
+            points2.push(new Vector3(xx, yy, z));
+        });
+
+        for(let i=0; i < index.length; i+=2) {
+            this.drawLine(points2[index[i]],points2[index[i+1]]);
+        }
+
+    }
+
+    /**
+     * TODO: optimize!!
+     */
+    public drawLine(start: Vector3, end: Vector3) {
+//        let start = new Point(this.width / 2, this.height / 2);
+  //      let end = new Point(this.width / 2 + Math.sin(Date.now() * 0.0002) * 100, this.height / 2 + Math.cos(Date.now() * 0.0002) * 100);
+
+        let xdist = (end.x - start.x);
+        let xdistSig = Math.sign(xdist);
+        let ydist = (end.y - start.y);
+        let ydistSig = Math.sign(ydist);
 
         let color = 255 | 0 << 8 | 255 << 16 | 255 << 24;
-        if (Math.abs(steigung) <= 1) {
-            let ystep = ydist / xdist;
-            for (let i = 0; i < xdist; i++) {
+
+        let x1 = start.x;
+        let y1 = start.y;
+
+        let ystep = ydist / Math.abs(xdist);
+        
+
+        if(Math.abs(ystep) < 1) {
+
+            for (let i = 0; i < Math.abs(xdist); i++) {
                 this.drawPixel(x1 | 0, y1 | 0, color);
-                x1++;
+                x1 += xdistSig;
                 y1 += ystep;
             }
         } else {
-            let xstep = xdist / ydist;
-            for (let i = 0; i < ydist; i++) {
+            let xstep = xdist / Math.abs(ydist);
+            
+            for (let i = 0; i < Math.abs(ydist); i++) {
                 this.drawPixel(x1 | 0, y1 | 0, color);
+                y1 += ydistSig;
                 x1 += xstep;
-                y1++;
             }
         }
+  
     }
 
     /**
      * TODO:
      * - adjust method in order to have window coordinates as parameter
      *   that gonna be used to define the area to be displayed
+     * - http://qzx.com/pc-gpe/
      */
     drawRotoZoomer(texture: Texture) {
         let scale = Math.sin(Date.now() * 0.0005) + 1.1;

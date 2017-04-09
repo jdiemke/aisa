@@ -10,6 +10,7 @@ export class Canvas {
     private context: CanvasRenderingContext2D;
     private backbufferContext: CanvasRenderingContext2D;
     private framebuffer: Framebuffer;
+    start: number;
 
     //
     private texture: Texture;
@@ -32,14 +33,25 @@ export class Canvas {
 
         this.backbufferContext = this.backbufferCanvas.getContext('2d');
         this.framebuffer = new Framebuffer(320, 200);
+
+        this.start = Date.now();
     }
 
     public render(): void {
+
+       let time = (Date.now() - this.start)% 9000;
+
+       if(time < 3000) {
         this.framebuffer.drawRotoZoomer(this.texture);
-        this.framebuffer.draw(this.texture);
+        } else if(time < 6000) {
+            //this.framebuffer.drawRotoZoomer(this.texture);
+            this.framebuffer.clear();
+            this.framebuffer.draw(this.texture);
+        } else {
+            this.framebuffer.clear();
+            this.framebuffer.scene8(Date.now() * 0.02);
+        }
     }
-
-
 
     getImageData(image: HTMLImageElement): Uint32Array {
         let canvas: HTMLCanvasElement = document.createElement('canvas');
