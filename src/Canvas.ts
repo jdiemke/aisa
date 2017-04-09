@@ -39,7 +39,7 @@ export class Canvas {
 
     public render(): void {
 
-       let time = (Date.now() - this.start)% 9000;
+       let time = (Date.now() - this.start)% 12000;
 
        if(time < 3000) {
         this.framebuffer.drawRotoZoomer(this.texture);
@@ -47,9 +47,12 @@ export class Canvas {
             //this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.clear();
             this.framebuffer.draw(this.texture);
-        } else {
+        } else if(time < 9000){
             this.framebuffer.clear();
             this.framebuffer.scene8(Date.now() * 0.02);
+        } else {
+            this.framebuffer.clear();
+            this.framebuffer.scene9(Date.now() * 0.02);
         }
     }
 

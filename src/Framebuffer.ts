@@ -3,6 +3,9 @@ import Point from './Point';
 import Vector3 from './Vector3f';
 import Matrix3 from './Matrix3';
 
+declare function require(string): string;
+let json = require('./assets/bunny.json');
+
 export default class Framebuffer {
 
     static PIXEL_SIZE_IN_BYTES = 4;
@@ -32,6 +35,8 @@ export default class Framebuffer {
             this.sinLUT.push(Math.sin(Math.PI * 2.0 / 512 * i));
             this.cosLUT.push(Math.cos(Math.PI * 2.0 / 512 * i));
         }
+
+        console.log(json);
 
     }
 
@@ -129,83 +134,85 @@ export default class Framebuffer {
         }
     }
 
-    // TODO: optimize with vertex arrays
+    // TODO:
+    // - implement scale and translate using homogenous 4x4 matrices
+    //   instead of fucking around with the projection formular
     public scene8(elapsedTime: number): void {
-       // this.clear();
 
-        let points: Array<Vector3> = new Array<Vector3>();
-        let index: Array<number> = new Array<number>();
+        let index: Array<number> = [
+            0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6,
+            6, 7, 7, 4, 0, 7, 1, 6, 2, 5, 3, 4
+        ];
 
-        index.push(0);
-        index.push(1);
+        let points: Array<Vector3> = [
+            new Vector3( 1.0, 1.0,-1.0), new Vector3(-1.0, 1.0,-1.0),
+            new Vector3(-1.0, 1.0, 1.0), new Vector3( 1.0, 1.0, 1.0),
+            new Vector3( 1.0,-1.0, 1.0), new Vector3(-1.0,-1.0, 1.0),
+            new Vector3(-1.0,-1.0,-1.0), new Vector3( 1.0,-1.0,-1.0)
+        ];
 
-        index.push(1);
-        index.push(2);
+        let scale = 1.8;
 
-        index.push(2);
-        index.push(3);
-
-        index.push(3);
-        index.push(0);
-
-        //
-        index.push(4);
-        index.push(5);
-
-        index.push(5);
-        index.push(6);
-
-        index.push(6);
-        index.push(7);
-
-        index.push(7);
-        index.push(4);
-
-        //
-        index.push(0);
-        index.push(7);
-
-        index.push(1);
-        index.push(6);
-
-        index.push(2);
-        index.push(5);
-
-        index.push(3);
-        index.push(4);
-
-        let scale = 0.8;
-        // face
-        points.push(new Vector3( 1.0, 1.0,-1.0).mult(1.0+scale));
-        points.push(new Vector3(-1.0, 1.0,-1.0).mult(1.0+scale));
-        points.push(new Vector3(-1.0, 1.0, 1.0).mult(1.0+scale));
-        points.push(new Vector3( 1.0, 1.0, 1.0).mult(1.0+scale));
-
-        // face
-        points.push(new Vector3(1.0, -1.0, 1.0).mult(1.0+scale));
-        points.push(new Vector3(-1.0,-1.0, 1.0).mult(1.0+scale));
-        points.push(new Vector3(-1.0,-1.0,-1.0).mult(1.0+scale));
-        points.push(new Vector3( 1.0,-1.0,-1.0).mult(1.0+scale));
-
-        let rotMat = Matrix3.constructYRotationMatrix(elapsedTime * 0.05);
-        rotMat = rotMat.multiplyMatrix(Matrix3.constructXRotationMatrix(elapsedTime * 0.05));
+        let modelViewMartrix = Matrix3.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3.constructYRotationMatrix(elapsedTime * 0.05));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3.constructXRotationMatrix(elapsedTime * 0.05));
 
         let points2: Array<Vector3> = new Array<Vector3>();
         points.forEach(element => {
-            let transformed = rotMat.multiply(element);
+            let transformed = modelViewMartrix.multiply(element);
 
-            let x = transformed.x-0;
+            let x = transformed.x;
             let y = transformed.y;
-            let z = transformed.z - 6 +Math.sin(elapsedTime);
-            let xx = 320 / 2 + (x / (-z * 0.0078));
-            let yy = 200 / 2 - (y / (-z * 0.0078));
+            let z = transformed.z - 6 +Math.sin(elapsedTime); // TODO: use translation matrix!
+
+            let xx = (320 / 2) + (x / (-z * 0.0078));
+            let yy = (200 / 2) - (y / (-z * 0.0078));
             points2.push(new Vector3(xx, yy, z));
         });
 
         for(let i=0; i < index.length; i+=2) {
-            this.drawLine(points2[index[i]],points2[index[i+1]]);
+            this.drawLine(points2[index[i]], points2[index[i+1]]);
         }
 
+    }
+
+    public scene9(elapsedTime: number): void {
+        
+        let data: any = json;
+        
+        // console.log(data.faces);
+        let index: Array<number> = data.faces;
+        
+       // console.log(index);
+        
+        let points: Array<Vector3> = new Array<Vector3>();
+        data.vertices.forEach(x => {
+            points.push(new Vector3(x.x, x.y, x.z));
+        });
+
+        let scale = 4.0;
+
+        let modelViewMartrix = Matrix3.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3.constructYRotationMatrix(elapsedTime * 0.05));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3.constructXRotationMatrix(elapsedTime * 0.05));
+
+        let points2: Array<Vector3> = new Array<Vector3>();
+        points.forEach(element => {
+            let transformed = modelViewMartrix.multiply(element);
+
+            let x = transformed.x;
+            let y = transformed.y;
+            let z = transformed.z - 9; // TODO: use translation matrix!
+
+            let xx = (320 / 2) + (x / (-z * 0.0078));
+            let yy = (200 / 2) - (y / (-z * 0.0078));
+            points2.push(new Vector3(xx, yy, z));
+        });
+
+        for(let i=0; i < index.length; i+=3) {
+            this.drawLine(points2[index[i]-1], points2[index[i+1]-1]);
+            this.drawLine(points2[index[i+1]-1], points2[index[i+2]-1]);
+            this.drawLine(points2[index[i+2]-1], points2[index[i]-1]);
+        }
+        
     }
 
     /**

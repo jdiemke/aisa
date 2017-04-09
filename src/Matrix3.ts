@@ -50,6 +50,24 @@ export default class Matrix3f {
         return matrix;
     }
 
+    static constructScaleMatrix(xScale: number, yScale: number, zScale: number) {
+        let matrix = new Matrix3f();
+
+        matrix.m11 = xScale;
+        matrix.m12 = 0.0;
+        matrix.m13 = 0.0;
+
+        matrix.m21 = 0.0;
+        matrix.m22 = yScale;
+        matrix.m23 = 0.0;
+
+        matrix.m31 = 0.0;
+        matrix.m32 = 0.0;
+        matrix.m33 = zScale;
+
+        return matrix;
+    }
+
     public multiplyMatrix(matrix: Matrix3f): Matrix3f {
         let result = new Matrix3f();
 
