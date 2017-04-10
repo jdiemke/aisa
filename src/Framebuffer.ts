@@ -4,7 +4,7 @@ import Vector3 from './Vector3f';
 import Matrix3 from './Matrix3';
 
 declare function require(string): string;
-let json = require('./assets/bunny.json');
+let json = require('./assets/f16.json');
 
 export default class Framebuffer {
 
