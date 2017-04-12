@@ -139,6 +139,8 @@ export default class Framebuffer {
     //   instead of fucking around with the projection formular
     public scene8(elapsedTime: number): void {
 
+
+
         let index: Array<number> = [
             0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6,
             6, 7, 7, 4, 0, 7, 1, 6, 2, 5, 3, 4
@@ -170,9 +172,19 @@ export default class Framebuffer {
         });
 
         for(let i=0; i < index.length; i+=2) {
-            this.drawLine(points2[index[i]], points2[index[i+1]]);
+            this.drawLineDDA(points2[index[i]], points2[index[i+1]]);
         }
+/*
+        let start = Date.now()
+        for(let i=0; i< 900000; i++)
+            this.drawLineDDA(new Vector3(320/2, 200/2,0), new Vector3(320/2+320/2, 200/2+200/2,0));
+        console.log("DDA:" +(Date.now()- start));
 
+        start = Date.now()
+        for(let i=0; i< 900000; i++)
+            this.drawLine(new Vector3(320/2, 200/2,0), new Vector3(320/2+320/2, 200/2+200/2,0));
+        console.log("lame:" +(Date.now()- start));
+*/
     }
 
     public scene9(elapsedTime: number): void {
@@ -202,26 +214,60 @@ export default class Framebuffer {
             let y = transformed.y;
             let z = transformed.z - 9; // TODO: use translation matrix!
 
-            let xx = (320 / 2) + (x / (-z * 0.0078));
-            let yy = (200 / 2) - (y / (-z * 0.0078));
+            let xx = (320 * 0.5) + (x / (-z * 0.0078));
+            let yy = (200 * 0.5) - (y / (-z * 0.0078));
             points2.push(new Vector3(xx, yy, z));
         });
 
-        for(let i=0; i < index.length; i+=3) {
-            this.drawLine(points2[index[i]-1], points2[index[i+1]-1]);
-            this.drawLine(points2[index[i+1]-1], points2[index[i+2]-1]);
-            this.drawLine(points2[index[i+2]-1], points2[index[i]-1]);
+        for (let i=0; i < index.length; i+=3) {
+            this.drawLineDDA(points2[index[i]-1], points2[index[i+1]-1]);
+            this.drawLineDDA(points2[index[i+1]-1], points2[index[i+2]-1]);
+            this.drawLineDDA(points2[index[i+2]-1], points2[index[i]-1]);
         }
         
+    }
+
+    /**
+     * digital differential analyser line drawing algorithm
+     * using fixed point math
+     */
+    public drawLineDDA(start: Vector3, end: Vector3): void {
+        let color = 255 | 0 << 8 | 255 << 16 | 255 << 24;
+
+        let xdist = ((end.x<<8) - (start.x<<8));
+        let ydist = ((end.y<<8) - (start.y<<8));
+
+        let dx;
+        let dy;
+
+        let length;
+
+        if (Math.abs(xdist) > Math.abs(ydist)) {
+            dx = Math.sign(xdist) << 8;
+            dy = ((ydist<<8) / (Math.abs(xdist)));
+            length = Math.abs(xdist) >>8;    
+        } else {
+            dy = Math.sign(ydist)<<8;
+            dx = ((xdist<<8) / (Math.abs(ydist)));
+            length = Math.abs(ydist) >>8;
+        }
+
+        let xPosition = start.x << 8;
+        let yPosition = start.y << 8;
+
+        for(let i=0; i < length; i++) {
+            // rounding??
+            this.drawPixel((xPosition+(1<<7)) >> 8, (yPosition+(1<<7)) >> 8, color);
+            xPosition += dx;
+            yPosition += dy;
+        }
+    
     }
 
     /**
      * TODO: optimize!!
      */
     public drawLine(start: Vector3, end: Vector3) {
-//        let start = new Point(this.width / 2, this.height / 2);
-  //      let end = new Point(this.width / 2 + Math.sin(Date.now() * 0.0002) * 100, this.height / 2 + Math.cos(Date.now() * 0.0002) * 100);
-
         let xdist = (end.x - start.x);
         let xdistSig = Math.sign(xdist);
         let ydist = (end.y - start.y);

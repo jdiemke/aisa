@@ -44,9 +44,11 @@ class ImagePreloader {
 /**
  * Tutorials:
  * - http://www.ecere.com/3dbhole/
+ * - https://www.davrous.com/2013/06/21/tutorial-part-4-learning-how-to-write-a-3d-software-engine-in-c-ts-or-js-rasterization-z-buffering/
  * Algorithms:
  * - http://joshbeam.com/articles/triangle_rasterization/ (scanline)
  * - http://forum.devmaster.net/t/advanced-rasterization/6145 (half space)
+ * - sutherland clipping
  */
 class Application {
 
