@@ -38,8 +38,7 @@ export class Canvas {
     }
 
     public render(): void {
-
-       let time = (Date.now() - this.start)% 20000;
+       let time: number = (Date.now() - this.start) % 20000;
 
        if(time < 5000) {
             this.framebuffer.drawRotoZoomer(this.texture);

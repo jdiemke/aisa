@@ -171,30 +171,19 @@ export default class Framebuffer {
             points2.push(new Vector3(xx, yy, z));
         });
 
-        for(let i=0; i < index.length; i+=2) {
-            this.drawLineDDA(points2[index[i]], points2[index[i+1]]);
-        }
-/*
-        let start = Date.now()
-        for(let i=0; i< 900000; i++)
-            this.drawLineDDA(new Vector3(320/2, 200/2,0), new Vector3(320/2+320/2, 200/2+200/2,0));
-        console.log("DDA:" +(Date.now()- start));
+        let color = 255 << 8 | 255 << 24;
 
-        start = Date.now()
-        for(let i=0; i< 900000; i++)
-            this.drawLine(new Vector3(320/2, 200/2,0), new Vector3(320/2+320/2, 200/2+200/2,0));
-        console.log("lame:" +(Date.now()- start));
-*/
+        for(let i=0; i < index.length; i+=2) {
+            this.drawLineDDA(points2[index[i]], points2[index[i+1]], color);
+        }
+        // this.drawTriangle(null, null, null);
     }
 
     public scene9(elapsedTime: number): void {
         
         let data: any = json;
         
-        // console.log(data.faces);
         let index: Array<number> = data.faces;
-        
-       // console.log(index);
         
         let points: Array<Vector3> = new Array<Vector3>();
         data.vertices.forEach(x => {
@@ -219,85 +208,73 @@ export default class Framebuffer {
             points2.push(new Vector3(xx, yy, z));
         });
 
+        let color = 255 | 255 << 16 | 255 << 24;
+
         for (let i=0; i < index.length; i+=3) {
-            this.drawLineDDA(points2[index[i]-1], points2[index[i+1]-1]);
-            this.drawLineDDA(points2[index[i+1]-1], points2[index[i+2]-1]);
-            this.drawLineDDA(points2[index[i+2]-1], points2[index[i]-1]);
+            this.drawLineDDA(points2[index[i]-1], points2[index[i+1]-1], color);
+            this.drawLineDDA(points2[index[i+1]-1], points2[index[i+2]-1], color);
+            this.drawLineDDA(points2[index[i+2]-1], points2[index[i]-1], color);
         }
         
+    }
+
+    drawTriangleSpan(dist: number, xpos: number, ypos: number, color: number): void {
+        let framebufferIndex = xpos + ypos * this.width;
+        this.framebuffer.fill(color, framebufferIndex, framebufferIndex + dist);
+    }
+
+    public drawTriangle(p1: Vector3, p2: Vector3, p3: Vector3): void {
+        let color = 255 <<24 | 255;
+
+        p1 = new Vector3(10,10,0);
+        p2 = new Vector3(2,50,0);
+        p3 = new Vector3(50,50,0);
+
+        let xstep1 = (p2.x - p1.x) / (p2.y - p1.y);
+        let xstep2 = (p3.x - p1.x) / (p3.y - p1.y);
+
+        let dist = (p2.y - p1.y); 
+        let x= p1.x;
+        let x2= p1.x;
+
+        for(let i =0; i < dist; i++) {
+             this.drawTriangleSpan(((x2|0)-(x|0))+1, x|0,(p1.y+i)|0, color);
+             x+=xstep1;
+             x2+=xstep2;
+        }
+
+       
     }
 
     /**
      * digital differential analyser line drawing algorithm
-     * using fixed point math
+     * using fixed point math.
+     * renders approx 1400 lines per millisecond on my machine
      */
-    public drawLineDDA(start: Vector3, end: Vector3): void {
-        let color = 255 | 0 << 8 | 255 << 16 | 255 << 24;
+    public drawLineDDA(start: Vector3, end: Vector3, color: number): void {
+        let xdist: number = end.x - start.x;
+        let ydist: number = end.y - start.y;
 
-        let xdist = ((end.x<<8) - (start.x<<8));
-        let ydist = ((end.y<<8) - (start.y<<8));
-
-        let dx;
-        let dy;
-
-        let length;
+        let dx: number, dy: number, length: number;
 
         if (Math.abs(xdist) > Math.abs(ydist)) {
-            dx = Math.sign(xdist) << 8;
-            dy = ((ydist<<8) / (Math.abs(xdist)));
-            length = Math.abs(xdist) >>8;    
+            dx = Math.sign(xdist);
+            dy = ydist / Math.abs(xdist);
+            length = Math.abs(xdist);    
         } else {
-            dy = Math.sign(ydist)<<8;
-            dx = ((xdist<<8) / (Math.abs(ydist)));
-            length = Math.abs(ydist) >>8;
+            dx = xdist / Math.abs(ydist);
+            dy = Math.sign(ydist);
+            length = Math.abs(ydist);
         }
 
-        let xPosition = start.x << 8;
-        let yPosition = start.y << 8;
+        let xPosition: number = start.x;
+        let yPosition: number = start.y;
 
         for(let i=0; i < length; i++) {
-            // rounding??
-            this.drawPixel((xPosition+(1<<7)) >> 8, (yPosition+(1<<7)) >> 8, color);
+            this.drawPixel(Math.round(xPosition), Math.round(yPosition), color);
             xPosition += dx;
             yPosition += dy;
         }
-    
-    }
-
-    /**
-     * TODO: optimize!!
-     */
-    public drawLine(start: Vector3, end: Vector3) {
-        let xdist = (end.x - start.x);
-        let xdistSig = Math.sign(xdist);
-        let ydist = (end.y - start.y);
-        let ydistSig = Math.sign(ydist);
-
-        let color = 255 | 0 << 8 | 255 << 16 | 255 << 24;
-
-        let x1 = start.x;
-        let y1 = start.y;
-
-        let ystep = ydist / Math.abs(xdist);
-        
-
-        if(Math.abs(ystep) < 1) {
-
-            for (let i = 0; i < Math.abs(xdist); i++) {
-                this.drawPixel(x1 | 0, y1 | 0, color);
-                x1 += xdistSig;
-                y1 += ystep;
-            }
-        } else {
-            let xstep = xdist / Math.abs(ydist);
-            
-            for (let i = 0; i < Math.abs(ydist); i++) {
-                this.drawPixel(x1 | 0, y1 | 0, color);
-                y1 += ydistSig;
-                x1 += xstep;
-            }
-        }
-  
     }
 
     /**
