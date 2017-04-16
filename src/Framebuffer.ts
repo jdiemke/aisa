@@ -224,7 +224,17 @@ export default class Framebuffer {
     }
 
     /**
+     * https://www.scratchapixel.com/lessons/3d-basic-rendering/rendering-3d-scene-overview
      * http://www.sunshine2k.de/coding/java/TriangleRasterization/TriangleRasterization.html
+     * https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/visibility-problem-depth-buffer-depth-interpolation
+     * https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/perspective-correct-interpolation-vertex-attributes
+     * https://gamedev.stackexchange.com/questions/38213/depth-interpolation-for-z-buffer-with-scanline
+     * https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-shading/shading-normals
+     * https://www.scratchapixel.com/lessons/3d-basic-rendering/transforming-objects-using-matrices
+     * https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-polygon-mesh
+     * https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix
+     * https://www.scratchapixel.com/lessons/3d-basic-rendering/3d-viewing-pinhole-camera
+     * https://www.scratchapixel.com/lessons/3d-basic-rendering/computing-pixel-coordinates-of-3d-point/mathematics-computing-2d-coordinates-of-3d-points
      */
     public drawTriangle(p1: Vector3, p2: Vector3, p3: Vector3): void {
         let color = 255 <<24 | 255;
