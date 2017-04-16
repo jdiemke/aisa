@@ -224,6 +224,7 @@ export default class Framebuffer {
     }
 
     /**
+     * http://simonstechblog.blogspot.de/2012/04/software-rasterizer-part-2.html
      * https://www.scratchapixel.com/lessons/3d-basic-rendering/rendering-3d-scene-overview
      * http://www.sunshine2k.de/coding/java/TriangleRasterization/TriangleRasterization.html
      * https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/visibility-problem-depth-buffer-depth-interpolation
