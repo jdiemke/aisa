@@ -223,6 +223,9 @@ export default class Framebuffer {
         this.framebuffer.fill(color, framebufferIndex, framebufferIndex + dist);
     }
 
+    /**
+     * http://www.sunshine2k.de/coding/java/TriangleRasterization/TriangleRasterization.html
+     */
     public drawTriangle(p1: Vector3, p2: Vector3, p3: Vector3): void {
         let color = 255 <<24 | 255;
 
@@ -242,8 +245,6 @@ export default class Framebuffer {
              x+=xstep1;
              x2+=xstep2;
         }
-
-       
     }
 
     /**
@@ -252,19 +253,19 @@ export default class Framebuffer {
      * renders approx 1400 lines per millisecond on my machine
      */
     public drawLineDDA(start: Vector3, end: Vector3, color: number): void {
-        let xdist: number = end.x - start.x;
-        let ydist: number = end.y - start.y;
+        let xDistance: number = end.x - start.x;
+        let yDistance: number = end.y - start.y;
 
         let dx: number, dy: number, length: number;
 
-        if (Math.abs(xdist) > Math.abs(ydist)) {
-            dx = Math.sign(xdist);
-            dy = ydist / Math.abs(xdist);
-            length = Math.abs(xdist);    
+        if (Math.abs(xDistance) > Math.abs(yDistance)) {
+            dx = Math.sign(xDistance);
+            dy = yDistance / Math.abs(xDistance);
+            length = Math.abs(xDistance);    
         } else {
-            dx = xdist / Math.abs(ydist);
-            dy = Math.sign(ydist);
-            length = Math.abs(ydist);
+            dx = xDistance / Math.abs(yDistance);
+            dy = Math.sign(yDistance);
+            length = Math.abs(yDistance);
         }
 
         let xPosition: number = start.x;
@@ -285,10 +286,6 @@ export default class Framebuffer {
      */
     drawRotoZoomer(texture: Texture) {
         let scale = Math.sin(Date.now() * 0.0005) + 1.1;
-
-        // works but lags due to limited precision!!!
-        // let yStepX = this.sinLUT[((Date.now() * 0.0003 * 512 / (Math.PI * 2)) & 0x1ff) | 0] * scale;//Math.sin(Date.now() * 0.0003) * scale;
-        // let yStepY = this.cosLUT[((Date.now() * 0.0003 * 512 / (Math.PI * 2)) & 0x1ff) | 0] * scale;
 
         let yStepX = Math.sin(Date.now() * 0.0003) * scale;
         let yStepY = Math.cos(Date.now() * 0.0003) * scale;

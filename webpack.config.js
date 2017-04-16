@@ -1,4 +1,5 @@
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var BabiliPlugin = require('babili-webpack-plugin');
 var path = require('path');
 
 module.exports = {
@@ -34,6 +35,7 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             template: './src/index.html'
-        })
+        }),
+       new BabiliPlugin()
     ]
 }
