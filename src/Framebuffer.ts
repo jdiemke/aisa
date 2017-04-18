@@ -15,6 +15,7 @@ export default class Framebuffer {
     private imageData: ImageData;
     private framebuffer: Uint32Array;
     private unsignedIntArray: Uint8ClampedArray;
+    public wBuffer: Float32Array;
 
     private sinLUT: Array<number>;
     private cosLUT: Array<number>;
@@ -24,6 +25,7 @@ export default class Framebuffer {
         this.height = height;
 
         this.imageData = new ImageData(320, 200);
+        this.wBuffer = new Float32Array(320*200);
         let arrayBuffer = new ArrayBuffer(this.width * this.height * Framebuffer.PIXEL_SIZE_IN_BYTES);
         this.unsignedIntArray = new Uint8ClampedArray(arrayBuffer);
 
@@ -139,8 +141,6 @@ export default class Framebuffer {
     //   instead of fucking around with the projection formular
     public scene8(elapsedTime: number): void {
 
-
-
         let index: Array<number> = [
             0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6,
             6, 7, 7, 4, 0, 7, 1, 6, 2, 5, 3, 4
@@ -174,12 +174,15 @@ export default class Framebuffer {
         let color = 255 << 8 | 255 << 24;
 
         for(let i=0; i < index.length; i+=2) {
+             let color = (255*(-points2[index[i]].z/15))&0xff | 255 << 16 | 255 << 24;
             this.drawLineDDA(points2[index[i]], points2[index[i+1]], color);
         }
         // this.drawTriangle(null, null, null);
     }
 
     public scene9(elapsedTime: number): void {
+
+        this.wBuffer.fill(100);
         
         let data: any = json;
         
@@ -211,9 +214,13 @@ export default class Framebuffer {
         let color = 255 | 255 << 16 | 255 << 24;
 
         for (let i=0; i < index.length; i+=3) {
-            this.drawLineDDA(points2[index[i]-1], points2[index[i+1]-1], color);
-            this.drawLineDDA(points2[index[i+1]-1], points2[index[i+2]-1], color);
-            this.drawLineDDA(points2[index[i+2]-1], points2[index[i]-1], color);
+            // backface culling
+            if(points2[index[i+1]-1].sub(points2[index[i]-1]).cross(points2[index[i+2]-1].sub(points2[index[i]-1])).z < 0) {
+                let color = (255*(-points2[index[i]-1].z/15))&0xff | 255 << 16 | 255 << 24;
+                this.drawLineDDA(points2[index[i]-1], points2[index[i+1]-1], color);
+                this.drawLineDDA(points2[index[i+1]-1], points2[index[i+2]-1], color);
+                this.drawLineDDA(points2[index[i+2]-1], points2[index[i]-1], color);
+            }
         }
         
     }
@@ -224,6 +231,7 @@ export default class Framebuffer {
     }
 
     /**
+     * http://www.hugi.scene.org/online/coding/
      * http://simonstechblog.blogspot.de/2012/04/software-rasterizer-part-2.html
      * https://www.scratchapixel.com/lessons/3d-basic-rendering/rendering-3d-scene-overview
      * http://www.sunshine2k.de/coding/java/TriangleRasterization/TriangleRasterization.html
@@ -282,10 +290,18 @@ export default class Framebuffer {
         let xPosition: number = start.x;
         let yPosition: number = start.y;
 
+        // w=1/z interpolation for z-buffer
+        let wStart = 1/start.z;
+        let wDelta = (1/end.z - 1/ start.z)/length;
+
         for(let i=0; i < length; i++) {
-            this.drawPixel(Math.round(xPosition), Math.round(yPosition), color);
+            if(wStart < this.wBuffer[Math.round(xPosition)+ Math.round(yPosition)*320]) {
+                this.wBuffer[Math.round(xPosition)+ Math.round(yPosition)*320] = wStart;
+                this.drawPixel(Math.round(xPosition), Math.round(yPosition), color);
+            }
             xPosition += dx;
             yPosition += dy;
+            wStart += wDelta;
         }
     }
 
