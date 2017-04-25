@@ -36,6 +36,6 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: './src/index.html'
         }),
-       new BabiliPlugin()
+      // new BabiliPlugin()
     ]
 }
