@@ -51,7 +51,7 @@ export class Canvas {
             this.framebuffer.scene8(Date.now() * 0.002);
         } else {
             this.framebuffer.clear();
-            this.framebuffer.scene9(Date.now() * 0.002);
+            this.framebuffer.scene9(Date.now() * 0.02);
         }
     }
 
