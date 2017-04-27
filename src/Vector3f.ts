@@ -32,4 +32,17 @@ export default class Vector3f {
             this.x * vec.y - this.y * vec.x);
     }
 
+    length() {
+        return Math.sqrt(this.x*this.x +this.y*this.y +this.z*this.z);
+    }
+
+    normalize(): Vector3f {
+        let reci = 1.0/this.length();
+        return this.mul(reci);
+    }
+
+    dot(vec:Vector3f): number {
+        return this.x*vec.x+this.y*vec.y+this.z*vec.z;
+    }
+
 }
