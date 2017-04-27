@@ -130,7 +130,7 @@ export default class Framebuffer {
 
         let index: Array<number> = [
             0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6,
-            6, 7, 7, 4, 0, 7, 1, 6, 2, 5, 3, 4
+            6, 7, 7, 4, 0, 7, 1, 6, 2, 5, 3, 4,
         ];
 
         let points: Array<Vector3> = [
@@ -171,22 +171,33 @@ export default class Framebuffer {
         this.wBuffer.fill(100);
 
         let index: Array<number> = [
-            1, 2, 3, 4, 5, 6
+            1, 2, 3, 3, 4, 1,
+            5, 6, 7, 7, 8, 5,
+
+            2, 6, 7, 7, 3, 2,
+            5, 1, 4, 4, 8, 5,
+
+            4, 3, 7, 7, 8, 4,
+            1, 2, 6, 6, 5, 1
         ];
 
         let points: Array<Vector3> = [
             new Vector3(-1.0, -1.0, 1.0), new Vector3(1.0, -1.0, 1.0),
-            new Vector3(1.0, 1.0, 1.0),
+            new Vector3(1.0, 1.0, 1.0), new Vector3(-1.0, 1.0, 1.0),
             new Vector3(-1.0, -1.0, -1.0), new Vector3(1.0, -1.0, -1.0),
-            new Vector3(1.0, 1.0, -1.0)
+            new Vector3(1.0, 1.0, -1.0), new Vector3(-1.0, 1.0, -1.0),
         ];
 
         let colorAr: Array<number> = [
             255 << 24 | 255 << 0,
             255 << 24 | 255 << 8,
+            255 << 24 | 255 << 16,
+            255 << 24 | 255 << 16 | 255,
+            255 << 24 | 255 << 16 | 255 << 8,
+            255 << 24 | 255 << 8 | 128,
         ];
 
-        let scale = 2.2;
+        let scale = 3.2;
 
         let modelViewMartrix = Matrix3.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3.constructYRotationMatrix(elapsedTime * 0.05));
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3.constructXRotationMatrix(elapsedTime * 0.08));
@@ -204,20 +215,9 @@ export default class Framebuffer {
             points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
         });
 
-        let color = 255 | 255 << 16 | 255 << 24;
-
-        let colindex = 0;
         for (let i = 0; i < index.length; i += 3) {
-            // backface culling
-
-            // if (points2[index[i + 1] - 1].sub(points2[index[i] - 1]).cross(points2[index[i + 2] - 1].sub(points2[index[i] - 1])).z < 0) {
-            let color = colorAr[colindex++];
-
-            this.drawTriangleDDA2(points2[index[i] - 1], points2[index[i + 1] - 1], points2[index[i + 2] - 1], color);
-            this.drawLineDDA(points2[index[i] - 1], points2[index[i + 1] - 1], color);
-            this.drawLineDDA(points2[index[i + 1] - 1], points2[index[i + 2] - 1], color);
-            this.drawLineDDA(points2[index[i + 2] - 1], points2[index[i] - 1], color);
-            // }
+            // TODO: use eye space triangles for backface culling
+            this.drawTriangleDDA2(points2[index[i] - 1], points2[index[i + 1] - 1], points2[index[i + 2] - 1], colorAr[(((i)/6) |0)%6]);
         }
 
     }
@@ -310,23 +310,22 @@ export default class Framebuffer {
         let zslope2 = ((1 / v3.z - 1 / v1.z) / (v3.y - v1.y));
 
         let curx1 = v1.x;
-        let curx2 = v1.x + 1;
+        let curx2 = v1.x;
 
         let curz1 = 1.0 / v1.z;
         let curz2 = 1.0 / v1.z;
 
-        for (let i = 0; i < Math.round(v2.y - v1.y); i++) {
+        for (let i = 0; i <= Math.round(v2.y - v1.y); i++) {
 
             for (let j = curx1; j < (curx2); j++) {
                 let wStart = (curz2 - curz1) / (curx2 - curx1) * (j - curx1) + curz1;
 
                 if (wStart < this.wBuffer[Math.round(j) + Math.round(v1.y + i) * 320]) {
                     this.wBuffer[Math.round(j) + Math.round(v1.y + i) * 320] = wStart;
-                    //color = 255 <<24 | (wStart*255) &0xff;
                     this.drawPixel(Math.round(j), Math.round(v1.y + i), color);
                 }
             }
-            // this.drawTriangleSpan(Math.round(curx2 - curx1), Math.round(curx1), Math.round(v1.y + i), color);
+
             curx1 += slope1;
             curx2 += slope2;
 
@@ -348,7 +347,7 @@ export default class Framebuffer {
         let curz1 = 1.0 / v1.z;
         let curz2 = 1.0 / v2.z;
 
-        for (let i = 0; i < Math.round(v3.y - v1.y); i++) {
+        for (let i = 0; i <= Math.round(v3.y - v1.y); i++) {
 
             for (let j = curx1; j < (curx2); j++) {
                 let wStart = (curz2 - curz1) / (curx2 - curx1) * (j - curx1) + curz1;

@@ -38,17 +38,14 @@ export class Canvas {
     }
 
     public render(): void {
-        let time: number = (Date.now() - this.start) % 40000;
+        let time: number = (Date.now() - this.start) % 30000;
 
         if (time < 10000) {
             this.framebuffer.drawRotoZoomer(this.texture);
+            this.framebuffer.scene10(Date.now() * 0.02);
         } else if (time < 20000) {
-            this.framebuffer.clear();
+            this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.draw(this.texture);
-        } else if (time < 30000) {
-            this.framebuffer.clear();
-            this.framebuffer.wBuffer.fill(100);
-            this.framebuffer.scene8(Date.now() * 0.002);
         } else {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.scene9(Date.now() * 0.02);
