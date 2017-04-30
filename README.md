@@ -16,3 +16,11 @@ Type the following command into your shell:
 > npm run build
 ```
 Move into the project's `dist/` folder and open `index.html`.
+### Backlog
+- Vertex shading (flat, gouraud, phong)
+- Texture mapping
+- Environment mapping
+- 4x4 homogenous matrices
+- Camera
+- Pixel shaders (bump mapping, parallax mapping)
+- Clipping
