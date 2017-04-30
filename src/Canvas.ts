@@ -50,6 +50,8 @@ export class Canvas {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.scene9(Date.now() * 0.02);
         }
+       // this.framebuffer.drawRotoZoomer(this.texture);
+       // this.framebuffer.scene10(Date.now() * 0.02);
     }
 
     getImageData(image: HTMLImageElement): Uint32Array {

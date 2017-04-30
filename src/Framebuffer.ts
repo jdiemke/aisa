@@ -166,19 +166,83 @@ export default class Framebuffer {
         }
     }
 
+    public debug(elapsedTime: number): void {
+
+        this.wBuffer.fill(100);
+
+        let index: Array<number> = [
+           1, 2, 3, 3, 4, 1,
+           1+8, 2+8, 3+8, 3+8, 4+8, 1+8,
+         
+        ];
+
+        let points: Array<Vector3> = [
+            new Vector3(-1.0, -1.0, 1.0), new Vector3(1.0, -1.0, 1.0),
+            new Vector3(1.0, 1.0, 1.0), new Vector3(-1.0, 1.0, 1.0),
+            new Vector3(-1.0, -1.0, -1.0), new Vector3(1.0, -1.0, -1.0),
+            new Vector3(1.0, 1.0, -1.0), new Vector3(-1.0, 1.0, -1.0),
+
+              new Vector3(-1.0, -1.0, 1.0).add(new Vector3(2.0, 0.0, 0.0)), new Vector3(1.0, -1.0, 1.0).add(new Vector3(2.0, 0.0, 0.0)),
+            new Vector3(1.0, 1.0, 1.0).add(new Vector3(2.0, 0.0, 0.0)), new Vector3(-1.0, 1.0, 1.0).add(new Vector3(2.0, 0.0, 0.0)),
+            new Vector3(-1.0, -1.0, -1.0).add(new Vector3(2.0, 0.0, 0.0)), new Vector3(1.0, -1.0, -1.0).add(new Vector3(2.0, 0.0, 0.0)),
+            new Vector3(1.0, 1.0, -1.0).add(new Vector3(2.0, 0.0, 0.0)), new Vector3(-1.0, 1.0, -1.0).add(new Vector3(2.0, 0.0, 0.0)),
+        ];
+
+        let colorAr: Array<number> = [
+            255 << 24 | 255 << 0,
+            255 << 24 | 255 << 8,
+            255 << 24 | 255 << 16,
+            255 << 24 | 255 << 16 | 255,
+            255 << 24 | 255 << 16 | 255 << 8,
+            255 << 24 | 255 << 8 | 128,
+        ];
+
+        let scale = 3.2;
+
+        let modelViewMartrix = Matrix3.constructScaleMatrix(scale, scale, scale);
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3.constructZRotationMatrix(elapsedTime * 0.08));
+
+        
+  
+            let points2: Array<Vector3> = new Array<Vector3>();
+        points.forEach(element => {
+            let transformed = modelViewMartrix.multiply(element);
+
+            let x = transformed.x ;
+            let y = transformed.y;
+            let z = transformed.z - 9; // TODO: use translation matrix!
+
+            let xx = (320 * 0.5) + (x / (-z * 0.0078));
+            let yy = (200 * 0.5) - (y / (-z * 0.0078));
+            points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+        });
+
+        for (let i = 0; i < index.length; i += 3) {
+            // TODO: use eye space triangles for backface culling
+            let col = 255 << 24 | 255<<16;
+            let col2 = 255 << 24 | 255;
+
+
+            this.drawTriangleDDA2(points2[index[i] - 1], points2[index[i + 1] - 1], points2[index[i + 2] - 1], colorAr[(((i)/3) |0)%6]);
+     
+        
+        }
+
+    }
+
     public scene10(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
 
         let index: Array<number> = [
-            1, 2, 3, 3, 4, 1,
-            5, 6, 7, 7, 8, 5,
+           1, 2, 3, 4, 1, 3,
+           5, 7, 6, 8, 7, 5,
 
             2, 6, 7, 7, 3, 2,
             5, 1, 4, 4, 8, 5,
 
             4, 3, 7, 7, 8, 4,
-            1, 2, 6, 6, 5, 1
+            1, 6, 2, 5, 6, 1
         ];
 
         let points: Array<Vector3> = [
@@ -202,11 +266,13 @@ export default class Framebuffer {
         let modelViewMartrix = Matrix3.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3.constructYRotationMatrix(elapsedTime * 0.05));
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3.constructXRotationMatrix(elapsedTime * 0.08));
 
-        let points2: Array<Vector3> = new Array<Vector3>();
+        
+  
+            let points2: Array<Vector3> = new Array<Vector3>();
         points.forEach(element => {
             let transformed = modelViewMartrix.multiply(element);
 
-            let x = transformed.x;
+            let x = transformed.x ;
             let y = transformed.y;
             let z = transformed.z - 9; // TODO: use translation matrix!
 
@@ -216,8 +282,16 @@ export default class Framebuffer {
         });
 
         for (let i = 0; i < index.length; i += 3) {
+            if (points2[index[i + 1] - 1].sub(points2[index[i] - 1]).cross(points2[index[i + 2] - 1].sub(points2[index[i] - 1])).z < 0) {
+                
             // TODO: use eye space triangles for backface culling
+            let col = 255 << 24 | 255<<16;
+            let col2 = 255 << 24 | 255;
+
+
             this.drawTriangleDDA2(points2[index[i] - 1], points2[index[i + 1] - 1], points2[index[i + 2] - 1], colorAr[(((i)/6) |0)%6]);
+     
+            }
         }
 
     }
@@ -263,10 +337,10 @@ export default class Framebuffer {
 
                 let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
                 let col3 = 255 << 24 | 0;
-                  this.drawLineDDA(points2[index[i] - 1], points2[index[i + 1] - 1], col3);
-                  this.drawLineDDA(points2[index[i + 1] - 1], points2[index[i + 2] - 1], col3);
-                  this.drawLineDDA(points2[index[i + 2] - 1], points2[index[i] - 1], col3);
                 this.drawTriangleDDA2(points2[index[i] - 1], points2[index[i + 1] - 1], points2[index[i + 2] - 1], color);
+          //       this.drawLineDDA(points2[index[i] - 1], points2[index[i + 1] - 1], col3);
+            //      this.drawLineDDA(points2[index[i + 1] - 1], points2[index[i + 2] - 1], col3);
+              //    this.drawLineDDA(points2[index[i + 2] - 1], points2[index[i] - 1], col3);
             }
         }
 
@@ -303,6 +377,9 @@ export default class Framebuffer {
     first: boolean;
 
     fillBottomFlatTriangle(v1: Vector3, v2: Vector3, v3: Vector3, color: number): void {
+
+        let yDistance = v3.y - v1.y;
+
         let slope1 = (v2.x - v1.x) / (v2.y - v1.y);
         let slope2 = (v3.x - v1.x) / (v3.y - v1.y);
 
@@ -315,16 +392,29 @@ export default class Framebuffer {
         let curz1 = 1.0 / v1.z;
         let curz2 = 1.0 / v1.z;
 
-        for (let i = 0; i <= Math.round(v2.y - v1.y); i++) {
 
-            for (let j = curx1; j < (curx2); j++) {
-                let wStart = (curz2 - curz1) / (curx2 - curx1) * (j - curx1) + curz1;
+        let length = Math.round(v2.y - v1.y);
 
-                if (wStart < this.wBuffer[Math.round(j) + Math.round(v1.y + i) * 320]) {
-                    this.wBuffer[Math.round(j) + Math.round(v1.y + i) * 320] = wStart;
-                    this.drawPixel(Math.round(j), Math.round(v1.y + i), color);
+       let xPosition = v1.x;
+        let xPosition2 = v1.x;
+        let yPosition = v1.y;
+
+        for (let i = 0; i < yDistance; i++) {
+       
+
+            let length = Math.round(xPosition2) -Math.round(xPosition);
+            for (let j = 0; j < length; j++) {
+                let wStart = (curz2 - curz1) / (length) * j + curz1;
+
+                if (wStart < this.wBuffer[Math.round(xPosition)+j + Math.round(yPosition) * 320]) {
+                    this.wBuffer[Math.round(xPosition)+j + Math.round(yPosition) * 320] = wStart;
+                    this.drawPixel(Math.round(xPosition)+j, Math.round(yPosition), color);
                 }
             }
+
+            xPosition += slope1;
+            xPosition2 += slope2;
+            yPosition ++;
 
             curx1 += slope1;
             curx2 += slope2;
@@ -334,28 +424,41 @@ export default class Framebuffer {
         }
     }
 
-    fillTopFlatTriangle(v1: Vector3, v2: Vector3, v3: Vector3, color: number): void {
-        let slope1 = (v3.x - v1.x) / (v3.y - v1.y);
-        let slope2 = (v3.x - v2.x) / (v3.y - v2.y);
 
-        let zslope1 = ((1 / v3.z - 1 / v1.z) / (v3.y - v1.y));
-        let zslope2 = ((1 / v3.z - 1 / v2.z) / (v3.y - v2.y));
+    fillTopFlatTriangle(v1: Vector3, v2: Vector3, v3: Vector3, color: number): void {
+        let yDistance = v3.y - v1.y;
+        let slope1 = (v3.x - v1.x) / yDistance;
+        let slope2 = (v3.x - v2.x) / yDistance;
+
+        let zslope1 = (1 / v3.z - 1 / v1.z) / yDistance;
+        let zslope2 = (1 / v3.z - 1 / v2.z) / yDistance;
 
         let curx1 = v1.x;
-        let curx2 = v2.x;
+        let curx2 = v2.y;
 
         let curz1 = 1.0 / v1.z;
-        let curz2 = 1.0 / v2.z;
+        let curz2 = 1.0 / v2.z ;
+    
+        let xPosition = v1.x;
+        let xPosition2 = v2.x;
+        let yPosition = v1.y;
 
-        for (let i = 0; i <= Math.round(v3.y - v1.y); i++) {
+        for (let i = 0; i < yDistance; i++) {
+       
 
-            for (let j = curx1; j < (curx2); j++) {
-                let wStart = (curz2 - curz1) / (curx2 - curx1) * (j - curx1) + curz1;
-                if (wStart < this.wBuffer[Math.round(j) + Math.round(v1.y + i) * 320]) {
-                    this.wBuffer[Math.round(j) + Math.round(v1.y + i) * 320] = wStart;
-                    this.drawPixel(Math.round(j), Math.round(v1.y + i), color);
+            let length = Math.round(xPosition2) -Math.round(xPosition);
+            for (let j = 0; j < length; j++) {
+                let wStart = (curz2 - curz1) / (length) * j + curz1;
+
+                if (wStart < this.wBuffer[Math.round(xPosition)+j + Math.round(yPosition) * 320]) {
+                    this.wBuffer[Math.round(xPosition)+j + Math.round(yPosition) * 320] = wStart;
+                    this.drawPixel(Math.round(xPosition)+j, Math.round(yPosition), color);
                 }
             }
+
+            xPosition += slope1;
+            xPosition2 += slope2;
+            yPosition ++;
 
             curx1 += slope1;
             curx2 += slope2;
@@ -366,10 +469,9 @@ export default class Framebuffer {
     }
 
     /**
-     * type 1: bottom flat
-     * type 2: top flat
-     * type 3: MIDP right
-     * type 4: MIDP left
+     * Triangle rasterization using edge-walking strategy for scan-conversion.
+     * Internally DDA is used for edge-walking.
+     * TODO: rotate around center and check for correctness!!
      */
     public drawTriangleDDA2(p1: Vector3, p2: Vector3, p3: Vector3, color: number): void {
         if (p1.y > p3.y) {
@@ -399,51 +501,15 @@ export default class Framebuffer {
         } else {
             let x = (p3.x - p1.x) * (p2.y - p1.y) / (p3.y - p1.y) + p1.x;
             let z = (1 / p3.z - 1 / p1.z) * (p2.y - p1.y) / (p3.y - p1.y) + 1 / p1.z;
-            let MIDP: Vector3 = new Vector3(x, p2.y, 1 / z);
+            let MIDP: Vector3 = new Vector3(x,p2.y, 1 / z);
 
             if (x > p2.x) {
-                this.fillBottomFlatTriangle(p1, p2, MIDP, color);
+               this.fillBottomFlatTriangle(p1, p2, MIDP, color);
                 this.fillTopFlatTriangle(p2, MIDP, p3, color);
             } else {
                 this.fillBottomFlatTriangle(p1, MIDP, p2, color);
                 this.fillTopFlatTriangle(MIDP, p2, p3, color);
             }
-        }
-    }
-
-    /**
-     * Triangle rasterization using edge-walking strategy for scan-conversion.
-     * Internally DDA is used for edge-walking.
-     * TODO: rotate around center and check for correctness!!
-     */
-    public drawTriangleDDA(vertices: Array<Vector3>): void {
-        let color = 255 << 24 | 255;
-
-        if (vertices[1].y > vertices[2].y) {
-            this.swapVertices(vertices, 1, 2);
-        }
-
-        if (vertices[0].y > vertices[2].y) {
-            this.swapVertices(vertices, 0, 2);
-        }
-
-        if (vertices[0].y > vertices[1].y) {
-            this.swapVertices(vertices, 0, 1);
-        }
-
-        if (vertices[1].y == vertices[2].y) {
-            if (vertices[1].x > vertices[2].x) this.swapVertices(vertices, 1, 2);
-            this.fillBottomFlatTriangle(vertices[0], vertices[1], vertices[2], color);
-            //  console.log("flat bottom");
-        } else if (vertices[0].y == vertices[1].y) {
-            if (vertices[0].x > vertices[1].x) this.swapVertices(vertices, 0, 1);
-            this.fillTopFlatTriangle(vertices[0], vertices[1], vertices[2], color);
-            // console.log("flat top");
-        } else {
-            let v4 = new Vector3(vertices[0].x + (vertices[1].y - vertices[0].y) /
-                (vertices[2].y - vertices[0].y) * (vertices[2].x - vertices[0].x), vertices[1].y, 0);
-            this.fillBottomFlatTriangle(vertices[0], vertices[1], v4, color);
-            this.fillTopFlatTriangle(vertices[1], v4, vertices[2], color);
         }
     }
 
@@ -476,10 +542,39 @@ export default class Framebuffer {
         let wDelta = (1 / end.z - 1 / start.z) / length;
 
         for (let i = 0; i < length; i++) {
-            if (wStart < this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320]) {
-                this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320] = wStart;
+           // if (wStart < this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320]) {
+             //   this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320] = wStart;
                 this.drawPixel(Math.round(xPosition), Math.round(yPosition), color);
-            }
+           // }
+            xPosition += dx;
+            yPosition += dy;
+            wStart += wDelta;
+        }
+    }
+
+        public drawLineDDA2(start: Vector3, end: Vector3, color: number): void {
+        let xDistance: number = end.x - start.x;
+        let yDistance: number = end.y - start.y;
+
+        let dx: number, dy: number, length: number;
+
+            dx = xDistance / Math.abs(yDistance);
+            dy = Math.sign(yDistance);
+            length = Math.abs(yDistance);
+        
+
+        let xPosition: number = start.x;
+        let yPosition: number = start.y;
+
+        // w=1/z interpolation for z-buffer
+        let wStart = 1 / (start.z + 0.1);
+        let wDelta = (1 / end.z - 1 / start.z) / length;
+
+        for (let i = 0; i < length; i++) {
+           // if (wStart < this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320]) {
+             //   this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320] = wStart;
+                this.drawPixel(Math.round(xPosition), Math.round(yPosition), color);
+           // }
             xPosition += dx;
             yPosition += dy;
             wStart += wDelta;

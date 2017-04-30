@@ -50,6 +50,24 @@ export default class Matrix3f {
         return matrix;
     }
 
+    static constructZRotationMatrix(angle: number) {
+        let matrix = new Matrix3f();
+
+        matrix.m11 = Math.cos(angle);
+        matrix.m12 = -Math.sin(angle);
+        matrix.m13 = 0.0;
+
+        matrix.m21 = Math.sin(angle);
+        matrix.m22 = Math.cos(angle);
+        matrix.m23 = 0.0;
+
+        matrix.m31 = 0.0;
+        matrix.m32 = 0.0;
+        matrix.m33 = 1.0;
+
+        return matrix;
+    }
+
     static constructScaleMatrix(xScale: number, yScale: number, zScale: number) {
         let matrix = new Matrix3f();
 
