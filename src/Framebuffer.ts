@@ -166,6 +166,27 @@ export default class Framebuffer {
         }
     }
 
+    /**
+     * https://mikro.naprvyraz.sk/docs/
+     * http://simonstechblog.blogspot.de/2012/04/software-rasterizer-part-1.html
+     * http://www.lysator.liu.se/~mikaelk/doc/perspectivetexture/
+     * http://chrishecker.com/Miscellaneous_Technical_Articles
+     * http://www.gamasutra.com/blogs/MichaelKissner/20160112/263097/Writing_a_Game_Engine_from_Scratch__Part_4_Graphics_Library.php
+     * https://www.codeproject.com/Articles/170296/D-Software-Rendering-Engine-Part-I
+     * https://www.davrous.com/2013/06/13/tutorial-series-learning-how-to-write-a-3d-soft-engine-from-scratch-in-c-typescript-or-javascript/
+     * https://www.youtube.com/playlist?list=PLEETnX-uPtBXP_B2yupUKlflXBznWIlL5
+     * https://www.youtube.com/watch?v=cQY3WTKRI7I
+     * https://www.youtube.com/playlist?list=PLEETnX-uPtBUbVOok816vTl1K9vV1GgH5
+     * https://www.youtube.com/playlist?list=PLEETnX-uPtBUG4iRqc6bEBv5uxMXswlEL
+     * https://www.youtube.com/playlist?list=PLbCDZQXIq7uYaf263gr-zb0wZGoCL-T5G
+     * https://www.youtube.com/watch?v=9A5TVh6kPLA
+     * http://joshbeam.com/articles/triangle_rasterization/
+     * http://developers-club.com/posts/257107/
+     * https://www.codeproject.com/Articles/170296/3D-Software-Rendering-Engine-Part-I
+     * https://gamedev.stackexchange.com/questions/44263/fast-software-color-interpolating-triangle-rasterization-technique
+     * https://fgiesen.wordpress.com/2011/07/05/a-trip-through-the-graphics-pipeline-2011-part-5/
+     * http://insolitdust.sourceforge.net/code.html
+     */
     public debug(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
@@ -230,6 +251,81 @@ export default class Framebuffer {
 
     }
 
+
+    public shadingDemo(elapsedTime: number): void {
+
+        this.wBuffer.fill(100);
+
+        let index: Array<number> = [
+           1, 2, 3, 4, 1, 3,
+           5, 7, 6, 8, 7, 5,
+
+            2, 6, 7, 7, 3, 2,
+            5, 1, 4, 4, 8, 5,
+
+            4, 3, 7, 7, 8, 4,
+            1, 6, 2, 5, 6, 1
+        ];
+
+        let points: Array<Vector3> = [
+            new Vector3(-1.0, -1.0, 1.0), new Vector3(1.0, -1.0, 1.0),
+            new Vector3(1.0, 1.0, 1.0), new Vector3(-1.0, 1.0, 1.0),
+            new Vector3(-1.0, -1.0, -1.0), new Vector3(1.0, -1.0, -1.0),
+            new Vector3(1.0, 1.0, -1.0), new Vector3(-1.0, 1.0, -1.0),
+        ];
+
+        // compute normals
+        let normals: Array<Vector3> = new Array<Vector3>();  
+
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1] - 1].sub(points[index[i] - 1]).cross(points[index[i + 2] - 1].sub(points[index[i] - 1]));
+            normals.push(normal);
+        }
+        
+
+        let colorAr: Array<number> = [
+            255 << 24 | 255 << 0,
+            255 << 24 | 255 << 8,
+            255 << 24 | 255 << 16,
+            255 << 24 | 255 << 16 | 255,
+            255 << 24 | 255 << 16 | 255 << 8,
+            255 << 24 | 255 << 8 | 128,
+        ];
+
+        let scale = 3.2;
+
+        let modelViewMartrix = Matrix3.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3.constructYRotationMatrix(elapsedTime * 0.05));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3.constructXRotationMatrix(elapsedTime * 0.08));
+  
+        let points2: Array<Vector3> = new Array<Vector3>();
+
+        let normals2: Array<Vector3> = new Array<Vector3>();
+            normals.forEach(element => {
+            normals2.push(modelViewMartrix.multiply(element));
+        });
+
+        points.forEach(element => {
+            let transformed = modelViewMartrix.multiply(element);
+
+            let x = transformed.x;
+            let y = transformed.y;
+            let z = transformed.z - 9; // TODO: use translation matrix!
+
+            let xx = (320 * 0.5) + (x / (-z * 0.0078));
+            let yy = (200 * 0.5) - (y / (-z * 0.0078));
+            points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+        });
+
+        for (let i = 0; i < index.length; i += 3) {
+            if (points2[index[i + 1] - 1].sub(points2[index[i] - 1]).cross(points2[index[i + 2] - 1].sub(points2[index[i] - 1])).z < 0) {
+                let normal = normals2[i/3];
+                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.5, 0.5, 0.5).normalize())) * 100), 255) + 100;
+                let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
+                this.drawTriangleDDA2(points2[index[i] - 1], points2[index[i + 1] - 1], points2[index[i + 2] - 1],color);
+            }
+        }
+    }
+
     public scene10(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
@@ -266,13 +362,13 @@ export default class Framebuffer {
         let modelViewMartrix = Matrix3.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3.constructYRotationMatrix(elapsedTime * 0.05));
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3.constructXRotationMatrix(elapsedTime * 0.08));
 
-        
+        for(let i=0; i < 2; i++) {
   
             let points2: Array<Vector3> = new Array<Vector3>();
         points.forEach(element => {
             let transformed = modelViewMartrix.multiply(element);
 
-            let x = transformed.x ;
+            let x = transformed.x +i*4-2;
             let y = transformed.y;
             let z = transformed.z - 9; // TODO: use translation matrix!
 
@@ -293,6 +389,7 @@ export default class Framebuffer {
      
             }
         }
+    }
 
     }
 
@@ -352,6 +449,9 @@ export default class Framebuffer {
     }
 
     /**
+     * http://www.flipcode.com/archives/articles.shtml
+     * http://lodev.org/cgtutor/
+     * http://lodev.org/cgtutor/lineclipping.html
      * http://www.hugi.scene.org/online/coding/
      * https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/perspective-correct-interpolation-vertex-attributes
      * http://simonstechblog.blogspot.de/2012/04/software-rasterizer-part-2.html

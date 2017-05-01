@@ -42,7 +42,7 @@ export class Canvas {
 
         if (time < 10000) {
             this.framebuffer.drawRotoZoomer(this.texture);
-            this.framebuffer.scene10(Date.now() * 0.02);
+            this.framebuffer.shadingDemo(Date.now() * 0.02);
         } else if (time < 20000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.draw(this.texture);
@@ -50,8 +50,6 @@ export class Canvas {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.scene9(Date.now() * 0.02);
         }
-       // this.framebuffer.drawRotoZoomer(this.texture);
-       // this.framebuffer.scene10(Date.now() * 0.02);
     }
 
     getImageData(image: HTMLImageElement): Uint32Array {
