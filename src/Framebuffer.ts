@@ -251,7 +251,17 @@ export default class Framebuffer {
 
     }
 
-
+    /**
+     * Full Pipeline:
+     * https://en.wikipedia.org/wiki/Graphics_pipeline
+     * https://en.wikipedia.org/wiki/Clipping_(computer_graphics)
+     * https://www.ntu.edu.sg/home/ehchua/programming/opengl/CG_BasicsTheory.html
+     * http://www.gamasutra.com/blogs/MichaelKissner/20160112/263097/Writing_a_Game_Engine_from_Scratch__Part_4_Graphics_Library.php
+     * culling:
+     * https://developer.tizen.org/development/guides/native-application/graphics/opengl-es/primitive-assembly-and-rasterization
+     * assumption:
+     * By default, vertices of every 3D triangle are in a counter-clockwise (CCW) order
+     */
     public shadingDemo(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
@@ -297,6 +307,9 @@ export default class Framebuffer {
         let modelViewMartrix = Matrix3.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3.constructYRotationMatrix(elapsedTime * 0.05));
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3.constructXRotationMatrix(elapsedTime * 0.08));
   
+        /**
+         * Vertex Shader Stage
+         */
         let points2: Array<Vector3> = new Array<Vector3>();
 
         let normals2: Array<Vector3> = new Array<Vector3>();
@@ -312,18 +325,46 @@ export default class Framebuffer {
             let z = transformed.z - 9; // TODO: use translation matrix!
 
             let xx = (320 * 0.5) + (x / (-z * 0.0078));
-            let yy = (200 * 0.5) - (y / (-z * 0.0078));
+            let yy = (200 * 0.5) + (y / (-z * 0.0078));
+            // commented out because it breaks the winding. inversion
+            // of y has to be done after back-face culling in the
+            // viewport transform
+            // yy =(200 * 0.5) - (y / (-z * 0.0078));
+
             points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
         });
 
+        /**
+         * Primitive Assembly and Rasterization Stage:
+         * 1. back-face culling
+         * 2. viewport transform
+         * 3. scan conversion (rasterization)
+         */
         for (let i = 0; i < index.length; i += 3) {
-            if (points2[index[i + 1] - 1].sub(points2[index[i] - 1]).cross(points2[index[i + 2] - 1].sub(points2[index[i] - 1])).z < 0) {
+            /**
+             * Only render triangles with CCW-ordered vertices
+             * 
+             * Reference:
+             * David H. Eberly (2006).
+             * 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
+             * p. 69. Morgan Kaufmann Publishers, United States.
+             */
+            let v1 = points2[index[i] - 1];
+            let v2 = points2[index[i + 1] - 1];
+            let v3 = points2[index[i + 2] - 1];
+            
+            if (this.isTriangleCCW(v1, v2, v3)) {
                 let normal = normals2[i/3];
                 let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.5, 0.5, 0.5).normalize())) * 100), 255) + 100;
                 let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
-                this.drawTriangleDDA2(points2[index[i] - 1], points2[index[i + 1] - 1], points2[index[i + 2] - 1],color);
+                this.drawTriangleDDA2(v1, v2, v3, color);
             }
         }
+    }
+
+    private isTriangleCCW(v1: Vector3, v2: Vector3, v3: Vector3): boolean {
+        let det: number = (v2.x - v1.x) * (v3.y - v1.y) - (v2.y - v1.y) * (v3.x - v1.x);
+        return det > 0;
     }
 
     public scene10(elapsedTime: number): void {
@@ -449,6 +490,7 @@ export default class Framebuffer {
     }
 
     /**
+     * https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/opengl-perspective-projection-matrix
      * http://www.flipcode.com/archives/articles.shtml
      * http://lodev.org/cgtutor/
      * http://lodev.org/cgtutor/lineclipping.html
