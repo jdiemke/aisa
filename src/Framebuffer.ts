@@ -251,8 +251,121 @@ export default class Framebuffer {
 
     }
 
+    private torusFunction(alpha: number): Vector3 {
+        let r= 3.5*(2+Math.sin(8*alpha));
+        return new Vector3(Math.sin(alpha) *10, 0, Math.cos(alpha) * 10);
+    }
+        public shadingTorus(elapsedTime: number): void {
+
+        this.wBuffer.fill(100);
+
+        let points: Array<Vector3> = [];
+
+        const STEPS = 15;
+        const STEPS2 = 12;
+        for (let i = 0; i < STEPS; i++) {
+            let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
+            let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
+            let up = new Vector3(0.0, 4.0, 0);
+            let right = frame2.sub(frame).cross(up);
+
+            for (let r = 0; r < STEPS2; r++) {
+                let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
+                points.push(pos);
+            }
+        }
+
+        let index: Array<number> = [ ];
+
+        for (let j = 0; j < STEPS; j++) {
+            for(let i= 0; i < STEPS2; i++) {
+                index.push(((STEPS2*j)+(1+i)%STEPS2)%points.length); // 2
+                index.push(((STEPS2*j)+(0+i)%STEPS2)%points.length); // 1
+                index.push(((STEPS2*j)+STEPS2+(1+i)%STEPS2)%points.length); //3
+
+                index.push(((STEPS2*j)+STEPS2+(0+i)%STEPS2)%points.length); //4
+                index.push(((STEPS2*j)+STEPS2+(1+i)%STEPS2)%points.length); //3
+                index.push(((STEPS2*j)+(0+i)%STEPS2)%points.length); // 5
+            }
+        }
+
+        // compute normals
+        let normals: Array<Vector3> = new Array<Vector3>();  
+
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+            normals.push(normal);
+        }
+
+        let scale = 1.0;
+
+        let modelViewMartrix = Matrix3.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3.constructYRotationMatrix(elapsedTime * 0.05));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3.constructXRotationMatrix(elapsedTime * 0.08));
+  
+        /**
+         * Vertex Shader Stage
+         */
+        let points2: Array<Vector3> = new Array<Vector3>();
+
+        let normals2: Array<Vector3> = new Array<Vector3>();
+        normals.forEach(element => {
+            normals2.push(modelViewMartrix.multiply(element));
+        });
+              
+        points.forEach(element => {
+            let transformed = modelViewMartrix.multiply(element);
+
+            let x = transformed.x;
+            let y = transformed.y;
+            let z = transformed.z - 24; // TODO: use translation matrix!
+
+            let xx = (320 * 0.5) + (x / (-z * 0.0078));
+            let yy = (200 * 0.5) + (y / (-z * 0.0078));
+            // commented out because it breaks the winding. inversion
+            // of y has to be done after back-face culling in the
+            // viewport transform
+            // yy =(200 * 0.5) - (y / (-z * 0.0078));
+
+            points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+        });
+
+        /**
+         * Primitive Assembly and Rasterization Stage:
+         * 1. back-face culling
+         * 2. viewport transform
+         * 3. scan conversion (rasterization)
+         */
+        for (let i = 0; i < index.length; i+=3) {
+            
+             // Only render triangles with CCW-ordered vertices
+             // 
+             // Reference:
+             // David H. Eberly (2006).
+             // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
+             // p. 69. Morgan Kaufmann Publishers, United States.
+             //
+            let v1 = points2[index[i]];
+            let v2 = points2[index[i+1]];
+            let v3 = points2[index[i+2]];
+  
+            
+            if (this.isTriangleCCW(v1, v2, v3)) {
+               let normal = normals2[i/3];
+                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.5, 0.5, 0.5).normalize())) * 100), 255) + 50;
+        
+                let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar+100;
+                this.drawTriangleDDA2(v1, v2, v3, color);
+            }
+
+            
+        }
+        
+    }
+
     /**
      * Full Pipeline:
+     * https://www.ntu.edu.sg/home/ehchua/programming/opengl/CG_BasicsTheory.html
+     * http://www.songho.ca/index.html
      * https://en.wikipedia.org/wiki/Graphics_pipeline
      * https://en.wikipedia.org/wiki/Clipping_(computer_graphics)
      * https://www.ntu.edu.sg/home/ehchua/programming/opengl/CG_BasicsTheory.html
@@ -355,8 +468,8 @@ export default class Framebuffer {
             
             if (this.isTriangleCCW(v1, v2, v3)) {
                 let normal = normals2[i/3];
-                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.5, 0.5, 0.5).normalize())) * 100), 255) + 100;
-                let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
+                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.5, 0.5, 0.5).normalize())) * 100), 255) + 50;
+                let color = 255 << 24 | scalar << 16 | (scalar+100) << 8 | scalar;
                 this.drawTriangleDDA2(v1, v2, v3, color);
             }
         }

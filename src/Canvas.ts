@@ -49,7 +49,7 @@ export class Canvas {
             this.framebuffer.draw(this.texture);
         } else {
             this.framebuffer.drawRotoZoomer(this.texture);
-            this.framebuffer.scene9(Date.now() * 0.02);
+            this.framebuffer.shadingTorus(Date.now() * 0.02);
         }
     }
 
