@@ -16,6 +16,12 @@ Type the following command into your shell:
 > npm run build
 ```
 Move into the project's `dist/` folder and open `index.html`.
+### How to serve
+Type the following command into your shell:
+```bash
+> npm run serve
+```
+And open `http://localhost:8080/webpack-dev-server/` in your favourite web browser.
 ### Backlog
 - Vertex shading (flat, gouraud, phong)
 - Texture mapping
