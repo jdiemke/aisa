@@ -25,6 +25,7 @@ export class Canvas {
 
         this.context.mozImageSmoothingEnabled = false;
         this.context.oImageSmoothingEnabled = false;
+        this.context.imageSmoothingEnabled = false;
         this.context.webkitImageSmoothingEnabled = false;
 
         this.backbufferCanvas = document.createElement('canvas');
