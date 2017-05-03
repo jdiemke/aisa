@@ -15,14 +15,14 @@ export default class Framebuffer {
     private imageData: ImageData;
     private framebuffer: Uint32Array;
     private unsignedIntArray: Uint8ClampedArray;
-    public wBuffer: Float64Array;
+    public wBuffer: Float32Array;
 
     constructor(width: number, height: number) {
         this.width = width;
         this.height = height;
 
         this.imageData = new ImageData(320, 200);
-        this.wBuffer = new Float64Array(320 * 200);
+        this.wBuffer = new Float32Array(320 * 200);
         let arrayBuffer = new ArrayBuffer(this.width * this.height * Framebuffer.PIXEL_SIZE_IN_BYTES);
         this.unsignedIntArray = new Uint8ClampedArray(arrayBuffer);
 
