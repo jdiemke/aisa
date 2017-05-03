@@ -635,11 +635,11 @@ export default class Framebuffer {
 
         let yDistance = v3.y - v1.y;
 
-        let slope1 = (v2.x - v1.x) / (v2.y - v1.y);
-        let slope2 = (v3.x - v1.x) / (v3.y - v1.y);
+        let slope1 = (v2.x - v1.x) / yDistance;
+        let slope2 = (v3.x - v1.x) / yDistance;
 
-        let zslope1 = ((1 / v2.z - 1 / v1.z) / (v2.y - v1.y));
-        let zslope2 = ((1 / v3.z - 1 / v1.z) / (v3.y - v1.y));
+        let zslope1 = (1 / v2.z - 1 / v1.z) / yDistance;
+        let zslope2 = (1 / v3.z - 1 / v1.z) / yDistance;
 
         let curx1 = v1.x;
         let curx2 = v1.x;
@@ -655,16 +655,15 @@ export default class Framebuffer {
         let yPosition = v1.y;
 
         for (let i = 0; i < yDistance; i++) {
-       
-
-            let length = Math.round(xPosition2) -Math.round(xPosition);
+            let length = Math.round(xPosition2) - Math.round(xPosition);
+             let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
             for (let j = 0; j < length; j++) {
                 let wStart = (curz2 - curz1) / (length) * j + curz1;
-
-                if (wStart < this.wBuffer[Math.round(xPosition)+j + Math.round(yPosition) * 320]) {
-                    this.wBuffer[Math.round(xPosition)+j + Math.round(yPosition) * 320] = wStart;
-                    this.drawPixel(Math.round(xPosition)+j, Math.round(yPosition), color);
+                if (wStart < this.wBuffer[framebufferIndex]) {
+                    this.wBuffer[framebufferIndex] = wStart;
+                    this.framebuffer[framebufferIndex] = color;
                 }
+                framebufferIndex++;
             }
 
             xPosition += slope1;
@@ -701,14 +700,15 @@ export default class Framebuffer {
         for (let i = 0; i < yDistance; i++) {
        
 
-            let length = Math.round(xPosition2) -Math.round(xPosition);
+            let length = Math.round(xPosition2) - Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
             for (let j = 0; j < length; j++) {
                 let wStart = (curz2 - curz1) / (length) * j + curz1;
-
-                if (wStart < this.wBuffer[Math.round(xPosition)+j + Math.round(yPosition) * 320]) {
-                    this.wBuffer[Math.round(xPosition)+j + Math.round(yPosition) * 320] = wStart;
-                    this.drawPixel(Math.round(xPosition)+j, Math.round(yPosition), color);
+                if (wStart < this.wBuffer[framebufferIndex]) {
+                    this.wBuffer[framebufferIndex] = wStart;
+                    this.framebuffer[framebufferIndex] = color;
                 }
+                framebufferIndex++;
             }
 
             xPosition += slope1;
