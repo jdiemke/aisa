@@ -648,7 +648,7 @@ export default class Framebuffer {
         let curz2 = 1.0 / v1.z;
 
 
-        let length = Math.round(v2.y - v1.y);
+        let length = Math.round(yDistance);
 
        let xPosition = v1.x;
         let xPosition2 = v1.x;
@@ -656,14 +656,16 @@ export default class Framebuffer {
 
         for (let i = 0; i < yDistance; i++) {
             let length = Math.round(xPosition2) - Math.round(xPosition);
-             let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            let spanzStep = (curz2 - curz1) / length;
+            let wStart = curz1;
             for (let j = 0; j < length; j++) {
-                let wStart = (curz2 - curz1) / (length) * j + curz1;
                 if (wStart < this.wBuffer[framebufferIndex]) {
                     this.wBuffer[framebufferIndex] = wStart;
                     this.framebuffer[framebufferIndex] = color;
                 }
                 framebufferIndex++;
+                wStart += spanzStep;
             }
 
             xPosition += slope1;
