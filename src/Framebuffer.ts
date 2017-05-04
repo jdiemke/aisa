@@ -244,7 +244,7 @@ export default class Framebuffer {
             let col2 = 255 << 24 | 255;
 
 
-            this.drawTriangleDDA2(points2[index[i] - 1], points2[index[i + 1] - 1], points2[index[i + 2] - 1], colorAr[(((i)/3) |0)%6]);
+            this.drawTriangleDDA(points2[index[i] - 1], points2[index[i + 1] - 1], points2[index[i + 2] - 1], colorAr[(((i)/3) |0)%6]);
      
         
         }
@@ -348,18 +348,13 @@ export default class Framebuffer {
             let v2 = points2[index[i+1]];
             let v3 = points2[index[i+2]];
   
-            
             if (this.isTriangleCCW(v1, v2, v3)) {
                let normal = normals2[i/3];
                 let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.5, 0.5, 0.5).normalize())) * 100), 255) + 50;
-        
                 let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar+100;
-                this.drawTriangleDDA2(v1, v2, v3, color);
-            }
-
-            
+                this.drawTriangleDDA(v1, v2, v3, color);
+            }   
         }
-        
     }
 
     /**
@@ -470,7 +465,7 @@ export default class Framebuffer {
                 let normal = normals2[i/3];
                 let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.5, 0.5, 0.5).normalize())) * 100), 255) + 50;
                 let color = 255 << 24 | scalar << 16 | (scalar+100) << 8 | scalar;
-                this.drawTriangleDDA2(v1, v2, v3, color);
+                this.drawTriangleDDA(v1, v2, v3, color);
             }
         }
     }
@@ -539,7 +534,7 @@ export default class Framebuffer {
             let col2 = 255 << 24 | 255;
 
 
-            this.drawTriangleDDA2(points2[index[i] - 1], points2[index[i + 1] - 1], points2[index[i + 2] - 1], colorAr[(((i)/6) |0)%6]);
+            this.drawTriangleDDA(points2[index[i] - 1], points2[index[i + 1] - 1], points2[index[i + 2] - 1], colorAr[(((i)/6) |0)%6]);
      
             }
         }
@@ -588,7 +583,7 @@ export default class Framebuffer {
 
                 let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
                 let col3 = 255 << 24 | 0;
-                this.drawTriangleDDA2(points2[index[i] - 1], points2[index[i + 1] - 1], points2[index[i + 2] - 1], color);
+                this.drawTriangleDDA(points2[index[i] - 1], points2[index[i + 1] - 1], points2[index[i + 2] - 1], color);
           //       this.drawLineDDA(points2[index[i] - 1], points2[index[i + 1] - 1], col3);
             //      this.drawLineDDA(points2[index[i + 1] - 1], points2[index[i + 2] - 1], col3);
               //    this.drawLineDDA(points2[index[i + 2] - 1], points2[index[i] - 1], col3);
@@ -623,13 +618,165 @@ export default class Framebuffer {
      * https://www.scratchapixel.com/lessons/3d-basic-rendering/computing-pixel-coordinates-of-3d-point/mathematics-computing-2d-coordinates-of-3d-points
      */
 
-    swapVertices(vertices: Array<Vector3>, index1: number, index2: number) {
-        let tempVertex: Vector3 = vertices[index1];
-        vertices[index1] = vertices[index2];
-        vertices[index2] = tempVertex;
+        fillLongRightTriangle(v1: Vector3, v2: Vector3, v3: Vector3, color: number): void {
+
+        let yDistanceLeft = v2.y - v1.y;
+        let yDistanceRight = v3.y - v1.y;
+
+        let slope1 = (v2.x - v1.x) / yDistanceLeft;
+        let slope2 = (v3.x - v1.x) / yDistanceRight;
+
+        let zslope1 = (1 / v2.z - 1 / v1.z) / yDistanceLeft;
+        let zslope2 = (1 / v3.z - 1 / v1.z) / yDistanceRight;
+
+        let curx1 = v1.x;
+        let curx2 = v1.x;
+
+        let curz1 = 1.0 / v1.z;
+        let curz2 = 1.0 / v1.z;
+
+       let xPosition = v1.x;
+        let xPosition2 = v1.x;
+        let yPosition = v1.y;
+
+        for (let i = 0; i < yDistanceLeft; i++) {
+            let length = Math.round(xPosition2) - Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            let spanzStep = (curz2 - curz1) / length;
+            let wStart = curz1;
+            for (let j = 0; j < length; j++) {
+                if (wStart < this.wBuffer[framebufferIndex]) {
+                    this.wBuffer[framebufferIndex] = wStart;
+                    this.framebuffer[framebufferIndex] = color;
+                }
+                framebufferIndex++;
+                wStart += spanzStep;
+            }
+
+            xPosition += slope1;
+            xPosition2 += slope2;
+            yPosition ++;
+
+            curx1 += slope1;
+            curx2 += slope2;
+
+            curz1 += zslope1;
+            curz2 += zslope2;
+        }
+
+        yDistanceLeft = v3.y - v2.y;
+        slope1 = (v3.x - v2.x) / yDistanceLeft;
+        zslope1 = (1 / v3.z - 1 / v2.z) / yDistanceLeft;
+        curx1 = v2.x;
+        curz1 = 1.0 / v2.z;
+        xPosition = v2.x;
+        yPosition = v2.y;
+
+        for (let i = 0; i < yDistanceLeft; i++) {
+            let length = Math.round(xPosition2) - Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            let spanzStep = (curz2 - curz1) / length;
+            let wStart = curz1;
+            for (let j = 0; j < length; j++) {
+                if (wStart < this.wBuffer[framebufferIndex]) {
+                    this.wBuffer[framebufferIndex] = wStart;
+                    this.framebuffer[framebufferIndex] = color;
+                }
+                framebufferIndex++;
+                wStart += spanzStep;
+            }
+
+            xPosition += slope1;
+            xPosition2 += slope2;
+            yPosition ++;
+
+            curx1 += slope1;
+            curx2 += slope2;
+
+            curz1 += zslope1;
+            curz2 += zslope2;
+        }
     }
 
-    first: boolean;
+       fillLongLeftTriangle(v1: Vector3, v2: Vector3, v3: Vector3, color: number): void {
+
+        let yDistanceRight = v2.y - v1.y;
+        let yDistanceLeft = v3.y - v1.y;
+
+        let slope2 = (v2.x - v1.x) / yDistanceRight;
+        let slope1 = (v3.x - v1.x) / yDistanceLeft;
+
+        let zslope2 = (1 / v2.z - 1 / v1.z) / yDistanceRight;
+        let zslope1 = (1 / v3.z - 1 / v1.z) / yDistanceLeft;
+
+        let curx1 = v1.x;
+        let curx2 = v1.x;
+
+        let curz1 = 1.0 / v1.z;
+        let curz2 = 1.0 / v1.z;
+
+       let xPosition = v1.x;
+        let xPosition2 = v1.x;
+        let yPosition = v1.y;
+
+        for (let i = 0; i < yDistanceRight; i++) {
+            let length = Math.round(xPosition2) - Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            let spanzStep = (curz2 - curz1) / length;
+            let wStart = curz1;
+            for (let j = 0; j < length; j++) {
+                if (wStart < this.wBuffer[framebufferIndex]) {
+                    this.wBuffer[framebufferIndex] = wStart;
+                    this.framebuffer[framebufferIndex] = color;
+                }
+                framebufferIndex++;
+                wStart += spanzStep;
+            }
+
+            xPosition += slope1;
+            xPosition2 += slope2;
+            yPosition ++;
+
+            curx1 += slope1;
+            curx2 += slope2;
+
+            curz1 += zslope1;
+            curz2 += zslope2;
+        }
+
+        yDistanceRight = v3.y - v2.y;
+        slope2 = (v3.x - v2.x) / yDistanceRight;
+        zslope2 = (1 / v3.z - 1 / v2.z) / yDistanceRight;
+        curx2 = v2.x;
+        curz2 = 1.0 / v2.z;
+        xPosition2 = v2.x;
+        yPosition = v2.y;
+
+        for (let i = 0; i < yDistanceRight; i++) {
+            let length = Math.round(xPosition2) - Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            let spanzStep = (curz2 - curz1) / length;
+            let wStart = curz1;
+            for (let j = 0; j < length; j++) {
+                if (wStart < this.wBuffer[framebufferIndex]) {
+                    this.wBuffer[framebufferIndex] = wStart;
+                    this.framebuffer[framebufferIndex] = color;
+                }
+                framebufferIndex++;
+                wStart += spanzStep;
+            }
+
+            xPosition += slope1;
+            xPosition2 += slope2;
+            yPosition ++;
+
+            curx1 += slope1;
+            curx2 += slope2;
+
+            curz1 += zslope1;
+            curz2 += zslope2;
+        }
+    }
 
     fillBottomFlatTriangle(v1: Vector3, v2: Vector3, v3: Vector3, color: number): void {
 
@@ -730,42 +877,47 @@ export default class Framebuffer {
      * Internally DDA is used for edge-walking.
      * TODO: rotate around center and check for correctness!!
      */
-    public drawTriangleDDA2(p1: Vector3, p2: Vector3, p3: Vector3, color: number): void {
+    public drawTriangleDDA(p1: Vector3, p2: Vector3, p3: Vector3, color: number): void {
         if (p1.y > p3.y) {
-            [p1, p3] = [p3, p1];
+            let temp: Vector3 = p1;
+            p1 = p3;
+            p3 = temp;
         }
 
         if (p1.y > p2.y) {
-            [p1, p2] = [p2, p1];
+            let temp: Vector3 = p1;
+            p1 = p2;
+            p2 = temp;
         }
 
         if (p2.y > p3.y) {
-            [p2, p3] = [p3, p2];
+            let temp: Vector3 = p2;
+            p2 = p3;
+            p3 = temp;
         }
 
         if (p1.y == p3.y) {
             return;
         } else if (p2.y == p3.y) {
             if (p2.x > p3.x) {
-                [p2, p3] = [p3, p2];
+                let temp: Vector3 = p2;
+                p2 = p3;
+                p3 = temp;
             }
             this.fillBottomFlatTriangle(p1, p2, p3, color);
         } else if (p1.y == p2.y) {
             if (p1.x > p2.x) {
-                [p1, p2] = [p2, p1];
+                let temp: Vector3 = p1;
+                p1 = p2;
+                p2 = temp;
             }
             this.fillTopFlatTriangle(p1, p2, p3, color);
         } else {
             let x = (p3.x - p1.x) * (p2.y - p1.y) / (p3.y - p1.y) + p1.x;
-            let z = (1 / p3.z - 1 / p1.z) * (p2.y - p1.y) / (p3.y - p1.y) + 1 / p1.z;
-            let MIDP: Vector3 = new Vector3(x,p2.y, 1 / z);
-
             if (x > p2.x) {
-               this.fillBottomFlatTriangle(p1, p2, MIDP, color);
-                this.fillTopFlatTriangle(p2, MIDP, p3, color);
+                this.fillLongRightTriangle(p1, p2, p3, color);
             } else {
-                this.fillBottomFlatTriangle(p1, MIDP, p2, color);
-                this.fillTopFlatTriangle(MIDP, p2, p3, color);
+                this.fillLongLeftTriangle(p1, p2, p3, color);
             }
         }
     }
@@ -799,39 +951,10 @@ export default class Framebuffer {
         let wDelta = (1 / end.z - 1 / start.z) / length;
 
         for (let i = 0; i < length; i++) {
-           // if (wStart < this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320]) {
-             //   this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320] = wStart;
+            if (wStart < this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320]) {
+                this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320] = wStart;
                 this.drawPixel(Math.round(xPosition), Math.round(yPosition), color);
-           // }
-            xPosition += dx;
-            yPosition += dy;
-            wStart += wDelta;
-        }
-    }
-
-        public drawLineDDA2(start: Vector3, end: Vector3, color: number): void {
-        let xDistance: number = end.x - start.x;
-        let yDistance: number = end.y - start.y;
-
-        let dx: number, dy: number, length: number;
-
-            dx = xDistance / Math.abs(yDistance);
-            dy = Math.sign(yDistance);
-            length = Math.abs(yDistance);
-        
-
-        let xPosition: number = start.x;
-        let yPosition: number = start.y;
-
-        // w=1/z interpolation for z-buffer
-        let wStart = 1 / (start.z + 0.1);
-        let wDelta = (1 / end.z - 1 / start.z) / length;
-
-        for (let i = 0; i < length; i++) {
-           // if (wStart < this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320]) {
-             //   this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320] = wStart;
-                this.drawPixel(Math.round(xPosition), Math.round(yPosition), color);
-           // }
+         }
             xPosition += dx;
             yPosition += dy;
             wStart += wDelta;
