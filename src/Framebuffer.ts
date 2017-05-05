@@ -463,8 +463,15 @@ export default class Framebuffer {
             
             if (this.isTriangleCCW(v1, v2, v3)) {
                 let normal = normals2[i/3];
-                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.5, 0.5, 0.5).normalize())) * 100), 255) + 50;
-                let color = 255 << 24 | scalar << 16 | (scalar+100) << 8 | scalar;
+                
+                let light = new Vector3(0.5, 0.5, 0.5);
+                let ambient = new Vector3(50, 100, 50);
+                let diffuse = new Vector3(90, 90, 90).mul(Math.max(0.0, normal.normalize().dot(light.normalize())));
+                let reflection = new Vector3(0,0, 1).sub(light.mul(-1).normalize());
+                // http://www.lighthouse3d.com/tutorials/glsl-tutorial/directional-lights-per-vertex-ii/
+                let specular = new Vector3(0,0,0);
+                let phong: Vector3 = ambient.add(diffuse).add(specular);
+                let color = 255 << 24 | (phong.z & 0xff) << 16 | (phong.y & 0xff) << 8 | (phong.x & 0xff);
                 this.drawTriangleDDA(v1, v2, v3, color);
             }
         }
