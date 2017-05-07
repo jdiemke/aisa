@@ -25,6 +25,9 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 ### Backlog
 - Vertex shading (flat, gouraud, phong)
 - Texture mapping
+- Light sources
+- Material
+- Shadows (Projection Shadows, Shadow Mapping)
 - Environment mapping
 - 4x4 homogenous matrices
 - Camera
