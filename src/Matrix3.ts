@@ -17,17 +17,20 @@ export default class Matrix3f {
     static constructXRotationMatrix(angle: number) {
         let matrix = new Matrix3f();
 
+        let cos = Math.cos(angle);
+        let sin = Math.sin(angle);
+
         matrix.m11 = 1.0;
         matrix.m12 = 0.0;
         matrix.m13 = 0.0;
 
         matrix.m21 = 0.0;
-        matrix.m22 = Math.cos(angle);
-        matrix.m23 = -Math.sin(angle);
+        matrix.m22 = cos;
+        matrix.m23 = -sin;
 
         matrix.m31 = 0.0;
-        matrix.m32 = Math.sin(angle);
-        matrix.m33 = Math.cos(angle);
+        matrix.m32 = sin;
+        matrix.m33 = cos;
 
         return matrix;
     }
