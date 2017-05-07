@@ -40,7 +40,7 @@ export class Canvas {
 
     public render(): void {
         let time: number = (Date.now() - this.start) % 30000;
-
+        /*
         if (time < 10000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.shadingDemo(Date.now() * 0.02);
@@ -51,6 +51,9 @@ export class Canvas {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.shadingTorus(Date.now() * 0.02);
         }
+        */
+        this.framebuffer.drawRotoZoomer(this.texture);
+        this.framebuffer.shadingTorus(Date.now() * 0.002);
     }
 
     getImageData(image: HTMLImageElement): Uint32Array {

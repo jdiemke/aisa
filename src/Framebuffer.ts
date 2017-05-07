@@ -416,7 +416,8 @@ export default class Framebuffer {
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3.constructXRotationMatrix(elapsedTime * 0.08));
   
         /**
-         * Vertex Shader Stage
+         * Vertex Shader Stage:
+         * 1. Local Space -> World Space -> Eye Space -> Clip Space -> NDC Space -> Screen Space
          */
         let points2: Array<Vector3> = new Array<Vector3>();
 
