@@ -53,7 +53,7 @@ export class Canvas {
         }
         */
         this.framebuffer.drawRotoZoomer(this.texture);
-        this.framebuffer.shadingTorus(Date.now() * 0.002);
+        this.framebuffer.shadingTorus(Date.now() * 0.005);
     }
 
     getImageData(image: HTMLImageElement): Uint32Array {
