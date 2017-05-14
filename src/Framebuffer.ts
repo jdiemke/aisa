@@ -11,6 +11,7 @@
 import Texture from './Texture';
 import Point from './Point';
 import Vector3 from './Vector3f';
+import Vector4f from './Vector4f';
 import Matrix3 from './Matrix3';
 import Matrix4f from './Matrix4f';
 
@@ -265,11 +266,11 @@ export default class Framebuffer {
 
 
 
-    private sphereFunction(theta: number, phi: number): Vector3 {
+    private sphereFunction(theta: number, phi: number): Vector4f {
 
-        let pos = new Vector3(Math.cos(theta) * Math.cos(phi),
+        let pos = new Vector4f(Math.cos(theta) * Math.cos(phi),
             Math.cos(theta) * Math.sin(phi),
-            Math.sin(theta));
+            Math.sin(theta), 1.0);
         let radius = (Math.sin(pos.z * 11 + Date.now() * 0.001) + 1) / 2 +
             (Math.sin(pos.x * 11 + Date.now() * 0.001) + 1) / 3;
         pos.x = pos.x + pos.x * radius;
@@ -282,15 +283,12 @@ export default class Framebuffer {
 
         this.wBuffer.fill(100);
 
-        let points: Array<Vector3> = [];
+        let points: Array<Vector4f> = [];
 
         const STEPS = 16;
         const STEPS2 = 16;
         for (let i = 0; i <= STEPS; i++) {
-
-
             for (let r = 0; r < STEPS2; r++) {
-
                 points.push(this.sphereFunction(-i * Math.PI / STEPS - Math.PI / 2, -r * 2 * Math.PI / STEPS2));
             }
         }
@@ -310,36 +308,35 @@ export default class Framebuffer {
         }
 
         // compute normals
-        let normals: Array<Vector3> = new Array<Vector3>();
+        let normals: Array<Vector4f> = new Array<Vector4f>();
 
         for (let i = 0; i < index.length; i += 3) {
             let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
             normals.push(normal);
         }
 
+        // Create MV Matrix
         let scale = 5.8;
-
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.05));
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.08));
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -26 + 4 * Math.sin(elapsedTime * 0.7)).multiplyMatrix(modelViewMartrix);
 
         /**
          * Vertex Shader Stage
          */
         let points2: Array<Vector3> = new Array<Vector3>();
 
-        let normals2: Array<Vector3> = new Array<Vector3>();
+        let normals2: Array<Vector4f> = new Array<Vector4f>();
         normals.forEach(element => {
-            normals2.push(modelViewMartrix.multiply(element));
+            normals2.push(modelViewMartrix.multiplyHom(element));
         });
 
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -26 + 4 * Math.sin(elapsedTime * 0.7)).multiplyMatrix(modelViewMartrix);
-
         points.forEach(element => {
-            let transformed = modelViewMartrix.multiply(element);
+            let transformed = modelViewMartrix.multiplyHom(element);
 
             let x = transformed.x;
             let y = transformed.y;
-            let z = transformed.z; // TODO: use translation matrix!
+            let z = transformed.z;
 
             let xx = (320 * 0.5) + (x / (-z * 0.0078));
             let yy = (200 * 0.5) + (y / (-z * 0.0078));
@@ -373,7 +370,7 @@ export default class Framebuffer {
             let colLine = 255 << 24 | 255 << 16 | 255 << 8 | 255;
             if (this.isTriangleCCW(v1, v2, v3)) {
                 let normal = normals2[i / 3];
-                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.5, 0.5, 0.5).normalize())) * 100), 255) + 50;
+                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector4f(0.5, 0.5, 0.5, 0.0).normalize())) * 100), 255) + 50;
                 let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar + 100;
                 this.drawTriangleDDA(v1, v2, v3, color);
                 //this.drawLineDDA(v1, v2, colLine);
