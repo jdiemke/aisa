@@ -1,3 +1,13 @@
+/**
+ * 3d polygon clipping:
+ * http://www.gamers.org/dEngine/quake/papers/ddjclip.html
+ * http://www.jagregory.com/abrash-black-book/#chapter-65-3-d-clipping-and-other-thoughts
+ * http://downloads.gamedev.net/pdf/gpbb/gpbb65.pdf
+ * http://www.cubic.org/docs/3dclip.htm
+ * http://fabiensanglard.net/polygon_codec/
+ * 
+ * http://fabiensanglard.net/quake2/quake2_software_renderer.php
+ */
 import Texture from './Texture';
 import Point from './Point';
 import Vector3 from './Vector3f';
