@@ -10,4 +10,12 @@ export default class Plane {
     private distance: number;
     private normal: Vector3;
 
+    isInsideClipVolumen(point: Vector3): boolean {
+        return this.normal.dot(point) > this.distance;
+    }
+
+    isOutsideClipVolumen(point: Vector3): boolean {
+        return this.normal.dot(point) < this.distance;
+    }
+
 }
