@@ -39,21 +39,21 @@ export class Canvas {
     }
 
     public render(): void {
-        let time: number = (Date.now() - this.start) % 30000;
-        /*
-        if (time < 10000) {
+        let time: number = (Date.now() - this.start) % 20000;
+        
+        if (time < 5000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.shadingDemo(Date.now() * 0.02);
-        } else if (time < 20000) {
+        } else if (time < 10000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.draw(this.texture);
-        } else {
+        } else if (time < 15000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.shadingTorus(Date.now() * 0.02);
+        } else {
+            this.framebuffer.drawRotoZoomer(this.texture);
+            this.framebuffer.shadingSphere(Date.now() * 0.01);
         }
-        */
-        this.framebuffer.drawRotoZoomer(this.texture);
-        this.framebuffer.shadingTorus(Date.now() * 0.005);
     }
 
     getImageData(image: HTMLImageElement): Uint32Array {
