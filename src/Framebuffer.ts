@@ -7,6 +7,15 @@
  * http://fabiensanglard.net/polygon_codec/
  * 
  * http://fabiensanglard.net/quake2/quake2_software_renderer.php
+ * 
+ * http://www.xbdev.net/maths_of_3d/rasterization/clipping/index.php
+ * http://www.gamasutra.com/view/news/168577/Indepth_Software_rasterizer_and_triangle_clipping.php
+ * https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/projection-matrix-GPU-rendering-pipeline-clipping
+ * http://www.songho.ca/opengl/gl_pipeline.html
+ * http://www.songho.ca/opengl/gl_transform.html
+ * http://www.songho.ca/opengl/gl_camera.html
+ * http://www.songho.ca/opengl/gl_matrix.html
+ * http://www.songho.ca/math/homogeneous/homogeneous.html
  */
 import Texture from './Texture';
 import Point from './Point';
