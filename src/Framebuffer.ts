@@ -86,7 +86,7 @@ export default class Framebuffer {
         }
     }
 
-    public drawTexture(x, y, texture: Texture) {
+    public drawTexture(x, y, texture: Texture, alpha2: number) {
         const SCREEN_WIDTH = 320;
         const SCREEN_HEIGHT = 200;
 
@@ -101,7 +101,7 @@ export default class Framebuffer {
 
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
-                let alpha = ((texture.texture[textureIndex] >> 24) & 0xff) / 255;
+                let alpha = ((texture.texture[textureIndex] >> 24) & 0xff) / 255* alpha2;
                 let inverseAlpha = 1 - alpha;
 
                 let r = (((this.framebuffer[framebufferIndex] >> 0) & 0xff) * (inverseAlpha) + ((texture.texture[textureIndex] >> 0) & 0xff) * (alpha)) | 0;
@@ -288,6 +288,216 @@ export default class Framebuffer {
         return pos;
     }
 
+    private sphereFunction2(theta: number, phi: number): Vector4f {
+
+        let pos = new Vector4f(Math.cos(theta) * Math.cos(phi),
+            Math.cos(theta) * Math.sin(phi),
+            Math.sin(theta), 1.0);
+
+        return pos;
+    }
+
+    public drawBox() {
+        let height = Framebuffer.maxWindow.y - Framebuffer.minWindow.y + 1;
+        let width = Framebuffer.maxWindow.x - Framebuffer.minWindow.x + 1;
+        let index = Framebuffer.minWindow.y * 320 + Framebuffer.minWindow.x;
+        for (let i = 0; i < height; i++) {
+            this.framebuffer.fill(255 << 24 | 55 << 16 | 55 << 8 | 55, index, index + width);
+            index += 320
+        }
+    }
+
+    public wireFrameSphereClipping(elapsedTime: number): void {
+
+        this.wBuffer.fill(100);
+
+        let points: Array<Vector4f> = [];
+
+        const STEPS = 16;
+        const STEPS2 = 16;
+
+        // TODO: move into setup method
+        for (let i = 0; i <= STEPS; i++) {
+            for (let r = 0; r < STEPS2; r++) {
+                points.push(this.sphereFunction2(-i * Math.PI / STEPS - Math.PI / 2, -r * 2 * Math.PI / STEPS2));
+            }
+        }
+
+        let index: Array<number> = [];
+
+        for (let j = 0; j < STEPS; j++) {
+            for (let i = 0; i < STEPS2; i++) {
+                index.push(((STEPS2 * j) + (1 + i) % STEPS2)); // 2
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 1
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); //3
+
+                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2)); //4
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); //3
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 5
+            }
+        }
+
+        // Create MV Matrix
+        let scale = 10.8 + 5 * (Math.sin(elapsedTime * 0.16) + 1) / 2;
+        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.08));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.08));
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(0 + 20 * Math.sin(elapsedTime * 0.04), 5 * Math.sin(elapsedTime * 0.06), -36).multiplyMatrix(modelViewMartrix);
+
+        /**
+         * Vertex Shader Stage
+         */
+        let points2: Array<Vector3> = new Array<Vector3>();
+
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiplyHom(points[p]);
+
+            let x = transformed.x;
+            let y = transformed.y;
+            let z = transformed.z;
+
+            let xx = (320 * 0.5) + (x / (-z * 0.0078));
+            let yy = (200 * 0.5) + (y / (-z * 0.0078));
+            // commented out because it breaks the winding. inversion
+            // of y has to be done after back-face culling in the
+            // viewport transform
+            // yy =(200 * 0.5) - (y / (-z * 0.0078));
+
+            points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+        }
+
+        // draw clip region
+        let colred = 255 << 24 | 230 << 16 | 200 << 16 | 200;
+        this.drawLineDDA(new Vector3(Framebuffer.minWindow.x - 1, Framebuffer.minWindow.y - 1, 0), new Vector3(Framebuffer.minWindow.x - 1, Framebuffer.maxWindow.y + 1, 0), colred);
+        this.drawLineDDA(new Vector3(Framebuffer.maxWindow.x + 1, Framebuffer.minWindow.y - 1, 0), new Vector3(Framebuffer.maxWindow.x + 1, Framebuffer.maxWindow.y + 1, 0), colred);
+        this.drawLineDDA(new Vector3(Framebuffer.minWindow.x - 1, Framebuffer.minWindow.y - 1, 0), new Vector3(Framebuffer.maxWindow.x + 1, Framebuffer.minWindow.y - 1, 0), colred);
+        this.drawLineDDA(new Vector3(Framebuffer.minWindow.x - 1, Framebuffer.maxWindow.y + 1, 0), new Vector3(Framebuffer.maxWindow.x + 2, Framebuffer.maxWindow.y + 1, 0), colred);
+
+        this.drawBox();
+        /**
+         * Primitive Assembly and Rasterization Stage:
+         * 1. back-face culling
+         * 2. viewport transform
+         * 3. scan conversion (rasterization)
+         */
+        for (let i = 0; i < index.length; i += 3) {
+
+            // Only render triangles with CCW-ordered vertices
+            // 
+            // Reference:
+            // David H. Eberly (2006).
+            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
+            // p. 69. Morgan Kaufmann Publishers, United States.
+            //
+            let v1 = points2[index[i]];
+            let v2 = points2[index[i + 1]];
+            let v3 = points2[index[i + 2]];
+
+            let colLine = 255 << 24 | 255 << 16 | 255 << 8 | 255;
+            if (this.isTriangleCCW(v1, v2, v3)) {
+
+
+                this.cohenSutherlandLineClipper(v1, v2, colLine);
+                this.cohenSutherlandLineClipper(v1, v3, colLine);
+                this.cohenSutherlandLineClipper(v3, v2, colLine);
+            }
+        }
+
+
+    }
+
+    private static minWindow: Vector3 = new Vector3(0 + 5, 0 + 50, 0);
+    private static maxWindow: Vector3 = new Vector3(319 - 5, 199 - 50, 0);
+    // seems to habe a small bug
+    public cohenSutherlandLineClipper(start: Vector3, end: Vector3, col: number) {
+        let p1: Vector3 = new Vector3(start.x, start.y, start.z);
+        let p2: Vector3 = new Vector3(end.x, end.y, end.z);
+
+        let code1: number = this.computeRegionCode(p1);
+        let code2: number = this.computeRegionCode(p2);
+
+        let accept: boolean = false;
+        let done: boolean = false;
+
+        while (!done) {
+
+            if (this.isTrivialAccept(code1, code2)) {
+                accept = true;
+                done = true;
+            } else if (this.isTrivialReject(code1, code2)) {
+                done = true;
+            } else {
+
+
+                if (code1 == Framebuffer.REGION_CODE_CENTER) {
+                    let tempCode: number = code1;
+                    code1 = code2;
+                    code2 = tempCode;
+
+                    let tempPoint: Vector3 = p1;
+                    p1 = p2;
+                    p2 = tempPoint;
+                }
+
+                if ((code1 & Framebuffer.REGION_CODE_TOP) != Framebuffer.REGION_CODE_CENTER) {
+                    p1.x = Math.round(p1.x + (p2.x - p1.x) * (Framebuffer.maxWindow.y - p1.y) / (p2.y - p1.y));
+                    p1.y = Framebuffer.maxWindow.y;
+                } else if ((code1 & Framebuffer.REGION_CODE_BOTTOM) != Framebuffer.REGION_CODE_CENTER) {
+                    p1.x = Math.round(p1.x + (p2.x - p1.x) * (Framebuffer.minWindow.y - p1.y) / (p2.y - p1.y));
+                    p1.y = Framebuffer.minWindow.y;
+                } else if ((code1 & Framebuffer.REGION_CODE_RIGHT) != Framebuffer.REGION_CODE_CENTER) {
+                    p1.y = Math.round(p1.y + (p2.y - p1.y) * (Framebuffer.maxWindow.x - p1.x) / (p2.x - p1.x));
+                    p1.x = Framebuffer.maxWindow.x;
+                } else if ((code1 & Framebuffer.REGION_CODE_LEFT) != Framebuffer.REGION_CODE_CENTER) {
+                    p1.y = Math.round(p1.y + (p2.y - p1.y) * (Framebuffer.minWindow.x - p1.x) / (p2.x - p1.x));
+                    p1.x = Framebuffer.minWindow.x;
+                }
+
+                code1 = this.computeRegionCode(p1);
+
+            }
+        }
+
+        if (accept) {
+            this.drawLineDDA(p1, p2, col);
+        }
+    }
+
+    public isTrivialAccept(code1: number, code2: number): boolean {
+        return (code1 | code2) == Framebuffer.REGION_CODE_CENTER;
+    }
+
+    public isTrivialReject(code1: number, code2: number): boolean {
+        return (code1 & code2) != Framebuffer.REGION_CODE_CENTER;
+    }
+
+    public static REGION_CODE_CENTER = 0b0000;
+    public static REGION_CODE_LEFT = 0b0001;
+    public static REGION_CODE_RIGHT = 0b0010;
+    public static REGION_CODE_BOTTOM = 0b0100;
+    public static REGION_CODE_TOP = 0b1000;
+
+    public dec2bin(dec: number) {
+        return (dec >>> 0).toString(2);
+    }
+
+    public computeRegionCode(point: Vector3): number {
+        let regionCode: number = Framebuffer.REGION_CODE_CENTER;
+
+        if (point.x < Framebuffer.minWindow.x) {
+            regionCode |= Framebuffer.REGION_CODE_LEFT;
+        } else if (point.x > Framebuffer.maxWindow.x) {
+            regionCode |= Framebuffer.REGION_CODE_RIGHT;
+        }
+
+        if (point.y < Framebuffer.minWindow.y) {
+            regionCode |= Framebuffer.REGION_CODE_BOTTOM;
+        } else if (point.y > Framebuffer.maxWindow.y) {
+            regionCode |= Framebuffer.REGION_CODE_TOP;
+        }
+
+        return regionCode;
+    }
+
     public shadingSphere(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
@@ -446,14 +656,14 @@ export default class Framebuffer {
         let points2: Array<Vector3> = new Array<Vector3>();
 
         let normals2: Array<Vector3> = new Array<Vector3>();
-        normals.forEach(element => {
-            normals2.push(modelViewMartrix.multiply(element));
-        });
+        for (let n = 0; n < normals.length; n++) {
+            normals2.push(modelViewMartrix.multiply(normals[n]));
+        }
 
         modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -24).multiplyMatrix(modelViewMartrix);
 
-        points.forEach(element => {
-            let transformed = modelViewMartrix.multiply(element);
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiply(points[p]);
 
             let x = transformed.x;
             let y = transformed.y;
@@ -467,7 +677,7 @@ export default class Framebuffer {
             // yy =(200 * 0.5) - (y / (-z * 0.0078));
 
             points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
-        });
+        }
 
         /**
          * Primitive Assembly and Rasterization Stage:
@@ -1100,10 +1310,10 @@ export default class Framebuffer {
         let wDelta = (1 / end.z - 1 / start.z) / length;
 
         for (let i = 0; i < length; i++) {
-            if (wStart < this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320]) {
-                this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320] = wStart;
-                this.drawPixel(Math.round(xPosition), Math.round(yPosition), color);
-            }
+            //if (wStart < this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320]) {
+            //  this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320] = wStart;
+            this.drawPixel(Math.round(xPosition), Math.round(yPosition), color);
+            //}
             xPosition += dx;
             yPosition += dy;
             wStart += wDelta;
@@ -1145,6 +1355,30 @@ export default class Framebuffer {
 
             texXCoord += yStepX;
             texYCoord += yStepY;
+        }
+    }
+
+    drawMetaballs() {
+        let balls: Array<Vector3> = [
+            new Vector3(Math.sin(Date.now() * 0.002) * 100 + 150,
+                Math.cos(Date.now() * 0.003) * 100 + 100, 0),
+            new Vector3(Math.sin(Date.now() * 0.001) * 100 + 150,
+                Math.cos(Date.now() * 0.002) * 100 + 100, 0)
+        ]
+
+        let index = 0;
+
+        for (let y = 0; y < 200; y++) {
+            for (let x = 0; x < 320; x++) {
+                let intensity = 0;
+                for (let b = 0; b < 2; b++) {
+                    let xx = (balls[b].x - x);
+                    let yy = (balls[b].y - y);
+                    let length = Math.sqrt(xx * xx + yy * yy);
+                    intensity += 8000 / length;
+                }
+                this.framebuffer[index++] = 255 << 24 | Math.min(intensity, 255);;
+            }
         }
     }
 

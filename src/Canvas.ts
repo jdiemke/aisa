@@ -14,6 +14,7 @@ export class Canvas {
 
     //
     private texture: Texture;
+    private texture2: Texture;
 
     constructor(width: number, height: number) {
         this.canvas = document.createElement('canvas');
@@ -23,7 +24,6 @@ export class Canvas {
 
         this.context = this.canvas.getContext('2d');
 
-        this.context.mozImageSmoothingEnabled = false;
         this.context.oImageSmoothingEnabled = false;
         this.context.imageSmoothingEnabled = false;
         this.context.webkitImageSmoothingEnabled = false;
@@ -39,8 +39,8 @@ export class Canvas {
     }
 
     public render(): void {
-        let time: number = (Date.now() - this.start) % 20000;
-        
+        let time: number = (Date.now() - this.start) % 30000;
+
         if (time < 5000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.shadingDemo(Date.now() * 0.02);
@@ -50,13 +50,28 @@ export class Canvas {
         } else if (time < 15000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.shadingTorus(Date.now() * 0.02);
-        } else {
+        } else if (time < 20000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.shadingSphere(Date.now() * 0.01);
+        } else if (time < 25000) {
+            this.framebuffer.drawRotoZoomer(this.texture);
+            this.framebuffer.wireFrameSphereClipping(Date.now() * 0.01);
+            this.framebuffer.draw(this.texture);
+        } else {
+            // https://www.youtube.com/watch?v=ccYLb7cLB1I&t=773s
+            this.framebuffer.drawMetaballs();
         }
+        this.framebuffer.drawTexture(35, 0, this.texture2, 1.0);
+        /**
+         * TODO: lenslfare effect
+         * - procedural lens flare textures
+         * - lens flare fade in
+         * - read zbuffer
+         * - http://blackpawn.com/texts/lensflare/
+         */
     }
 
-    getImageData(image: HTMLImageElement): Uint32Array {
+    getImageData(image: HTMLImageElement, withAlpha: boolean): Uint32Array {
         let canvas: HTMLCanvasElement = document.createElement('canvas');
         canvas.width = image.width;
         canvas.height = image.height;
@@ -66,8 +81,11 @@ export class Canvas {
         let conv = new Uint32Array(data.length / 4);
         let c = 0;
         for (let i = 0; i < data.length; i += 4) {
-            // conv[c] = (data[i + 3] << 24) | (data[i + 2] << 16) | (data[i + 1] << 8) | data[i + 0];
-            conv[c] = (255 << 24) | (data[i + 2] << 16) | (data[i + 1] << 8) | data[i + 0];
+            if (withAlpha) {
+                conv[c] = (data[i + 3] << 24) | (data[i + 2] << 16) | (data[i + 1] << 8) | data[i + 0];
+            } else {
+                conv[c] = (255 << 24) | (data[i + 2] << 16) | (data[i + 1] << 8) | data[i + 0];
+            }
 
             c++;
         }
@@ -78,10 +96,24 @@ export class Canvas {
         let img = new Image();
         img.addEventListener("load", () => {
             this.texture = new Texture();
-            this.texture.texture = this.getImageData(img);
+            this.texture.texture = this.getImageData(img, false);
             this.texture.width = img.width;
             this.texture.height = img.height;
-            this.renderLoop();
+
+
+            let img2 = new Image();
+            img2.addEventListener("load", () => {
+                this.texture2 = new Texture();
+                this.texture2.texture = this.getImageData(img2, true);
+                this.texture2.width = img2.width;
+                this.texture2.height = img2.height;
+
+                let myAudio = new Audio(require('./assets/3dGalax.mp3'));
+                myAudio.loop = true;
+                myAudio.play();
+                this.renderLoop();
+            });
+            img2.src = require("./assets/razor1911.png");
         });
         img.src = require("./assets/logo.png");
     }
