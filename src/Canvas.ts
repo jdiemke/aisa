@@ -15,6 +15,7 @@ export class Canvas {
     //
     private texture: Texture;
     private texture2: Texture;
+    private texture3: Texture;
 
     constructor(width: number, height: number) {
         this.canvas = document.createElement('canvas');
@@ -40,16 +41,17 @@ export class Canvas {
 
     public render(): void {
         let time: number = (Date.now() - this.start) % 30000;
-
+        
         if (time < 5000) {
-            this.framebuffer.drawRotoZoomer(this.texture);
-            this.framebuffer.shadingDemo(Date.now() * 0.02);
+        this.framebuffer.drawTitanEffect();
+         this.framebuffer.shadingTorus(Date.now() * 0.02);
+         this.framebuffer.drawTexture(32,1,this.texture2,1.0);
         } else if (time < 10000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.draw(this.texture);
         } else if (time < 15000) {
             this.framebuffer.drawRotoZoomer(this.texture);
-            this.framebuffer.shadingTorus(Date.now() * 0.02);
+            this.framebuffer.shadingDemo(Date.now() * 0.02);
         } else if (time < 20000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.shadingSphere(Date.now() * 0.01);
@@ -61,7 +63,21 @@ export class Canvas {
             // https://www.youtube.com/watch?v=ccYLb7cLB1I&t=773s
             this.framebuffer.drawMetaballs();
         }
-        this.framebuffer.drawTexture(35, 0, this.texture2, 1.0);
+        
+       
+        //   this.framebuffer.drawVoxelLandscape(this.texture3);
+         // TODO: text
+         // 3d line clipping for fly by :)
+         // different transitions:
+         // - stripes etc
+         // - chessboard
+         // wobble logo
+         // ball 3d with precalculated sizes lookup
+         // starfield 2d /3d
+         // tv noise
+         // wormhole
+         // glitch logo
+
         /**
          * TODO: lenslfare effect
          * - procedural lens flare textures
@@ -108,10 +124,20 @@ export class Canvas {
                 this.texture2.width = img2.width;
                 this.texture2.height = img2.height;
 
-                let myAudio = new Audio(require('./assets/3dGalax.mp3'));
-                myAudio.loop = true;
-                myAudio.play();
-                this.renderLoop();
+
+                let img3 = new Image();
+                img3.addEventListener("load", () => {
+                    this.texture3 = new Texture();
+                    this.texture3.texture = this.getImageData(img3, false);
+                    this.texture3.width = img3.width;
+                    this.texture3.height = img3.height;
+
+                    let myAudio = new Audio(require('./assets/3dGalax.mp3'));
+                    myAudio.loop = true;
+                    myAudio.play();
+                    this.renderLoop();
+                });
+                img3.src = require("./assets/heightmap.png");
             });
             img2.src = require("./assets/razor1911.png");
         });

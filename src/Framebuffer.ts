@@ -307,6 +307,15 @@ export default class Framebuffer {
         }
     }
 
+    public drawBox2(x1: number, y1: number, width: number, height: number, color: number) {
+        
+        let index = y1 * 320 + x1;
+        for (let i = 0; i < height; i++) {
+            this.framebuffer.fill(color, index, index + width);
+            index += 320
+        }
+    }
+
     public wireFrameSphereClipping(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
@@ -1356,6 +1365,32 @@ export default class Framebuffer {
             texXCoord += yStepX;
             texYCoord += yStepY;
         }
+    }
+
+    // https://www.flipcode.com/archives/Realtime_Voxel_Landscape_Engines-Part_1_Introduction.shtml
+    drawVoxelLandscape(texture: Texture) {
+        this.drawTexture(0,0, texture, 1.0);
+    }
+
+    drawTitanEffect() {
+        	this.clear();
+            const horizontalNum = 320 / 20;
+            const verticalNum = 200 / 20;
+
+            
+
+            
+            for(let x = 0; x < horizontalNum; x++) {
+                for(let y = 0; y < verticalNum; y++) {
+
+                    let scale = ((Math.sin(Date.now() *0.004+x*0.7+y*0.4) +1)/2);
+                    let size =  Math.round(scale*8+1)*2;
+                    let offset = (20/2-size/2)|0;
+                    let color = 255 << 24 | (85*scale) << 16 | (55*scale) << 8 | (55*scale);
+                    this.drawBox2(x*20+offset,y*20+offset,size,size, color); 
+                }    
+            }
+               
     }
 
     drawMetaballs() {

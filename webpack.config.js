@@ -27,11 +27,7 @@ module.exports = {
                 loader: 'html-loader'
             },
             {
-                test: /\.png$/,
-                loader: 'file-loader'
-            },
-                {
-                test: /\.mp3$/,
+                test: /\.(png|jpg|mp3)$/,
                 loader: 'file-loader'
             }
         ]
@@ -40,6 +36,6 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: './src/index.html'
         }),
-      // new BabiliPlugin()
+        new BabiliPlugin()
     ]
 }
