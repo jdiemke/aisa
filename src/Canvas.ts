@@ -40,7 +40,7 @@ export class Canvas {
     }
 
     public render(): void {
-        let time: number = (Date.now() - this.start) % 30000;
+        let time: number = (Date.now() - this.start) % 35000;
         
         if (time < 5000) {
         this.framebuffer.drawTitanEffect();
@@ -59,13 +59,16 @@ export class Canvas {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.wireFrameSphereClipping(Date.now() * 0.01);
             this.framebuffer.draw(this.texture);
+        } else if (time < 30000){
+            this.framebuffer.drawVoxelLandscape(this.texture3);
+           this.framebuffer.drawTexture(32,1,this.texture2,1.0);
         } else {
             // https://www.youtube.com/watch?v=ccYLb7cLB1I&t=773s
             this.framebuffer.drawMetaballs();
         }
         
        
-        //   this.framebuffer.drawVoxelLandscape(this.texture3);
+           
          // TODO: text
          // 3d line clipping for fly by :)
          // different transitions:

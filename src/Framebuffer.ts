@@ -1369,8 +1369,53 @@ export default class Framebuffer {
 
     // https://www.flipcode.com/archives/Realtime_Voxel_Landscape_Engines-Part_1_Introduction.shtml
     drawVoxelLandscape(texture: Texture) {
-        this.drawTexture(0,0, texture, 1.0);
+        this.clear();
+
+        
+let off = (Date.now()*0.001);
+        for(let x = 0; x < 320; x++) {
+            let dir = new Vector3(Math.cos(Date.now()*0.0002+x*0.003),
+                                  Math.sin(Date.now()*0.0002+x*0.003),0);
+            
+            for(let d=100; d > 35; d--) {
+                let hmx = Date.now()*0.02+dir.x*d;
+                let hmy = dir.y*d;
+                let color = this.getBilinearFilteredPixel(texture, hmx, hmy);//texture.texture[(hmx&0xff) + (hmy&0xff) * 256];
+                let height = (color & 0xff)+50;
+
+                
+
+                let correctHCam = (300-(255-height)*3.9)*50 / (d*6.6)+0+d*1.3;
+                let correctH = (300-(255-height)*3.9)*50 / (d*6.6)+0+d*1.3;
+                let val = (color & 0xff)*((100-d)/40);
+                let col2 = 255 <<24 | val << 16 | (((val+10) << 8)) | val;
+                for(let i=0; i < Math.min(200,correctH); i++)
+                    this.framebuffer[x+((200-i)*320)] = col2;
+            }
+        }
     }
+
+    getPixel(texture: Texture, x:number, y:number) {
+        return texture.texture[(x&0xff) + (y&0xff) * 256];
+    }
+
+     getBilinearFilteredPixel(texture: Texture, x:number, y:number) {
+        let x0 = (((x | 0) % 256) + 256) % 256;
+        let x1 = ((((x + 1) | 0) % 256) + 256) % 256;
+        let y0 = (((y | 0) % 256) + 256) % 256;
+        let y1 = ((((y + 1) | 0) % 256) + 256) % 256;
+
+        let x0y0 = this.getPixel(texture,x0, y0) & 0xff;
+        let x1y0 = this.getPixel(texture,x1, y0)& 0xff;
+        let x0y1 = this.getPixel(texture,x0, y1)& 0xff;
+        let x1y1 = this.getPixel(texture,x1, y1)& 0xff;
+
+        let col1 = x0y0 *(1 - (x - Math.floor(x))) + (x1y0*((x - Math.floor(x))));
+        let col2 = x0y1*(1 - (x - Math.floor(x)))+(x1y1*((x - Math.floor(x))));
+        let col = col1*(1 - (y - Math.floor(y))) +(col2*((y - Math.floor(y))));
+
+        return col;
+}
 
     drawTitanEffect() {
         	this.clear();
