@@ -60,14 +60,14 @@ export class Canvas {
             this.framebuffer.wireFrameSphereClipping(Date.now() * 0.01);
             this.framebuffer.draw(this.texture);
         } else if (time < 30000){
-            this.framebuffer.drawVoxelLandscape(this.texture3);
-           this.framebuffer.drawTexture(32,1,this.texture2,1.0);
+            this.framebuffer.drawVoxelLandscape2(this.texture3);
+            this.framebuffer.drawTexture(32,1,this.texture2,1.0);
         } else {
             // https://www.youtube.com/watch?v=ccYLb7cLB1I&t=773s
             this.framebuffer.drawMetaballs();
         }
-        
-       
+
+
            
          // TODO: text
          // 3d line clipping for fly by :)

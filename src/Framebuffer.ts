@@ -1367,6 +1367,53 @@ export default class Framebuffer {
         }
     }
 
+    drawVoxelLandscape2(texture: Texture) {
+        this.clearCol(255 <<24);
+
+        const MIN_DIST = 15;
+        const MAX_DIST = 200;
+
+        let camX = Date.now() * 0.008;
+        let camY = 0;
+
+       
+        const focus = 35.7;
+        const center = 100;
+        const eye = 250+Math.sin(Date.now()*0.0004)*5;
+
+        for(let x=0; x < 320; x++) {
+            let dirX = Math.cos(Date.now()*0.0005+x*0.005)*0.5;
+            let dirY = Math.sin(Date.now()*0.0005+x*0.005)*0.5;
+
+           
+
+            let highestPoint = 0;
+
+            for(let dist = MIN_DIST; dist < MAX_DIST; dist ++) {
+                  let rayX = camX + dirX * dist;
+                let rayY = camY + dirY * dist;
+                let height = this.getBilinearFilteredPixel(texture, rayX, rayY);
+                let projHeight = Math.round((height - eye) * focus / dist + center);
+                let color = Math.round(height)*Math.min(1.0,(1-(dist-MIN_DIST)/(MAX_DIST-MIN_DIST))*4);
+                let packedRGB = 255<<24 | color << 16 | (color+10) << 8 | color;
+
+                if(projHeight > highestPoint) {
+                    let index = x+(199-highestPoint)*320;
+                    for(let i = highestPoint; i < projHeight; i++) {
+                        this.framebuffer[index] = packedRGB;
+                        index -= 320;
+                    }
+                    highestPoint = projHeight;
+               }
+                
+                
+            }
+        
+        }
+        
+    }
+
+
     // https://www.flipcode.com/archives/Realtime_Voxel_Landscape_Engines-Part_1_Introduction.shtml
     drawVoxelLandscape(texture: Texture) {
         this.clear();
