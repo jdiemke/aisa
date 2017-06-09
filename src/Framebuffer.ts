@@ -101,7 +101,7 @@ export default class Framebuffer {
 
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
-                let alpha = ((texture.texture[textureIndex] >> 24) & 0xff) / 255* alpha2;
+                let alpha = ((texture.texture[textureIndex] >> 24) & 0xff) / 255 * alpha2;
                 let inverseAlpha = 1 - alpha;
 
                 let r = (((this.framebuffer[framebufferIndex] >> 0) & 0xff) * (inverseAlpha) + ((texture.texture[textureIndex] >> 0) & 0xff) * (alpha)) | 0;
@@ -308,7 +308,7 @@ export default class Framebuffer {
     }
 
     public drawBox2(x1: number, y1: number, width: number, height: number, color: number) {
-        
+
         let index = y1 * 320 + x1;
         for (let i = 0; i < height; i++) {
             this.framebuffer.fill(color, index, index + width);
@@ -1367,50 +1367,71 @@ export default class Framebuffer {
         }
     }
 
-    drawVoxelLandscape2(texture: Texture) {
-        this.clearCol(255 <<24);
+    /**
+     * Generates a voxel landscape.
+     * 
+     * TODO:
+     * - y-span color interpolation
+     * - texturing
+     * 
+     * http://simulationcorner.net/index.php?page=comanche
+     * http://www.flipcode.com/archives/Realtime_Voxel_Landscape_Engines-Part_2_Rendering_the_Landscapes_Structure.shtml
+     * http://www.massal.net/article/voxel/
+     * 
+     * @param {Texture} texture The heightmap
+     * @param {number} time Elapsed time in milliseconds
+     * 
+     * @memberof Framebuffer
+     */
+    drawVoxelLandscape2(texture: Texture, time: number) {
+        this.clearCol(255 << 24);
 
-        const MIN_DIST = 15;
+        const MIN_DIST = 45;
         const MAX_DIST = 200;
 
-        let camX = Date.now() * 0.008;
+        let camX = time * 0.008;
         let camY = 0;
 
-       
-        const focus = 35.7;
-        const center = 100;
-        const eye = 250+Math.sin(Date.now()*0.0004)*5;
+        const focus = 125.7;
+        const center = 300;
+        const eye = 250;
 
-        for(let x=0; x < 320; x++) {
-            let dirX = Math.cos(Date.now()*0.0005+x*0.005)*0.5;
-            let dirY = Math.sin(Date.now()*0.0005+x*0.005)*0.5;
-
-           
+        for (let x = 0; x < 320; x++) {
+            let dirX = Math.cos(time * 0.0005 + x * 0.005) * 0.4;
+            let dirY = Math.sin(time * 0.0005 + x * 0.005) * 0.4;
 
             let highestPoint = 0;
 
-            for(let dist = MIN_DIST; dist < MAX_DIST; dist ++) {
-                  let rayX = camX + dirX * dist;
-                let rayY = camY + dirY * dist;
+            let rayX = camX + dirX * MIN_DIST;
+            let rayY = camY + dirY * MIN_DIST;
+
+            for (let dist = MIN_DIST; dist < MAX_DIST; dist++) {
+
                 let height = this.getBilinearFilteredPixel(texture, rayX, rayY);
                 let projHeight = Math.round((height - eye) * focus / dist + center);
-                let color = Math.round(height)*Math.min(1.0,(1-(dist-MIN_DIST)/(MAX_DIST-MIN_DIST))*4);
-                let packedRGB = 255<<24 | color << 16 | (color+10) << 8 | color;
+                let color = Math.round(height) * Math.min(1.0, (1 - (dist - MIN_DIST) / (MAX_DIST - MIN_DIST))*10);
+                let packedRGB = 255 << 24 | (color+10) << 16 | (color + 20) << 8 | (color+13);
 
-                if(projHeight > highestPoint) {
-                    let index = x+(199-highestPoint)*320;
-                    for(let i = highestPoint; i < projHeight; i++) {
+                if (projHeight > highestPoint) {
+                    let index = x + (199 - highestPoint) * 320;
+                    let max = Math.min(projHeight, 200);
+
+                    for (let i = highestPoint; i < max; i++) {
                         this.framebuffer[index] = packedRGB;
                         index -= 320;
                     }
+
+                    if (max == 200) {
+                        break;
+                    }
+
                     highestPoint = projHeight;
-               }
-                
-                
+                }
+
+                rayX += dirX;
+                rayY += dirY;
             }
-        
         }
-        
     }
 
 
@@ -1418,71 +1439,71 @@ export default class Framebuffer {
     drawVoxelLandscape(texture: Texture) {
         this.clear();
 
-        
-let off = (Date.now()*0.001);
-        for(let x = 0; x < 320; x++) {
-            let dir = new Vector3(Math.cos(Date.now()*0.0002+x*0.003),
-                                  Math.sin(Date.now()*0.0002+x*0.003),0);
-            
-            for(let d=100; d > 35; d--) {
-                let hmx = Date.now()*0.02+dir.x*d;
-                let hmy = dir.y*d;
+
+        let off = (Date.now() * 0.001);
+        for (let x = 0; x < 320; x++) {
+            let dir = new Vector3(Math.cos(Date.now() * 0.0002 + x * 0.003),
+                Math.sin(Date.now() * 0.0002 + x * 0.003), 0);
+
+            for (let d = 100; d > 35; d--) {
+                let hmx = Date.now() * 0.02 + dir.x * d;
+                let hmy = dir.y * d;
                 let color = this.getBilinearFilteredPixel(texture, hmx, hmy);//texture.texture[(hmx&0xff) + (hmy&0xff) * 256];
-                let height = (color & 0xff)+50;
+                let height = (color & 0xff) + 50;
 
-                
 
-                let correctHCam = (300-(255-height)*3.9)*50 / (d*6.6)+0+d*1.3;
-                let correctH = (300-(255-height)*3.9)*50 / (d*6.6)+0+d*1.3;
-                let val = (color & 0xff)*((100-d)/40);
-                let col2 = 255 <<24 | val << 16 | (((val+10) << 8)) | val;
-                for(let i=0; i < Math.min(200,correctH); i++)
-                    this.framebuffer[x+((200-i)*320)] = col2;
+
+                let correctHCam = (300 - (255 - height) * 3.9) * 50 / (d * 6.6) + 0 + d * 1.3;
+                let correctH = (300 - (255 - height) * 3.9) * 50 / (d * 6.6) + 0 + d * 1.3;
+                let val = (color & 0xff) * ((100 - d) / 40);
+                let col2 = 255 << 24 | val << 16 | (((val + 10) << 8)) | val;
+                for (let i = 0; i < Math.min(200, correctH); i++)
+                    this.framebuffer[x + ((200 - i) * 320)] = col2;
             }
         }
     }
 
-    getPixel(texture: Texture, x:number, y:number) {
-        return texture.texture[(x&0xff) + (y&0xff) * 256];
+    getPixel(texture: Texture, x: number, y: number) {
+        return texture.texture[(x & 0xff) + (y & 0xff) * 256];
     }
 
-     getBilinearFilteredPixel(texture: Texture, x:number, y:number) {
+    getBilinearFilteredPixel(texture: Texture, x: number, y: number) {
         let x0 = (((x | 0) % 256) + 256) % 256;
         let x1 = ((((x + 1) | 0) % 256) + 256) % 256;
         let y0 = (((y | 0) % 256) + 256) % 256;
         let y1 = ((((y + 1) | 0) % 256) + 256) % 256;
 
-        let x0y0 = this.getPixel(texture,x0, y0) & 0xff;
-        let x1y0 = this.getPixel(texture,x1, y0)& 0xff;
-        let x0y1 = this.getPixel(texture,x0, y1)& 0xff;
-        let x1y1 = this.getPixel(texture,x1, y1)& 0xff;
+        let x0y0 = this.getPixel(texture, x0, y0) & 0xff;
+        let x1y0 = this.getPixel(texture, x1, y0) & 0xff;
+        let x0y1 = this.getPixel(texture, x0, y1) & 0xff;
+        let x1y1 = this.getPixel(texture, x1, y1) & 0xff;
 
-        let col1 = x0y0 *(1 - (x - Math.floor(x))) + (x1y0*((x - Math.floor(x))));
-        let col2 = x0y1*(1 - (x - Math.floor(x)))+(x1y1*((x - Math.floor(x))));
-        let col = col1*(1 - (y - Math.floor(y))) +(col2*((y - Math.floor(y))));
+        let col1 = x0y0 * (1 - (x - Math.floor(x))) + (x1y0 * ((x - Math.floor(x))));
+        let col2 = x0y1 * (1 - (x - Math.floor(x))) + (x1y1 * ((x - Math.floor(x))));
+        let col = col1 * (1 - (y - Math.floor(y))) + (col2 * ((y - Math.floor(y))));
 
         return col;
-}
+    }
 
     drawTitanEffect() {
-        	this.clear();
-            const horizontalNum = 320 / 20;
-            const verticalNum = 200 / 20;
+        this.clear();
+        const horizontalNum = 320 / 20;
+        const verticalNum = 200 / 20;
 
-            
 
-            
-            for(let x = 0; x < horizontalNum; x++) {
-                for(let y = 0; y < verticalNum; y++) {
 
-                    let scale = ((Math.sin(Date.now() *0.004+x*0.7+y*0.4) +1)/2);
-                    let size =  Math.round(scale*8+1)*2;
-                    let offset = (20/2-size/2)|0;
-                    let color = 255 << 24 | (85*scale) << 16 | (55*scale) << 8 | (55*scale);
-                    this.drawBox2(x*20+offset,y*20+offset,size,size, color); 
-                }    
+
+        for (let x = 0; x < horizontalNum; x++) {
+            for (let y = 0; y < verticalNum; y++) {
+
+                let scale = ((Math.sin(Date.now() * 0.004 + x * 0.7 + y * 0.4) + 1) / 2);
+                let size = Math.round(scale * 8 + 1) * 2;
+                let offset = (20 / 2 - size / 2) | 0;
+                let color = 255 << 24 | (85 * scale) << 16 | (55 * scale) << 8 | (55 * scale);
+                this.drawBox2(x * 20 + offset, y * 20 + offset, size, size, color);
             }
-               
+        }
+
     }
 
     drawMetaballs() {

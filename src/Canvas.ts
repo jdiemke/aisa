@@ -41,11 +41,11 @@ export class Canvas {
 
     public render(): void {
         let time: number = (Date.now() - this.start) % 35000;
-        
+
         if (time < 5000) {
-        this.framebuffer.drawTitanEffect();
-         this.framebuffer.shadingTorus(Date.now() * 0.02);
-         this.framebuffer.drawTexture(32,1,this.texture2,1.0);
+            this.framebuffer.drawTitanEffect();
+            this.framebuffer.shadingTorus(Date.now() * 0.02);
+            this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
         } else if (time < 10000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.draw(this.texture);
@@ -59,27 +59,25 @@ export class Canvas {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.wireFrameSphereClipping(Date.now() * 0.01);
             this.framebuffer.draw(this.texture);
-        } else if (time < 30000){
-            this.framebuffer.drawVoxelLandscape2(this.texture3);
-            this.framebuffer.drawTexture(32,1,this.texture2,1.0);
+        } else if (time < 30000) {
+            this.framebuffer.drawVoxelLandscape2(this.texture3, time);
+            this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
         } else {
             // https://www.youtube.com/watch?v=ccYLb7cLB1I&t=773s
             this.framebuffer.drawMetaballs();
         }
 
-
-           
-         // TODO: text
-         // 3d line clipping for fly by :)
-         // different transitions:
-         // - stripes etc
-         // - chessboard
-         // wobble logo
-         // ball 3d with precalculated sizes lookup
-         // starfield 2d /3d
-         // tv noise
-         // wormhole
-         // glitch logo
+        // TODO: text
+        // 3d line clipping for fly by :)
+        // different transitions:
+        // - stripes etc
+        // - chessboard
+        // wobble logo
+        // ball 3d with precalculated sizes lookup
+        // starfield 2d /3d
+        // tv noise
+        // wormhole
+        // glitch logo
 
         /**
          * TODO: lenslfare effect
