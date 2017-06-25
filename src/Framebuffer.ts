@@ -86,7 +86,36 @@ export default class Framebuffer {
         }
     }
 
-    public drawTexture(x, y, texture: Texture, alpha2: number) {
+    public drawText(x: number, y: number, text: string, texture: Texture): void {
+        for(let i= 0; i < text.length; i++) {
+            let index = text.charCodeAt(i) - ' '.charCodeAt(0);
+            let tx = Math.floor(index % 32) * 8;
+            let ty = Math.floor(index / 32) * 8;
+            console.log(tx + ty + ",");
+            this.drawTextureRect(x+i*8,y,tx,ty,8,8, texture, 1.0);
+        }
+        console.log("--");
+    }
+
+    public drawTextureRect(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Texture, alpha2: number): void {
+        for (let w = 0; w < width; w++) {
+            for (let h = 0; h < height; h++) {
+                let texIndex = (xt + w) + ((yt + h) * texture.width);
+                let frIndex = (xs + w) + ((ys + h) * 320);
+                let alpha = ((texture.texture[texIndex] >> 24) & 0xff) / 255 * alpha2;
+                let inverseAlpha = 1 - alpha;
+
+                let r = (((this.framebuffer[frIndex] >> 0) & 0xff) * (inverseAlpha) + ((texture.texture[texIndex] >> 0) & 0xff) * (alpha)) | 0;
+                let g = (((this.framebuffer[frIndex] >> 8) & 0xff) * (inverseAlpha) + ((texture.texture[texIndex] >> 8) & 0xff) * (alpha)) | 0;
+                let b = (((this.framebuffer[frIndex] >> 16) & 0xff) * (inverseAlpha) + ((texture.texture[texIndex] >> 16) & 0xff) * (alpha)) | 0;
+
+
+                this.framebuffer[frIndex] = r | (g << 8) | (b << 16) | (255 << 24);
+            }
+        }
+    }
+
+    public drawTexture(x: number, y: number, texture: Texture, alpha2: number) {
         const SCREEN_WIDTH = 320;
         const SCREEN_HEIGHT = 200;
 
@@ -1409,8 +1438,8 @@ export default class Framebuffer {
 
                 let height = this.getBilinearFilteredPixel(texture, rayX, rayY);
                 let projHeight = Math.round((height - eye) * focus / dist + center);
-                let color = Math.round(height) * Math.min(1.0, (1 - (dist - MIN_DIST) / (MAX_DIST - MIN_DIST))*10);
-                let packedRGB = 255 << 24 | (color+10) << 16 | (color + 20) << 8 | (color+13);
+                let color = Math.round(height) * Math.min(1.0, (1 - (dist - MIN_DIST) / (MAX_DIST - MIN_DIST)) * 10);
+                let packedRGB = 255 << 24 | (color + 10) << 16 | (color + 20) << 8 | (color + 13);
 
                 if (projHeight > highestPoint) {
                     let index = x + (199 - highestPoint) * 320;

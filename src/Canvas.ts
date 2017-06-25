@@ -12,10 +12,10 @@ export class Canvas {
     private framebuffer: Framebuffer;
     start: number;
 
-    //
     private texture: Texture;
     private texture2: Texture;
     private texture3: Texture;
+    private texture4: Texture;
 
     constructor(width: number, height: number) {
         this.canvas = document.createElement('canvas');
@@ -66,6 +66,9 @@ export class Canvas {
             // https://www.youtube.com/watch?v=ccYLb7cLB1I&t=773s
             this.framebuffer.drawMetaballs();
         }
+
+        this.framebuffer.drawText(80+0,100+0, 'SOFTWARE 3D RENDERING', this.texture4);
+        this.framebuffer.drawText(80+4,100+8, '   IN JAVASCRIPT!    ', this.texture4);
 
         // TODO: text
         // 3d line clipping for fly by :)
@@ -133,10 +136,20 @@ export class Canvas {
                     this.texture3.width = img3.width;
                     this.texture3.height = img3.height;
 
-                    let myAudio = new Audio(require('./assets/3dGalax.mp3'));
-                    myAudio.loop = true;
-                    myAudio.play();
-                    this.renderLoop();
+
+                    let img4 = new Image();
+                    img4.addEventListener("load", () => {
+                        this.texture4 = new Texture();
+                        this.texture4.texture = this.getImageData(img4, true);
+                        this.texture4.width = img4.width;
+                        this.texture4.height = img4.height;
+
+                        let myAudio = new Audio(require('./assets/3dGalax.mp3'));
+                        myAudio.loop = true;
+                        myAudio.play();
+                        this.renderLoop();
+                    });
+                    img4.src = require("./assets/font.png");
                 });
                 img3.src = require("./assets/heightmap.png");
             });
