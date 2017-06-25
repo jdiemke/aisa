@@ -88,11 +88,12 @@ export default class Framebuffer {
 
     public drawText(x: number, y: number, text: string, texture: Texture): void {
         for(let i= 0; i < text.length; i++) {
+            let offset = Math.round(Math.sin(i*0.2+Date.now()*0.005)*10);
             let index = text.charCodeAt(i) - ' '.charCodeAt(0);
             let tx = Math.floor(index % 32) * 8;
             let ty = Math.floor(index / 32) * 8;
             console.log(tx + ty + ",");
-            this.drawTextureRect(x+i*8,y,tx,ty,8,8, texture, 1.0);
+            this.drawTextureRect(x+i*8,y+offset,tx,ty,8,8, texture, 1.0);
         }
         console.log("--");
     }
@@ -1533,7 +1534,7 @@ export default class Framebuffer {
     draw(texture: Texture) {
         // this.clearCol(80 << 16 | 80 << 8 | 99 << 0 | 255 << 24)
         let a = Date.now() * 0.001;
-        for (let i = 0; i < 200; i++) {
+        for (let i = 10; i < 190; i++) {
             let xoff = (Math.sin(a + i * 0.01) * 50) | 0;
             let rot = Math.sin(a * 0.4 + i * 0.0021) * Math.PI * 2;
             let x1 = (Math.sin(rot) * 32) | 0;

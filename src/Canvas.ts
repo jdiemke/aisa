@@ -16,6 +16,7 @@ export class Canvas {
     private texture2: Texture;
     private texture3: Texture;
     private texture4: Texture;
+    private texture5: Texture;
 
     constructor(width: number, height: number) {
         this.canvas = document.createElement('canvas');
@@ -47,7 +48,8 @@ export class Canvas {
             this.framebuffer.shadingTorus(Date.now() * 0.02);
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
         } else if (time < 10000) {
-            this.framebuffer.drawRotoZoomer(this.texture);
+           // this.framebuffer.drawRotoZoomer(this.texture);
+              this.framebuffer.drawTexture(0, 0, this.texture5, 1.0);
             this.framebuffer.draw(this.texture);
         } else if (time < 15000) {
             this.framebuffer.drawRotoZoomer(this.texture);
@@ -58,7 +60,7 @@ export class Canvas {
         } else if (time < 25000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.wireFrameSphereClipping(Date.now() * 0.01);
-            this.framebuffer.draw(this.texture);
+           // this.framebuffer.draw(this.texture);
         } else if (time < 30000) {
             this.framebuffer.drawVoxelLandscape2(this.texture3, time);
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
@@ -67,8 +69,8 @@ export class Canvas {
             this.framebuffer.drawMetaballs();
         }
 
-        this.framebuffer.drawText(80+0,100+0, 'SOFTWARE 3D RENDERING', this.texture4);
-        this.framebuffer.drawText(80+4,100+8, '   IN JAVASCRIPT!    ', this.texture4);
+        this.framebuffer.drawText(80 + 0, 100 + 0, 'SOFTWARE 3D RENDERING', this.texture4);
+        this.framebuffer.drawText(80 + 0, 100 + 8, '   IN JAVASCRIPT!    ', this.texture4);
 
         // TODO: text
         // 3d line clipping for fly by :)
@@ -91,7 +93,7 @@ export class Canvas {
          */
     }
 
-    getImageData(image: HTMLImageElement, withAlpha: boolean): Uint32Array {
+    getImageData(image: HTMLImageElement, withAlpha: boolean = false): Uint32Array {
         let canvas: HTMLCanvasElement = document.createElement('canvas');
         canvas.width = image.width;
         canvas.height = image.height;
@@ -116,7 +118,7 @@ export class Canvas {
         let img = new Image();
         img.addEventListener("load", () => {
             this.texture = new Texture();
-            this.texture.texture = this.getImageData(img, false);
+            this.texture.texture = this.getImageData(img);
             this.texture.width = img.width;
             this.texture.height = img.height;
 
@@ -132,7 +134,7 @@ export class Canvas {
                 let img3 = new Image();
                 img3.addEventListener("load", () => {
                     this.texture3 = new Texture();
-                    this.texture3.texture = this.getImageData(img3, false);
+                    this.texture3.texture = this.getImageData(img3);
                     this.texture3.width = img3.width;
                     this.texture3.height = img3.height;
 
@@ -144,10 +146,20 @@ export class Canvas {
                         this.texture4.width = img4.width;
                         this.texture4.height = img4.height;
 
-                        let myAudio = new Audio(require('./assets/3dGalax.mp3'));
-                        myAudio.loop = true;
-                        myAudio.play();
-                        this.renderLoop();
+
+                        let img5 = new Image();
+                        img5.addEventListener("load", () => {
+                            this.texture5 = new Texture();
+                            this.texture5.texture = this.getImageData(img5);
+                            this.texture5.width = img5.width;
+                            this.texture5.height = img5.height;
+
+                            let myAudio = new Audio(require('./assets/3dGalax.mp3'));
+                            myAudio.loop = true;
+                            myAudio.play();
+                            this.renderLoop();
+                        });
+                         img5.src = require("./assets/atlantis.png");
                     });
                     img4.src = require("./assets/font.png");
                 });
