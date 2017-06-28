@@ -17,6 +17,7 @@ export class Canvas {
     private texture3: Texture;
     private texture4: Texture;
     private texture5: Texture;
+    private texture6: Texture;
 
     constructor(width: number, height: number) {
         this.canvas = document.createElement('canvas');
@@ -45,12 +46,17 @@ export class Canvas {
 
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
+            //this.framebuffer.drawTexture(0, 0, this.texture5, 1.0);
             this.framebuffer.shadingTorus(Date.now() * 0.02);
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
         } else if (time < 10000) {
-           // this.framebuffer.drawRotoZoomer(this.texture);
-              this.framebuffer.drawTexture(0, 0, this.texture5, 1.0);
-            this.framebuffer.draw(this.texture);
+
+            this.framebuffer.drawTexture(0, 0, this.texture5, 1.0);
+            //   this.framebuffer.draw(this.texture);
+            this.framebuffer.drawLens(this.texture5, this.texture6);
+
+            this.framebuffer.drawText(8, 18, '2D LENS EFFECT', this.texture4);
+
         } else if (time < 15000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.shadingDemo(Date.now() * 0.02);
@@ -60,7 +66,7 @@ export class Canvas {
         } else if (time < 25000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.wireFrameSphereClipping(Date.now() * 0.01);
-           // this.framebuffer.draw(this.texture);
+            // this.framebuffer.draw(this.texture);
         } else if (time < 30000) {
             this.framebuffer.drawVoxelLandscape2(this.texture3, time);
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
@@ -69,8 +75,9 @@ export class Canvas {
             this.framebuffer.drawMetaballs();
         }
 
-        this.framebuffer.drawText(80 + 0, 100 + 0, 'SOFTWARE 3D RENDERING', this.texture4);
-        this.framebuffer.drawText(80 + 0, 100 + 8, '   IN JAVASCRIPT!    ', this.texture4);
+
+
+        //this.framebuffer.drawText(80 + 0, 100 + 8, '   IN JAVASCRIPT!    ', this.texture4);
 
         // TODO: text
         // 3d line clipping for fly by :)
@@ -154,12 +161,23 @@ export class Canvas {
                             this.texture5.width = img5.width;
                             this.texture5.height = img5.height;
 
-                            let myAudio = new Audio(require('./assets/3dGalax.mp3'));
-                            myAudio.loop = true;
-                            myAudio.play();
-                            this.renderLoop();
+                            let img6 = new Image();
+                            img6.addEventListener("load", () => {
+                                this.texture6 = new Texture();
+                                this.texture6.texture = this.getImageData(img6, true);
+                                this.texture6.width = img6.width;
+                                this.texture6.height = img6.height;
+
+                                let myAudio = new Audio(require('./assets/3dGalax.mp3'));
+                                myAudio.loop = true;
+                                myAudio.play();
+                                this.renderLoop();
+                            });
+                            img6.src = require("./assets/lens.png");
+
+
                         });
-                         img5.src = require("./assets/atlantis.png");
+                        img5.src = require("./assets/atlantis.png");
                     });
                     img4.src = require("./assets/font.png");
                 });

@@ -87,13 +87,13 @@ export default class Framebuffer {
     }
 
     public drawText(x: number, y: number, text: string, texture: Texture): void {
-        for(let i= 0; i < text.length; i++) {
-            let offset = Math.round(Math.sin(i*0.2+Date.now()*0.005)*10);
+        for (let i = 0; i < text.length; i++) {
+            let offset = 0;//Math.round(Math.sin(i * 0.2 + Date.now() * 0.005) * 10);
             let index = text.charCodeAt(i) - ' '.charCodeAt(0);
             let tx = Math.floor(index % 32) * 8;
             let ty = Math.floor(index / 32) * 8;
             console.log(tx + ty + ",");
-            this.drawTextureRect(x+i*8,y+offset,tx,ty,8,8, texture, 1.0);
+            this.drawTextureRect(x + i * 8, y + offset, tx, ty, 8, 8, texture, 1.0);
         }
         console.log("--");
     }
@@ -114,6 +114,33 @@ export default class Framebuffer {
                 this.framebuffer[frIndex] = r | (g << 8) | (b << 16) | (255 << 24);
             }
         }
+    }
+
+    public drawLens(texture: Texture, tex: Texture) {
+
+        const radius = 47;
+        let xoff = 320 / 2 + Math.sin(Date.now() * 0.0006) * (320 / 2-50);
+        let yoff = 200 / 2 + Math.cos(Date.now() * 0.0008) * (200 / 2-50);
+
+        for (let y = -radius; y <= radius; y++) {
+            for (let x = -radius; x <= radius; x++) {
+                if (x * x + y * y <= radius * radius) {
+
+                    let xx = Math.round(x + xoff);
+                    let yy = Math.round(y + yoff);
+
+                    let z = 1+Math.sqrt(radius*radius - x*x - y*y)*0.03;
+                     let xx2 = Math.round(x/z + xoff);
+                    let yy2 = Math.round(y/z + yoff);
+                    let col = texture.texture[xx2 + yy2 * 320];
+          
+                    let index = xx + yy * 320;
+                    this.framebuffer[index] = col ;
+                }
+            }
+        }
+
+        this.drawTexture(Math.round(xoff-50), Math.round(yoff-50), tex, 1.0);
     }
 
     public drawTexture(x: number, y: number, texture: Texture, alpha2: number) {
