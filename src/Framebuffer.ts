@@ -119,8 +119,8 @@ export default class Framebuffer {
     public drawLens(texture: Texture, tex: Texture) {
 
         const radius = 47;
-        let xoff = 320 / 2 + Math.sin(Date.now() * 0.0006) * (320 / 2-50);
-        let yoff = 200 / 2 + Math.cos(Date.now() * 0.0008) * (200 / 2-50);
+        let xoff = 320 / 2 + Math.cos(6*Date.now() * 0.0002) * (320 / 2 - 50);
+        let yoff = 200 / 2 + Math.sin(4*Date.now() * 0.0002) * (200 / 2 - 50);
 
         for (let y = -radius; y <= radius; y++) {
             for (let x = -radius; x <= radius; x++) {
@@ -129,18 +129,18 @@ export default class Framebuffer {
                     let xx = Math.round(x + xoff);
                     let yy = Math.round(y + yoff);
 
-                    let z = 1+Math.sqrt(radius*radius - x*x - y*y)*0.03;
-                     let xx2 = Math.round(x/z + xoff);
-                    let yy2 = Math.round(y/z + yoff);
+                    let z = 1 + Math.sqrt(radius * radius - x * x - y * y) * 0.03;
+                    let xx2 = Math.round(x / z + xoff);
+                    let yy2 = Math.round(y / z + yoff);
                     let col = texture.texture[xx2 + yy2 * 320];
-          
+
                     let index = xx + yy * 320;
-                    this.framebuffer[index] = col ;
+                    this.framebuffer[index] = col;
                 }
             }
         }
 
-        this.drawTexture(Math.round(xoff-50), Math.round(yoff-50), tex, 1.0);
+        this.drawTexture(Math.round(xoff - 50), Math.round(yoff - 50), tex, 1.0);
     }
 
     public drawTexture(x: number, y: number, texture: Texture, alpha2: number) {
@@ -373,6 +373,32 @@ export default class Framebuffer {
         }
     }
 
+    drawWireTunnel(elapsedTime: number) {
+      
+       
+    
+        let time = elapsedTime * 0.0007 * 1.0;
+        let lineDirection = new Vector3(Math.sin(time), Math.cos(time),0);
+        let radialWaveCenter = new Vector3(470.0 / 2.0, 230.0 / 2.0,0).add(new Vector3(470.0 / 2.0 *
+            Math.sin(-time), 230.0 / 2.0 * Math.cos(-time),0));
+        // https://hacks.mozilla.org/2011/12/faster-canvas-pixel-manipulation-with-typed-arrays/
+        // TODO: implement sin/cos lookup tables plus starfield ;)
+        let index=0;
+        for (let y = 0; y < 200; y ++) {
+            for (let x = 0; x < 320; x ++) {
+                let directionalWave = Math.sin(((x * lineDirection.x + y * lineDirection.y) * 0.02 + time) + 1.0) / 2.0;
+                let radialWave = (Math.cos(new Vector3(x - radialWaveCenter.x, y - radialWaveCenter.y,0).length() * 0.03) + 1.0) / 2.0;
+                let waveSum: number = (radialWave + directionalWave) / 2.0;
+
+                let red = (Math.cos(Math.PI * waveSum / 0.5 + time) + 1.0) / 2.0 * 255;
+                let green = (Math.sin(Math.PI * waveSum / 0.5 + time) + 1.0) / 2.0 * 255;
+                let blue = (Math.sin(time) + 1.0) / 2.0 * 255;
+
+                this.framebuffer[index++] = 255 << 24 | blue <<  16| green << 8 | red;
+            }
+        }
+    }
+
     public wireFrameSphereClipping(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
@@ -471,8 +497,8 @@ export default class Framebuffer {
 
     }
 
-    private static minWindow: Vector3 = new Vector3(0 + 5, 0 + 50, 0);
-    private static maxWindow: Vector3 = new Vector3(319 - 5, 199 - 50, 0);
+    private static minWindow: Vector3 = new Vector3(0, 19, 0);
+    private static maxWindow: Vector3 = new Vector3(319, 199-10, 0);
     // seems to habe a small bug
     public cohenSutherlandLineClipper(start: Vector3, end: Vector3, col: number) {
         let p1: Vector3 = new Vector3(start.x, start.y, start.z);
