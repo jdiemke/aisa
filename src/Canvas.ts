@@ -54,46 +54,53 @@ export class Canvas {
      * http://codeincomplete.com/posts/javascript-racer-v1-straight/
      * http://www.extentofthejam.com/pseudo/
      * 
+     * http://hugi.scene.org/online/hugi24/coding%20graphics%20bonz%20sines%20and%20cosines%20for%20fun%20and%20profit.htm
+     * 
      * @memberof Canvas
      */
     public render(): void {
-        let time: number = (Date.now() - this.start) % 45000;
+        let time: number = (Date.now() - this.start) % 55000;
 
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
-            //this.framebuffer.drawTexture(0, 0, this.texture5, 1.0);
             this.framebuffer.shadingTorus(Date.now() * 0.02);
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
+            this.framebuffer.drawText(8, 192-18, '3D TORUS', this.texture4);
         } else if (time < 15000) {
-
             this.framebuffer.drawTexture(0, 0, this.texture5, 1.0);
-            //   this.framebuffer.draw(this.texture);
-            this.framebuffer.drawLens(this.texture5, this.texture6);
-
-            this.framebuffer.drawText(8, 18, '2D LENS EFFECT', this.texture4);
-
-        } else if (time < 20000) {
-            this.framebuffer.drawRotoZoomer(this.texture);
-            this.framebuffer.shadingDemo(Date.now() * 0.02);
+            this.framebuffer.draw(this.texture);
+            this.framebuffer.drawText(8, 192-18, 'TEXTURED TWISTER', this.texture4);
         } else if (time < 25000) {
-            this.framebuffer.drawRotoZoomer(this.texture);
-            this.framebuffer.shadingSphere(Date.now() * 0.01);
+            this.framebuffer.drawTexture(0, 0, this.texture5, 1.0);
+            this.framebuffer.drawLens(this.texture5, this.texture6);
+            this.framebuffer.drawText(8, 192-18, '2D LENS EFFECT', this.texture4);
         } else if (time < 30000) {
             this.framebuffer.drawRotoZoomer(this.texture);
-            this.framebuffer.wireFrameSphereClipping(Date.now() * 0.01);
-            // this.framebuffer.draw(this.texture);
+            this.framebuffer.shadingDemo(Date.now() * 0.02);
+            this.framebuffer.drawText(8, 192-18, 'SHADED 3D CUBE', this.texture4);
         } else if (time < 35000) {
+            this.framebuffer.drawRotoZoomer(this.texture);
+            this.framebuffer.shadingSphere(Date.now() * 0.01);
+            this.framebuffer.drawText(8, 192-18, 'DISTORTED 3D SPHERE', this.texture4);
+        } else if (time < 40000) {
+            this.framebuffer.drawRotoZoomer(this.texture);
+            this.framebuffer.wireFrameSphereClipping(Date.now() * 0.01);
+            this.framebuffer.drawText(8, 192-18, 'WIREFRAME SPHERE', this.texture4);
+            // this.framebuffer.draw(this.texture);
+        } else if (time < 45000) {
             this.framebuffer.drawVoxelLandscape2(this.texture3, time);
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
-        } else if(time < 40000) { 
+            this.framebuffer.drawText(8, 192-18, 'VOXEL LANDSCAPE', this.texture4);
+        } else if (time < 50000) {
             this.framebuffer.drawWireTunnel(Date.now());
-            this.framebuffer.drawText(8, 18, 'OLD SCHOOL PLASMA', this.texture4);
+            this.framebuffer.drawText(8, 192-18, 'OLD SCHOOL PLASMA', this.texture4);
         } else {
             // https://www.youtube.com/watch?v=ccYLb7cLB1I&t=773s
             this.framebuffer.drawMetaballs();
+            this.framebuffer.drawText(8, 192-18, '2D METABALLS', this.texture4);
         }
 
-          
+
 
         // this.framebuffer.scene9(time*0.01);
 
