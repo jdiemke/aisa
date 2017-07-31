@@ -92,10 +92,8 @@ export default class Framebuffer {
             let index = text.charCodeAt(i) - ' '.charCodeAt(0);
             let tx = Math.floor(index % 32) * 8;
             let ty = Math.floor(index / 32) * 8;
-            console.log(tx + ty + ",");
             this.drawTextureRect(x + i * 8, y + offset, tx, ty, 8, 8, texture, 1.0);
         }
-        console.log("--");
     }
 
     public drawTextureRect(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Texture, alpha2: number): void {
@@ -116,11 +114,11 @@ export default class Framebuffer {
         }
     }
 
-    public drawLens(texture: Texture, tex: Texture) {
+    public drawLens(texture: Texture, tex: Texture, time: number) {
 
         const radius = 47;
-        let xoff = 320 / 2 + Math.cos(6*Date.now() * 0.0002) * (320 / 2 - 50);
-        let yoff = 200 / 2 + Math.sin(4*Date.now() * 0.0002) * (200 / 2 - 50);
+        let xoff = 320 / 2 + Math.cos(6 * time * 0.0002) * (320 / 2 - 50);
+        let yoff = 200 / 2 + Math.sin(4 * time * 0.0002) * (200 / 2 - 50);
 
         for (let y = -radius; y <= radius; y++) {
             for (let x = -radius; x <= radius; x++) {
@@ -374,27 +372,27 @@ export default class Framebuffer {
     }
 
     drawWireTunnel(elapsedTime: number) {
-      
-       
-    
         let time = elapsedTime * 0.0007 * 1.0;
-        let lineDirection = new Vector3(Math.sin(time), Math.cos(time),0);
-        let radialWaveCenter = new Vector3(470.0 / 2.0, 230.0 / 2.0,0).add(new Vector3(470.0 / 2.0 *
-            Math.sin(-time), 230.0 / 2.0 * Math.cos(-time),0));
-        // https://hacks.mozilla.org/2011/12/faster-canvas-pixel-manipulation-with-typed-arrays/
+        let lineDirection = new Vector3(Math.sin(time), Math.cos(time), 0);
+        let radialWaveCenter = new Vector3(470.0 / 2.0, 230.0 / 2.0, 0).add(new Vector3(470.0 / 2.0 *
+            Math.sin(-time), 230.0 / 2.0 * Math.cos(-time), 0));
+
+        let difference = new Vector3(0, 0, 0);
         // TODO: implement sin/cos lookup tables plus starfield ;)
-        let index=0;
-        for (let y = 0; y < 200; y ++) {
-            for (let x = 0; x < 320; x ++) {
-                let directionalWave = Math.sin(((x * lineDirection.x + y * lineDirection.y) * 0.02 + time) + 1.0) / 2.0;
-                let radialWave = (Math.cos(new Vector3(x - radialWaveCenter.x, y - radialWaveCenter.y,0).length() * 0.03) + 1.0) / 2.0;
-                let waveSum: number = (radialWave + directionalWave) / 2.0;
+        let index = 0;
+        for (let y = 0; y < 200; y++) {
+            for (let x = 0; x < 320; x++) {
+                let directionalWave = Math.sin(((x * lineDirection.x + y * lineDirection.y) * 0.02 + time) + 1.0) * 0.5;
+                difference.x = x - radialWaveCenter.x;
+                difference.y = y - radialWaveCenter.y;
+                let radialWave = (Math.cos(difference.length() * 0.03) + 1.0) * 0.5;
+                let waveSum: number = (radialWave + directionalWave) * 0.5;
 
-                let red = (Math.cos(Math.PI * waveSum / 0.5 + time) + 1.0) / 2.0 * 255;
-                let green = (Math.sin(Math.PI * waveSum / 0.5 + time) + 1.0) / 2.0 * 255;
-                let blue = (Math.sin(time) + 1.0) / 2.0 * 255;
+                let red = (Math.cos(Math.PI * waveSum / 0.5 + time) + 1.0) * 0.5 * 255;
+                let green = (Math.sin(Math.PI * waveSum / 0.5 + time) + 1.0) * 0.5 * 255;
+                let blue = (Math.sin(time) + 1.0) * 0.5 * 255;
 
-                this.framebuffer[index++] = 255 << 24 | blue <<  16| green << 8 | red;
+                this.framebuffer[index++] = 255 << 24 | blue << 16 | green << 8 | red;
             }
         }
     }
@@ -498,7 +496,7 @@ export default class Framebuffer {
     }
 
     private static minWindow: Vector3 = new Vector3(0, 19, 0);
-    private static maxWindow: Vector3 = new Vector3(319, 199-10, 0);
+    private static maxWindow: Vector3 = new Vector3(319, 199 - 10, 0);
     // seems to habe a small bug
     public cohenSutherlandLineClipper(start: Vector3, end: Vector3, col: number) {
         let p1: Vector3 = new Vector3(start.x, start.y, start.z);
@@ -1584,9 +1582,9 @@ export default class Framebuffer {
         }
     }
 
-    draw(texture: Texture) {
+    draw(texture: Texture, time: number) {
         // this.clearCol(80 << 16 | 80 << 8 | 99 << 0 | 255 << 24)
-        let a = Date.now() * 0.001;
+        let a = time * 0.001;
         for (let i = 10; i < 190; i++) {
             let xoff = (Math.sin(a + i * 0.01) * 50) | 0;
             let rot = Math.sin(a * 0.4 + i * 0.0021) * Math.PI * 2;

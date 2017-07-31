@@ -63,28 +63,28 @@ export class Canvas {
 
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
-            this.framebuffer.shadingTorus(Date.now() * 0.02);
+            this.framebuffer.shadingTorus(time * 0.02);
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
             this.framebuffer.drawText(8, 192-18, '3D TORUS', this.texture4);
         } else if (time < 15000) {
             this.framebuffer.drawTexture(0, 0, this.texture5, 1.0);
-            this.framebuffer.draw(this.texture);
+            this.framebuffer.draw(this.texture, time);
             this.framebuffer.drawText(8, 192-18, 'TEXTURED TWISTER', this.texture4);
         } else if (time < 25000) {
             this.framebuffer.drawTexture(0, 0, this.texture5, 1.0);
-            this.framebuffer.drawLens(this.texture5, this.texture6);
+            this.framebuffer.drawLens(this.texture5, this.texture6, time);
             this.framebuffer.drawText(8, 192-18, '2D LENS EFFECT', this.texture4);
         } else if (time < 30000) {
             this.framebuffer.drawRotoZoomer(this.texture);
-            this.framebuffer.shadingDemo(Date.now() * 0.02);
+            this.framebuffer.shadingDemo(time * 0.02);
             this.framebuffer.drawText(8, 192-18, 'SHADED 3D CUBE', this.texture4);
         } else if (time < 35000) {
             this.framebuffer.drawRotoZoomer(this.texture);
-            this.framebuffer.shadingSphere(Date.now() * 0.01);
+            this.framebuffer.shadingSphere(time * 0.01);
             this.framebuffer.drawText(8, 192-18, 'DISTORTED 3D SPHERE', this.texture4);
         } else if (time < 40000) {
             this.framebuffer.drawRotoZoomer(this.texture);
-            this.framebuffer.wireFrameSphereClipping(Date.now() * 0.01);
+            this.framebuffer.wireFrameSphereClipping(time * 0.01);
             this.framebuffer.drawText(8, 192-18, 'WIREFRAME SPHERE', this.texture4);
             // this.framebuffer.draw(this.texture);
         } else if (time < 45000) {
@@ -92,7 +92,7 @@ export class Canvas {
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
             this.framebuffer.drawText(8, 192-18, 'VOXEL LANDSCAPE', this.texture4);
         } else if (time < 50000) {
-            this.framebuffer.drawWireTunnel(Date.now());
+            this.framebuffer.drawWireTunnel(time);
             this.framebuffer.drawText(8, 192-18, 'OLD SCHOOL PLASMA', this.texture4);
         } else {
             // https://www.youtube.com/watch?v=ccYLb7cLB1I&t=773s
@@ -198,7 +198,7 @@ export class Canvas {
                                 let myAudio = new Audio(require('./assets/3dGalax.mp3'));
                                 myAudio.loop = true;
                                 myAudio.play();
-                                this.renderLoop();
+                                this.renderLoop(0);
                             });
                             img6.src = require("./assets/lens.png");
 
@@ -219,10 +219,10 @@ export class Canvas {
 
     }
 
-    public renderLoop(): void {
+    public renderLoop(time: number): void {
+        requestAnimationFrame(this.renderLoop.bind(this));
         this.render();
         this.flipBackbuffer();
-        requestAnimationFrame(() => this.renderLoop());
     }
 
     public flipBackbuffer(): void {
