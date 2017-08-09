@@ -819,7 +819,7 @@ export default class Framebuffer {
         }
 
         modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.04) * 25,
-        Math.sin(elapsedTime * 0.05) * 9, -24).multiplyMatrix(modelViewMartrix);
+            Math.sin(elapsedTime * 0.05) * 9, -24).multiplyMatrix(modelViewMartrix);
 
         for (let p = 0; p < points.length; p++) {
             let transformed = modelViewMartrix.multiply(points[p]);
@@ -883,15 +883,38 @@ export default class Framebuffer {
     }
 
     // Sutherland-Hodgman
+    // http://www.sunshine2k.de/coding/java/SutherlandHodgman/SutherlandHodgman.html
+    // http://www.cubic.org/docs/3dclip.htm
+
+    private static clipRegion = new Array<AbstractClipEdge>(
+        new RightEdge(),
+        new LeftEdge(),
+        new BottomEdge(),
+        new TopEdge()
+    );
+
+    /**
+     * FIXME: optimize by minimizing creation of new arrays
+     * 
+     * @param {Vector3} v1 
+     * @param {Vector3} v2 
+     * @param {Vector3} v3 
+     * @param {number} color 
+     * @returns {void} 
+     * @memberof Framebuffer
+     */
     public clipTriangle(v1: Vector3, v2: Vector3, v3: Vector3, color: number): void {
         let subject = new Array<Vector3>(v1, v2, v3);
         let output = subject;
-        let clipPoly = new Array<AbstractClipEdge>(new RightEdge(), new LeftEdge(), new BottomEdge(), new TopEdge());
-        clipPoly.forEach((edge) => {
+
+        for (let j = 0; j < Framebuffer.clipRegion.length; j++) {
+            let edge = Framebuffer.clipRegion[j];
             let input = output;
             output = new Array<Vector3>();
             let S = input[input.length - 1];
-            input.forEach((point) => {
+
+            for (let i = 0; i < input.length; i++) {
+                let point = input[i];
                 if (edge.isInside(point)) {
                     if (!edge.isInside(S)) {
                         output.push(edge.computeIntersection(S, point));
@@ -901,8 +924,8 @@ export default class Framebuffer {
                     output.push(edge.computeIntersection(S, point));
                 }
                 S = point;
-            });
-        });
+            }
+        };
 
         if (output.length < 3) {
             return;
@@ -912,13 +935,6 @@ export default class Framebuffer {
         for (let i = 0; i < output.length - 2; i++) {
             this.drawTriangleDDA(output[0], output[1 + i], output[2 + i], color);
         }
-    }
-
-    public computeIntersection(p1: Vector3, p2: Vector3): Vector3 {
-        return new Vector3(Framebuffer.maxWindow.x + 1,
-            Math.round(p1.y + (p2.y - p1.y) * (Framebuffer.maxWindow.x + 1 - p1.x) / (p2.x - p1.x)),
-            Math.round(1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.maxWindow.x + 1 - p1.x) / (p2.x - p1.x))));
-
     }
 
     public shadingTorus(elapsedTime: number): void {

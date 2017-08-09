@@ -103,6 +103,7 @@ export class Canvas {
             this.framebuffer.shadingTorus2(time * 0.02);
             this.framebuffer.drawText(8, 192 - 18, 'POLYGON CLIPPING', this.texture4);
         }
+
         // this.framebuffer.scene9(time*0.01);
 
         //this.framebuffer.drawText(80 + 0, 100 + 8, '   IN JAVASCRIPT!    ', this.texture4);
