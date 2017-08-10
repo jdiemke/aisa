@@ -206,6 +206,34 @@ export default class Framebuffer {
         this.drawTexture(Math.round(xoff - 50), Math.round(yoff - 50), tex, 1.0);
     }
 
+    public starField() {
+        
+    }
+
+    public floodFill(texture: Texture, time: number) {
+
+        let pos = ((time*0.02) |0) %200;
+
+        let index = 320*200;
+        let index2 = 320*200;
+        for (let y = 0; y < pos; y++) {
+            for (let x = 0; x < 320; x++) {
+                this.framebuffer[index] = texture.texture[index2];
+                index--;
+                index2--;
+            }
+        }
+
+         for (let y = 0; y < 200-pos; y++) {
+            for (let x = 0; x < 320; x++) {
+                this.framebuffer[index] = texture.texture[index2];
+                index--;
+                index2--;
+            }
+            index2+= 320;
+        }
+    }
+
     public drawTexture(x: number, y: number, texture: Texture, alpha2: number) {
         const SCREEN_WIDTH = 320;
         const SCREEN_HEIGHT = 200;
@@ -895,6 +923,7 @@ export default class Framebuffer {
 
     /**
      * FIXME: optimize by minimizing creation of new arrays
+     * https://www.npmjs.com/package/npm-check-updates
      * 
      * @param {Vector3} v1 
      * @param {Vector3} v2 

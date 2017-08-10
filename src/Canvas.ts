@@ -59,7 +59,7 @@ export class Canvas {
      * @memberof Canvas
      */
     public render(): void {
-        let time: number = (Date.now() - this.start) % 60000;
+        let time: number = (Date.now() - this.start) % 70000;
 
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
@@ -98,10 +98,12 @@ export class Canvas {
             // https://www.youtube.com/watch?v=ccYLb7cLB1I&t=773s
             this.framebuffer.drawMetaballs();
             this.framebuffer.drawText(8, 192 - 18, '2D METABALLS', this.texture4);
-        } else {
+        } else if (time < 60000) {
             this.framebuffer.drawTexture(0, 0, this.texture5, 1.0);
             this.framebuffer.shadingTorus2(time * 0.02);
             this.framebuffer.drawText(8, 192 - 18, 'POLYGON CLIPPING', this.texture4);
+        } else {
+            this.framebuffer.floodFill(this.texture5, time-60000);
         }
 
         // this.framebuffer.scene9(time*0.01);
