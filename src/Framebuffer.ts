@@ -99,7 +99,7 @@ export default class Framebuffer {
     private width: number;
     private height: number;
     private imageData: ImageData;
-    private framebuffer: Uint32Array;
+    public framebuffer: Uint32Array;
     private unsignedIntArray: Uint8ClampedArray;
     public wBuffer: Float32Array;
 
@@ -207,15 +207,42 @@ export default class Framebuffer {
     }
 
     public starField() {
-        
+
+    }
+
+    // 6 times faster than the slow method that clips and does alpha blending
+    public fastFramebufferCopy(src, dest) {
+        let i = 320 * 200 / 32 + 1;
+        let k = 320 * 200;
+        while (--i) {
+            src[--k] = dest[k]; src[--k] = dest[k];
+            src[--k] = dest[k]; src[--k] = dest[k];
+            src[--k] = dest[k]; src[--k] = dest[k];
+            src[--k] = dest[k]; src[--k] = dest[k];
+
+            src[--k] = dest[k]; src[--k] = dest[k];
+            src[--k] = dest[k]; src[--k] = dest[k];
+            src[--k] = dest[k]; src[--k] = dest[k];
+            src[--k] = dest[k]; src[--k] = dest[k];
+
+            src[--k] = dest[k]; src[--k] = dest[k];
+            src[--k] = dest[k]; src[--k] = dest[k];
+            src[--k] = dest[k]; src[--k] = dest[k];
+            src[--k] = dest[k]; src[--k] = dest[k];
+
+            src[--k] = dest[k]; src[--k] = dest[k];
+            src[--k] = dest[k]; src[--k] = dest[k];
+            src[--k] = dest[k]; src[--k] = dest[k];
+            src[--k] = dest[k]; src[--k] = dest[k];
+        }
     }
 
     public floodFill(texture: Texture, time: number) {
 
-        let pos = ((time*0.02) |0) %200;
+        let pos = ((time * 0.02) | 0) % 200;
 
-        let index = 320*200;
-        let index2 = 320*200;
+        let index = 320 * 200;
+        let index2 = 320 * 200;
         for (let y = 0; y < pos; y++) {
             for (let x = 0; x < 320; x++) {
                 this.framebuffer[index] = texture.texture[index2];
@@ -224,13 +251,13 @@ export default class Framebuffer {
             }
         }
 
-         for (let y = 0; y < 200-pos; y++) {
+        for (let y = 0; y < 200 - pos; y++) {
             for (let x = 0; x < 320; x++) {
                 this.framebuffer[index] = texture.texture[index2];
                 index--;
                 index2--;
             }
-            index2+= 320;
+            index2 += 320;
         }
     }
 

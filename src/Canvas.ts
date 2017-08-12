@@ -9,7 +9,7 @@ export class Canvas {
     private backbufferCanvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
     private backbufferContext: CanvasRenderingContext2D;
-    private framebuffer: Framebuffer;
+    public framebuffer: Framebuffer;
     start: number;
 
     private texture: Texture;
@@ -67,7 +67,8 @@ export class Canvas {
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
             this.framebuffer.drawText(8, 192 - 18, '3D TORUS', this.texture4);
         } else if (time < 15000) {
-            this.framebuffer.drawTexture(0, 0, this.texture5, 1.0);
+            //this.framebuffer.drawTexture(0, 0, this.texture5, 0.02);
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.draw(this.texture, time);
             this.framebuffer.drawText(8, 192 - 18, 'TEXTURED TWISTER', this.texture4);
         } else if (time < 25000) {
@@ -103,7 +104,7 @@ export class Canvas {
             this.framebuffer.shadingTorus2(time * 0.02);
             this.framebuffer.drawText(8, 192 - 18, 'POLYGON CLIPPING', this.texture4);
         } else {
-            this.framebuffer.floodFill(this.texture5, time-60000);
+            this.framebuffer.floodFill(this.texture5, time - 60000);
         }
 
         // this.framebuffer.scene9(time*0.01);
