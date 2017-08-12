@@ -41,6 +41,11 @@ export class Canvas {
         this.start = Date.now();
     }
 
+
+    fpsStartTime =Date.now();
+    fpsCount = 0;
+     fps: number =0;
+
     /**
      * http://www.hugi.scene.org/online/coding/hugi%20se%204%20-%20index%20sorted%20by%20topic.htm
      * http://www.flipcode.com/archives/The_Art_of_Demomaking-Issue_01_Prologue.shtml
@@ -59,6 +64,16 @@ export class Canvas {
      * @memberof Canvas
      */
     public render(): void {
+      
+
+        let currentTime: number = Date.now();
+        if (currentTime > this.fpsStartTime + 1000) {
+            this.fpsStartTime = currentTime;
+            this.fps = this.fpsCount;
+            this.fpsCount =0;
+        }
+        this.fpsCount++;
+
         let time: number = (Date.now() - this.start) % 70000;
 
         if (time < 5000) {
@@ -72,7 +87,8 @@ export class Canvas {
             this.framebuffer.draw(this.texture, time);
             this.framebuffer.drawText(8, 192 - 18, 'TEXTURED TWISTER', this.texture4);
         } else if (time < 25000) {
-            this.framebuffer.drawTexture(0, 0, this.texture5, 1.0);
+            // this.framebuffer.drawTexture(0, 0, this.texture5, 1.0);
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.drawLens(this.texture5, this.texture6, time);
             this.framebuffer.drawText(8, 192 - 18, '2D LENS EFFECT', this.texture4);
         } else if (time < 30000) {
@@ -100,13 +116,16 @@ export class Canvas {
             this.framebuffer.drawMetaballs();
             this.framebuffer.drawText(8, 192 - 18, '2D METABALLS', this.texture4);
         } else if (time < 60000) {
-            this.framebuffer.drawTexture(0, 0, this.texture5, 1.0);
+            // this.framebuffer.drawTexture(0, 0, this.texture5, 1.0);
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.shadingTorus2(time * 0.02);
             this.framebuffer.drawText(8, 192 - 18, 'POLYGON CLIPPING', this.texture4);
         } else {
             this.framebuffer.floodFill(this.texture5, time - 60000);
         }
 
+
+        this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
         // this.framebuffer.scene9(time*0.01);
 
         //this.framebuffer.drawText(80 + 0, 100 + 8, '   IN JAVASCRIPT!    ', this.texture4);
