@@ -18,6 +18,7 @@ export class Canvas {
     private texture4: Texture;
     private texture5: Texture;
     private texture6: Texture;
+    private texture7: Texture;
 
     constructor(width: number, height: number) {
         this.canvas = document.createElement('canvas');
@@ -42,9 +43,9 @@ export class Canvas {
     }
 
 
-    fpsStartTime =Date.now();
+    fpsStartTime = Date.now();
     fpsCount = 0;
-     fps: number =0;
+    fps: number = 0;
 
     /**
      * http://www.hugi.scene.org/online/coding/hugi%20se%204%20-%20index%20sorted%20by%20topic.htm
@@ -64,17 +65,17 @@ export class Canvas {
      * @memberof Canvas
      */
     public render(): void {
-      
+
 
         let currentTime: number = Date.now();
         if (currentTime > this.fpsStartTime + 1000) {
             this.fpsStartTime = currentTime;
             this.fps = this.fpsCount;
-            this.fpsCount =0;
+            this.fpsCount = 0;
         }
         this.fpsCount++;
 
-        let time: number = (Date.now() - this.start) % 70000;
+        let time: number = (Date.now() - this.start) % 75000;
 
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
@@ -120,10 +121,14 @@ export class Canvas {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.shadingTorus2(time * 0.02);
             this.framebuffer.drawText(8, 192 - 18, 'POLYGON CLIPPING', this.texture4);
-        } else {
+        } else if (time < 70000) {
             this.framebuffer.floodFill(this.texture5, time - 60000);
+            this.framebuffer.drawText(8, 192 - 18, 'FLOOD FILL', this.texture4);
+        } else {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
+            this.framebuffer.drawBobs(this.texture7, time);
+            this.framebuffer.drawText(8, 192 - 18, 'UNLIMITED BOBS', this.texture4);
         }
-
 
         this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
         // this.framebuffer.scene9(time*0.01);
@@ -219,10 +224,20 @@ export class Canvas {
                                 this.texture6.width = img6.width;
                                 this.texture6.height = img6.height;
 
-                                let myAudio = new Audio(require('./assets/3dGalax.mp3'));
-                                myAudio.loop = true;
-                                myAudio.play();
-                                this.renderLoop(0);
+                                let img7 = new Image();
+                                img7.addEventListener("load", () => {
+                                    this.texture7 = new Texture();
+                                    this.texture7.texture = this.getImageData(img7, true);
+                                    this.texture7.width = img7.width;
+                                    this.texture7.height = img7.height;
+
+                                    let myAudio = new Audio(require('./assets/3dGalax.mp3'));
+                                    myAudio.loop = true;
+                                    myAudio.play();
+                                    this.renderLoop(0);
+                                });
+                                img7.src = require("./assets/ball2.png");
+
                             });
                             img6.src = require("./assets/lens.png");
 

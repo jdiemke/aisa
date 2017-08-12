@@ -237,6 +237,16 @@ export default class Framebuffer {
         }
     }
 
+    public drawBobs(texture: Texture, time: number) {
+        let scaledTime = time * 0.2;
+        const BALL_SIZE = 16;
+        for (let i = 0; i < 30; i++) {
+            let x = (Math.cos(3 * scaledTime * 0.002 + i * 0.11) * (320 / 2 - BALL_SIZE / 2)) | 0;
+            let y = (Math.sin(4 * scaledTime * 0.002 + i * 0.11) * (200 / 2 - BALL_SIZE / 2)) | 0;
+            this.drawTexture(320 / 2 - BALL_SIZE / 2 + x, 200 / 2 - BALL_SIZE / 2 + y, texture, 1.0);
+        }
+    }
+
     public floodFill(texture: Texture, time: number) {
 
         let pos = ((time * 0.02) | 0) % 200;
