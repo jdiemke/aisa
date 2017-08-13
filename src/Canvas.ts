@@ -77,7 +77,7 @@ export class Canvas {
         this.fpsCount++;
 
         let time: number = (Date.now() - this.start) % 140000;
-
+        
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
             this.framebuffer.shadingTorus(time * 0.02);
