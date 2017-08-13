@@ -19,6 +19,7 @@ export class Canvas {
     private texture5: Texture;
     private texture6: Texture;
     private texture7: Texture;
+    private texture8: Texture;
 
     constructor(width: number, height: number) {
         this.canvas = document.createElement('canvas');
@@ -75,7 +76,7 @@ export class Canvas {
         }
         this.fpsCount++;
 
-        let time: number = (Date.now() - this.start) % 75000;
+        let time: number = (Date.now() - this.start) % 140000;
 
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
@@ -83,12 +84,10 @@ export class Canvas {
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
             this.framebuffer.drawText(8, 192 - 18, '3D TORUS', this.texture4);
         } else if (time < 15000) {
-            //this.framebuffer.drawTexture(0, 0, this.texture5, 0.02);
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.draw(this.texture, time);
             this.framebuffer.drawText(8, 192 - 18, 'TEXTURED TWISTER', this.texture4);
         } else if (time < 25000) {
-            // this.framebuffer.drawTexture(0, 0, this.texture5, 1.0);
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.drawLens(this.texture5, this.texture6, time);
             this.framebuffer.drawText(8, 192 - 18, '2D LENS EFFECT', this.texture4);
@@ -104,7 +103,6 @@ export class Canvas {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.wireFrameSphereClipping(time * 0.01);
             this.framebuffer.drawText(8, 192 - 18, 'WIREFRAME SPHERE', this.texture4);
-            // this.framebuffer.draw(this.texture);
         } else if (time < 45000) {
             this.framebuffer.drawVoxelLandscape2(this.texture3, time);
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
@@ -117,20 +115,29 @@ export class Canvas {
             this.framebuffer.drawMetaballs();
             this.framebuffer.drawText(8, 192 - 18, '2D METABALLS', this.texture4);
         } else if (time < 60000) {
-            // this.framebuffer.drawTexture(0, 0, this.texture5, 1.0);
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.shadingTorus2(time * 0.02);
             this.framebuffer.drawText(8, 192 - 18, 'POLYGON CLIPPING', this.texture4);
         } else if (time < 70000) {
             this.framebuffer.floodFill(this.texture5, time - 60000);
             this.framebuffer.drawText(8, 192 - 18, 'FLOOD FILL', this.texture4);
-        } else {
+        } else if (time < 80000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.drawBobs(this.texture7, time);
             this.framebuffer.drawText(8, 192 - 18, 'UNLIMITED BOBS', this.texture4);
+        } else if (time < 95000) {
+            this.framebuffer.blockFace(this.texture5, time, 80000);
+            this.framebuffer.drawText(8, 192 - 18, 'MOSAIC FADE IN', this.texture4);
+        } else {
+            this.framebuffer.scrollingBackground(this.texture8, time - 95000);
+            this.framebuffer.drawText(8, 192 - 18, 'SCROLLING BACKGROUND', this.texture4);
         }
 
+        // this.framebuffer.addReflections();
+
+        // this.framebuffer.drawRaster();
         this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
+        this.framebuffer.drawText(8, 26, 'TME: ' + time, this.texture4);
         // this.framebuffer.scene9(time*0.01);
 
         //this.framebuffer.drawText(80 + 0, 100 + 8, '   IN JAVASCRIPT!    ', this.texture4);
@@ -231,10 +238,21 @@ export class Canvas {
                                     this.texture7.width = img7.width;
                                     this.texture7.height = img7.height;
 
-                                    let myAudio = new Audio(require('./assets/3dGalax.mp3'));
-                                    myAudio.loop = true;
-                                    myAudio.play();
-                                    this.renderLoop(0);
+                                    let img8 = new Image();
+                                    img8.addEventListener("load", () => {
+                                        this.texture8 = new Texture();
+                                        this.texture8.texture = this.getImageData(img8);
+                                        this.texture8.width = img8.width;
+                                        this.texture8.height = img8.height;
+
+
+                                        let myAudio = new Audio(require('./assets/3dGalax.mp3'));
+                                        myAudio.loop = true;
+                                        myAudio.play();
+                                        this.renderLoop(0);
+                                    });
+                                    img8.src = require("./assets/pandabear.png");
+
                                 });
                                 img7.src = require("./assets/ball2.png");
 

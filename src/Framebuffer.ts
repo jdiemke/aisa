@@ -23,7 +23,7 @@ import Vector3 from './Vector3f';
 import Vector4f from './Vector4f';
 import Matrix3 from './Matrix3';
 import Matrix4f from './Matrix4f';
-
+import RandomNumberGenerator from './RandomNumberGenerator';
 declare function require(string): string;
 let json = require('./assets/f16.json');
 
@@ -157,11 +157,22 @@ export default class Framebuffer {
             let index = text.charCodeAt(i) - ' '.charCodeAt(0);
             let tx = Math.floor(index % 32) * 8;
             let ty = Math.floor(index / 32) * 8;
-            this.drawTextureRect(x + i * 8, y + offset, tx, ty, 8, 8, texture, 1.0);
+            this.drawTextureRectFastAlpha(x + i * 8, y + offset, tx, ty, 8, 8, texture);
         }
     }
 
-    public drawTextureRect(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Texture, alpha2: number): void {
+    public addReflections() {
+        let start = 150;
+        for (let i = 0; i < 50; i++) {
+            for (let x = 0; x < 320; x++) {
+                this.framebuffer[(start + i) * 320 + x] = this.framebuffer[(start - i * 3 - 1) * 320 + x +
+                    this.interpolate(0, 50, i) * (Math.sin(Date.now() * 0.002 + i * 0.2) * 10) | 0]
+            }
+        }
+    }
+
+
+    public drawTextureRect2(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Texture, alpha2: number): void {
         for (let w = 0; w < width; w++) {
             for (let h = 0; h < height; h++) {
                 let texIndex = (xt + w) + ((yt + h) * texture.width);
@@ -173,9 +184,48 @@ export default class Framebuffer {
                 let g = (((this.framebuffer[frIndex] >> 8) & 0xff) * (inverseAlpha) + ((texture.texture[texIndex] >> 8) & 0xff) * (alpha)) | 0;
                 let b = (((this.framebuffer[frIndex] >> 16) & 0xff) * (inverseAlpha) + ((texture.texture[texIndex] >> 16) & 0xff) * (alpha)) | 0;
 
-
                 this.framebuffer[frIndex] = r | (g << 8) | (b << 16) | (255 << 24);
             }
+        }
+    }
+
+    public drawTextureRectFastAlpha(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Texture): void {
+        let texIndex = xt + yt * texture.width;
+        let frIndex = xs + ys * 320;
+
+        for (let h = 0; h < height; h++) {
+            for (let w = 0; w < width; w++) {
+                let color = texture.texture[texIndex];
+                if (color >> 24) {
+                    this.framebuffer[frIndex] = color;
+                }
+                texIndex++;
+                frIndex++;
+            }
+            texIndex += texture.width - width;
+            frIndex += 320 - width;
+        }
+    }
+
+    public drawTextureRect(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Texture, alpha2: number): void {
+        let texIndex = xt + yt * texture.width;
+        let frIndex = xs + ys * 320;
+
+        for (let h = 0; h < height; h++) {
+            for (let w = 0; w < width; w++) {
+                let alpha = ((texture.texture[texIndex] >> 24) & 0xff) / 255 * alpha2;
+                let inverseAlpha = 1 - alpha;
+
+                let r = (((this.framebuffer[frIndex] >> 0) & 0xff) * (inverseAlpha) + ((texture.texture[texIndex] >> 0) & 0xff) * (alpha)) | 0;
+                let g = (((this.framebuffer[frIndex] >> 8) & 0xff) * (inverseAlpha) + ((texture.texture[texIndex] >> 8) & 0xff) * (alpha)) | 0;
+                let b = (((this.framebuffer[frIndex] >> 16) & 0xff) * (inverseAlpha) + ((texture.texture[texIndex] >> 16) & 0xff) * (alpha)) | 0;
+
+                this.framebuffer[frIndex] = r | (g << 8) | (b << 16) | (255 << 24);
+                texIndex++;
+                frIndex++;
+            }
+            texIndex += texture.width - width;
+            frIndex += 320 - width;
         }
     }
 
@@ -206,7 +256,77 @@ export default class Framebuffer {
         this.drawTexture(Math.round(xoff - 50), Math.round(yoff - 50), tex, 1.0);
     }
 
+    public cinematicScroller() {
+
+    }
+
     public starField() {
+        // plus razor logo
+    }
+
+    public planeDeformation() {
+        // with lookup
+    }
+
+    // Crossfade 2 effects
+    public crossFade() {
+
+    }
+
+    public pixelate() {
+
+    }
+
+    interpolate(start: number, end: number, current: number): number {
+        if (current <= start) {
+            return 0;
+        }
+        if (current >= end) {
+            return 1;
+        }
+        return (current - start) / (end - start);
+    }
+
+    public scrollingBackground(texture: Texture, time: number) {
+        this.drawTexture(0,(-(1-this.interpolate(0,10000, time*0.25))*(800-200))|0, texture, 1.0);
+    }
+
+    public drawRaster() {
+        let colorLUT = new Array<number>();
+        for (let i = 0; i < 16; i++) {
+            let shade = (Math.sin(Math.PI  *i/ 15) * 255)|0;
+            let color = shade << 16 | shade << 8 |shade  | 255 << 24;
+            colorLUT.push( color);
+        }
+
+        let pos = ((Math.sin(Date.now()*0.002)+1)/2*(200-16))|0;
+        for (let i = 0; i < 16; i++) {
+            this.framebuffer.fill(colorLUT[i], 320 * (pos + i), 320 * (pos + i )+320);
+        }
+
+
+    }
+
+    public blockFace(texture: Texture, time: number, startTime: number) {
+        let fadeArray = new Array<number>(16 * 10);
+        let rng = new RandomNumberGenerator();
+        rng.setSeed(366);
+        // TODO: different fadeArray algorithms
+        for (let y = 0; y < 10; y++) {
+            for (let x = 0; x < 16; x++) {
+                fadeArray[x + y * 16] = 500 + Math.round(rng.getInteger() * 600000) % 10000;
+            }
+        }
+        this.clear();
+        for (let y = 0; y < 10; y++) {
+            for (let x = 0; x < 16; x++) {
+                this.drawTextureRect(x * 20, y * 20, x * 20, y * 20, 20, 20, texture,
+                    this.interpolate(startTime + fadeArray[x + y * 16], startTime + fadeArray[x + y * 16] + 700, time));
+            }
+        }
+    }
+
+    public draw3dBobs() {
 
     }
 
@@ -243,7 +363,8 @@ export default class Framebuffer {
         for (let i = 0; i < 30; i++) {
             let x = (Math.cos(3 * scaledTime * 0.002 + i * 0.11) * (320 / 2 - BALL_SIZE / 2)) | 0;
             let y = (Math.sin(4 * scaledTime * 0.002 + i * 0.11) * (200 / 2 - BALL_SIZE / 2)) | 0;
-            this.drawTexture(320 / 2 - BALL_SIZE / 2 + x, 200 / 2 - BALL_SIZE / 2 + y, texture, 1.0);
+            //this.drawTexture(320 / 2 - BALL_SIZE / 2 + x, 200 / 2 - BALL_SIZE / 2 + y, texture, 1.0);
+            this.drawTextureNoClipAlpha(320 / 2 - BALL_SIZE / 2 + x, 200 / 2 - BALL_SIZE / 2 + y, texture);
         }
     }
 
@@ -303,6 +424,34 @@ export default class Framebuffer {
             framebufferIndex += framebufferRowOffset;
         }
     }
+
+    public drawTextureNoClipAlpha(x: number, y: number, texture: Texture) {
+        const SCREEN_WIDTH = 320;
+        const SCREEN_HEIGHT = 200;
+
+        let framebufferIndex: number = x + y * this.width;
+        let textureIndex: number = 0;
+
+        let textureRowOffset = 0;
+        let framebufferRowOffset = this.width - texture.width;
+
+        for (let y = 0; y < texture.height; y++) {
+            for (let x = 0; x < texture.width; x++) {
+                let color = texture.texture[textureIndex];
+
+                if (color >> 24) {
+                    this.framebuffer[framebufferIndex] = color;
+                }
+
+                framebufferIndex++;
+                textureIndex++;
+            }
+
+            textureIndex += textureRowOffset;
+            framebufferIndex += framebufferRowOffset;
+        }
+    }
+
 
     /**
      * Span Renderer
