@@ -256,8 +256,40 @@ export default class Framebuffer {
         this.drawTexture(Math.round(xoff - 50), Math.round(yoff - 50), tex, 1.0);
     }
 
-    public cinematicScroller() {
+    public cinematicScroller(texture: Texture, time: number) {
+        let scrollText: Array<string> = [
+            '', '', '', '', '', '', '', '', '', '',
+            '', '', '', '', '', '', '', '', '', '',
+            '', '', '', '', '',
+            'YOU HAVE BEEN WATCHING',
+            '',
+            'D A R K   M A T T E R',
+            '',
+            'A JAVASCRIPT DEMO MADE FOR',
+            'NORDLICHT 2018',
+            '',
+            'CREDITS',
+            '',
+            'CODE BY',
+            'TRIGGER',
+            '',
+            'GRAFICS BY',
+            'PREMIUM',
+            '',
+            'MUSIC BY',
+            'VIRGILL'
+        ];
+        time = time * 0.6;
 
+        for (let i = 0; i < 200 / 8 + 1; i++) {
+            let text = scrollText[(i + (time / 255) | 0) % scrollText.length];
+            let x = (320 / 2 - text.length * 8 / 2) | 0;
+            let y = 8 * i - Math.round(this.interpolate(0, 250, time % 255) * 8);
+            // TODO: proper text clipping to rect
+            if (y <= (200 - 8) && y > 0) {
+                this.drawText(x, y, text, texture);
+            }
+        }
     }
 
     public starField() {
@@ -288,21 +320,21 @@ export default class Framebuffer {
     }
 
     public scrollingBackground(texture: Texture, time: number) {
-        let offset = Math.round(-(1-this.interpolate(250,10250, time*0.25))*(800-200));
+        let offset = Math.round(-(1 - this.interpolate(250, 10250, time * 0.25)) * (800 - 200));
         this.fastFramebufferCopyOffset(this.framebuffer, texture.texture, offset);
     }
 
     public drawRaster() {
         let colorLUT = new Array<number>();
         for (let i = 0; i < 16; i++) {
-            let shade = (Math.sin(Math.PI  *i/ 15) * 255)|0;
-            let color = shade << 16 | shade << 8 |shade  | 255 << 24;
-            colorLUT.push( color);
+            let shade = (Math.sin(Math.PI * i / 15) * 255) | 0;
+            let color = shade << 16 | shade << 8 | shade | 255 << 24;
+            colorLUT.push(color);
         }
 
-        let pos = ((Math.sin(Date.now()*0.002)+1)/2*(200-16))|0;
+        let pos = ((Math.sin(Date.now() * 0.002) + 1) / 2 * (200 - 16)) | 0;
         for (let i = 0; i < 16; i++) {
-            this.framebuffer.fill(colorLUT[i], 320 * (pos + i), 320 * (pos + i )+320);
+            this.framebuffer.fill(colorLUT[i], 320 * (pos + i), 320 * (pos + i) + 320);
         }
 
 
@@ -332,10 +364,10 @@ export default class Framebuffer {
     }
 
 
-public fastFramebufferCopyOffset(src, dest, offset = 0) {
+    public fastFramebufferCopyOffset(src, dest, offset = 0) {
         let i = 320 * 200 / 32 + 1;
         let k = 320 * 200;
-        let l = 320 * (200-offset);
+        let l = 320 * (200 - offset);
         while (--i) {
             src[--k] = dest[--l]; src[--k] = dest[--l];
             src[--k] = dest[--l]; src[--k] = dest[--l];

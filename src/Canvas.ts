@@ -20,6 +20,7 @@ export class Canvas {
     private texture6: Texture;
     private texture7: Texture;
     private texture8: Texture;
+    private texture9: Texture;
 
     constructor(width: number, height: number) {
         this.canvas = document.createElement('canvas');
@@ -76,8 +77,8 @@ export class Canvas {
         }
         this.fpsCount++;
 
-        let time: number = (Date.now() - this.start) % 140000;
-        
+        let time: number = (Date.now() - this.start) % 160000;
+
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
             this.framebuffer.shadingTorus(time * 0.02);
@@ -128,10 +129,18 @@ export class Canvas {
         } else if (time < 95000) {
             this.framebuffer.blockFace(this.texture5, time, 80000);
             this.framebuffer.drawText(8, 192 - 18, 'MOSAIC FADE IN', this.texture4);
-        } else {
+        } else if (time < 140000) {
             this.framebuffer.scrollingBackground(this.texture8, time - 95000);
             this.framebuffer.drawText(8, 192 - 18, 'SCROLLING BACKGROUND', this.texture4);
+        } else {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture9.texture);
+            this.framebuffer.cinematicScroller(this.texture4, time - 140000);
+            this.framebuffer.drawText(8, 192 - 18, 'CINEMATIC SCROLLER', this.texture4);
         }
+
+        // http://www.cubic.org/docs/camera.htm
+        // http://www.cubic.org/docs/3dclip.htm
+        // http://www.cubic.org/docs/backcull.htm
 
         // this.framebuffer.addReflections();
 
@@ -245,11 +254,20 @@ export class Canvas {
                                         this.texture8.width = img8.width;
                                         this.texture8.height = img8.height;
 
+                                        let img9 = new Image();
+                                        img9.addEventListener("load", () => {
+                                            this.texture9 = new Texture();
+                                            this.texture9.texture = this.getImageData(img9);
+                                            this.texture9.width = img9.width;
+                                            this.texture9.height = img9.height;
 
-                                        let myAudio = new Audio(require('./assets/3dGalax.mp3'));
-                                        myAudio.loop = true;
-                                        myAudio.play();
-                                        this.renderLoop(0);
+                                            let myAudio = new Audio(require('./assets/3dGalax.mp3'));
+                                            myAudio.loop = true;
+                                            myAudio.play();
+                                            this.renderLoop(0);
+                                        });
+                                        img9.src = require("./assets/battleofilona.png");
+
                                     });
                                     img8.src = require("./assets/pandabear.png");
 
