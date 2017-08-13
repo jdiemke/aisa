@@ -652,7 +652,8 @@ class Framebuffer {
         return (current - start) / (end - start);
     }
     scrollingBackground(texture, time) {
-        this.drawTexture(0, (-(1 - this.interpolate(0, 10000, time * 0.25)) * (800 - 200)) | 0, texture, 1.0);
+        let offset = Math.round(-(1 - this.interpolate(250, 10250, time * 0.25)) * (800 - 200));
+        this.fastFramebufferCopyOffset(this.framebuffer, texture.texture, offset);
     }
     drawRaster() {
         let colorLUT = new Array();
@@ -685,8 +686,47 @@ class Framebuffer {
     }
     draw3dBobs() {
     }
+    fastFramebufferCopyOffset(src, dest, offset = 0) {
+        let i = 320 * 200 / 32 + 1;
+        let k = 320 * 200;
+        let l = 320 * (200 - offset);
+        while (--i) {
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+            src[--k] = dest[--l];
+        }
+    }
     // 6 times faster than the slow method that clips and does alpha blending
-    fastFramebufferCopy(src, dest) {
+    fastFramebufferCopy(src, dest, offset = 0) {
         let i = 320 * 200 / 32 + 1;
         let k = 320 * 200;
         while (--i) {
