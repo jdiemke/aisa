@@ -256,7 +256,7 @@ class Canvas {
             this.fpsCount = 0;
         }
         this.fpsCount++;
-        let time = (Date.now() - this.start) % 140000;
+        let time = (Date.now() - this.start) % 160000;
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
             this.framebuffer.shadingTorus(time * 0.02);
@@ -320,10 +320,18 @@ class Canvas {
             this.framebuffer.blockFace(this.texture5, time, 80000);
             this.framebuffer.drawText(8, 192 - 18, 'MOSAIC FADE IN', this.texture4);
         }
-        else {
+        else if (time < 140000) {
             this.framebuffer.scrollingBackground(this.texture8, time - 95000);
             this.framebuffer.drawText(8, 192 - 18, 'SCROLLING BACKGROUND', this.texture4);
         }
+        else {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture9.texture);
+            this.framebuffer.cinematicScroller(this.texture4, time - 140000);
+            this.framebuffer.drawText(8, 192 - 18, 'CINEMATIC SCROLLER', this.texture4);
+        }
+        // http://www.cubic.org/docs/camera.htm
+        // http://www.cubic.org/docs/3dclip.htm
+        // http://www.cubic.org/docs/backcull.htm
         // this.framebuffer.addReflections();
         // this.framebuffer.drawRaster();
         this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
@@ -418,26 +426,34 @@ class Canvas {
                                         this.texture8.texture = this.getImageData(img8);
                                         this.texture8.width = img8.width;
                                         this.texture8.height = img8.height;
-                                        let myAudio = new Audio(__webpack_require__(10));
-                                        myAudio.loop = true;
-                                        myAudio.play();
-                                        this.renderLoop(0);
+                                        let img9 = new Image();
+                                        img9.addEventListener("load", () => {
+                                            this.texture9 = new Texture_1.default();
+                                            this.texture9.texture = this.getImageData(img9);
+                                            this.texture9.width = img9.width;
+                                            this.texture9.height = img9.height;
+                                            let myAudio = new Audio(__webpack_require__(10));
+                                            myAudio.loop = true;
+                                            myAudio.play();
+                                            this.renderLoop(0);
+                                        });
+                                        img9.src = __webpack_require__(11);
                                     });
-                                    img8.src = __webpack_require__(11);
+                                    img8.src = __webpack_require__(12);
                                 });
-                                img7.src = __webpack_require__(12);
+                                img7.src = __webpack_require__(13);
                             });
-                            img6.src = __webpack_require__(13);
+                            img6.src = __webpack_require__(14);
                         });
-                        img5.src = __webpack_require__(14);
+                        img5.src = __webpack_require__(15);
                     });
-                    img4.src = __webpack_require__(15);
+                    img4.src = __webpack_require__(16);
                 });
-                img3.src = __webpack_require__(16);
+                img3.src = __webpack_require__(17);
             });
-            img2.src = __webpack_require__(17);
+            img2.src = __webpack_require__(18);
         });
-        img.src = __webpack_require__(18);
+        img.src = __webpack_require__(19);
     }
     display() {
     }
@@ -629,7 +645,39 @@ class Framebuffer {
         }
         this.drawTexture(Math.round(xoff - 50), Math.round(yoff - 50), tex, 1.0);
     }
-    cinematicScroller() {
+    cinematicScroller(texture, time) {
+        let scrollText = [
+            '', '', '', '', '', '', '', '', '', '',
+            '', '', '', '', '', '', '', '', '', '',
+            '', '', '', '', '',
+            'YOU HAVE BEEN WATCHING',
+            '',
+            'D A R K   M A T T E R',
+            '',
+            'A JAVASCRIPT DEMO MADE FOR',
+            'NORDLICHT 2018',
+            '',
+            'CREDITS',
+            '',
+            'CODE BY',
+            'TRIGGER',
+            '',
+            'GRAFICS BY',
+            'PREMIUM',
+            '',
+            'MUSIC BY',
+            'VIRGILL'
+        ];
+        time = time * 0.6;
+        for (let i = 0; i < 200 / 8 + 1; i++) {
+            let text = scrollText[(i + (time / 255) | 0) % scrollText.length];
+            let x = (320 / 2 - text.length * 8 / 2) | 0;
+            let y = 8 * i - Math.round(this.interpolate(0, 250, time % 255) * 8);
+            // TODO: proper text clipping to rect
+            if (y <= (200 - 8) && y > 0) {
+                this.drawText(x, y, text, texture);
+            }
+        }
     }
     starField() {
         // plus razor logo
@@ -2458,46 +2506,52 @@ module.exports = __webpack_require__.p + "0e7cabddfc9af1214d72c4201b0da9d9.mp3";
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "0009cb245d8a3129bcd470b1c30a2c17.png";
+module.exports = __webpack_require__.p + "47d04e8b7dc74f4980d66796a632547c.png";
 
 /***/ }),
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "f4f2b50d7d886d02949a38f94c217a86.png";
+module.exports = __webpack_require__.p + "0009cb245d8a3129bcd470b1c30a2c17.png";
 
 /***/ }),
 /* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "dad0119c8dd1a33ab48b6870bfa8b432.png";
+module.exports = __webpack_require__.p + "f4f2b50d7d886d02949a38f94c217a86.png";
 
 /***/ }),
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "bed841884f7920591d4279314a1b53da.png";
+module.exports = __webpack_require__.p + "dad0119c8dd1a33ab48b6870bfa8b432.png";
 
 /***/ }),
 /* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "211f2046cf2c6739bad5c6209b09dac4.png";
+module.exports = __webpack_require__.p + "bed841884f7920591d4279314a1b53da.png";
 
 /***/ }),
 /* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "c4e4b266fe4b4281371e908cb2fa6e89.png";
+module.exports = __webpack_require__.p + "211f2046cf2c6739bad5c6209b09dac4.png";
 
 /***/ }),
 /* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "b30d17fb175566e9e20d5584d7ae6bfb.png";
+module.exports = __webpack_require__.p + "c4e4b266fe4b4281371e908cb2fa6e89.png";
 
 /***/ }),
 /* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "b30d17fb175566e9e20d5584d7ae6bfb.png";
+
+/***/ }),
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "36fbc222529fa8e2b722e7de1ca8f010.png";
