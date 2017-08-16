@@ -77,7 +77,7 @@ export class Canvas {
         }
         this.fpsCount++;
 
-        let time: number = (Date.now() - this.start) % 160000;
+        let time: number = (Date.now() - this.start) % 170000;
 
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
@@ -132,11 +132,16 @@ export class Canvas {
         } else if (time < 140000) {
             this.framebuffer.scrollingBackground(this.texture8, time - 95000);
             this.framebuffer.drawText(8, 192 - 18, 'SCROLLING BACKGROUND', this.texture4);
-        } else {
+        } else if (time < 160000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture9.texture);
             this.framebuffer.cinematicScroller(this.texture4, time - 140000);
             this.framebuffer.drawText(8, 192 - 18, 'CINEMATIC SCROLLER', this.texture4);
+        } else {
+            this.framebuffer.clear();
+            this.framebuffer.scene8(time * 0.01);
+            this.framebuffer.drawText(8, 192 - 18, 'NEAR PLANE CLIPPING', this.texture4);
         }
+
 
         // http://www.cubic.org/docs/camera.htm
         // http://www.cubic.org/docs/3dclip.htm

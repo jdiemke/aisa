@@ -556,7 +556,7 @@ export default class Framebuffer {
             new Vector3(-1.0, -1.0, -1.0), new Vector3(1.0, -1.0, -1.0)
         ];
 
-        let scale = 1.8;
+        let scale = 0.8;
 
         let modelViewMartrix = Matrix3.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3.constructYRotationMatrix(elapsedTime * 0.05));
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3.constructXRotationMatrix(elapsedTime * 0.05));
@@ -567,18 +567,39 @@ export default class Framebuffer {
 
             let x = transformed.x;
             let y = transformed.y;
-            let z = transformed.z - 6 + Math.sin(elapsedTime); // TODO: use translation matrix!
+            let z = transformed.z - 4 + Math.sin(elapsedTime * 0.09) * 2; // TODO: use translation matrix!
 
-            let xx = (320 / 2) + (x / (-z * 0.0078));
-            let yy = (200 / 2) - (y / (-z * 0.0078));
-            points2.push(new Vector3(xx, yy, z));
+            points2.push(new Vector3(x, y, z));
         });
 
-        let color = 255 << 8 | 255 << 24;
+
 
         for (let i = 0; i < index.length; i += 2) {
-            let color = (255 * (-(points2[index[i]].z + 5))) & 0xff | 0 << 16 | 255 << 24;
-            this.drawLineDDA(points2[index[i]], points2[index[i + 1]], color);
+            this.nearPlaneClipping(points2[index[i]], points2[index[i + 1]]);
+        }
+    }
+
+    public project(t1: Vector3): Vector3 {
+        return new Vector3((320 / 2) + (t1.x / (-t1.z * 0.0078)),
+            (200 / 2) - (t1.y / (-t1.z * 0.0078)), t1.z);
+    }
+
+    public nearPlaneClipping(t1: Vector3, t2: Vector3): void {
+        const NEAR_PLANE_Z = -1.7;
+
+        let color = 255 | 0 << 16 | 255 << 24;
+        if (t1.z < NEAR_PLANE_Z && t2.z < NEAR_PLANE_Z) {
+            this.cohenSutherlandLineClipper(this.project(t1), this.project(t2), color);
+        } else if (t1.z > NEAR_PLANE_Z && t2.z > NEAR_PLANE_Z) {
+            return;
+        } else if (t1.z < NEAR_PLANE_Z) {
+            let ratio = (NEAR_PLANE_Z - t1.z) / (t2.z - t1.z);
+            let t3 = new Vector3(ratio * (t2.x - t1.x) + t1.x, ratio * (t2.y - t1.y) + t1.y, NEAR_PLANE_Z);
+            this.cohenSutherlandLineClipper(this.project(t1), this.project(t3), color);
+        } else if (t2.z < NEAR_PLANE_Z) {
+            let ratio = (NEAR_PLANE_Z - t2.z) / (t1.z - t2.z);
+            let t3 = new Vector3(ratio * (t1.x - t2.x) + t2.x, ratio * (t1.y - t2.y) + t2.y, NEAR_PLANE_Z);
+            this.cohenSutherlandLineClipper(this.project(t2), this.project(t3), color);
         }
     }
 
@@ -831,8 +852,8 @@ export default class Framebuffer {
         }
     }
 
-    public static minWindow: Vector3 = new Vector3(0, 10, 0);
-    public static maxWindow: Vector3 = new Vector3(319, 190, 0);
+    public static minWindow: Vector3 = new Vector3(0, 0, 0);
+    public static maxWindow: Vector3 = new Vector3(319, 199, 0);
     // seems to habe a small bug
     public cohenSutherlandLineClipper(start: Vector3, end: Vector3, col: number) {
         let p1: Vector3 = new Vector3(start.x, start.y, start.z);
