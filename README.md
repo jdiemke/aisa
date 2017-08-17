@@ -24,6 +24,9 @@ Type the following command into your shell:
 > npm run serve
 ```
 And open `http://localhost:8080/webpack-dev-server/` in your favourite web browser.
+### Features
+- Flat Shading
+- Near Plane & Viewport Clipping
 ### Backlog
 - Vertex shading (flat, gouraud, phong)
 - Texture mapping
@@ -31,9 +34,7 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Material
 - Shadows (Projection Shadows, Shadow Mapping)
 - Environment mapping
-- 4x4 homogenous matrices
 - Camera
 - Pixel shaders (bump mapping, parallax mapping)
-- Clipping
 - Frustum culling
 - Lens flare
