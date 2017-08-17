@@ -1,3 +1,4 @@
+import { ControllableCamera } from './ControllableCamera';
 /**
  * 3d polygon clipping:
  * http://www.gamers.org/dEngine/quake/papers/ddjclip.html
@@ -103,6 +104,10 @@ export default class Framebuffer {
     private unsignedIntArray: Uint8ClampedArray;
     public wBuffer: Float32Array;
 
+    private x: number = 0;
+
+    private camera: ControllableCamera;
+
     constructor(width: number, height: number) {
         this.width = width;
         this.height = height;
@@ -113,6 +118,14 @@ export default class Framebuffer {
         this.unsignedIntArray = new Uint8ClampedArray(arrayBuffer);
 
         this.framebuffer = new Uint32Array(arrayBuffer);
+        this.camera = new ControllableCamera();
+        document.addEventListener("keydown", (e) => {
+            console.log('key pressed');
+            if (e.which == 38) this.camera.moveForward(0.2, 1.0);
+            if (e.which == 40) this.camera.moveBackward(0.2, 1.0);
+            if (e.which == 37) this.camera.turnLeft(0.05, 1.0);
+            if (e.which == 39) this.camera.turnRight(0.05, 1.0);
+        });
     }
 
     public getImageData(): ImageData {
@@ -1057,8 +1070,8 @@ export default class Framebuffer {
 
         let points: Array<Vector4f> = [];
 
-        const STEPS = 16 / 2;
-        const STEPS2 = 16;
+        let STEPS = 16 / 2;
+        let STEPS2 = 16;
         for (let i = 0; i <= STEPS; i++) {
             for (let r = 0; r < STEPS2; r++) {
                 points.push(this.sphereFunction2(-i * Math.PI / STEPS - Math.PI / 2, -r * 2 * Math.PI / STEPS2));
@@ -1089,10 +1102,67 @@ export default class Framebuffer {
 
         // Create MV Matrix
         let scale = 5.8;
-        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.05));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.08));
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -9 + 4 * Math.sin(elapsedTime * 0.02)).multiplyMatrix(modelViewMartrix);
 
+        let viewMatrix = this.camera.getViewMatrix();
+        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.09));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.09));
+        modelViewMartrix = viewMatrix.multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0, -9).multiplyMatrix(modelViewMartrix));
+
+        //this.drawObject(points, normals, index, modelViewMartrix, 0, 255, 0);
+
+        // torus starts
+        points = [];
+
+        STEPS = 15;
+        STEPS2 = 12;
+        for (let i = 0; i < STEPS; i++) {
+            let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
+            let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
+            let up = new Vector3(0.0, 4.0, 0);
+            let right = frame2.sub(frame).cross(up);
+
+            for (let r = 0; r < STEPS2; r++) {
+                let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
+                points.push(new Vector4f(pos.x, pos.y, pos.z, 1.0));
+            }
+        }
+
+        index = [];
+
+        for (let j = 0; j < STEPS; j++) {
+            for (let i = 0; i < STEPS2; i++) {
+                index.push(((STEPS2 * j) + (1 + i) % STEPS2) % points.length); // 2
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 1
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+
+                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2) % points.length); //4
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 5
+            }
+        }
+
+        // compute normals
+        normals = new Array<Vector4f>();
+
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+            normals.push(normal.mul(-1));
+        }
+
+
+        scale = 1.6;
+
+        viewMatrix = this.camera.getViewMatrix();
+        modelViewMartrix =Matrix4f.constructYRotationMatrix(elapsedTime * 0.1).multiplyMatrix( Matrix4f.constructScaleMatrix(scale, scale, scale));
+        //modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(-elapsedTime * 0.2));
+        modelViewMartrix = viewMatrix.multiplyMatrix(Matrix4f.constructZRotationMatrix(-elapsedTime * 0.02).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0, -21).multiplyMatrix(modelViewMartrix)));
+
+
+        this.drawObject(points, normals, index, modelViewMartrix, 215, 30,120);
+        
+    }
+
+    private drawObject(points: Vector4f[], normals: Vector4f[], index: number[], modelViewMartrix: Matrix4f, red: number, green: number, blue: number) {
         let points2: Array<Vector3> = new Array<Vector3>();
         let normals2: Array<Vector4f> = new Array<Vector4f>();
 
@@ -1113,8 +1183,9 @@ export default class Framebuffer {
             let colLine = 255 << 24 | 255 << 16 | 255 << 8 | 255;
             if (true) {
                 let normal = normals2[i / 3];
-                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector4f(0.5, 0.5, 0.5, 0.0).normalize())) * 100), 255) + 50;
-                let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar + 100;
+                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector4f(0.5, 0.5, 0.3, 0.0).normalize()))), 1.0);
+                let ambient = 29;
+                let color = 255 << 24 | Math.min(scalar * blue+ambient,255) << 16 | Math.min(scalar * green+ambient,255) << 8 | Math.min(scalar * red+ambient,255);
                 this.zClipTriangle(new Array<Vector3>(v1, v2, v3), color);
             }
         }
