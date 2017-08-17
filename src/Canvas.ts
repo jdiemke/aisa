@@ -77,7 +77,7 @@ export class Canvas {
         }
         this.fpsCount++;
 
-        let time: number = (Date.now() - this.start) % 170000;
+        let time: number = (Date.now() - this.start) % 185000;
 
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
@@ -109,7 +109,7 @@ export class Canvas {
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
             this.framebuffer.drawText(8, 192 - 18, 'VOXEL LANDSCAPE', this.texture4);
         } else if (time < 50000) {
-            this.framebuffer.drawWireTunnel(time);
+            this.framebuffer.drawOldSchoolPlasma(time);
             this.framebuffer.drawText(8, 192 - 18, 'OLD SCHOOL PLASMA', this.texture4);
         } else if (time < 55000) {
             // https://www.youtube.com/watch?v=ccYLb7cLB1I&t=773s
@@ -136,12 +136,14 @@ export class Canvas {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture9.texture);
             this.framebuffer.cinematicScroller(this.texture4, time - 140000);
             this.framebuffer.drawText(8, 192 - 18, 'CINEMATIC SCROLLER', this.texture4);
-        } else {
+        } else if (time < 170000) {
             this.framebuffer.clear();
             this.framebuffer.scene8(time * 0.01);
             this.framebuffer.drawText(8, 192 - 18, 'NEAR PLANE CLIPPING', this.texture4);
+        } else {
+            this.framebuffer.shadingSphereClip((time-170000) * 0.003);
+            this.framebuffer.drawText(8, 192 - 18, 'TRIANGLE NEAR PLANE CLIPPING', this.texture4);
         }
-
 
         // http://www.cubic.org/docs/camera.htm
         // http://www.cubic.org/docs/3dclip.htm

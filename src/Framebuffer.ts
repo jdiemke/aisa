@@ -30,13 +30,11 @@ let json = require('./assets/f16.json');
 abstract class AbstractClipEdge {
 
     public abstract isInside(p: Vector3): boolean;
-
     public abstract computeIntersection(p1: Vector3, p2: Vector3): Vector3;
 
 }
 
 class RightEdge extends AbstractClipEdge {
-
 
     public isInside(p: Vector3): boolean {
         return p.x < 320;
@@ -47,11 +45,10 @@ class RightEdge extends AbstractClipEdge {
             Math.round(p1.y + (p2.y - p1.y) * (Framebuffer.maxWindow.x + 1 - p1.x) / (p2.x - p1.x)),
             Math.round(1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.maxWindow.x + 1 - p1.x) / (p2.x - p1.x))));
     }
+
 }
 
-
 class LeftEdge extends AbstractClipEdge {
-
 
     public isInside(p: Vector3): boolean {
         return p.x >= 0;
@@ -62,6 +59,7 @@ class LeftEdge extends AbstractClipEdge {
             Math.round(p1.y + (p2.y - p1.y) * (Framebuffer.minWindow.x - p1.x) / (p2.x - p1.x)),
             Math.round(1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.minWindow.x - p1.x) / (p2.x - p1.x))));
     }
+
 }
 
 class TopEdge extends AbstractClipEdge {
@@ -76,6 +74,7 @@ class TopEdge extends AbstractClipEdge {
             Framebuffer.maxWindow.y,
             Math.round(1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.maxWindow.y - p1.y) / (p2.y - p1.y))));
     }
+
 }
 
 class BottomEdge extends AbstractClipEdge {
@@ -90,6 +89,7 @@ class BottomEdge extends AbstractClipEdge {
             Framebuffer.minWindow.y,
             Math.round(1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.minWindow.y - p1.y) / (p2.y - p1.y))));
     }
+
 }
 
 export default class Framebuffer {
@@ -152,12 +152,14 @@ export default class Framebuffer {
     }
 
     public drawText(x: number, y: number, text: string, texture: Texture): void {
+        let xpos = x;
+        let firstIndex = ' '.charCodeAt(0);
         for (let i = 0; i < text.length; i++) {
-            let offset = 0;//Math.round(Math.sin(i * 0.2 + Date.now() * 0.005) * 10);
-            let index = text.charCodeAt(i) - ' '.charCodeAt(0);
+            let index = text.charCodeAt(i) - firstIndex;
             let tx = Math.floor(index % 32) * 8;
             let ty = Math.floor(index / 32) * 8;
-            this.drawTextureRectFastAlpha(x + i * 8, y + offset, tx, ty, 8, 8, texture);
+            this.drawTextureRectFastAlpha(xpos, y, tx, ty, 8, 8, texture);
+            xpos += 8;
         }
     }
 
@@ -196,7 +198,7 @@ export default class Framebuffer {
         for (let h = 0; h < height; h++) {
             for (let w = 0; w < width; w++) {
                 let color = texture.texture[texIndex];
-                if (color >> 24) {
+                if (color & 0xff000000) {
                     this.framebuffer[frIndex] = color;
                 }
                 texIndex++;
@@ -235,6 +237,7 @@ export default class Framebuffer {
         let xoff = 320 / 2 + Math.cos(6 * time * 0.0002) * (320 / 2 - 50);
         let yoff = 200 / 2 + Math.sin(4 * time * 0.0002) * (200 / 2 - 50);
 
+        // TODO: precalculate displacement in an array
         for (let y = -radius; y <= radius; y++) {
             for (let x = -radius; x <= radius; x++) {
                 if (x * x + y * y <= radius * radius) {
@@ -281,14 +284,15 @@ export default class Framebuffer {
         ];
         time = time * 0.6;
 
-        for (let i = 0; i < 200 / 8 + 1; i++) {
+        let scrollerOffset = Math.round(this.interpolate(0, 250, time % 255) * 8);
+
+        for (let i = 1; i < 200 / 8; i++) {
             let text = scrollText[(i + (time / 255) | 0) % scrollText.length];
             let x = (320 / 2 - text.length * 8 / 2) | 0;
-            let y = 8 * i - Math.round(this.interpolate(0, 250, time % 255) * 8);
+            let y = 8 * i - scrollerOffset;
             // TODO: proper text clipping to rect
-            if (y <= (200 - 8) && y > 0) {
-                this.drawText(x, y, text, texture);
-            }
+            // maybe just for first and last row
+            this.drawText(x, y, text, texture);
         }
     }
 
@@ -309,7 +313,7 @@ export default class Framebuffer {
 
     }
 
-    interpolate(start: number, end: number, current: number): number {
+    private interpolate(start: number, end: number, current: number): number {
         if (current <= start) {
             return 0;
         }
@@ -320,7 +324,7 @@ export default class Framebuffer {
     }
 
     public scrollingBackground(texture: Texture, time: number) {
-        let offset = Math.round(-(1 - this.interpolate(250, 10250, time * 0.25)) * (800 - 200));
+        let offset = Math.round(-(1 - this.interpolate(250, 10250, time * 0.25)) * (texture.height - 200));
         this.fastFramebufferCopyOffset(this.framebuffer, texture.texture, offset);
     }
 
@@ -336,8 +340,6 @@ export default class Framebuffer {
         for (let i = 0; i < 16; i++) {
             this.framebuffer.fill(colorLUT[i], 320 * (pos + i), 320 * (pos + i) + 320);
         }
-
-
     }
 
     public blockFace(texture: Texture, time: number, startTime: number) {
@@ -364,7 +366,7 @@ export default class Framebuffer {
     }
 
 
-    public fastFramebufferCopyOffset(src, dest, offset = 0) {
+    public fastFramebufferCopyOffset(src: Uint32Array, dest: Uint32Array, offset = 0) {
         let i = 320 * 200 / 32 + 1;
         let k = 320 * 200;
         let l = 320 * (200 - offset);
@@ -392,7 +394,7 @@ export default class Framebuffer {
     }
 
     // 6 times faster than the slow method that clips and does alpha blending
-    public fastFramebufferCopy(src, dest, offset = 0) {
+    public fastFramebufferCopy(src: Uint32Array, dest: Uint32Array, offset = 0) {
         let i = 320 * 200 / 32 + 1;
         let k = 320 * 200;
         while (--i) {
@@ -434,15 +436,15 @@ export default class Framebuffer {
         let pos = ((time * 0.02) | 0) % 200;
 
         let index = 320 * 200;
-        let index2 = 320 * 200;
+
         for (let y = 0; y < pos; y++) {
             for (let x = 0; x < 320; x++) {
-                this.framebuffer[index] = texture.texture[index2];
+                this.framebuffer[index] = texture.texture[index];
                 index--;
-                index2--;
             }
         }
 
+        let index2 = index;
         for (let y = 0; y < 200 - pos; y++) {
             for (let x = 0; x < 320; x++) {
                 this.framebuffer[index] = texture.texture[index2];
@@ -500,7 +502,7 @@ export default class Framebuffer {
             for (let x = 0; x < texture.width; x++) {
                 let color = texture.texture[textureIndex];
 
-                if (color >> 24) {
+                if (color & 0xff000000) {
                     this.framebuffer[framebufferIndex] = color;
                 }
 
@@ -573,17 +575,17 @@ export default class Framebuffer {
         });
 
 
-
         for (let i = 0; i < index.length; i += 2) {
             this.nearPlaneClipping(points2[index[i]], points2[index[i + 1]]);
         }
     }
 
-    public project(t1: Vector3): Vector3 {
-        return new Vector3((320 / 2) + (t1.x / (-t1.z * 0.0078)),
-            (200 / 2) - (t1.y / (-t1.z * 0.0078)), t1.z);
+    public project(t1: { x: number, y: number, z: number }): Vector3 {
+        return new Vector3(Math.round(320 / 2) + (t1.x / (-t1.z * 0.0078)),
+            Math.round((200 / 2) - (t1.y / (-t1.z * 0.0078))), t1.z);
     }
 
+    // https://math.stackexchange.com/questions/859454/maximum-number-of-vertices-in-intersection-of-triangle-with-box/
     public nearPlaneClipping(t1: Vector3, t2: Vector3): void {
         const NEAR_PLANE_Z = -1.7;
 
@@ -624,14 +626,16 @@ export default class Framebuffer {
      * https://fgiesen.wordpress.com/2011/07/05/a-trip-through-the-graphics-pipeline-2011-part-5/
      * http://insolitdust.sourceforge.net/code.html
      */
-    public debug(elapsedTime: number): void {
-
+    private clearDepthBuffer(): void {
         this.wBuffer.fill(100);
+    }
+
+    public debug(elapsedTime: number): void {
+        this.clearDepthBuffer();
 
         let index: Array<number> = [
             1, 2, 3, 3, 4, 1,
             1 + 8, 2 + 8, 3 + 8, 3 + 8, 4 + 8, 1 + 8,
-
         ];
 
         let points: Array<Vector3> = [
@@ -680,12 +684,8 @@ export default class Framebuffer {
             let col = 255 << 24 | 255 << 16;
             let col2 = 255 << 24 | 255;
 
-
             this.drawTriangleDDA(points2[index[i] - 1], points2[index[i + 1] - 1], points2[index[i + 2] - 1], colorAr[(((i) / 3) | 0) % 6]);
-
-
         }
-
     }
 
 
@@ -703,6 +703,8 @@ export default class Framebuffer {
         pos.z = pos.z + pos.z * radius;
         return pos;
     }
+
+
 
     private sphereFunction2(theta: number, phi: number): Vector4f {
 
@@ -732,7 +734,7 @@ export default class Framebuffer {
         }
     }
 
-    drawWireTunnel(elapsedTime: number) {
+    public drawOldSchoolPlasma(elapsedTime: number): void {
         let time = elapsedTime * 0.0007 * 1.0;
         let lineDirection = new Vector3(Math.sin(time), Math.cos(time), 0);
         let radialWaveCenter = new Vector3(470.0 / 2.0, 230.0 / 2.0, 0).add(new Vector3(470.0 / 2.0 *
@@ -1044,6 +1046,124 @@ export default class Framebuffer {
         }
     }
 
+
+    private clearColorBuffer() {
+        this.clear();
+    }
+
+    public shadingSphereClip(elapsedTime: number): void {
+        this.clearColorBuffer();
+        this.clearDepthBuffer();
+
+        let points: Array<Vector4f> = [];
+
+        const STEPS = 16 / 2;
+        const STEPS2 = 16;
+        for (let i = 0; i <= STEPS; i++) {
+            for (let r = 0; r < STEPS2; r++) {
+                points.push(this.sphereFunction2(-i * Math.PI / STEPS - Math.PI / 2, -r * 2 * Math.PI / STEPS2));
+            }
+        }
+
+        let index: Array<number> = [];
+
+        for (let j = 0; j < STEPS; j++) {
+            for (let i = 0; i < STEPS2; i++) {
+                index.push(((STEPS2 * j) + (1 + i) % STEPS2)); // 2
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 1
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); //3
+
+                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2)); //4
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); //3
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 5
+            }
+        }
+
+        // compute normals
+        let normals: Array<Vector4f> = new Array<Vector4f>();
+
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+            normals.push(normal);
+        }
+
+        // Create MV Matrix
+        let scale = 5.8;
+        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.05));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.08));
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -9 + 4 * Math.sin(elapsedTime * 0.02)).multiplyMatrix(modelViewMartrix);
+
+        let points2: Array<Vector3> = new Array<Vector3>();
+        let normals2: Array<Vector4f> = new Array<Vector4f>();
+
+        for (let i = 0; i < normals.length; i++) {
+            normals2.push(modelViewMartrix.multiplyHom(normals[i]));
+        }
+
+        for (let i = 0; i < points.length; i++) {
+            let tmp = modelViewMartrix.multiplyHom(points[i])
+            points2.push(new Vector3(tmp.x, tmp.y, tmp.z));
+        }
+
+        for (let i = 0; i < index.length; i += 3) {
+            let v1 = points2[index[i]];
+            let v2 = points2[index[i + 1]];
+            let v3 = points2[index[i + 2]];
+
+            let colLine = 255 << 24 | 255 << 16 | 255 << 8 | 255;
+            if (true) {
+                let normal = normals2[i / 3];
+                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector4f(0.5, 0.5, 0.5, 0.0).normalize())) * 100), 255) + 50;
+                let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar + 100;
+                this.zClipTriangle(new Array<Vector3>(v1, v2, v3), color);
+            }
+        }
+    }
+
+    NEAR_PLANE_Z = -1.7;
+
+    public isInFrontOfNearPlane(p: Vector3): boolean {
+        return p.z < this.NEAR_PLANE_Z;
+    }
+
+    public computeNearPlaneIntersection(p1: Vector3, p2: Vector3): Vector3 {
+        let ratio = (this.NEAR_PLANE_Z - p1.z) / (p2.z - p1.z);
+        return new Vector3(ratio * (p2.x - p1.x) + p1.x, ratio * (p2.y - p1.y) + p1.y, this.NEAR_PLANE_Z);
+    }
+
+    public zClipTriangle(subject: Array<Vector3>, color: number): void {
+
+        let output = subject;
+
+        let input = output;
+        output = new Array<Vector3>();
+        let S = input[input.length - 1];
+
+        for (let i = 0; i < input.length; i++) {
+            let point = input[i];
+            if (this.isInFrontOfNearPlane(point)) {
+                if (!this.isInFrontOfNearPlane(S)) {
+                    output.push(this.computeNearPlaneIntersection(S, point));
+                }
+                output.push(point);
+            } else if (this.isInFrontOfNearPlane(S)) {
+                output.push(this.computeNearPlaneIntersection(S, point));
+            }
+            S = point;
+        }
+
+        if (output.length < 3) {
+            return;
+        }
+
+        let projected: Vector3[] = output.map<Vector3>((v) => {
+            return this.project(v);
+        })
+
+        this.clipConvexPolygon(projected, color);
+    }
+
+
     private torusFunction(alpha: number): Vector3 {
         return new Vector3(Math.sin(alpha) * 10, 0, Math.cos(alpha) * 10);
     }
@@ -1170,7 +1290,7 @@ export default class Framebuffer {
                     v1.y > Framebuffer.maxWindow.y ||
                     v2.y > Framebuffer.maxWindow.y ||
                     v3.y > Framebuffer.maxWindow.y) {
-                    this.clipTriangle(v1, v2, v3, color);
+                    this.clipConvexPolygon(new Array<Vector3>(v1, v2, v3), color);
                 } else {
                     this.drawTriangleDDA(v1, v2, v3, color);
                 }
@@ -1200,8 +1320,8 @@ export default class Framebuffer {
      * @returns {void} 
      * @memberof Framebuffer
      */
-    public clipTriangle(v1: Vector3, v2: Vector3, v3: Vector3, color: number): void {
-        let subject = new Array<Vector3>(v1, v2, v3);
+    public clipConvexPolygon(subject: Array<Vector3>, color: number): void {
+
         let output = subject;
 
         for (let j = 0; j < Framebuffer.clipRegion.length; j++) {
@@ -1460,7 +1580,7 @@ export default class Framebuffer {
         }
     }
 
-    private isTriangleCCW(v1: Vector3, v2: Vector3, v3: Vector3): boolean {
+    private isTriangleCCW(v1: { x: number, y: number, z: number }, v2: { x: number, y: number, z: number }, v3: { x: number, y: number, z: number }): boolean {
         let det: number = (v2.x - v1.x) * (v3.y - v1.y) - (v2.y - v1.y) * (v3.x - v1.x);
         return det > 0;
     }
