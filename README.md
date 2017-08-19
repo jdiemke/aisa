@@ -28,13 +28,13 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Flat Shading
 - Near Plane & Viewport Clipping
 ### Backlog
-- Vertex shading (flat, gouraud, phong)
-- Texture mapping
-- Light sources
+- Lens Flare
+- View Frustum Culling & Space Partitioning
+- Camera
+- Vertex shading (Flat, Gouraud, Phong)
+- Texture Mapping
+- Light Sources
 - Material
 - Shadows (Projection Shadows, Shadow Mapping)
-- Environment mapping
-- Camera
-- Pixel shaders (bump mapping, parallax mapping)
-- Frustum culling
-- Lens flare
+- Environment Mapping
+- Pixel Shaders (Bump Mapping, Parallax Mapping)

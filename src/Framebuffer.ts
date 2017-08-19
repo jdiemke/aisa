@@ -108,6 +108,7 @@ export default class Framebuffer {
 
     private camera: ControllableCamera;
 
+    private obj: any;
     constructor(width: number, height: number) {
         this.width = width;
         this.height = height;
@@ -119,13 +120,17 @@ export default class Framebuffer {
 
         this.framebuffer = new Uint32Array(arrayBuffer);
         this.camera = new ControllableCamera();
+
+
+        this.obj = this.createObject();
+        /*
         document.addEventListener("keydown", (e) => {
             console.log('key pressed');
             if (e.which == 38) this.camera.moveForward(0.2, 1.0);
             if (e.which == 40) this.camera.moveBackward(0.2, 1.0);
             if (e.which == 37) this.camera.turnLeft(0.05, 1.0);
             if (e.which == 39) this.camera.turnRight(0.05, 1.0);
-        });
+        });*/
     }
 
     public getImageData(): ImageData {
@@ -1064,53 +1069,23 @@ export default class Framebuffer {
         this.clear();
     }
 
-    public shadingSphereClip(elapsedTime: number): void {
-        this.clearColorBuffer();
-        this.clearDepthBuffer();
+    public createObject() {
 
         let points: Array<Vector4f> = [];
 
         let STEPS = 16 / 2;
         let STEPS2 = 16;
-        for (let i = 0; i <= STEPS; i++) {
-            for (let r = 0; r < STEPS2; r++) {
-                points.push(this.sphereFunction2(-i * Math.PI / STEPS - Math.PI / 2, -r * 2 * Math.PI / STEPS2));
-            }
-        }
 
         let index: Array<number> = [];
 
-        for (let j = 0; j < STEPS; j++) {
-            for (let i = 0; i < STEPS2; i++) {
-                index.push(((STEPS2 * j) + (1 + i) % STEPS2)); // 2
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 1
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); //3
-
-                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2)); //4
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); //3
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 5
-            }
-        }
 
         // compute normals
         let normals: Array<Vector4f> = new Array<Vector4f>();
 
-        for (let i = 0; i < index.length; i += 3) {
-            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
-            normals.push(normal);
-        }
-
         // Create MV Matrix
         let scale = 5.8;
 
-        let viewMatrix = this.camera.getViewMatrix();
-        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.09));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.09));
-        modelViewMartrix = viewMatrix.multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0, -9).multiplyMatrix(modelViewMartrix));
 
-        //this.drawObject(points, normals, index, modelViewMartrix, 0, 255, 0);
-
-        // torus starts
         points = [];
 
         STEPS = 15;
@@ -1150,43 +1125,79 @@ export default class Framebuffer {
         }
 
 
-        scale = 1.6;
 
-        viewMatrix = this.camera.getViewMatrix();
-        modelViewMartrix =Matrix4f.constructYRotationMatrix(elapsedTime * 0.1).multiplyMatrix( Matrix4f.constructScaleMatrix(scale, scale, scale));
-        //modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(-elapsedTime * 0.2));
-        modelViewMartrix = viewMatrix.multiplyMatrix(Matrix4f.constructZRotationMatrix(-elapsedTime * 0.02).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0, -21).multiplyMatrix(modelViewMartrix)));
+        return {
+            points: points, normals: normals, index: index,
+            points2: points.map(() => new Vector4f(0, 0, 0, 0)),
+            normals2: normals.map(() => new Vector4f(0, 0, 0, 0))
 
-
-        this.drawObject(points, normals, index, modelViewMartrix, 215, 30,120);
-        
+        }
     }
 
-    private drawObject(points: Vector4f[], normals: Vector4f[], index: number[], modelViewMartrix: Matrix4f, red: number, green: number, blue: number) {
-        let points2: Array<Vector3> = new Array<Vector3>();
-        let normals2: Array<Vector4f> = new Array<Vector4f>();
+    public shadingSphereClip(elapsedTime: number): void {
+        // this.clearColorBuffer();
+        this.clearDepthBuffer();
+        // one line is missing due to polygon clipping in viewport!
+        let modelViewMartrix: Matrix4f;
 
-        for (let i = 0; i < normals.length; i++) {
-            normals2.push(modelViewMartrix.multiplyHom(normals[i]));
+        let scale = 1.6;
+
+        // viewMatrix = this.camera.getViewMatrix();
+        modelViewMartrix = Matrix4f.constructYRotationMatrix(elapsedTime * 0.1).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));
+        //modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(-elapsedTime * 0.2));
+        modelViewMartrix = Matrix4f.constructZRotationMatrix(-elapsedTime * 0.02).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0, -21)
+            .multiplyMatrix(modelViewMartrix));
+
+        /**
+         * TODO:
+         * - optimization
+         * - object with position, rotation, material, color
+         * - do not generate the object every frame!
+         * - no temp arrays per frame!
+         * - remove tempp matrix objects: instead store one global MV  matrix and manipulate it directly without generating temp amtrices every frame
+         * - backface culling
+         * - no lighting for culled triangles
+         * - only z clip if necessary (no clip, fully visible)
+         */
+
+        this.drawObject(this.obj, modelViewMartrix, 215, 30, 120);
+
+    }
+
+    private drawObject(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number) {
+
+        for (let i = 0; i < obj.normals.length; i++) {
+            modelViewMartrix.multiplyHomArr(obj.normals[i], obj.normals2[i]);
         }
 
-        for (let i = 0; i < points.length; i++) {
-            let tmp = modelViewMartrix.multiplyHom(points[i])
-            points2.push(new Vector3(tmp.x, tmp.y, tmp.z));
+        for (let i = 0; i < obj.points.length; i++) {
+            modelViewMartrix.multiplyHomArr(obj.points[i], obj.points2[i]);
         }
 
-        for (let i = 0; i < index.length; i += 3) {
-            let v1 = points2[index[i]];
-            let v2 = points2[index[i + 1]];
-            let v3 = points2[index[i + 2]];
+        for (let i = 0; i < obj.index.length; i += 3) {
+            let v1 = obj.points2[obj.index[i]];
+            let v2 = obj.points2[obj.index[i + 1]];
+            let v3 = obj.points2[obj.index[i + 2]];
 
-            let colLine = 255 << 24 | 255 << 16 | 255 << 8 | 255;
-            if (true) {
-                let normal = normals2[i / 3];
-                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector4f(0.5, 0.5, 0.3, 0.0).normalize()))), 1.0);
-                let ambient = 29;
-                let color = 255 << 24 | Math.min(scalar * blue+ambient,255) << 16 | Math.min(scalar * green+ambient,255) << 8 | Math.min(scalar * red+ambient,255);
-                this.zClipTriangle(new Array<Vector3>(v1, v2, v3), color);
+            let normal = obj.normals2[i / 3];
+            if (normal.normalize().dot(v1.normalize()) < 0) {
+                if (this.isInFrontOfNearPlane(v1) &&
+                    this.isInFrontOfNearPlane(v2) &&
+                    this.isInFrontOfNearPlane(v3)) {
+                    let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector4f(0.5, 0.5, 0.3, 0.0).normalize()))), 1.0);
+                    let ambient = 29;
+                    let color = 255 << 24 | Math.min(scalar * blue + ambient, 255) << 16 | Math.min(scalar * green + ambient, 255) << 8 | Math.min(scalar * red + ambient, 255);
+                    this.clipConvexPolygon(new Array<Vector3>(this.project(v1), this.project(v2), this.project(v3)), color);
+                } else if (!this.isInFrontOfNearPlane(v1) &&
+                    !this.isInFrontOfNearPlane(v2) &&
+                    !this.isInFrontOfNearPlane(v3)) {
+                    continue;
+                } else {
+                    let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector4f(0.5, 0.5, 0.3, 0.0).normalize()))), 1.0);
+                    let ambient = 29;
+                    let color = 255 << 24 | Math.min(scalar * blue + ambient, 255) << 16 | Math.min(scalar * green + ambient, 255) << 8 | Math.min(scalar * red + ambient, 255);
+                    this.zClipTriangle(new Array<Vector3>(v1, v2, v3), color);
+                }
             }
         }
     }

@@ -221,18 +221,25 @@ export default class Matrix4f {
         return result;
     }
 
-    public multiply(vector: Vector3f):  Vector3f {
+    public multiply(vector: Vector3f): Vector3f {
         return new Vector3f(this.m11 * vector.x + this.m12 * vector.y + this.m13 * vector.z + this.m14,
-                            this.m21 * vector.x + this.m22 * vector.y + this.m23 * vector.z + this.m24,
-                            this.m31 * vector.x + this.m32 * vector.y + this.m33 * vector.z + this.m34);
+            this.m21 * vector.x + this.m22 * vector.y + this.m23 * vector.z + this.m24,
+            this.m31 * vector.x + this.m32 * vector.y + this.m33 * vector.z + this.m34);
     }
 
-    public multiplyHom(vector: Vector4f):  Vector4f {
+    public multiplyHom(vector: Vector4f): Vector4f {
         return new Vector4f(this.m11 * vector.x + this.m12 * vector.y + this.m13 * vector.z + this.m14 * vector.w,
-                            this.m21 * vector.x + this.m22 * vector.y + this.m23 * vector.z + this.m24 * vector.w,
-                            this.m31 * vector.x + this.m32 * vector.y + this.m33 * vector.z + this.m34 * vector.w,
-                            this.m41 * vector.x + this.m42 * vector.y + this.m43 * vector.z + this.m44 * vector.w);
+            this.m21 * vector.x + this.m22 * vector.y + this.m23 * vector.z + this.m24 * vector.w,
+            this.m31 * vector.x + this.m32 * vector.y + this.m33 * vector.z + this.m34 * vector.w,
+            this.m41 * vector.x + this.m42 * vector.y + this.m43 * vector.z + this.m44 * vector.w);
     }
 
+
+    public multiplyHomArr(vector: Vector4f, result: Vector4f): void {
+        result.x = this.m11 * vector.x + this.m12 * vector.y + this.m13 * vector.z + this.m14 * vector.w;
+        result.y = this.m21 * vector.x + this.m22 * vector.y + this.m23 * vector.z + this.m24 * vector.w;
+        result.z = this.m31 * vector.x + this.m32 * vector.y + this.m33 * vector.z + this.m34 * vector.w;
+
+    }
 
 }

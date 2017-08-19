@@ -144,7 +144,6 @@ export class Canvas {
             this.framebuffer.cinematicScroller(this.texture4, time - 160000);
             //   this.framebuffer.drawText(8, 192 - 18, 'TRIANGLE NEAR PLANE CLIPPING', this.texture4);
         }
-
         // http://www.cubic.org/docs/camera.htm
         // http://www.cubic.org/docs/3dclip.htm
         // http://www.cubic.org/docs/backcull.htm
@@ -153,7 +152,7 @@ export class Canvas {
 
         // this.framebuffer.drawRaster();
         this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
-       // this.framebuffer.drawText(8, 26, 'TME: ' + time, this.texture4);
+        // this.framebuffer.drawText(8, 26, 'TME: ' + time, this.texture4);
         // this.framebuffer.scene9(time*0.01);
 
         //this.framebuffer.drawText(80 + 0, 100 + 8, '   IN JAVASCRIPT!    ', this.texture4);
