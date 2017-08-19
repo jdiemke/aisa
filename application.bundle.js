@@ -276,6 +276,11 @@ class Matrix4f {
     multiplyHom(vector) {
         return new Vector4f_1.default(this.m11 * vector.x + this.m12 * vector.y + this.m13 * vector.z + this.m14 * vector.w, this.m21 * vector.x + this.m22 * vector.y + this.m23 * vector.z + this.m24 * vector.w, this.m31 * vector.x + this.m32 * vector.y + this.m33 * vector.z + this.m34 * vector.w, this.m41 * vector.x + this.m42 * vector.y + this.m43 * vector.z + this.m44 * vector.w);
     }
+    multiplyHomArr(vector, result) {
+        result.x = this.m11 * vector.x + this.m12 * vector.y + this.m13 * vector.z + this.m14 * vector.w;
+        result.y = this.m21 * vector.x + this.m22 * vector.y + this.m23 * vector.z + this.m24 * vector.w;
+        result.z = this.m31 * vector.x + this.m32 * vector.y + this.m33 * vector.z + this.m34 * vector.w;
+    }
 }
 exports.default = Matrix4f;
 
@@ -714,17 +719,15 @@ class Framebuffer {
         this.unsignedIntArray = new Uint8ClampedArray(arrayBuffer);
         this.framebuffer = new Uint32Array(arrayBuffer);
         this.camera = new ControllableCamera_1.ControllableCamera();
+        this.obj = this.createObject();
+        /*
         document.addEventListener("keydown", (e) => {
             console.log('key pressed');
-            if (e.which == 38)
-                this.camera.moveForward(0.2, 1.0);
-            if (e.which == 40)
-                this.camera.moveBackward(0.2, 1.0);
-            if (e.which == 37)
-                this.camera.turnLeft(0.05, 1.0);
-            if (e.which == 39)
-                this.camera.turnRight(0.05, 1.0);
-        });
+            if (e.which == 38) this.camera.moveForward(0.2, 1.0);
+            if (e.which == 40) this.camera.moveBackward(0.2, 1.0);
+            if (e.which == 37) this.camera.turnLeft(0.05, 1.0);
+            if (e.which == 39) this.camera.turnRight(0.05, 1.0);
+        });*/
     }
     getImageData() {
         this.imageData.data.set(this.unsignedIntArray);
@@ -1510,42 +1513,15 @@ class Framebuffer {
     clearColorBuffer() {
         this.clear();
     }
-    shadingSphereClip(elapsedTime) {
-        this.clearColorBuffer();
-        this.clearDepthBuffer();
+    createObject() {
         let points = [];
         let STEPS = 16 / 2;
         let STEPS2 = 16;
-        for (let i = 0; i <= STEPS; i++) {
-            for (let r = 0; r < STEPS2; r++) {
-                points.push(this.sphereFunction2(-i * Math.PI / STEPS - Math.PI / 2, -r * 2 * Math.PI / STEPS2));
-            }
-        }
         let index = [];
-        for (let j = 0; j < STEPS; j++) {
-            for (let i = 0; i < STEPS2; i++) {
-                index.push(((STEPS2 * j) + (1 + i) % STEPS2)); // 2
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 1
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); //3
-                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2)); //4
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); //3
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 5
-            }
-        }
         // compute normals
         let normals = new Array();
-        for (let i = 0; i < index.length; i += 3) {
-            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
-            normals.push(normal);
-        }
         // Create MV Matrix
         let scale = 5.8;
-        let viewMatrix = this.camera.getViewMatrix();
-        let modelViewMartrix = Matrix4f_1.default.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f_1.default.constructYRotationMatrix(elapsedTime * 0.09));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f_1.default.constructXRotationMatrix(elapsedTime * 0.09));
-        modelViewMartrix = viewMatrix.multiplyMatrix(Matrix4f_1.default.constructTranslationMatrix(0, 0, -9).multiplyMatrix(modelViewMartrix));
-        //this.drawObject(points, normals, index, modelViewMartrix, 0, 255, 0);
-        // torus starts
         points = [];
         STEPS = 15;
         STEPS2 = 12;
@@ -1576,34 +1552,68 @@ class Framebuffer {
             let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
             normals.push(normal.mul(-1));
         }
-        scale = 1.6;
-        viewMatrix = this.camera.getViewMatrix();
+        return {
+            points: points, normals: normals, index: index,
+            points2: points.map(() => new Vector4f_1.default(0, 0, 0, 0)),
+            normals2: normals.map(() => new Vector4f_1.default(0, 0, 0, 0))
+        };
+    }
+    shadingSphereClip(elapsedTime) {
+        // this.clearColorBuffer();
+        this.clearDepthBuffer();
+        // one line is missing due to polygon clipping in viewport!
+        let modelViewMartrix;
+        let scale = 1.6;
+        // viewMatrix = this.camera.getViewMatrix();
         modelViewMartrix = Matrix4f_1.default.constructYRotationMatrix(elapsedTime * 0.1).multiplyMatrix(Matrix4f_1.default.constructScaleMatrix(scale, scale, scale));
         //modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(-elapsedTime * 0.2));
-        modelViewMartrix = viewMatrix.multiplyMatrix(Matrix4f_1.default.constructZRotationMatrix(-elapsedTime * 0.02).multiplyMatrix(Matrix4f_1.default.constructTranslationMatrix(0, 0, -21).multiplyMatrix(modelViewMartrix)));
-        this.drawObject(points, normals, index, modelViewMartrix, 215, 30, 120);
+        modelViewMartrix = Matrix4f_1.default.constructZRotationMatrix(-elapsedTime * 0.02).multiplyMatrix(Matrix4f_1.default.constructTranslationMatrix(0, 0, -21)
+            .multiplyMatrix(modelViewMartrix));
+        /**
+         * TODO:
+         * - optimization
+         * - object with position, rotation, material, color
+         * - do not generate the object every frame!
+         * - no temp arrays per frame!
+         * - remove tempp matrix objects: instead store one global MV  matrix and manipulate it directly without generating temp amtrices every frame
+         * - backface culling
+         * - no lighting for culled triangles
+         * - only z clip if necessary (no clip, fully visible)
+         */
+        this.drawObject(this.obj, modelViewMartrix, 215, 30, 120);
     }
-    drawObject(points, normals, index, modelViewMartrix, red, green, blue) {
-        let points2 = new Array();
-        let normals2 = new Array();
-        for (let i = 0; i < normals.length; i++) {
-            normals2.push(modelViewMartrix.multiplyHom(normals[i]));
+    drawObject(obj, modelViewMartrix, red, green, blue) {
+        for (let i = 0; i < obj.normals.length; i++) {
+            modelViewMartrix.multiplyHomArr(obj.normals[i], obj.normals2[i]);
         }
-        for (let i = 0; i < points.length; i++) {
-            let tmp = modelViewMartrix.multiplyHom(points[i]);
-            points2.push(new Vector3f_1.default(tmp.x, tmp.y, tmp.z));
+        for (let i = 0; i < obj.points.length; i++) {
+            modelViewMartrix.multiplyHomArr(obj.points[i], obj.points2[i]);
         }
-        for (let i = 0; i < index.length; i += 3) {
-            let v1 = points2[index[i]];
-            let v2 = points2[index[i + 1]];
-            let v3 = points2[index[i + 2]];
-            let colLine = 255 << 24 | 255 << 16 | 255 << 8 | 255;
-            if (true) {
-                let normal = normals2[i / 3];
-                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector4f_1.default(0.5, 0.5, 0.3, 0.0).normalize()))), 1.0);
-                let ambient = 29;
-                let color = 255 << 24 | Math.min(scalar * blue + ambient, 255) << 16 | Math.min(scalar * green + ambient, 255) << 8 | Math.min(scalar * red + ambient, 255);
-                this.zClipTriangle(new Array(v1, v2, v3), color);
+        for (let i = 0; i < obj.index.length; i += 3) {
+            let v1 = obj.points2[obj.index[i]];
+            let v2 = obj.points2[obj.index[i + 1]];
+            let v3 = obj.points2[obj.index[i + 2]];
+            let normal = obj.normals2[i / 3];
+            if (normal.normalize().dot(v1.normalize()) < 0) {
+                if (this.isInFrontOfNearPlane(v1) &&
+                    this.isInFrontOfNearPlane(v2) &&
+                    this.isInFrontOfNearPlane(v3)) {
+                    let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector4f_1.default(0.5, 0.5, 0.3, 0.0).normalize()))), 1.0);
+                    let ambient = 29;
+                    let color = 255 << 24 | Math.min(scalar * blue + ambient, 255) << 16 | Math.min(scalar * green + ambient, 255) << 8 | Math.min(scalar * red + ambient, 255);
+                    this.clipConvexPolygon(new Array(this.project(v1), this.project(v2), this.project(v3)), color);
+                }
+                else if (!this.isInFrontOfNearPlane(v1) &&
+                    !this.isInFrontOfNearPlane(v2) &&
+                    !this.isInFrontOfNearPlane(v3)) {
+                    continue;
+                }
+                else {
+                    let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector4f_1.default(0.5, 0.5, 0.3, 0.0).normalize()))), 1.0);
+                    let ambient = 29;
+                    let color = 255 << 24 | Math.min(scalar * blue + ambient, 255) << 16 | Math.min(scalar * green + ambient, 255) << 8 | Math.min(scalar * red + ambient, 255);
+                    this.zClipTriangle(new Array(v1, v2, v3), color);
+                }
             }
         }
     }
