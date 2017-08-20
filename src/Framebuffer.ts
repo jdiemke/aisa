@@ -480,20 +480,22 @@ export default class Framebuffer {
         let framebufferIndex: number = Math.max(x, 0) + Math.max(y, 0) * this.width;
         let textureIndex: number = Math.max(0, 0 - x) + Math.max(0, 0 - y) * texture.width;
 
-        let width: number = Math.min(texture.width, SCREEN_WIDTH - x) - Math.max(0, 0 - x);
-        let height: number = Math.min(texture.height, SCREEN_HEIGHT - y) - Math.max(0, 0 - y);
+        const width: number = Math.min(texture.width, SCREEN_WIDTH - x) - Math.max(0, 0 - x);
+        const height: number = Math.min(texture.height, SCREEN_HEIGHT - y) - Math.max(0, 0 - y);
 
-        let textureRowOffset = texture.width - width;
-        let framebufferRowOffset = this.width - width;
+        const textureRowOffset = texture.width - width;
+        const framebufferRowOffset = this.width - width;
+
+        const div = 1 / 255 * alpha2;
 
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
-                let alpha = ((texture.texture[textureIndex] >> 24) & 0xff) / 255 * alpha2;
+                let alpha = (texture.texture[textureIndex] >> 24 & 0xff) * div;
                 let inverseAlpha = 1 - alpha;
 
-                let r = (((this.framebuffer[framebufferIndex] >> 0) & 0xff) * (inverseAlpha) + ((texture.texture[textureIndex] >> 0) & 0xff) * (alpha)) | 0;
-                let g = (((this.framebuffer[framebufferIndex] >> 8) & 0xff) * (inverseAlpha) + ((texture.texture[textureIndex] >> 8) & 0xff) * (alpha)) | 0;
-                let b = (((this.framebuffer[framebufferIndex] >> 16) & 0xff) * (inverseAlpha) + ((texture.texture[textureIndex] >> 16) & 0xff) * (alpha)) | 0;
+                let r = (this.framebuffer[framebufferIndex] >> 0 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 0 & 0xff) * alpha;
+                let g = (this.framebuffer[framebufferIndex] >> 8 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 8 & 0xff) * alpha;
+                let b = (this.framebuffer[framebufferIndex] >> 16 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 16 & 0xff) * alpha;
 
                 this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | (255 << 24);
 
@@ -594,20 +596,21 @@ export default class Framebuffer {
 
 
         for (let i = 0; i < index.length; i += 2) {
-            this.nearPlaneClipping(points2[index[i]], points2[index[i + 1]]);
+            let color = 255 | 0 << 16 | 255 << 24;
+            this.nearPlaneClipping(points2[index[i]], points2[index[i + 1]], color);
         }
     }
 
     public project(t1: { x: number, y: number, z: number }): Vector3 {
-        return new Vector3(Math.round(320 / 2) + (t1.x / (-t1.z * 0.0078)),
+        return new Vector3(Math.round((320 / 2) + (t1.x / (-t1.z * 0.0078))),
             Math.round((200 / 2) - (t1.y / (-t1.z * 0.0078))), t1.z);
     }
 
     // https://math.stackexchange.com/questions/859454/maximum-number-of-vertices-in-intersection-of-triangle-with-box/
-    public nearPlaneClipping(t1: Vector3, t2: Vector3): void {
+    public nearPlaneClipping(t1: Vector3, t2: Vector3, color: number): void {
         const NEAR_PLANE_Z = -1.7;
 
-        let color = 255 | 0 << 16 | 255 << 24;
+
         if (t1.z < NEAR_PLANE_Z && t2.z < NEAR_PLANE_Z) {
             this.cohenSutherlandLineClipper(this.project(t1), this.project(t2), color);
         } else if (t1.z > NEAR_PLANE_Z && t2.z > NEAR_PLANE_Z) {
@@ -1070,26 +1073,13 @@ export default class Framebuffer {
     }
 
     public createObject() {
-
-        let points: Array<Vector4f> = [];
-
-        let STEPS = 16 / 2;
-        let STEPS2 = 16;
-
-        let index: Array<number> = [];
-
-
-        // compute normals
+        let points: Array<Vector4f> = new Array<Vector4f>();
         let normals: Array<Vector4f> = new Array<Vector4f>();
+        let index: Array<number> = new Array<number>();
 
-        // Create MV Matrix
-        let scale = 5.8;
+        const STEPS = 15;
+        const STEPS2 = 12;
 
-
-        points = [];
-
-        STEPS = 15;
-        STEPS2 = 12;
         for (let i = 0; i < STEPS; i++) {
             let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
             let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
@@ -1102,36 +1092,88 @@ export default class Framebuffer {
             }
         }
 
-        index = [];
-
         for (let j = 0; j < STEPS; j++) {
             for (let i = 0; i < STEPS2; i++) {
-                index.push(((STEPS2 * j) + (1 + i) % STEPS2) % points.length); // 2
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 1
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
-
-                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2) % points.length); //4
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 5
+                index.push(((STEPS2 * j) + (1 + i) % STEPS2) % points.length);
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length);
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length);
+                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2) % points.length);
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length);
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length);
             }
         }
 
-        // compute normals
-        normals = new Array<Vector4f>();
-
         for (let i = 0; i < index.length; i += 3) {
             let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
-            normals.push(normal.mul(-1));
+            normals.push(normal.mul(-1)); // normalize?
         }
 
-
-
+        // Create class for objects
         return {
             points: points, normals: normals, index: index,
             points2: points.map(() => new Vector4f(0, 0, 0, 0)),
             normals2: normals.map(() => new Vector4f(0, 0, 0, 0))
-
         }
+    }
+
+    public wireFrameTerrain(elapsedTime: number, heightmap: Texture): void {
+
+        this.clearDepthBuffer();
+
+        let index: Array<number> = [
+        ];
+
+        let points: Array<Vector3> = [];
+        for (let y = 0; y < 256; y++) {
+            for (let x = 0; x < 256; x++) {
+                points.push(new Vector3((x - 128) * 20.0, (heightmap.texture[x + y * 256] & 0x000000ff) * 128 / 256 - 70, (y - 128) * 20.0));
+            }
+        }
+
+        for (let y = 0; y < 256; y += 1) {
+            for (let x = 0; x < 256 - 1; x += 1) {
+                index.push(0 + x + (y * 256));
+                index.push(1 + x + (y * 256));
+            }
+        }
+
+        for (let x = 0; x < 256; x += 1) {
+            for (let y = 0; y < 256 - 1; y += 1) {
+
+                index.push(x + ((y + 0) * 256));
+                index.push(x + ((y + 1) * 256));
+            }
+        }
+
+        let scale = 0.8;
+
+        let modelViewMartrix = Matrix3.constructYRotationMatrix(elapsedTime * 0.003);
+
+
+        let points2: Array<Vector3> = new Array<Vector3>();
+
+        let xOff = + Math.cos(elapsedTime * 0.000001) * 128 * 20;
+        let zOff = Math.sin(elapsedTime * 0.000001) * 128 * 20;
+        points.forEach(element => {
+            let transformed = modelViewMartrix.multiply(element);
+
+            let x = transformed.x + xOff;
+            let y = transformed.y;
+            let z = transformed.z + zOff; // TODO: use translation matrix!
+
+            points2.push(new Vector3(x, y, z));
+        });
+
+
+        for (let i = 0; i < index.length; i += 2) {
+            let scale = (1 - Math.min(255, -points2[index[i]].z * 0.9) / 255);
+            let color = (255 * scale) << 8 | 100 * scale | (200 * scale) << 16 | 255 << 24;
+            this.nearPlaneClipping(points2[index[i]], points2[index[i + 1]], color);
+        }
+    }
+
+    public reproduceRazorScene(elapsedTime: number): void {
+        this.clearDepthBuffer();
     }
 
     public shadingSphereClip(elapsedTime: number): void {
@@ -1436,6 +1478,38 @@ export default class Framebuffer {
         }
     }
 
+    lensFlareVisible: boolean = false;
+    lensFlareStart = 0;
+    lensFlareEnd = 0;
+
+    public drawLensFlare(elapsedTime: number, texture: { tex: Texture, scale: number, alpha: number }[]): void {
+        let pos = new Vector3(Math.round(320 / 2 + Math.sin(elapsedTime * 0.00035) * 110),
+            Math.round(200 / 2 + Math.cos(elapsedTime * 0.0003) * 80), 0);
+
+        if (this.wBuffer[pos.x + (pos.y * 320)] == 100) {
+            if (!this.lensFlareVisible) {
+                this.lensFlareVisible = true;
+                this.lensFlareStart = elapsedTime;
+            }
+        } else {
+            if (this.lensFlareVisible) {
+                this.lensFlareVisible = false;
+                this.lensFlareEnd = elapsedTime;
+            }
+        }
+
+        let scale = this.interpolate(this.lensFlareStart, this.lensFlareStart + 100, elapsedTime);
+        if (this.lensFlareVisible != true) {
+            scale *= (1 - this.interpolate(this.lensFlareEnd, this.lensFlareEnd + 100, elapsedTime));
+        }
+        let dir = new Vector3(320 / 2, 200 / 2, 0).sub(pos);
+
+
+        for (let i = 0; i < texture.length; i++) {
+            let temp = pos.add(dir.mul(texture[i].scale));
+            this.drawTexture(Math.round(temp.x) - texture[i].tex.width / 2, Math.round(temp.y) - texture[i].tex.height / 2, texture[i].tex, texture[i].alpha * scale);
+        }
+    }
     public shadingTorus(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
@@ -2142,11 +2216,11 @@ export default class Framebuffer {
         let wStart = 1 / (start.z + 0.1);
         let wDelta = (1 / end.z - 1 / start.z) / length;
 
-        for (let i = 0; i < length; i++) {
-            //if (wStart < this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320]) {
-            //  this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320] = wStart;
-            this.drawPixel(Math.round(xPosition), Math.round(yPosition), color);
-            //}
+        for (let i = 0; i <= length; i++) {
+            if (wStart < this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320]) {
+                this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320] = wStart;
+                this.drawPixel(Math.round(xPosition), Math.round(yPosition), color);
+            }
             xPosition += dx;
             yPosition += dy;
             wStart += wDelta;

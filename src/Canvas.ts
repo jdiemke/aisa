@@ -21,6 +21,9 @@ export class Canvas {
     private texture7: Texture;
     private texture8: Texture;
     private texture9: Texture;
+    private texture10: Texture;
+    private texture11: Texture;
+    private texture12: Texture;
     private boundRenderLoop: (time: number) => void;
 
     constructor(width: number, height: number) {
@@ -80,7 +83,7 @@ export class Canvas {
         }
         this.fpsCount++;
 
-        let time: number = (Date.now() - this.start) % 185000;
+        let time: number = (Date.now() - this.start) % 195000;
 
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
@@ -139,11 +142,21 @@ export class Canvas {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture9.texture);
             this.framebuffer.cinematicScroller(this.texture4, time - 140000);
             // this.framebuffer.drawText(8, 192 - 18, 'CINEMATIC SCROLLER', this.texture4);
-        } else {
+        } else if (time < 185000) {
             this.framebuffer.shadingSphereClip((time - 170000) * 0.003);
             this.framebuffer.cinematicScroller(this.texture4, time - 160000);
             //   this.framebuffer.drawText(8, 192 - 18, 'TRIANGLE NEAR PLANE CLIPPING', this.texture4);
+        } else {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture12.texture);
+            this.framebuffer.shadingTorus(time * 0.02);
+            this.framebuffer.drawLensFlare(time - 185000, [{ tex: this.texture10, scale: 0.0, alpha: 1.0 }, { tex: this.texture11, scale: 2.3, alpha: 0.5 }]);
         }
+
+        //     this.framebuffer.wireFrameTerrain(time*0.008,this.texture3);
+        //    this.framebuffer.cinematicScroller(this.texture4, time );
+        // todo: radial blur -> pouet.net
+
+        // this.framebuffer.reproduceRazorScene(2);
         // http://www.cubic.org/docs/camera.htm
         // http://www.cubic.org/docs/3dclip.htm
         // http://www.cubic.org/docs/backcull.htm
@@ -267,23 +280,46 @@ export class Canvas {
                                             this.texture9.width = img9.width;
                                             this.texture9.height = img9.height;
 
-                                            let myAudio = new Audio(require('./assets/3dGalax.mp3'));
-                                            myAudio.loop = true;
-                                            myAudio.play();
-                                            this.renderLoop(0);
+                                            let img10 = new Image();
+                                            img10.addEventListener("load", () => {
+                                                this.texture10 = new Texture();
+                                                this.texture10.texture = this.getImageData(img10, true);
+                                                this.texture10.width = img10.width;
+                                                this.texture10.height = img10.height;
+
+
+                                                let img11 = new Image();
+                                                img11.addEventListener("load", () => {
+                                                    this.texture11 = new Texture();
+                                                    this.texture11.texture = this.getImageData(img11, true);
+                                                    this.texture11.width = img11.width;
+                                                    this.texture11.height = img11.height;
+
+                                                    let img12 = new Image();
+                                                    img12.addEventListener("load", () => {
+                                                        this.texture12 = new Texture();
+                                                        this.texture12.texture = this.getImageData(img12, true);
+                                                        this.texture12.width = img12.width;
+                                                        this.texture12.height = img12.height;
+                                                        let myAudio = new Audio(require('./assets/3dGalax.mp3'));
+                                                        myAudio.loop = true;
+                                                        myAudio.play();
+                                                        this.renderLoop(0);
+                                                    });
+                                                    img12.src = require("./assets/sky.png");
+                                                });
+                                                img11.src = require("./assets/ring.png");
+                                            });
+                                            img10.src = require("./assets/spark.png");
+
                                         });
                                         img9.src = require("./assets/battleofilona.png");
-
                                     });
                                     img8.src = require("./assets/pandabear.png");
-
                                 });
                                 img7.src = require("./assets/ball2.png");
-
                             });
                             img6.src = require("./assets/lens.png");
-
-
                         });
                         img5.src = require("./assets/atlantis.png");
                     });
