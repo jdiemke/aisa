@@ -154,6 +154,14 @@ export default class Framebuffer {
         this.framebuffer[x + y * this.width] = color;
     }
 
+    public readPixel(x: number, y: number, color: number): number {
+        return this.framebuffer[x + y * this.width];
+    }
+
+    public readPixel2(fb: Uint32Array, x: number, y: number, color: number): number {
+        return fb[x + y * this.width];
+    }
+
     public toColor(red: number): number {
         return (255 << 24) |
             (red << 16) |
@@ -327,8 +335,67 @@ export default class Framebuffer {
 
     }
 
-    public pixelate() {
+    // optimization:
+    // - downscale image to half the size before bluring
+    // render result to texture in order to not blur the logo
+    tmp = new Uint32Array(320 * 200);
+    tmp2 = new Uint32Array(320 * 200);
 
+    public blur() {
+        let scale = 1 / (3.025);
+        let r: number = 0;
+        let g: number = 0;
+        let b: number = 0;
+        for (let y = 1; y < 200 - 1; y++) {
+            for (let x = 1; x < 320 - 1; x++) {
+                r = g = b = 0;
+                for (let i = -1; i <= 1; i++) {
+                    let color = this.readPixel(x + i, y, 0);
+                    r += color & 0xff;
+                    g += color >> 8 & 0xff;
+                    b += color >> 16 & 0xff;
+                }
+                r *= scale;
+                g *= scale;
+                b *= scale;
+                this.tmp[x + y * 320] = r | g << 8 | b << 16 | 255 << 24;
+            }
+        }
+
+        for (let y = 1; y < 200 - 1; y++) {
+            for (let x = 1; x < 320 - 1; x++) {
+                r = g = b = 0;
+                for (let i = -1; i <= 1; i++) {
+                    let color = this.readPixel2(this.tmp, x, y + i, 0);
+                    r += color & 0xff;
+                    g += color >> 8 & 0xff;
+                    b += color >> 16 & 0xff;
+                }
+                r *= scale;
+                g *= scale;
+                b *= scale;
+                this.tmp2[x + y * 320] = r | g << 8 | b << 16 | 255 << 24;
+            }
+        }
+        this.fastFramebufferCopy(this.framebuffer, this.tmp2);
+
+    }
+
+    public pixelate() {
+        let xoff = 20;
+        let yoff = 50;
+
+
+
+        for (let x = 0; x < 10; x++) {
+            for (let y = 0; y < 10; y++) {
+                this.drawBox2(x * 10 + xoff, y * 10 + yoff, 10, 10, this.readPixel(x * 10 + xoff, y * 10 + yoff, 0));
+            }
+        }
+        this.drawLineDDA(new Vector3(xoff, yoff, -0.3), new Vector3(xoff + 20 * 5, yoff, -0.3), 0xffffffff);
+        this.drawLineDDA(new Vector3(xoff, yoff + 20 * 5, -0.3), new Vector3(xoff + 20 * 5, yoff + 20 * 5, -0.3), 0xffffffff);
+        this.drawLineDDA(new Vector3(xoff, yoff, -0.3), new Vector3(xoff, yoff + 20 * 5, -0.3), 0xffffffff);
+        this.drawLineDDA(new Vector3(xoff + 20 * 5, yoff, -0.3), new Vector3(xoff + 20 * 5, yoff + 20 * 5, -0.3), 0xffffffff);
     }
 
     private interpolate(start: number, end: number, current: number): number {
@@ -1293,6 +1360,8 @@ export default class Framebuffer {
     }
 
 
+
+
     /**
      * https://www.youtube.com/watch?v=VMD7fsCYO9o
      * http://www.cs.jhu.edu/~misha/Fall16/13.pdf
@@ -1421,6 +1490,107 @@ export default class Framebuffer {
             }
         }
     }
+
+    public shadingTorus3(elapsedTime: number): void {
+
+        this.wBuffer.fill(100);
+
+        let points: Array<Vector3> = [];
+
+        const STEPS = 15 * 2;
+        const STEPS2 = 12 * 2;
+        for (let i = 0; i < STEPS; i++) {
+            let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
+            let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
+            let up = new Vector3(0.0, 4.0, 0);
+            let right = frame2.sub(frame).cross(up);
+
+            for (let r = 0; r < STEPS2; r++) {
+                let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
+                points.push(pos);
+            }
+        }
+
+        let index: Array<number> = [];
+
+        for (let j = 0; j < STEPS; j++) {
+            for (let i = 0; i < STEPS2; i++) {
+                index.push(((STEPS2 * j) + (1 + i) % STEPS2) % points.length); // 2
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 1
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+
+                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2) % points.length); //4
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 5
+            }
+        }
+
+        // compute normals
+        let normals: Array<Vector3> = new Array<Vector3>();
+
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+            normals.push(normal);
+        }
+
+        let scale = 1.2;
+
+        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.09));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.08));
+
+        /**
+         * Vertex Shader Stage
+         */
+        let points2: Array<Vector3> = new Array<Vector3>();
+
+        let normals2: Array<Vector3> = new Array<Vector3>();
+        for (let n = 0; n < normals.length; n++) {
+            normals2.push(modelViewMartrix.multiply(normals[n]));
+        }
+
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.04) * 25,
+            Math.sin(elapsedTime * 0.05) * 9, -34).multiplyMatrix(modelViewMartrix);
+
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiply(points[p]);
+
+            let x = transformed.x;
+            let y = transformed.y;
+            let z = transformed.z; // TODO: use translation matrix!
+
+            let xx = (320 * 0.5) + (x / (-z * 0.0078));
+            let yy = (200 * 0.5) + (y / (-z * 0.0078));
+            // commented out because it breaks the winding. inversion
+            // of y has to be done after back-face culling in the
+            // viewport transform
+            // yy =(200 * 0.5) - (y / (-z * 0.0078));
+
+            points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+        }
+
+        /**
+         * Primitive Assembly and Rasterization Stage:
+         * 1. back-face culling
+         * 2. viewport transform
+         * 3. scan conversion (rasterization)
+         */
+        for (let i = 0; i < points2.length; i++) {
+
+            let v1 = points2[i];
+
+            let scalar = 1;
+            let color = 0xffbbffbb;
+            if (v1.x > Framebuffer.minWindow.x &&
+                v1.x < Framebuffer.maxWindow.x &&
+                v1.y > Framebuffer.minWindow.y &&
+                v1.y < Framebuffer.maxWindow.y) {
+
+                this.drawPixel(v1.x, v1.y, color);
+            }
+        }
+    }
+
+
 
     // Sutherland-Hodgman
     // http://www.sunshine2k.de/coding/java/SutherlandHodgman/SutherlandHodgman.html
@@ -2213,7 +2383,7 @@ export default class Framebuffer {
         let yPosition: number = start.y;
 
         // w=1/z interpolation for z-buffer
-        let wStart = 1 / (start.z + 0.1);
+        let wStart = 1 / (start.z);
         let wDelta = (1 / end.z - 1 / start.z) / length;
 
         for (let i = 0; i <= length; i++) {

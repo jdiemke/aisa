@@ -24,6 +24,7 @@ export class Canvas {
     private texture10: Texture;
     private texture11: Texture;
     private texture12: Texture;
+    private texture13: Texture;
     private boundRenderLoop: (time: number) => void;
 
     constructor(width: number, height: number) {
@@ -83,7 +84,7 @@ export class Canvas {
         }
         this.fpsCount++;
 
-        let time: number = (Date.now() - this.start) % 195000;
+        let time: number = (Date.now() - this.start) % 210000;
 
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
@@ -146,11 +147,29 @@ export class Canvas {
             this.framebuffer.shadingSphereClip((time - 170000) * 0.003);
             this.framebuffer.cinematicScroller(this.texture4, time - 160000);
             //   this.framebuffer.drawText(8, 192 - 18, 'TRIANGLE NEAR PLANE CLIPPING', this.texture4);
-        } else {
+        } else if (time < 200000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture12.texture);
             this.framebuffer.shadingTorus(time * 0.02);
-            this.framebuffer.drawLensFlare(time - 185000, [{ tex: this.texture10, scale: 0.0, alpha: 1.0 }, { tex: this.texture11, scale: 2.3, alpha: 0.5 }]);
+            this.framebuffer.drawLensFlare(time - 185000, [
+                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                { tex: this.texture13, scale: 1.6, alpha: 0.25 }
+            ]);
+        } else {
+            this.framebuffer.blur();
+            this.framebuffer.shadingTorus3(time * 0.015);
+            this.framebuffer.drawTexture(32, 60, this.texture2, 1.0);
         }
+
+        // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
+        // this.framebuffer.shadingTorus2(time * 0.02);
+
+
+
+        // this.framebuffer.wireFrameTerrain(time*0.01, this.texture3);
+        //   this.framebuffer.pixelate();
+
+
 
         //     this.framebuffer.wireFrameTerrain(time*0.008,this.texture3);
         //    this.framebuffer.cinematicScroller(this.texture4, time );
@@ -301,10 +320,20 @@ export class Canvas {
                                                         this.texture12.texture = this.getImageData(img12, true);
                                                         this.texture12.width = img12.width;
                                                         this.texture12.height = img12.height;
-                                                        let myAudio = new Audio(require('./assets/3dGalax.mp3'));
-                                                        myAudio.loop = true;
-                                                        myAudio.play();
-                                                        this.renderLoop(0);
+
+                                                        let img13 = new Image();
+                                                        img13.addEventListener("load", () => {
+                                                            this.texture13 = new Texture();
+                                                            this.texture13.texture = this.getImageData(img13, true);
+                                                            this.texture13.width = img13.width;
+                                                            this.texture13.height = img13.height;
+
+                                                            let myAudio = new Audio(require('./assets/3dGalax.mp3'));
+                                                            myAudio.loop = true;
+                                                            myAudio.play();
+                                                            this.renderLoop(0);
+                                                        });
+                                                        img13.src = require("./assets/bokeh.png");
                                                     });
                                                     img12.src = require("./assets/sky.png");
                                                 });
