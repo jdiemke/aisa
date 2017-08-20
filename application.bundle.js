@@ -437,7 +437,7 @@ class Canvas {
             this.fpsCount = 0;
         }
         this.fpsCount++;
-        let time = (Date.now() - this.start) % 195000;
+        let time = (Date.now() - this.start) % 210000;
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
             this.framebuffer.shadingTorus(time * 0.02);
@@ -515,11 +515,24 @@ class Canvas {
             this.framebuffer.cinematicScroller(this.texture4, time - 160000);
             //   this.framebuffer.drawText(8, 192 - 18, 'TRIANGLE NEAR PLANE CLIPPING', this.texture4);
         }
-        else {
+        else if (time < 200000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture12.texture);
             this.framebuffer.shadingTorus(time * 0.02);
-            this.framebuffer.drawLensFlare(time - 185000, [{ tex: this.texture10, scale: 0.0, alpha: 1.0 }, { tex: this.texture11, scale: 2.3, alpha: 0.5 }]);
+            this.framebuffer.drawLensFlare(time - 185000, [
+                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                { tex: this.texture13, scale: 1.6, alpha: 0.25 }
+            ]);
         }
+        else {
+            this.framebuffer.blur();
+            this.framebuffer.shadingTorus3(time * 0.015);
+            this.framebuffer.drawTexture(32, 60, this.texture2, 1.0);
+        }
+        // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
+        // this.framebuffer.shadingTorus2(time * 0.02);
+        // this.framebuffer.wireFrameTerrain(time*0.01, this.texture3);
+        //   this.framebuffer.pixelate();
         //     this.framebuffer.wireFrameTerrain(time*0.008,this.texture3);
         //    this.framebuffer.cinematicScroller(this.texture4, time );
         // todo: radial blur -> pouet.net
@@ -645,34 +658,42 @@ class Canvas {
                                                         this.texture12.texture = this.getImageData(img12, true);
                                                         this.texture12.width = img12.width;
                                                         this.texture12.height = img12.height;
-                                                        let myAudio = new Audio(__webpack_require__(12));
-                                                        myAudio.loop = true;
-                                                        myAudio.play();
-                                                        this.renderLoop(0);
+                                                        let img13 = new Image();
+                                                        img13.addEventListener("load", () => {
+                                                            this.texture13 = new Texture_1.default();
+                                                            this.texture13.texture = this.getImageData(img13, true);
+                                                            this.texture13.width = img13.width;
+                                                            this.texture13.height = img13.height;
+                                                            let myAudio = new Audio(__webpack_require__(12));
+                                                            myAudio.loop = true;
+                                                            myAudio.play();
+                                                            this.renderLoop(0);
+                                                        });
+                                                        img13.src = __webpack_require__(13);
                                                     });
-                                                    img12.src = __webpack_require__(13);
+                                                    img12.src = __webpack_require__(14);
                                                 });
-                                                img11.src = __webpack_require__(14);
+                                                img11.src = __webpack_require__(15);
                                             });
-                                            img10.src = __webpack_require__(15);
+                                            img10.src = __webpack_require__(16);
                                         });
-                                        img9.src = __webpack_require__(16);
+                                        img9.src = __webpack_require__(17);
                                     });
-                                    img8.src = __webpack_require__(17);
+                                    img8.src = __webpack_require__(18);
                                 });
-                                img7.src = __webpack_require__(18);
+                                img7.src = __webpack_require__(19);
                             });
-                            img6.src = __webpack_require__(19);
+                            img6.src = __webpack_require__(20);
                         });
-                        img5.src = __webpack_require__(20);
+                        img5.src = __webpack_require__(21);
                     });
-                    img4.src = __webpack_require__(21);
+                    img4.src = __webpack_require__(22);
                 });
-                img3.src = __webpack_require__(22);
+                img3.src = __webpack_require__(23);
             });
-            img2.src = __webpack_require__(23);
+            img2.src = __webpack_require__(24);
         });
-        img.src = __webpack_require__(24);
+        img.src = __webpack_require__(25);
     }
     display() {
     }
@@ -743,6 +764,11 @@ class BottomEdge extends AbstractClipEdge {
 class Framebuffer {
     constructor(width, height) {
         this.x = 0;
+        // optimization:
+        // - downscale image to half the size before bluring
+        // render result to texture in order to not blur the logo
+        this.tmp = new Uint32Array(320 * 200);
+        this.tmp2 = new Uint32Array(320 * 200);
         this.NEAR_PLANE_Z = -1.7;
         this.lensFlareVisible = false;
         this.lensFlareStart = 0;
@@ -781,6 +807,12 @@ class Framebuffer {
     }
     drawPixel(x, y, color) {
         this.framebuffer[x + y * this.width] = color;
+    }
+    readPixel(x, y, color) {
+        return this.framebuffer[x + y * this.width];
+    }
+    readPixel2(fb, x, y, color) {
+        return fb[x + y * this.width];
     }
     toColor(red) {
         return (255 << 24) |
@@ -926,7 +958,55 @@ class Framebuffer {
     // Crossfade 2 effects
     crossFade() {
     }
+    blur() {
+        let scale = 1 / (3.025);
+        let r = 0;
+        let g = 0;
+        let b = 0;
+        for (let y = 1; y < 200 - 1; y++) {
+            for (let x = 1; x < 320 - 1; x++) {
+                r = g = b = 0;
+                for (let i = -1; i <= 1; i++) {
+                    let color = this.readPixel(x + i, y, 0);
+                    r += color & 0xff;
+                    g += color >> 8 & 0xff;
+                    b += color >> 16 & 0xff;
+                }
+                r *= scale;
+                g *= scale;
+                b *= scale;
+                this.tmp[x + y * 320] = r | g << 8 | b << 16 | 255 << 24;
+            }
+        }
+        for (let y = 1; y < 200 - 1; y++) {
+            for (let x = 1; x < 320 - 1; x++) {
+                r = g = b = 0;
+                for (let i = -1; i <= 1; i++) {
+                    let color = this.readPixel2(this.tmp, x, y + i, 0);
+                    r += color & 0xff;
+                    g += color >> 8 & 0xff;
+                    b += color >> 16 & 0xff;
+                }
+                r *= scale;
+                g *= scale;
+                b *= scale;
+                this.tmp2[x + y * 320] = r | g << 8 | b << 16 | 255 << 24;
+            }
+        }
+        this.fastFramebufferCopy(this.framebuffer, this.tmp2);
+    }
     pixelate() {
+        let xoff = 20;
+        let yoff = 50;
+        for (let x = 0; x < 10; x++) {
+            for (let y = 0; y < 10; y++) {
+                this.drawBox2(x * 10 + xoff, y * 10 + yoff, 10, 10, this.readPixel(x * 10 + xoff, y * 10 + yoff, 0));
+            }
+        }
+        this.drawLineDDA(new Vector3f_1.default(xoff, yoff, -0.3), new Vector3f_1.default(xoff + 20 * 5, yoff, -0.3), 0xffffffff);
+        this.drawLineDDA(new Vector3f_1.default(xoff, yoff + 20 * 5, -0.3), new Vector3f_1.default(xoff + 20 * 5, yoff + 20 * 5, -0.3), 0xffffffff);
+        this.drawLineDDA(new Vector3f_1.default(xoff, yoff, -0.3), new Vector3f_1.default(xoff, yoff + 20 * 5, -0.3), 0xffffffff);
+        this.drawLineDDA(new Vector3f_1.default(xoff + 20 * 5, yoff, -0.3), new Vector3f_1.default(xoff + 20 * 5, yoff + 20 * 5, -0.3), 0xffffffff);
     }
     interpolate(start, end, current) {
         if (current <= start) {
@@ -1830,6 +1910,81 @@ class Framebuffer {
             }
         }
     }
+    shadingTorus3(elapsedTime) {
+        this.wBuffer.fill(100);
+        let points = [];
+        const STEPS = 15 * 2;
+        const STEPS2 = 12 * 2;
+        for (let i = 0; i < STEPS; i++) {
+            let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
+            let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
+            let up = new Vector3f_1.default(0.0, 4.0, 0);
+            let right = frame2.sub(frame).cross(up);
+            for (let r = 0; r < STEPS2; r++) {
+                let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
+                points.push(pos);
+            }
+        }
+        let index = [];
+        for (let j = 0; j < STEPS; j++) {
+            for (let i = 0; i < STEPS2; i++) {
+                index.push(((STEPS2 * j) + (1 + i) % STEPS2) % points.length); // 2
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 1
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2) % points.length); //4
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 5
+            }
+        }
+        // compute normals
+        let normals = new Array();
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+            normals.push(normal);
+        }
+        let scale = 1.2;
+        let modelViewMartrix = Matrix4f_1.default.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f_1.default.constructYRotationMatrix(elapsedTime * 0.09));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f_1.default.constructXRotationMatrix(elapsedTime * 0.08));
+        /**
+         * Vertex Shader Stage
+         */
+        let points2 = new Array();
+        let normals2 = new Array();
+        for (let n = 0; n < normals.length; n++) {
+            normals2.push(modelViewMartrix.multiply(normals[n]));
+        }
+        modelViewMartrix = Matrix4f_1.default.constructTranslationMatrix(Math.sin(elapsedTime * 0.04) * 25, Math.sin(elapsedTime * 0.05) * 9, -34).multiplyMatrix(modelViewMartrix);
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiply(points[p]);
+            let x = transformed.x;
+            let y = transformed.y;
+            let z = transformed.z; // TODO: use translation matrix!
+            let xx = (320 * 0.5) + (x / (-z * 0.0078));
+            let yy = (200 * 0.5) + (y / (-z * 0.0078));
+            // commented out because it breaks the winding. inversion
+            // of y has to be done after back-face culling in the
+            // viewport transform
+            // yy =(200 * 0.5) - (y / (-z * 0.0078));
+            points2.push(new Vector3f_1.default(Math.round(xx), Math.round(yy), z));
+        }
+        /**
+         * Primitive Assembly and Rasterization Stage:
+         * 1. back-face culling
+         * 2. viewport transform
+         * 3. scan conversion (rasterization)
+         */
+        for (let i = 0; i < points2.length; i++) {
+            let v1 = points2[i];
+            let scalar = 1;
+            let color = 0xffbbffbb;
+            if (v1.x > Framebuffer.minWindow.x &&
+                v1.x < Framebuffer.maxWindow.x &&
+                v1.y > Framebuffer.minWindow.y &&
+                v1.y < Framebuffer.maxWindow.y) {
+                this.drawPixel(v1.x, v1.y, color);
+            }
+        }
+    }
     /**
      * FIXME: optimize by minimizing creation of new arrays
      * https://www.npmjs.com/package/npm-check-updates
@@ -2459,7 +2614,7 @@ class Framebuffer {
         let xPosition = start.x;
         let yPosition = start.y;
         // w=1/z interpolation for z-buffer
-        let wStart = 1 / (start.z + 0.1);
+        let wStart = 1 / (start.z);
         let wDelta = (1 / end.z - 1 / start.z) / length;
         for (let i = 0; i <= length; i++) {
             if (wStart < this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320]) {
@@ -2858,70 +3013,76 @@ module.exports = __webpack_require__.p + "0e7cabddfc9af1214d72c4201b0da9d9.mp3";
 /* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "f1dde6672b0d9b18b4373a26d3803351.png";
+module.exports = __webpack_require__.p + "54e31707db0fbae7dec46d063517665a.png";
 
 /***/ }),
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "5c07fbf7949c365c56f8188b02827d6e.png";
+module.exports = __webpack_require__.p + "f1dde6672b0d9b18b4373a26d3803351.png";
 
 /***/ }),
 /* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "c196269cf8b2fc9593276f497c8ffdd9.png";
+module.exports = __webpack_require__.p + "5c07fbf7949c365c56f8188b02827d6e.png";
 
 /***/ }),
 /* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "47d04e8b7dc74f4980d66796a632547c.png";
+module.exports = __webpack_require__.p + "c196269cf8b2fc9593276f497c8ffdd9.png";
 
 /***/ }),
 /* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "0009cb245d8a3129bcd470b1c30a2c17.png";
+module.exports = __webpack_require__.p + "47d04e8b7dc74f4980d66796a632547c.png";
 
 /***/ }),
 /* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "f4f2b50d7d886d02949a38f94c217a86.png";
+module.exports = __webpack_require__.p + "0009cb245d8a3129bcd470b1c30a2c17.png";
 
 /***/ }),
 /* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "dad0119c8dd1a33ab48b6870bfa8b432.png";
+module.exports = __webpack_require__.p + "f4f2b50d7d886d02949a38f94c217a86.png";
 
 /***/ }),
 /* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "bed841884f7920591d4279314a1b53da.png";
+module.exports = __webpack_require__.p + "dad0119c8dd1a33ab48b6870bfa8b432.png";
 
 /***/ }),
 /* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "211f2046cf2c6739bad5c6209b09dac4.png";
+module.exports = __webpack_require__.p + "bed841884f7920591d4279314a1b53da.png";
 
 /***/ }),
 /* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "c4e4b266fe4b4281371e908cb2fa6e89.png";
+module.exports = __webpack_require__.p + "211f2046cf2c6739bad5c6209b09dac4.png";
 
 /***/ }),
 /* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "b30d17fb175566e9e20d5584d7ae6bfb.png";
+module.exports = __webpack_require__.p + "c4e4b266fe4b4281371e908cb2fa6e89.png";
 
 /***/ }),
 /* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "b30d17fb175566e9e20d5584d7ae6bfb.png";
+
+/***/ }),
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "36fbc222529fa8e2b722e7de1ca8f010.png";
