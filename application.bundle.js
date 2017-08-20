@@ -437,7 +437,7 @@ class Canvas {
             this.fpsCount = 0;
         }
         this.fpsCount++;
-        let time = (Date.now() - this.start) % 185000;
+        let time = (Date.now() - this.start) % 195000;
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
             this.framebuffer.shadingTorus(time * 0.02);
@@ -510,11 +510,20 @@ class Canvas {
             this.framebuffer.cinematicScroller(this.texture4, time - 140000);
             // this.framebuffer.drawText(8, 192 - 18, 'CINEMATIC SCROLLER', this.texture4);
         }
-        else {
+        else if (time < 185000) {
             this.framebuffer.shadingSphereClip((time - 170000) * 0.003);
             this.framebuffer.cinematicScroller(this.texture4, time - 160000);
             //   this.framebuffer.drawText(8, 192 - 18, 'TRIANGLE NEAR PLANE CLIPPING', this.texture4);
         }
+        else {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture12.texture);
+            this.framebuffer.shadingTorus(time * 0.02);
+            this.framebuffer.drawLensFlare(time - 185000, [{ tex: this.texture10, scale: 0.0, alpha: 1.0 }, { tex: this.texture11, scale: 2.3, alpha: 0.5 }]);
+        }
+        //     this.framebuffer.wireFrameTerrain(time*0.008,this.texture3);
+        //    this.framebuffer.cinematicScroller(this.texture4, time );
+        // todo: radial blur -> pouet.net
+        // this.framebuffer.reproduceRazorScene(2);
         // http://www.cubic.org/docs/camera.htm
         // http://www.cubic.org/docs/3dclip.htm
         // http://www.cubic.org/docs/backcull.htm
@@ -618,28 +627,52 @@ class Canvas {
                                             this.texture9.texture = this.getImageData(img9);
                                             this.texture9.width = img9.width;
                                             this.texture9.height = img9.height;
-                                            let myAudio = new Audio(__webpack_require__(12));
-                                            myAudio.loop = true;
-                                            myAudio.play();
-                                            this.renderLoop(0);
+                                            let img10 = new Image();
+                                            img10.addEventListener("load", () => {
+                                                this.texture10 = new Texture_1.default();
+                                                this.texture10.texture = this.getImageData(img10, true);
+                                                this.texture10.width = img10.width;
+                                                this.texture10.height = img10.height;
+                                                let img11 = new Image();
+                                                img11.addEventListener("load", () => {
+                                                    this.texture11 = new Texture_1.default();
+                                                    this.texture11.texture = this.getImageData(img11, true);
+                                                    this.texture11.width = img11.width;
+                                                    this.texture11.height = img11.height;
+                                                    let img12 = new Image();
+                                                    img12.addEventListener("load", () => {
+                                                        this.texture12 = new Texture_1.default();
+                                                        this.texture12.texture = this.getImageData(img12, true);
+                                                        this.texture12.width = img12.width;
+                                                        this.texture12.height = img12.height;
+                                                        let myAudio = new Audio(__webpack_require__(12));
+                                                        myAudio.loop = true;
+                                                        myAudio.play();
+                                                        this.renderLoop(0);
+                                                    });
+                                                    img12.src = __webpack_require__(13);
+                                                });
+                                                img11.src = __webpack_require__(14);
+                                            });
+                                            img10.src = __webpack_require__(15);
                                         });
-                                        img9.src = __webpack_require__(13);
+                                        img9.src = __webpack_require__(16);
                                     });
-                                    img8.src = __webpack_require__(14);
+                                    img8.src = __webpack_require__(17);
                                 });
-                                img7.src = __webpack_require__(15);
+                                img7.src = __webpack_require__(18);
                             });
-                            img6.src = __webpack_require__(16);
+                            img6.src = __webpack_require__(19);
                         });
-                        img5.src = __webpack_require__(17);
+                        img5.src = __webpack_require__(20);
                     });
-                    img4.src = __webpack_require__(18);
+                    img4.src = __webpack_require__(21);
                 });
-                img3.src = __webpack_require__(19);
+                img3.src = __webpack_require__(22);
             });
-            img2.src = __webpack_require__(20);
+            img2.src = __webpack_require__(23);
         });
-        img.src = __webpack_require__(21);
+        img.src = __webpack_require__(24);
     }
     display() {
     }
@@ -711,6 +744,9 @@ class Framebuffer {
     constructor(width, height) {
         this.x = 0;
         this.NEAR_PLANE_Z = -1.7;
+        this.lensFlareVisible = false;
+        this.lensFlareStart = 0;
+        this.lensFlareEnd = 0;
         this.width = width;
         this.height = height;
         this.imageData = new ImageData(320, 200);
@@ -1048,17 +1084,18 @@ class Framebuffer {
         const SCREEN_HEIGHT = 200;
         let framebufferIndex = Math.max(x, 0) + Math.max(y, 0) * this.width;
         let textureIndex = Math.max(0, 0 - x) + Math.max(0, 0 - y) * texture.width;
-        let width = Math.min(texture.width, SCREEN_WIDTH - x) - Math.max(0, 0 - x);
-        let height = Math.min(texture.height, SCREEN_HEIGHT - y) - Math.max(0, 0 - y);
-        let textureRowOffset = texture.width - width;
-        let framebufferRowOffset = this.width - width;
+        const width = Math.min(texture.width, SCREEN_WIDTH - x) - Math.max(0, 0 - x);
+        const height = Math.min(texture.height, SCREEN_HEIGHT - y) - Math.max(0, 0 - y);
+        const textureRowOffset = texture.width - width;
+        const framebufferRowOffset = this.width - width;
+        const div = 1 / 255 * alpha2;
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
-                let alpha = ((texture.texture[textureIndex] >> 24) & 0xff) / 255 * alpha2;
+                let alpha = (texture.texture[textureIndex] >> 24 & 0xff) * div;
                 let inverseAlpha = 1 - alpha;
-                let r = (((this.framebuffer[framebufferIndex] >> 0) & 0xff) * (inverseAlpha) + ((texture.texture[textureIndex] >> 0) & 0xff) * (alpha)) | 0;
-                let g = (((this.framebuffer[framebufferIndex] >> 8) & 0xff) * (inverseAlpha) + ((texture.texture[textureIndex] >> 8) & 0xff) * (alpha)) | 0;
-                let b = (((this.framebuffer[framebufferIndex] >> 16) & 0xff) * (inverseAlpha) + ((texture.texture[textureIndex] >> 16) & 0xff) * (alpha)) | 0;
+                let r = (this.framebuffer[framebufferIndex] >> 0 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 0 & 0xff) * alpha;
+                let g = (this.framebuffer[framebufferIndex] >> 8 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 8 & 0xff) * alpha;
+                let b = (this.framebuffer[framebufferIndex] >> 16 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 16 & 0xff) * alpha;
                 this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | (255 << 24);
                 framebufferIndex++;
                 textureIndex++;
@@ -1133,16 +1170,16 @@ class Framebuffer {
             points2.push(new Vector3f_1.default(x, y, z));
         });
         for (let i = 0; i < index.length; i += 2) {
-            this.nearPlaneClipping(points2[index[i]], points2[index[i + 1]]);
+            let color = 255 | 0 << 16 | 255 << 24;
+            this.nearPlaneClipping(points2[index[i]], points2[index[i + 1]], color);
         }
     }
     project(t1) {
-        return new Vector3f_1.default(Math.round(320 / 2) + (t1.x / (-t1.z * 0.0078)), Math.round((200 / 2) - (t1.y / (-t1.z * 0.0078))), t1.z);
+        return new Vector3f_1.default(Math.round((320 / 2) + (t1.x / (-t1.z * 0.0078))), Math.round((200 / 2) - (t1.y / (-t1.z * 0.0078))), t1.z);
     }
     // https://math.stackexchange.com/questions/859454/maximum-number-of-vertices-in-intersection-of-triangle-with-box/
-    nearPlaneClipping(t1, t2) {
+    nearPlaneClipping(t1, t2, color) {
         const NEAR_PLANE_Z = -1.7;
-        let color = 255 | 0 << 16 | 255 << 24;
         if (t1.z < NEAR_PLANE_Z && t2.z < NEAR_PLANE_Z) {
             this.cohenSutherlandLineClipper(this.project(t1), this.project(t2), color);
         }
@@ -1514,17 +1551,11 @@ class Framebuffer {
         this.clear();
     }
     createObject() {
-        let points = [];
-        let STEPS = 16 / 2;
-        let STEPS2 = 16;
-        let index = [];
-        // compute normals
+        let points = new Array();
         let normals = new Array();
-        // Create MV Matrix
-        let scale = 5.8;
-        points = [];
-        STEPS = 15;
-        STEPS2 = 12;
+        let index = new Array();
+        const STEPS = 15;
+        const STEPS2 = 12;
         for (let i = 0; i < STEPS; i++) {
             let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
             let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
@@ -1535,28 +1566,68 @@ class Framebuffer {
                 points.push(new Vector4f_1.default(pos.x, pos.y, pos.z, 1.0));
             }
         }
-        index = [];
         for (let j = 0; j < STEPS; j++) {
             for (let i = 0; i < STEPS2; i++) {
-                index.push(((STEPS2 * j) + (1 + i) % STEPS2) % points.length); // 2
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 1
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
-                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2) % points.length); //4
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 5
+                index.push(((STEPS2 * j) + (1 + i) % STEPS2) % points.length);
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length);
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length);
+                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2) % points.length);
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length);
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length);
             }
         }
-        // compute normals
-        normals = new Array();
         for (let i = 0; i < index.length; i += 3) {
             let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
-            normals.push(normal.mul(-1));
+            normals.push(normal.mul(-1)); // normalize?
         }
+        // Create class for objects
         return {
             points: points, normals: normals, index: index,
             points2: points.map(() => new Vector4f_1.default(0, 0, 0, 0)),
             normals2: normals.map(() => new Vector4f_1.default(0, 0, 0, 0))
         };
+    }
+    wireFrameTerrain(elapsedTime, heightmap) {
+        this.clearDepthBuffer();
+        let index = [];
+        let points = [];
+        for (let y = 0; y < 256; y++) {
+            for (let x = 0; x < 256; x++) {
+                points.push(new Vector3f_1.default((x - 128) * 20.0, (heightmap.texture[x + y * 256] & 0x000000ff) * 128 / 256 - 70, (y - 128) * 20.0));
+            }
+        }
+        for (let y = 0; y < 256; y += 1) {
+            for (let x = 0; x < 256 - 1; x += 1) {
+                index.push(0 + x + (y * 256));
+                index.push(1 + x + (y * 256));
+            }
+        }
+        for (let x = 0; x < 256; x += 1) {
+            for (let y = 0; y < 256 - 1; y += 1) {
+                index.push(x + ((y + 0) * 256));
+                index.push(x + ((y + 1) * 256));
+            }
+        }
+        let scale = 0.8;
+        let modelViewMartrix = Matrix3_1.default.constructYRotationMatrix(elapsedTime * 0.003);
+        let points2 = new Array();
+        let xOff = +Math.cos(elapsedTime * 0.000001) * 128 * 20;
+        let zOff = Math.sin(elapsedTime * 0.000001) * 128 * 20;
+        points.forEach(element => {
+            let transformed = modelViewMartrix.multiply(element);
+            let x = transformed.x + xOff;
+            let y = transformed.y;
+            let z = transformed.z + zOff; // TODO: use translation matrix!
+            points2.push(new Vector3f_1.default(x, y, z));
+        });
+        for (let i = 0; i < index.length; i += 2) {
+            let scale = (1 - Math.min(255, -points2[index[i]].z * 0.9) / 255);
+            let color = (255 * scale) << 8 | 100 * scale | (200 * scale) << 16 | 255 << 24;
+            this.nearPlaneClipping(points2[index[i]], points2[index[i + 1]], color);
+        }
+    }
+    reproduceRazorScene(elapsedTime) {
+        this.clearDepthBuffer();
     }
     shadingSphereClip(elapsedTime) {
         // this.clearColorBuffer();
@@ -1798,6 +1869,30 @@ class Framebuffer {
         // triangulate new point set
         for (let i = 0; i < output.length - 2; i++) {
             this.drawTriangleDDA(output[0], output[1 + i], output[2 + i], color);
+        }
+    }
+    drawLensFlare(elapsedTime, texture) {
+        let pos = new Vector3f_1.default(Math.round(320 / 2 + Math.sin(elapsedTime * 0.00035) * 110), Math.round(200 / 2 + Math.cos(elapsedTime * 0.0003) * 80), 0);
+        if (this.wBuffer[pos.x + (pos.y * 320)] == 100) {
+            if (!this.lensFlareVisible) {
+                this.lensFlareVisible = true;
+                this.lensFlareStart = elapsedTime;
+            }
+        }
+        else {
+            if (this.lensFlareVisible) {
+                this.lensFlareVisible = false;
+                this.lensFlareEnd = elapsedTime;
+            }
+        }
+        let scale = this.interpolate(this.lensFlareStart, this.lensFlareStart + 100, elapsedTime);
+        if (this.lensFlareVisible != true) {
+            scale *= (1 - this.interpolate(this.lensFlareEnd, this.lensFlareEnd + 100, elapsedTime));
+        }
+        let dir = new Vector3f_1.default(320 / 2, 200 / 2, 0).sub(pos);
+        for (let i = 0; i < texture.length; i++) {
+            let temp = pos.add(dir.mul(texture[i].scale));
+            this.drawTexture(Math.round(temp.x) - texture[i].tex.width / 2, Math.round(temp.y) - texture[i].tex.height / 2, texture[i].tex, texture[i].alpha * scale);
         }
     }
     shadingTorus(elapsedTime) {
@@ -2366,11 +2461,11 @@ class Framebuffer {
         // w=1/z interpolation for z-buffer
         let wStart = 1 / (start.z + 0.1);
         let wDelta = (1 / end.z - 1 / start.z) / length;
-        for (let i = 0; i < length; i++) {
-            //if (wStart < this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320]) {
-            //  this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320] = wStart;
-            this.drawPixel(Math.round(xPosition), Math.round(yPosition), color);
-            //}
+        for (let i = 0; i <= length; i++) {
+            if (wStart < this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320]) {
+                this.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320] = wStart;
+                this.drawPixel(Math.round(xPosition), Math.round(yPosition), color);
+            }
             xPosition += dx;
             yPosition += dy;
             wStart += wDelta;
@@ -2763,52 +2858,70 @@ module.exports = __webpack_require__.p + "0e7cabddfc9af1214d72c4201b0da9d9.mp3";
 /* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "47d04e8b7dc74f4980d66796a632547c.png";
+module.exports = __webpack_require__.p + "f1dde6672b0d9b18b4373a26d3803351.png";
 
 /***/ }),
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "0009cb245d8a3129bcd470b1c30a2c17.png";
+module.exports = __webpack_require__.p + "5c07fbf7949c365c56f8188b02827d6e.png";
 
 /***/ }),
 /* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "f4f2b50d7d886d02949a38f94c217a86.png";
+module.exports = __webpack_require__.p + "c196269cf8b2fc9593276f497c8ffdd9.png";
 
 /***/ }),
 /* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "dad0119c8dd1a33ab48b6870bfa8b432.png";
+module.exports = __webpack_require__.p + "47d04e8b7dc74f4980d66796a632547c.png";
 
 /***/ }),
 /* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "bed841884f7920591d4279314a1b53da.png";
+module.exports = __webpack_require__.p + "0009cb245d8a3129bcd470b1c30a2c17.png";
 
 /***/ }),
 /* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "211f2046cf2c6739bad5c6209b09dac4.png";
+module.exports = __webpack_require__.p + "f4f2b50d7d886d02949a38f94c217a86.png";
 
 /***/ }),
 /* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "c4e4b266fe4b4281371e908cb2fa6e89.png";
+module.exports = __webpack_require__.p + "dad0119c8dd1a33ab48b6870bfa8b432.png";
 
 /***/ }),
 /* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "b30d17fb175566e9e20d5584d7ae6bfb.png";
+module.exports = __webpack_require__.p + "bed841884f7920591d4279314a1b53da.png";
 
 /***/ }),
 /* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "211f2046cf2c6739bad5c6209b09dac4.png";
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "c4e4b266fe4b4281371e908cb2fa6e89.png";
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "b30d17fb175566e9e20d5584d7ae6bfb.png";
+
+/***/ }),
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "36fbc222529fa8e2b722e7de1ca8f010.png";
