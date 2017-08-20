@@ -158,11 +158,12 @@ export class Canvas {
         } else {
             this.framebuffer.blur();
             this.framebuffer.shadingTorus3(time * 0.015);
-            this.framebuffer.drawTexture(32, 60, this.texture2, 1.0);
+            this.framebuffer.drawTexture(32, 70, this.texture2, 1.0);
         }
 
         // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
         // this.framebuffer.shadingTorus2(time * 0.02);
+        // this.framebuffer.drawTexture(32, 60, this.texture2, 1.0);
 
 
 

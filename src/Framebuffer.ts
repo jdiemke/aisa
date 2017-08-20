@@ -340,45 +340,92 @@ export default class Framebuffer {
     // render result to texture in order to not blur the logo
     tmp = new Uint32Array(320 * 200);
     tmp2 = new Uint32Array(320 * 200);
-
     public blur() {
-        let scale = 1 / (3.025);
+        let scale = 1 / (3.1);
         let r: number = 0;
         let g: number = 0;
         let b: number = 0;
-        for (let y = 1; y < 200 - 1; y++) {
-            for (let x = 1; x < 320 - 1; x++) {
-                r = g = b = 0;
-                for (let i = -1; i <= 1; i++) {
-                    let color = this.readPixel(x + i, y, 0);
-                    r += color & 0xff;
-                    g += color >> 8 & 0xff;
-                    b += color >> 16 & 0xff;
-                }
-                r *= scale;
-                g *= scale;
-                b *= scale;
-                this.tmp[x + y * 320] = r | g << 8 | b << 16 | 255 << 24;
+        let index = 1 + 320;
+        let sumIndex = 320;
+        let color: number;
+        for (let y = 0; y < 198; y++) {
+            for (let x = 0; x < 318; x++) {
+                color = this.framebuffer[sumIndex];
+                r = color & 0xff;
+                g = color >> 8 & 0xff;
+                b = color >> 16 & 0xff;
+                sumIndex++;
+
+                color = this.framebuffer[sumIndex];
+                r += color & 0xff;
+                g += color >> 8 & 0xff;
+                b += color >> 16 & 0xff;
+                sumIndex++;
+
+                color = this.framebuffer[sumIndex];
+                r += color & 0xff;
+                g += color >> 8 & 0xff;
+                b += color >> 16 & 0xff;
+                sumIndex++;
+
+                sumIndex -= 2;
+                r *= scale; g *= scale; b *= scale;
+                this.tmp[index] = r | g << 8 | b << 16 | 255 << 24;
+                index++;
             }
+            sumIndex += 2;
+            index += 2;
         }
 
-        for (let y = 1; y < 200 - 1; y++) {
-            for (let x = 1; x < 320 - 1; x++) {
-                r = g = b = 0;
-                for (let i = -1; i <= 1; i++) {
-                    let color = this.readPixel2(this.tmp, x, y + i, 0);
-                    r += color & 0xff;
-                    g += color >> 8 & 0xff;
-                    b += color >> 16 & 0xff;
-                }
-                r *= scale;
-                g *= scale;
-                b *= scale;
-                this.tmp2[x + y * 320] = r | g << 8 | b << 16 | 255 << 24;
+        index = 320 + 1;
+        sumIndex = 1;
+        for (let x = 1; x < 320 - 1; x++) {
+            //   index = x + 320;
+            sumIndex = x;
+            for (let y = 0; y < 198; y++) {
+                color = this.tmp[sumIndex];
+                r = color & 0xff;
+                g = color >> 8 & 0xff;
+                b = color >> 16 & 0xff;
+                sumIndex += 320;
+
+                color = this.tmp[sumIndex];
+                r += color & 0xff;
+                g += color >> 8 & 0xff;
+                b += color >> 16 & 0xff;
+                sumIndex += 320;
+
+                color = this.tmp[sumIndex];
+                r += color & 0xff;
+                g += color >> 8 & 0xff;
+                b += color >> 16 & 0xff;
+                sumIndex += 320;
+
+                sumIndex -= 320 * 2;
+                r *= scale; g *= scale; b *= scale;
+                this.tmp2[index] = r | g << 8 | b << 16 | 255 << 24;
+                index += 320;
             }
+            index += -198 * 320 + 1;
         }
+
+        /*
+                for (let y = 1; y < 200 - 1; y++) {
+                    for (let x = 1; x < 320 - 1; x++) {
+                        r = g = b = 0;
+                        for (let i = -1; i <= 1; i++) {
+                            let color = this.readPixel2(this.tmp, x, y + i, 0);
+                            r += color & 0xff;
+                            g += color >> 8 & 0xff;
+                            b += color >> 16 & 0xff;
+                        }
+                        r *= scale;
+                        g *= scale;
+                        b *= scale;
+                        this.tmp2[x + y * 320] = r | g << 8 | b << 16 | 255 << 24;
+                    }
+                }*/
         this.fastFramebufferCopy(this.framebuffer, this.tmp2);
-
     }
 
     public pixelate() {
@@ -1492,11 +1539,7 @@ export default class Framebuffer {
     }
 
     public shadingTorus3(elapsedTime: number): void {
-
-        this.wBuffer.fill(100);
-
         let points: Array<Vector3> = [];
-
         const STEPS = 15 * 2;
         const STEPS2 = 12 * 2;
         for (let i = 0; i < STEPS; i++) {
@@ -1511,28 +1554,6 @@ export default class Framebuffer {
             }
         }
 
-        let index: Array<number> = [];
-
-        for (let j = 0; j < STEPS; j++) {
-            for (let i = 0; i < STEPS2; i++) {
-                index.push(((STEPS2 * j) + (1 + i) % STEPS2) % points.length); // 2
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 1
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
-
-                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2) % points.length); //4
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 5
-            }
-        }
-
-        // compute normals
-        let normals: Array<Vector3> = new Array<Vector3>();
-
-        for (let i = 0; i < index.length; i += 3) {
-            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
-            normals.push(normal);
-        }
-
         let scale = 1.2;
 
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.09));
@@ -1543,10 +1564,6 @@ export default class Framebuffer {
          */
         let points2: Array<Vector3> = new Array<Vector3>();
 
-        let normals2: Array<Vector3> = new Array<Vector3>();
-        for (let n = 0; n < normals.length; n++) {
-            normals2.push(modelViewMartrix.multiply(normals[n]));
-        }
 
         modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.04) * 25,
             Math.sin(elapsedTime * 0.05) * 9, -34).multiplyMatrix(modelViewMartrix);
@@ -1575,16 +1592,10 @@ export default class Framebuffer {
          * 3. scan conversion (rasterization)
          */
         for (let i = 0; i < points2.length; i++) {
-
             let v1 = points2[i];
-
-            let scalar = 1;
             let color = 0xffbbffbb;
-            if (v1.x > Framebuffer.minWindow.x &&
-                v1.x < Framebuffer.maxWindow.x &&
-                v1.y > Framebuffer.minWindow.y &&
-                v1.y < Framebuffer.maxWindow.y) {
-
+            if (v1.x > Framebuffer.minWindow.x && v1.x < Framebuffer.maxWindow.x &&
+                v1.y > Framebuffer.minWindow.y && v1.y < Framebuffer.maxWindow.y) {
                 this.drawPixel(v1.x, v1.y, color);
             }
         }
