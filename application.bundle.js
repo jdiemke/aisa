@@ -527,10 +527,11 @@ class Canvas {
         else {
             this.framebuffer.blur();
             this.framebuffer.shadingTorus3(time * 0.015);
-            this.framebuffer.drawTexture(32, 60, this.texture2, 1.0);
+            this.framebuffer.drawTexture(32, 70, this.texture2, 1.0);
         }
         // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
         // this.framebuffer.shadingTorus2(time * 0.02);
+        // this.framebuffer.drawTexture(32, 60, this.texture2, 1.0);
         // this.framebuffer.wireFrameTerrain(time*0.01, this.texture3);
         //   this.framebuffer.pixelate();
         //     this.framebuffer.wireFrameTerrain(time*0.008,this.texture3);
@@ -959,40 +960,86 @@ class Framebuffer {
     crossFade() {
     }
     blur() {
-        let scale = 1 / (3.025);
+        let scale = 1 / (3.1);
         let r = 0;
         let g = 0;
         let b = 0;
-        for (let y = 1; y < 200 - 1; y++) {
-            for (let x = 1; x < 320 - 1; x++) {
-                r = g = b = 0;
-                for (let i = -1; i <= 1; i++) {
-                    let color = this.readPixel(x + i, y, 0);
-                    r += color & 0xff;
-                    g += color >> 8 & 0xff;
-                    b += color >> 16 & 0xff;
-                }
+        let index = 1 + 320;
+        let sumIndex = 320;
+        let color;
+        for (let y = 0; y < 198; y++) {
+            for (let x = 0; x < 318; x++) {
+                color = this.framebuffer[sumIndex];
+                r = color & 0xff;
+                g = color >> 8 & 0xff;
+                b = color >> 16 & 0xff;
+                sumIndex++;
+                color = this.framebuffer[sumIndex];
+                r += color & 0xff;
+                g += color >> 8 & 0xff;
+                b += color >> 16 & 0xff;
+                sumIndex++;
+                color = this.framebuffer[sumIndex];
+                r += color & 0xff;
+                g += color >> 8 & 0xff;
+                b += color >> 16 & 0xff;
+                sumIndex++;
+                sumIndex -= 2;
                 r *= scale;
                 g *= scale;
                 b *= scale;
-                this.tmp[x + y * 320] = r | g << 8 | b << 16 | 255 << 24;
+                this.tmp[index] = r | g << 8 | b << 16 | 255 << 24;
+                index++;
             }
+            sumIndex += 2;
+            index += 2;
         }
-        for (let y = 1; y < 200 - 1; y++) {
-            for (let x = 1; x < 320 - 1; x++) {
-                r = g = b = 0;
-                for (let i = -1; i <= 1; i++) {
-                    let color = this.readPixel2(this.tmp, x, y + i, 0);
-                    r += color & 0xff;
-                    g += color >> 8 & 0xff;
-                    b += color >> 16 & 0xff;
-                }
+        index = 320 + 1;
+        sumIndex = 1;
+        for (let x = 1; x < 320 - 1; x++) {
+            //   index = x + 320;
+            sumIndex = x;
+            for (let y = 0; y < 198; y++) {
+                color = this.tmp[sumIndex];
+                r = color & 0xff;
+                g = color >> 8 & 0xff;
+                b = color >> 16 & 0xff;
+                sumIndex += 320;
+                color = this.tmp[sumIndex];
+                r += color & 0xff;
+                g += color >> 8 & 0xff;
+                b += color >> 16 & 0xff;
+                sumIndex += 320;
+                color = this.tmp[sumIndex];
+                r += color & 0xff;
+                g += color >> 8 & 0xff;
+                b += color >> 16 & 0xff;
+                sumIndex += 320;
+                sumIndex -= 320 * 2;
                 r *= scale;
                 g *= scale;
                 b *= scale;
-                this.tmp2[x + y * 320] = r | g << 8 | b << 16 | 255 << 24;
+                this.tmp2[index] = r | g << 8 | b << 16 | 255 << 24;
+                index += 320;
             }
+            index += -198 * 320 + 1;
         }
+        /*
+                for (let y = 1; y < 200 - 1; y++) {
+                    for (let x = 1; x < 320 - 1; x++) {
+                        r = g = b = 0;
+                        for (let i = -1; i <= 1; i++) {
+                            let color = this.readPixel2(this.tmp, x, y + i, 0);
+                            r += color & 0xff;
+                            g += color >> 8 & 0xff;
+                            b += color >> 16 & 0xff;
+                        }
+                        r *= scale;
+                        g *= scale;
+                        b *= scale;
+                        this.tmp2[x + y * 320] = r | g << 8 | b << 16 | 255 << 24;
+                    }
+                }*/
         this.fastFramebufferCopy(this.framebuffer, this.tmp2);
     }
     pixelate() {
@@ -1911,7 +1958,6 @@ class Framebuffer {
         }
     }
     shadingTorus3(elapsedTime) {
-        this.wBuffer.fill(100);
         let points = [];
         const STEPS = 15 * 2;
         const STEPS2 = 12 * 2;
@@ -1925,23 +1971,6 @@ class Framebuffer {
                 points.push(pos);
             }
         }
-        let index = [];
-        for (let j = 0; j < STEPS; j++) {
-            for (let i = 0; i < STEPS2; i++) {
-                index.push(((STEPS2 * j) + (1 + i) % STEPS2) % points.length); // 2
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 1
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
-                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2) % points.length); //4
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 5
-            }
-        }
-        // compute normals
-        let normals = new Array();
-        for (let i = 0; i < index.length; i += 3) {
-            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
-            normals.push(normal);
-        }
         let scale = 1.2;
         let modelViewMartrix = Matrix4f_1.default.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f_1.default.constructYRotationMatrix(elapsedTime * 0.09));
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f_1.default.constructXRotationMatrix(elapsedTime * 0.08));
@@ -1949,10 +1978,6 @@ class Framebuffer {
          * Vertex Shader Stage
          */
         let points2 = new Array();
-        let normals2 = new Array();
-        for (let n = 0; n < normals.length; n++) {
-            normals2.push(modelViewMartrix.multiply(normals[n]));
-        }
         modelViewMartrix = Matrix4f_1.default.constructTranslationMatrix(Math.sin(elapsedTime * 0.04) * 25, Math.sin(elapsedTime * 0.05) * 9, -34).multiplyMatrix(modelViewMartrix);
         for (let p = 0; p < points.length; p++) {
             let transformed = modelViewMartrix.multiply(points[p]);
@@ -1975,12 +2000,9 @@ class Framebuffer {
          */
         for (let i = 0; i < points2.length; i++) {
             let v1 = points2[i];
-            let scalar = 1;
             let color = 0xffbbffbb;
-            if (v1.x > Framebuffer.minWindow.x &&
-                v1.x < Framebuffer.maxWindow.x &&
-                v1.y > Framebuffer.minWindow.y &&
-                v1.y < Framebuffer.maxWindow.y) {
+            if (v1.x > Framebuffer.minWindow.x && v1.x < Framebuffer.maxWindow.x &&
+                v1.y > Framebuffer.minWindow.y && v1.y < Framebuffer.maxWindow.y) {
                 this.drawPixel(v1.x, v1.y, color);
             }
         }
