@@ -27,9 +27,10 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 ### Features
 - Flat Shading
 - Near Plane & Viewport Clipping
-### Backlog
 - Lens Flare
+### Backlog
 - View Frustum Culling & Space Partitioning
+- 3D Portal Engine
 - Camera
 - Vertex shading (Flat, Gouraud, Phong)
 - Texture Mapping
