@@ -370,7 +370,7 @@ class ImagePreloader {
  */
 class Application {
     main() {
-        let canvas = new AISA.Canvas(640, 400);
+        let canvas = new AISA.Canvas(320, 200);
         canvas.appendTo(document.getElementById('aisa'));
         canvas.init();
         // TODO: copy image file into dist
@@ -400,6 +400,16 @@ class Canvas {
         this.canvas = document.createElement('canvas');
         this.canvas.width = width;
         this.canvas.height = height;
+        this.canvas.style.cssText = 'image-rendering: optimizeSpeed;' +
+            'image-rendering: -moz-crisp-edges;' +
+            'image-rendering: -o-crisp-edges;' +
+            'image-rendering: -webkit-crisp-edges;' +
+            'image-rendering: crisp-edges;' +
+            'image-rendering: -webkit-optimize-contrast;' +
+            'image-rendering: pixelated; ' +
+            '-ms-interpolation-mode: nearest-neighbor;'; // IE
+        this.canvas.style.width = '' + width * 2 + 'px';
+        this.canvas.style.height = '' + height * 2 + 'px';
         this.context = this.canvas.getContext('2d');
         this.context.oImageSmoothingEnabled = false;
         this.context.imageSmoothingEnabled = false;
@@ -409,7 +419,6 @@ class Canvas {
         this.backbufferCanvas.height = 200;
         this.backbufferContext = this.backbufferCanvas.getContext('2d');
         this.framebuffer = new Framebuffer_1.default(320, 200);
-        this.start = Date.now();
         this.boundRenderLoop = this.renderLoop.bind(this);
     }
     /**
@@ -667,6 +676,7 @@ class Canvas {
                                                             this.texture13.height = img13.height;
                                                             let myAudio = new Audio(__webpack_require__(12));
                                                             myAudio.loop = true;
+                                                            this.start = Date.now();
                                                             myAudio.play();
                                                             this.renderLoop(0);
                                                         });
@@ -704,8 +714,9 @@ class Canvas {
         requestAnimationFrame(this.boundRenderLoop);
     }
     flipBackbuffer() {
-        this.backbufferContext.putImageData(this.framebuffer.getImageData(), 0, 0);
-        this.context.drawImage(this.backbufferCanvas, 0, 0, 320, 200, 0, 0, 320 * 2, 200 * 2);
+        //this.backbufferContext.putImageData(this.framebuffer.getImageData(), 0, 0);
+        //this.context.drawImage(this.backbufferCanvas, 0, 0, 320, 200, 0, 0, 320 * 2, 200 * 2);
+        this.context.putImageData(this.framebuffer.getImageData(), 0, 0);
     }
     appendTo(element) {
         element.appendChild(this.canvas);
@@ -1232,11 +1243,8 @@ class Framebuffer {
         }
     }
     drawTextureNoClipAlpha(x, y, texture) {
-        const SCREEN_WIDTH = 320;
-        const SCREEN_HEIGHT = 200;
         let framebufferIndex = x + y * this.width;
         let textureIndex = 0;
-        let textureRowOffset = 0;
         let framebufferRowOffset = this.width - texture.width;
         for (let y = 0; y < texture.height; y++) {
             for (let x = 0; x < texture.width; x++) {
@@ -1247,7 +1255,6 @@ class Framebuffer {
                 framebufferIndex++;
                 textureIndex++;
             }
-            textureIndex += textureRowOffset;
             framebufferIndex += framebufferRowOffset;
         }
     }
