@@ -408,16 +408,13 @@ class Canvas {
             'image-rendering: -webkit-optimize-contrast;' +
             'image-rendering: pixelated; ' +
             '-ms-interpolation-mode: nearest-neighbor;'; // IE
-        this.canvas.style.width = '' + width * 2 + 'px';
-        this.canvas.style.height = '' + height * 2 + 'px';
+        let aspect = Math.round(200 / 320 * 100);
+        this.canvas.style.width = '100%'; //640px';
+        this.canvas.style.height = '100%'; //'400px';
         this.context = this.canvas.getContext('2d');
         this.context.oImageSmoothingEnabled = false;
         this.context.imageSmoothingEnabled = false;
         this.context.webkitImageSmoothingEnabled = false;
-        this.backbufferCanvas = document.createElement('canvas');
-        this.backbufferCanvas.width = 320;
-        this.backbufferCanvas.height = 200;
-        this.backbufferContext = this.backbufferCanvas.getContext('2d');
         this.framebuffer = new Framebuffer_1.default(320, 200);
         this.boundRenderLoop = this.renderLoop.bind(this);
     }
