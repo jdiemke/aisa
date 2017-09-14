@@ -6,9 +6,7 @@ declare function require(string): string;
 export class Canvas {
 
     private canvas: HTMLCanvasElement;
-    private backbufferCanvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
-    private backbufferContext: CanvasRenderingContext2D;
     public framebuffer: Framebuffer;
     start: number;
 
@@ -33,20 +31,30 @@ export class Canvas {
         this.canvas.width = width;
         this.canvas.height = height;
 
+        this.canvas.style.cssText = 'image-rendering: optimizeSpeed;' + // FireFox < 6.0
+            'image-rendering: -moz-crisp-edges;' + // FireFox
+            'image-rendering: -o-crisp-edges;' +  // Opera
+            'image-rendering: -webkit-crisp-edges;' + // Chrome
+            'image-rendering: crisp-edges;' + // Chrome
+            'image-rendering: -webkit-optimize-contrast;' + // Safari
+            'image-rendering: pixelated; ' + // Future browsers
+            '-ms-interpolation-mode: nearest-neighbor;'; // IE
+
+        let aspect =  Math.round(200/320*100) ;
+        
+        this.canvas.style.width = '100%';//640px';
+        this.canvas.style.height = '100%';//'400px';
+
         this.context = this.canvas.getContext('2d');
 
         this.context.oImageSmoothingEnabled = false;
         this.context.imageSmoothingEnabled = false;
         this.context.webkitImageSmoothingEnabled = false;
 
-        this.backbufferCanvas = document.createElement('canvas');
-        this.backbufferCanvas.width = 320;
-        this.backbufferCanvas.height = 200;
-
-        this.backbufferContext = this.backbufferCanvas.getContext('2d');
+       
         this.framebuffer = new Framebuffer(320, 200);
 
-        this.start = Date.now();
+      
 
         this.boundRenderLoop = this.renderLoop.bind(this)
     }
@@ -331,6 +339,7 @@ export class Canvas {
 
                                                             let myAudio = new Audio(require('./assets/3dGalax.mp3'));
                                                             myAudio.loop = true;
+                                                            this.start = Date.now();
                                                             myAudio.play();
                                                             this.renderLoop(0);
                                                         });
@@ -373,8 +382,9 @@ export class Canvas {
     }
 
     public flipBackbuffer(): void {
-        this.backbufferContext.putImageData(this.framebuffer.getImageData(), 0, 0);
-        this.context.drawImage(this.backbufferCanvas, 0, 0, 320, 200, 0, 0, 320 * 2, 200 * 2);
+        //this.backbufferContext.putImageData(this.framebuffer.getImageData(), 0, 0);
+        //this.context.drawImage(this.backbufferCanvas, 0, 0, 320, 200, 0, 0, 320 * 2, 200 * 2);
+        this.context.putImageData(this.framebuffer.getImageData(), 0, 0);
     }
 
     public appendTo(element: HTMLElement): void {

@@ -53,7 +53,7 @@ class ImagePreloader {
 class Application {
 
     public main(): void {
-        let canvas: AISA.Canvas = new AISA.Canvas(640, 400);
+        let canvas: AISA.Canvas = new AISA.Canvas(320, 200);
         canvas.appendTo(document.getElementById('aisa'));
         canvas.init();
 

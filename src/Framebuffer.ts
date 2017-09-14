@@ -622,14 +622,10 @@ export default class Framebuffer {
         }
     }
 
-    public drawTextureNoClipAlpha(x: number, y: number, texture: Texture) {
-        const SCREEN_WIDTH = 320;
-        const SCREEN_HEIGHT = 200;
-
+    public drawTextureNoClipAlpha(x: number, y: number, texture: Texture): void {
         let framebufferIndex: number = x + y * this.width;
         let textureIndex: number = 0;
 
-        let textureRowOffset = 0;
         let framebufferRowOffset = this.width - texture.width;
 
         for (let y = 0; y < texture.height; y++) {
@@ -644,7 +640,6 @@ export default class Framebuffer {
                 textureIndex++;
             }
 
-            textureIndex += textureRowOffset;
             framebufferIndex += framebufferRowOffset;
         }
     }
