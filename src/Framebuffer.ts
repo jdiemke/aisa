@@ -235,6 +235,22 @@ export default class Framebuffer {
         }
     }
 
+    public drawTextureRectNoAlpha(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Texture): void {
+        let texIndex = xt + yt * texture.width;
+        let frIndex = xs + ys * 320;
+
+        for (let h = 0; h < height; h++) {
+            for (let w = 0; w < width; w++) {
+                this.framebuffer[frIndex] = texture.texture[texIndex];
+                texIndex++;
+                frIndex++;
+            }
+            texIndex += texture.width - width;
+            frIndex += 320 - width;
+        }
+    }
+
+
     public drawTextureRect(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Texture, alpha2: number): void {
         let texIndex = xt + yt * texture.width;
         let frIndex = xs + ys * 320;
@@ -643,6 +659,7 @@ export default class Framebuffer {
             framebufferIndex += framebufferRowOffset;
         }
     }
+
 
 
     /**
@@ -1686,6 +1703,28 @@ export default class Framebuffer {
             this.drawTexture(Math.round(temp.x) - texture[i].tex.width / 2, Math.round(temp.y) - texture[i].tex.height / 2, texture[i].tex, texture[i].alpha * scale);
         }
     }
+
+    // TODO: create interesting pattern!
+    public led(elapsedTime: number, texture: Texture): void {
+        let time = elapsedTime * 0.0007 * 1.0;
+        let lineDirection = new Vector3(Math.sin(time), Math.cos(time), 0);
+        let radialWaveCenter = new Vector3(40.0 / 2.0, 35.0 / 2.0, 0).add(new Vector3(40.0 / 2.0 *
+            Math.sin(-time*1.2), 35.0 / 2.0 * Math.cos(-time*1.2), 0));
+        let difference: Vector3 = new Vector3(0,0,0);
+        for (let y = 0; y < 25; y++) {
+            for (let x = 0; x < 40; x++) {
+                let directionalWave =(Math.sin((x * lineDirection.x + y * lineDirection.y) * 0.8 + time) + 1.0) * 0.5;
+                difference.x = x - radialWaveCenter.x;
+                difference.y = y - radialWaveCenter.y;
+                let radialWave =  (Math.cos(difference.length() * 0.7) + 1.0) * 0.5;
+                let waveSum: number = (radialWave + directionalWave) * 0.5;
+
+                let intensity = ((waveSum * 15) | 0) % 16;
+                this.drawTextureRectNoAlpha(x * 8, y * 8, 0, 8 * intensity, 8, 8, texture);
+            }
+        }
+    }
+
     public shadingTorus(elapsedTime: number): void {
 
         this.wBuffer.fill(100);

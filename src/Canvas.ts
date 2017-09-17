@@ -23,6 +23,7 @@ export class Canvas {
     private texture11: Texture;
     private texture12: Texture;
     private texture13: Texture;
+    private texture14: Texture;
     private boundRenderLoop: (time: number) => void;
 
     constructor(width: number, height: number) {
@@ -40,8 +41,8 @@ export class Canvas {
             'image-rendering: pixelated; ' + // Future browsers
             '-ms-interpolation-mode: nearest-neighbor;'; // IE
 
-        let aspect =  Math.round(200/320*100) ;
-        
+        let aspect = Math.round(200 / 320 * 100);
+
         this.canvas.style.width = '100%';//640px';
         this.canvas.style.height = '100%';//'400px';
 
@@ -51,10 +52,10 @@ export class Canvas {
         this.context.imageSmoothingEnabled = false;
         this.context.webkitImageSmoothingEnabled = false;
 
-       
+
         this.framebuffer = new Framebuffer(320, 200);
 
-      
+
 
         this.boundRenderLoop = this.renderLoop.bind(this)
     }
@@ -92,7 +93,7 @@ export class Canvas {
         }
         this.fpsCount++;
 
-        let time: number = (Date.now() - this.start) % 210000;
+        let time: number = (Date.now() - this.start) % 215000;
 
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
@@ -163,19 +164,23 @@ export class Canvas {
                 { tex: this.texture11, scale: 2.3, alpha: 0.5 },
                 { tex: this.texture13, scale: 1.6, alpha: 0.25 }
             ]);
-        } else {
+        } else if (time < 210000) {
             this.framebuffer.blur();
             this.framebuffer.shadingTorus3(time * 0.015);
             this.framebuffer.drawTexture(32, 70, this.texture2, 1.0);
+        } else {
+            this.framebuffer.led(time, this.texture14);
+            this.framebuffer.drawTexture(32, 64, this.texture2, 1.0);
         }
+
 
         // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
         // this.framebuffer.shadingTorus2(time * 0.02);
         // this.framebuffer.drawTexture(32, 60, this.texture2, 1.0);
 
+        //this.framebuffer.clear();
 
-
-        // this.framebuffer.wireFrameTerrain(time*0.01, this.texture3);
+        //this.framebuffer.wireFrameTerrain(time*0.01, this.texture3);
         //   this.framebuffer.pixelate();
 
 
@@ -337,11 +342,19 @@ export class Canvas {
                                                             this.texture13.width = img13.width;
                                                             this.texture13.height = img13.height;
 
-                                                            let myAudio = new Audio(require('./assets/3dGalax.mp3'));
-                                                            myAudio.loop = true;
-                                                            this.start = Date.now();
-                                                            myAudio.play();
-                                                            this.renderLoop(0);
+                                                            let img14 = new Image();
+                                                            img14.addEventListener("load", () => {
+                                                                this.texture14 = new Texture();
+                                                                this.texture14.texture = this.getImageData(img14, false);
+                                                                this.texture14.width = img14.width;
+                                                                this.texture14.height = img14.height;
+                                                                let myAudio = new Audio(require('./assets/3dGalax.mp3'));
+                                                                myAudio.loop = true;
+                                                                this.start = Date.now();
+                                                                myAudio.play();
+                                                                this.renderLoop(0);
+                                                            });
+                                                            img14.src = require("./assets/led.png");
                                                         });
                                                         img13.src = require("./assets/bokeh.png");
                                                     });
