@@ -245,15 +245,24 @@ export class Canvas {
         return conv;
     }
 
+    public createTexture(path: string, hasAlpha: boolean): Promise<Texture> {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                const texture = new Texture();
+                texture.texture = this.getImageData(img, hasAlpha);
+                texture.width = img.width;
+                texture.height = img.height;
+                resolve(texture);
+            };
+            img.onerror = () => resolve();
+            img.src = path;
+        });
+    }
+
     public init(): void {
-        let img = new Image();
-        img.addEventListener("load", () => {
-            this.texture = new Texture();
-            this.texture.texture = this.getImageData(img);
-            this.texture.width = img.width;
-            this.texture.height = img.height;
-
-
+        this.createTexture(require("./assets/logo.png"), false).then((texture) => {
+            this.texture = texture;
             let img2 = new Image();
             img2.addEventListener("load", () => {
                 this.texture2 = new Texture();
@@ -381,7 +390,7 @@ export class Canvas {
             });
             img2.src = require("./assets/razor1911.png");
         });
-        img.src = require("./assets/logo.png");
+
     }
 
     public display(): void {
