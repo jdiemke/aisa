@@ -34,7 +34,6 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - 3D Portal Engine
 - Camera
 - Vertex shading (Flat, Gouraud, Phong)
-- Texture Mapping
 - Light Sources
 - Material
 - Shadows (Projection Shadows, Shadow Mapping)
