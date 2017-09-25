@@ -93,7 +93,7 @@ export class Canvas {
         }
         this.fpsCount++;
 
-        let time: number = (Date.now() - this.start) % 215000;
+        let time: number = (Date.now() - this.start) % 230000;
 
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
@@ -168,11 +168,14 @@ export class Canvas {
             this.framebuffer.blur();
             this.framebuffer.shadingTorus3(time * 0.015);
             this.framebuffer.drawTexture(32, 70, this.texture2, 1.0);
-        } else {
+        } else if (time < 215000) {
             this.framebuffer.led(time, this.texture14);
             this.framebuffer.drawTexture(32, 64, this.texture2, 1.0);
+        } else {
+            this.framebuffer.setBob(this.texture7);
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
+            this.framebuffer.shadingTorus4(time * 0.009);
         }
-
 
         // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
         // this.framebuffer.shadingTorus2(time * 0.02);

@@ -109,6 +109,12 @@ export default class Framebuffer {
     private camera: ControllableCamera;
 
     private obj: any;
+    private bob: Texture;
+
+    setBob(texture: Texture) {
+        this.bob = texture;
+    }
+
     constructor(width: number, height: number) {
         this.width = width;
         this.height = height;
@@ -1545,8 +1551,121 @@ export default class Framebuffer {
                     this.clipConvexPolygon(new Array<Vector3>(v1, v2, v3), color);
                 } else {
                     this.drawTriangleDDA(v1, v2, v3, color);
+                    //this.drawTriangleDDA2(v1, v2, v3, new Vector3(0, 0, 0), new Vector3(0, 16, 0), new Vector3(16, 16, 0), color);
                 }
             }
+        }
+    }
+
+    public shadingTorus4(elapsedTime: number): void {
+
+        this.wBuffer.fill(100);
+        let index: Array<number> = [
+            1, 2, 3, 4, 1, 3,
+            5, 7, 6, 8, 7, 5,
+
+            2, 6, 7, 7, 3, 2,
+            5, 1, 4, 4, 8, 5,
+
+            4, 3, 7, 7, 8, 4,
+            1, 6, 2, 5, 6, 1
+        ];
+
+        let points: Array<Vector3> = [
+            new Vector3(-1.0, -1.0, 1.0), new Vector3(1.0, -1.0, 1.0),
+            new Vector3(1.0, 1.0, 1.0), new Vector3(-1.0, 1.0, 1.0),
+            new Vector3(-1.0, -1.0, -1.0), new Vector3(1.0, -1.0, -1.0),
+            new Vector3(1.0, 1.0, -1.0), new Vector3(-1.0, 1.0, -1.0),
+        ];
+
+        // compute normals
+        let normals: Array<Vector3> = new Array<Vector3>();
+
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1] - 1].sub(points[index[i] - 1]).cross(points[index[i + 2] - 1].sub(points[index[i] - 1]));
+            normals.push(normal);
+        }
+
+
+
+        let scale = 4.6;
+
+        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.12));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.1));
+
+        /**
+         * Vertex Shader Stage
+         */
+        let points2: Array<Vector3> = new Array<Vector3>();
+
+        let normals2: Array<Vector3> = new Array<Vector3>();
+        for (let n = 0; n < normals.length; n++) {
+            normals2.push(modelViewMartrix.multiply(normals[n]));
+        }
+
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime*0.1)*11,Math.sin(elapsedTime*0.2)*3
+            , -19).multiplyMatrix(modelViewMartrix);
+
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiply(points[p]);
+
+            let x = transformed.x;
+            let y = transformed.y;
+            let z = transformed.z; // TODO: use translation matrix!
+
+            let xx = (320 * 0.5) + (x / (-z * 0.0078));
+            let yy = (200 * 0.5) + (y / (-z * 0.0078));
+            // commented out because it breaks the winding. inversion
+            // of y has to be done after back-face culling in the
+            // viewport transform
+            // yy =(200 * 0.5) - (y / (-z * 0.0078));
+
+            points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+        }
+
+        /**
+         * Primitive Assembly and Rasterization Stage:
+         * 1. back-face culling
+         * 2. viewport transform
+         * 3. scan conversion (rasterization)
+         */
+        
+        for (let i = 0; i < index.length; i += 3) {
+
+            // Only render triangles with CCW-ordered vertices
+            // 
+            // Reference:
+            // David H. Eberly (2006).
+            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
+            // p. 69. Morgan Kaufmann Publishers, United States.
+            //
+            let v1 = points2[index[i]-1];
+            let v2 = points2[index[i + 1]-1];
+            let v3 = points2[index[i + 2]-1];
+
+            // if (this.isTriangleCCW(v1, v2, v3)) {
+
+           // let normal = normals2[i / 3];
+           // let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.5, 0.5, 0.5).normalize())) * 100), 255) + 50;
+           // let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar + 100;
+            if (v1.x < Framebuffer.minWindow.x ||
+                v2.x < Framebuffer.minWindow.x ||
+                v3.x < Framebuffer.minWindow.x ||
+                v1.x > Framebuffer.maxWindow.x ||
+                v2.x > Framebuffer.maxWindow.x ||
+                v3.x > Framebuffer.maxWindow.x ||
+                v1.y < Framebuffer.minWindow.y ||
+                v2.y < Framebuffer.minWindow.y ||
+                v3.y < Framebuffer.minWindow.y ||
+                v1.y > Framebuffer.maxWindow.y ||
+                v2.y > Framebuffer.maxWindow.y ||
+                v3.y > Framebuffer.maxWindow.y) {
+                // this.clipConvexPolygon(new Array<Vector3>(v1, v2, v3), color);
+            } else {
+                // this.drawTriangleDDA(v1, v2, v3, color);
+                this.drawTriangleDDA2(v1, v2, v3, new Vector3(0, 0, 0), new Vector3(0, 16, 0), new Vector3(16, 16, 0), 0);
+            }
+            // }
         }
     }
 
@@ -1709,14 +1828,14 @@ export default class Framebuffer {
         let time = elapsedTime * 0.0007 * 1.0;
         let lineDirection = new Vector3(Math.sin(time), Math.cos(time), 0);
         let radialWaveCenter = new Vector3(40.0 / 2.0, 35.0 / 2.0, 0).add(new Vector3(40.0 / 2.0 *
-            Math.sin(-time*1.2), 35.0 / 2.0 * Math.cos(-time*1.2), 0));
-        let difference: Vector3 = new Vector3(0,0,0);
+            Math.sin(-time * 1.2), 35.0 / 2.0 * Math.cos(-time * 1.2), 0));
+        let difference: Vector3 = new Vector3(0, 0, 0);
         for (let y = 0; y < 25; y++) {
             for (let x = 0; x < 40; x++) {
-                let directionalWave =(Math.sin((x * lineDirection.x + y * lineDirection.y) * 0.8 + time) + 1.0) * 0.5;
+                let directionalWave = (Math.sin((x * lineDirection.x + y * lineDirection.y) * 0.8 + time) + 1.0) * 0.5;
                 difference.x = x - radialWaveCenter.x;
                 difference.y = y - radialWaveCenter.y;
-                let radialWave =  (Math.cos(difference.length() * 0.7) + 1.0) * 0.5;
+                let radialWave = (Math.cos(difference.length() * 0.7) + 1.0) * 0.5;
                 let waveSum: number = (radialWave + directionalWave) * 0.5;
 
                 let intensity = ((waveSum * 15) | 0) % 16;
@@ -2179,6 +2298,282 @@ export default class Framebuffer {
         }
     }
 
+    fillLongRightTriangle2(v1: Vector3, v2: Vector3, v3: Vector3, t1: Vector3, t2: Vector3, t3: Vector3, color: number): void {
+
+        let yDistanceLeft = v2.y - v1.y;
+        let yDistanceRight = v3.y - v1.y;
+
+        let slope1 = (v2.x - v1.x) / yDistanceLeft;
+        let slope2 = (v3.x - v1.x) / yDistanceRight;
+
+        let tslope1u = (t2.x / v2.z - t1.x / v1.z) / yDistanceLeft;
+        let tslope2u = (t3.x / v3.z - t1.x / v1.z) / yDistanceRight;
+
+        let tslope1v = (t2.y / v2.z - t1.y / v1.z) / yDistanceLeft;
+        let tslope2v = (t3.y / v3.z - t1.y / v1.z) / yDistanceRight;
+
+        let zslope1 = (1 / v2.z - 1 / v1.z) / yDistanceLeft;
+        let zslope2 = (1 / v3.z - 1 / v1.z) / yDistanceRight;
+
+        let curx1 = v1.x;
+        let curx2 = v1.x;
+
+        let curz1 = 1.0 / v1.z;
+        let curz2 = 1.0 / v1.z;
+
+        let curu1 = t1.x / v1.z;
+        let curv1 = t1.y / v1.z;
+        let curu2 = t1.x / v1.z;
+        let curv2 = t1.y / v1.z;
+
+        let xPosition = v1.x;
+        let xPosition2 = v1.x;
+        let yPosition = v1.y;
+
+        for (let i = 0; i < yDistanceLeft; i++) {
+            let length = Math.round(xPosition2) - Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            let spanzStep = (curz2 - curz1) / length;
+            let spanuStep = (curu2 - curu1) / length;
+            let spanvStep = (curv2 - curv1) / length;
+            let wStart = curz1;
+
+            let uStart = curu1;
+            let vStart = curv1;
+            for (let j = 0; j < length; j++) {
+                if (wStart < this.wBuffer[framebufferIndex]) {
+                    this.wBuffer[framebufferIndex] = wStart;
+                    let z = 1 / wStart;
+                    let u = (uStart *z) | 0;
+                    let v = (vStart *z) | 0;
+                    //console.log('u: ' + u + ' v: '+ v);
+                    let color = this.bob.texture[u + v * 16];
+                    this.framebuffer[framebufferIndex] = color;
+                }
+                framebufferIndex++;
+                wStart += spanzStep;
+                uStart += spanuStep;
+                vStart += spanvStep;
+            }
+
+            xPosition += slope1;
+            xPosition2 += slope2;
+            yPosition++;
+
+            curx1 += slope1;
+            curx2 += slope2;
+
+            curz1 += zslope1;
+            curz2 += zslope2;
+
+            curu1 += tslope1u;
+            curu2 += tslope2u;
+
+            curv1 += tslope1v;
+            curv2 += tslope2v;
+        }
+
+        yDistanceLeft = v3.y - v2.y;
+        slope1 = (v3.x - v2.x) / yDistanceLeft;
+        zslope1 = (1 / v3.z - 1 / v2.z) / yDistanceLeft;
+        tslope1u = (t3.x / v3.z - t2.x / v2.z) / yDistanceLeft;
+        tslope1v = (t3.y / v3.z - t2.y / v2.z) / yDistanceLeft;
+
+
+        curx1 = v2.x;
+        curz1 = 1.0 / v2.z;
+        curu1 = t2.x / v2.z;
+        curv1 = t2.y / v2.z;
+        xPosition = v2.x;
+        yPosition = v2.y;
+
+        for (let i = 0; i < yDistanceLeft; i++) {
+            let length = Math.round(xPosition2) - Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+
+            let spanzStep = (curz2 - curz1) / length;
+            let spanuStep = (curu2 - curu1) / length;
+            let spanvStep = (curv2 - curv1) / length;
+            let wStart = curz1;
+
+            let uStart = curu1;
+            let vStart = curv1;
+            for (let j = 0; j < length; j++) {
+                if (wStart < this.wBuffer[framebufferIndex]) {
+                    this.wBuffer[framebufferIndex] = wStart;
+
+                    let z = 1 / wStart;
+                    let u = (uStart *z) | 0;
+                    let v = (vStart *z) | 0;
+                    //console.log('u: ' + u + ' v: '+ v);
+                    let color = this.bob.texture[u + v * 16];
+                    this.framebuffer[framebufferIndex] = color;
+
+                }
+                framebufferIndex++;
+                wStart += spanzStep;
+                uStart += spanuStep;
+                vStart += spanvStep;
+            }
+
+            xPosition += slope1;
+            xPosition2 += slope2;
+            yPosition++;
+
+            curx1 += slope1;
+            curx2 += slope2;
+
+            curz1 += zslope1;
+            curz2 += zslope2;
+
+            curu1 += tslope1u;
+            curu2 += tslope2u;
+
+            curv1 += tslope1v;
+            curv2 += tslope2v;
+        }
+    }
+
+    fillLongLeftTriangle2(v1: Vector3, v2: Vector3, v3: Vector3, t1: Vector3, t2: Vector3, t3: Vector3, color: number): void {
+
+        let yDistanceRight = v2.y - v1.y;
+        let yDistanceLeft = v3.y - v1.y;
+
+        let slope2 = (v2.x - v1.x) / yDistanceRight;
+        let slope1 = (v3.x - v1.x) / yDistanceLeft;
+
+        let tslope1u = (t3.x / v3.z - t1.x / v1.z) / yDistanceLeft;
+        let tslope2u = (t2.x / v2.z - t1.x / v1.z) / yDistanceRight;
+
+        let tslope1v = (t3.y / v3.z - t1.y / v1.z) / yDistanceLeft;
+        let tslope2v = (t2.y / v2.z - t1.y / v1.z) / yDistanceRight;
+
+
+        let zslope2 = (1 / v2.z - 1 / v1.z) / yDistanceRight;
+        let zslope1 = (1 / v3.z - 1 / v1.z) / yDistanceLeft;
+
+        let curx1 = v1.x;
+        let curx2 = v1.x;
+
+        let curz1 = 1.0 / v1.z;
+        let curz2 = 1.0 / v1.z;
+
+        let curu1 = t1.x / v1.z;
+        let curv1 = t1.y / v1.z;
+        let curu2 = t1.x / v1.z;
+        let curv2 = t1.y / v1.z;
+
+        let xPosition = v1.x;
+        let xPosition2 = v1.x;
+        let yPosition = v1.y;
+
+        for (let i = 0; i < yDistanceRight; i++) {
+            let length = Math.round(xPosition2) - Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            let spanzStep = (curz2 - curz1) / length;
+            let spanuStep = (curu2 - curu1) / length;
+            let spanvStep = (curv2 - curv1) / length;
+            let wStart = curz1;
+
+            let uStart = curu1;
+            let vStart = curv1;
+            for (let j = 0; j < length; j++) {
+                if (wStart < this.wBuffer[framebufferIndex]) {
+                    this.wBuffer[framebufferIndex] = wStart;
+                    let z = 1 / wStart;
+                    let u = (uStart *z) | 0;
+                    let v = (vStart *z) | 0;
+                    //console.log('u: ' + u + ' v: '+ v);
+                    let color = this.bob.texture[u + v * 16];
+                    this.framebuffer[framebufferIndex] = color;
+                }
+                framebufferIndex++;
+                wStart += spanzStep;
+                uStart += spanuStep;
+                vStart += spanvStep;
+            }
+
+            xPosition += slope1;
+            xPosition2 += slope2;
+            yPosition++;
+
+            curx1 += slope1;
+            curx2 += slope2;
+
+            curz1 += zslope1;
+            curz2 += zslope2;
+
+            curu1 += tslope1u;
+            curu2 += tslope2u;
+
+            curv1 += tslope1v;
+            curv2 += tslope2v;
+        }
+
+        yDistanceRight = v3.y - v2.y;
+        slope2 = (v3.x - v2.x) / yDistanceRight;
+        zslope2 = (1 / v3.z - 1 / v2.z) / yDistanceRight;
+
+        tslope2u = (t3.x / v3.z - t2.x / v2.z) / yDistanceRight;
+        tslope2v = (t3.y / v3.z - t2.y / v2.z) / yDistanceRight;
+
+
+        curx2 = v2.x;
+        curz2 = 1.0 / v2.z;
+
+        curu2 = t2.x / v2.z;
+        curv2 = t2.y / v2.z;
+
+        xPosition2 = v2.x;
+        yPosition = v2.y;
+
+        for (let i = 0; i < yDistanceRight; i++) {
+            let length = Math.round(xPosition2) - Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+
+
+            let spanzStep = (curz2 - curz1) / length;
+            let spanuStep = (curu2 - curu1) / length;
+            let spanvStep = (curv2 - curv1) / length;
+            let wStart = curz1;
+
+            let uStart = curu1;
+            let vStart = curv1;
+            for (let j = 0; j < length; j++) {
+                if (wStart < this.wBuffer[framebufferIndex]) {
+                    this.wBuffer[framebufferIndex] = wStart;
+                    let z = 1 / wStart;
+                    let u = (uStart *z) | 0;
+                    let v = (vStart *z) | 0;
+                    //console.log('u: ' + u + ' v: '+ v);
+                    let color = this.bob.texture[u + v * 16];
+                    this.framebuffer[framebufferIndex] = color;
+                }
+                framebufferIndex++;
+                wStart += spanzStep;
+                uStart += spanuStep;
+                vStart += spanvStep;
+            }
+
+            xPosition += slope1;
+            xPosition2 += slope2;
+            yPosition++;
+
+            curx1 += slope1;
+            curx2 += slope2;
+
+            curz1 += zslope1;
+            curz2 += zslope2;
+
+            curu1 += tslope1u;
+            curu2 += tslope2u;
+
+            curv1 += tslope1v;
+            curv2 += tslope2v;
+        }
+    }
+
+
     fillLongLeftTriangle(v1: Vector3, v2: Vector3, v3: Vector3, color: number): void {
 
         let yDistanceRight = v2.y - v1.y;
@@ -2399,6 +2794,61 @@ export default class Framebuffer {
                 this.fillLongRightTriangle(p1, p2, p3, color);
             } else {
                 this.fillLongLeftTriangle(p1, p2, p3, color);
+            }
+        }
+    }
+
+    public drawTriangleDDA2(p1: Vector3, p2: Vector3, p3: Vector3, t1: Vector3,
+        t2: Vector3, t3: Vector3, color: number): void {
+        if (p1.y > p3.y) {
+            let temp: Vector3 = p1;
+            p1 = p3;
+            p3 = temp;
+            temp = t1;
+            t1 = t3;
+            t3 = temp;
+        }
+
+        if (p1.y > p2.y) {
+            let temp: Vector3 = p1;
+            p1 = p2;
+            p2 = temp;
+            temp = t1;
+            t1 = t2;
+            t2 = temp;
+        }
+
+        if (p2.y > p3.y) {
+            let temp: Vector3 = p2;
+            p2 = p3;
+            p3 = temp;
+            temp = t2;
+            t2 = t3;
+            t3 = temp;
+        }
+
+        if (p1.y == p3.y) {
+            return;
+        } /*else if (p2.y == p3.y) {
+            if (p2.x > p3.x) {
+                let temp: Vector3 = p2;
+                p2 = p3;
+                p3 = temp;
+            }
+            this.fillBottomFlatTriangle(p1, p2, p3, color);
+        } else if (p1.y == p2.y) {
+            if (p1.x > p2.x) {
+                let temp: Vector3 = p1;
+                p1 = p2;
+                p2 = temp;
+            }
+            this.fillTopFlatTriangle(p1, p2, p3, color);
+        } */else {
+            let x = (p3.x - p1.x) * (p2.y - p1.y) / (p3.y - p1.y) + p1.x;
+            if (x > p2.x) {
+                this.fillLongRightTriangle2(p1, p2, p3, t1, t2, t3, color);
+            } else {
+                this.fillLongLeftTriangle2(p1, p2, p3, t1, t2, t3, color);
             }
         }
     }

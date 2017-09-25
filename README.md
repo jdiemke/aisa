@@ -26,6 +26,7 @@ Type the following command into your shell:
 And open `http://localhost:8080/webpack-dev-server/` in your favourite web browser.
 ### Features
 - Flat Shading
+- Perspective Correct Texture Mapping
 - Near Plane & Viewport Clipping
 - Lens Flare
 ### Backlog
