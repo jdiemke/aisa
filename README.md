@@ -1,5 +1,5 @@
 # AISA
-AISA is a Software 3D Engine written in TypeScript 2.3.3
+AISA is a Software 3D Engine written in TypeScript 2.5.2
 ### Demo
 https://jdiemke.github.io/AISA/
 ### How to get

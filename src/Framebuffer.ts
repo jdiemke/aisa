@@ -2344,8 +2344,8 @@ export default class Framebuffer {
                 if (wStart < this.wBuffer[framebufferIndex]) {
                     this.wBuffer[framebufferIndex] = wStart;
                     let z = 1 / wStart;
-                    let u = (uStart *z) | 0;
-                    let v = (vStart *z) | 0;
+                    let u = Math.max(Math.min((uStart *z) | 0, 15),0);
+                    let v = Math.max(Math.min((vStart *z) | 0, 15),0);
                     //console.log('u: ' + u + ' v: '+ v);
                     let color = this.bob.texture[u + v * 16];
                     this.framebuffer[framebufferIndex] = color;
@@ -2403,8 +2403,8 @@ export default class Framebuffer {
                     this.wBuffer[framebufferIndex] = wStart;
 
                     let z = 1 / wStart;
-                    let u = (uStart *z) | 0;
-                    let v = (vStart *z) | 0;
+                    let u = Math.max(Math.min((uStart *z) | 0, 15),0);
+                    let v = Math.max(Math.min((vStart *z) | 0, 15),0);
                     //console.log('u: ' + u + ' v: '+ v);
                     let color = this.bob.texture[u + v * 16];
                     this.framebuffer[framebufferIndex] = color;
@@ -2481,8 +2481,8 @@ export default class Framebuffer {
                 if (wStart < this.wBuffer[framebufferIndex]) {
                     this.wBuffer[framebufferIndex] = wStart;
                     let z = 1 / wStart;
-                    let u = (uStart *z) | 0;
-                    let v = (vStart *z) | 0;
+                    let u = Math.max(Math.min((uStart *z) | 0, 15),0);
+                    let v = Math.max(Math.min((vStart *z) | 0, 15),0);
                     //console.log('u: ' + u + ' v: '+ v);
                     let color = this.bob.texture[u + v * 16];
                     this.framebuffer[framebufferIndex] = color;
@@ -2543,8 +2543,8 @@ export default class Framebuffer {
                 if (wStart < this.wBuffer[framebufferIndex]) {
                     this.wBuffer[framebufferIndex] = wStart;
                     let z = 1 / wStart;
-                    let u = (uStart *z) | 0;
-                    let v = (vStart *z) | 0;
+                    let u = Math.max(Math.min((uStart *z) | 0, 15),0);
+                    let v = Math.max(Math.min((vStart *z) | 0, 15),0);
                     //console.log('u: ' + u + ' v: '+ v);
                     let color = this.bob.texture[u + v * 16];
                     this.framebuffer[framebufferIndex] = color;
