@@ -174,7 +174,7 @@ export class Canvas {
         } else {
             this.framebuffer.setBob(this.texture7);
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
-            this.framebuffer.shadingTorus4(time * 0.009);
+            this.framebuffer.shadingTorus4(time * 0.005);
         }
 
         // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);

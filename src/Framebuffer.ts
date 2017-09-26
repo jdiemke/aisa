@@ -1560,38 +1560,49 @@ export default class Framebuffer {
     public shadingTorus4(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
-        let index: Array<number> = [
-            1, 2, 3, 4, 1, 3,
-            5, 7, 6, 8, 7, 5,
+        let points: Array<Vector3> = [];
+        
+                const STEPS = 15;
+                const STEPS2 = 8;
+                for (let i = 0; i < STEPS; i++) {
+                    let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
+                    let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
+                    let up = new Vector3(0.0, 4.0, 0);
+                    let right = frame2.sub(frame).cross(up);
+        
+                    for (let r = 0; r < STEPS2; r++) {
+                        let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
+                        points.push(pos);
+                    }
+                }
+        
+                let index: Array<number> = [];
+        
+                for (let j = 0; j < STEPS; j++) {
+                    for (let i = 0; i < STEPS2; i++) {
+                        index.push(((STEPS2 * j) + (1 + i) % STEPS2) % points.length); // 2
+                        index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 1
+                        index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+        
+                        index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2) % points.length); //4
+                        index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+                        index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 5
+                    }
+                }
+        
+                // compute normals
+                let normals: Array<Vector3> = new Array<Vector3>();
+        
+                for (let i = 0; i < index.length; i += 3) {
+                    let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+                    normals.push(normal);
+                }
+        
 
-            2, 6, 7, 7, 3, 2,
-            5, 1, 4, 4, 8, 5,
+        let scale = 2.1;
 
-            4, 3, 7, 7, 8, 4,
-            1, 6, 2, 5, 6, 1
-        ];
-
-        let points: Array<Vector3> = [
-            new Vector3(-1.0, -1.0, 1.0), new Vector3(1.0, -1.0, 1.0),
-            new Vector3(1.0, 1.0, 1.0), new Vector3(-1.0, 1.0, 1.0),
-            new Vector3(-1.0, -1.0, -1.0), new Vector3(1.0, -1.0, -1.0),
-            new Vector3(1.0, 1.0, -1.0), new Vector3(-1.0, 1.0, -1.0),
-        ];
-
-        // compute normals
-        let normals: Array<Vector3> = new Array<Vector3>();
-
-        for (let i = 0; i < index.length; i += 3) {
-            let normal = points[index[i + 1] - 1].sub(points[index[i] - 1]).cross(points[index[i + 2] - 1].sub(points[index[i] - 1]));
-            normals.push(normal);
-        }
-
-
-
-        let scale = 4.6;
-
-        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.12));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.1));
+        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.15));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.2));
 
         /**
          * Vertex Shader Stage
@@ -1603,8 +1614,8 @@ export default class Framebuffer {
             normals2.push(modelViewMartrix.multiply(normals[n]));
         }
 
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime*0.1)*11,Math.sin(elapsedTime*0.2)*3
-            , -19).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime*0.1)*14,Math.sin(elapsedTime*0.2)*3
+            , -49+Math.sin(elapsedTime*0.2)*8).multiplyMatrix(modelViewMartrix);
 
         for (let p = 0; p < points.length; p++) {
             let transformed = modelViewMartrix.multiply(points[p]);
@@ -1639,15 +1650,15 @@ export default class Framebuffer {
             // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
             // p. 69. Morgan Kaufmann Publishers, United States.
             //
-            let v1 = points2[index[i]-1];
-            let v2 = points2[index[i + 1]-1];
-            let v3 = points2[index[i + 2]-1];
+            let v1 = points2[index[i]];
+            let v2 = points2[index[i + 1]];
+            let v3 = points2[index[i + 2]];
 
-            // if (this.isTriangleCCW(v1, v2, v3)) {
+             if (this.isTriangleCCW(v1, v2, v3)) {
 
-           // let normal = normals2[i / 3];
-           // let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.5, 0.5, 0.5).normalize())) * 100), 255) + 50;
-           // let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar + 100;
+            let normal = normals2[i / 3];
+            let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.2, 0.2, 1).normalize())) * 255), 255) ;
+            let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar ;
             if (v1.x < Framebuffer.minWindow.x ||
                 v2.x < Framebuffer.minWindow.x ||
                 v3.x < Framebuffer.minWindow.x ||
@@ -1660,12 +1671,12 @@ export default class Framebuffer {
                 v1.y > Framebuffer.maxWindow.y ||
                 v2.y > Framebuffer.maxWindow.y ||
                 v3.y > Framebuffer.maxWindow.y) {
-                // this.clipConvexPolygon(new Array<Vector3>(v1, v2, v3), color);
+                 this.clipConvexPolygon2(new Array<Vector3>(v1, v2, v3),new Array<Vector3>(new Vector3(0, 0, 0), new Vector3(0, 16, 0), new Vector3(16, 16, 0)), color);
             } else {
                 // this.drawTriangleDDA(v1, v2, v3, color);
-                this.drawTriangleDDA2(v1, v2, v3, new Vector3(0, 0, 0), new Vector3(0, 16, 0), new Vector3(16, 16, 0), 0);
+                this.drawTriangleDDA2(v1, v2, v3, new Vector3(0, 16, 0), new Vector3(0, 0, 0), new Vector3(16, 16, 0), color);
             }
-            // }
+             }
         }
     }
 
@@ -1789,6 +1800,41 @@ export default class Framebuffer {
             this.drawTriangleDDA(output[0], output[1 + i], output[2 + i], color);
         }
     }
+
+
+    public clipConvexPolygon2(subject: Array<Vector3>,subjectt: Array<Vector3>, color: number): void {
+        
+                let output = subject;
+        
+                for (let j = 0; j < Framebuffer.clipRegion.length; j++) {
+                    let edge = Framebuffer.clipRegion[j];
+                    let input = output;
+                    output = new Array<Vector3>();
+                    let S = input[input.length - 1];
+        
+                    for (let i = 0; i < input.length; i++) {
+                        let point = input[i];
+                        if (edge.isInside(point)) {
+                            if (!edge.isInside(S)) {
+                                output.push(edge.computeIntersection(S, point));
+                            }
+                            output.push(point);
+                        } else if (edge.isInside(S)) {
+                            output.push(edge.computeIntersection(S, point));
+                        }
+                        S = point;
+                    }
+                };
+        
+                if (output.length < 3) {
+                    return;
+                }
+        
+                // triangulate new point set
+                for (let i = 0; i < output.length - 2; i++) {
+                    this.drawTriangleDDA(output[0], output[1 + i], output[2 + i], color);
+                }
+            }
 
     lensFlareVisible: boolean = false;
     lensFlareStart = 0;
@@ -2347,8 +2393,12 @@ export default class Framebuffer {
                     let u = Math.max(Math.min((uStart *z) | 0, 15),0);
                     let v = Math.max(Math.min((vStart *z) | 0, 15),0);
                     //console.log('u: ' + u + ' v: '+ v);
-                    let color = this.bob.texture[u + v * 16];
-                    this.framebuffer[framebufferIndex] = color;
+                    let color2 = this.bob.texture[u + v * 16];
+                    let scale =((color>>8) &0xff)/255;
+                    let r = (color2  & 0xff)*scale;
+                    let g = ((color2 >> 8)  & 0xff)*scale;
+                    let b = ((color2  >>16) & 0xff)*scale;
+                    this.framebuffer[framebufferIndex] = r |(g<<8) | (b<<16)|255<<24;
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
@@ -2406,9 +2456,12 @@ export default class Framebuffer {
                     let u = Math.max(Math.min((uStart *z) | 0, 15),0);
                     let v = Math.max(Math.min((vStart *z) | 0, 15),0);
                     //console.log('u: ' + u + ' v: '+ v);
-                    let color = this.bob.texture[u + v * 16];
-                    this.framebuffer[framebufferIndex] = color;
-
+                    let color2 = this.bob.texture[u + v * 16];
+                    let scale =((color>>8) &0xff)/255;
+                    let r = (color2  & 0xff)*scale;
+                    let g = ((color2 >> 8)  & 0xff)*scale;
+                    let b = ((color2  >>16) & 0xff)*scale;
+                    this.framebuffer[framebufferIndex] = r |(g<<8) | (b<<16)|255<<24;
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
@@ -2484,8 +2537,12 @@ export default class Framebuffer {
                     let u = Math.max(Math.min((uStart *z) | 0, 15),0);
                     let v = Math.max(Math.min((vStart *z) | 0, 15),0);
                     //console.log('u: ' + u + ' v: '+ v);
-                    let color = this.bob.texture[u + v * 16];
-                    this.framebuffer[framebufferIndex] = color;
+                    let color2 = this.bob.texture[u + v * 16];
+                    let scale =((color>>8) &0xff)/255;
+                    let r = (color2  & 0xff)*scale;
+                    let g = ((color2 >> 8)  & 0xff)*scale;
+                    let b = ((color2  >>16) & 0xff)*scale;
+                    this.framebuffer[framebufferIndex] = r |(g<<8) | (b<<16)|255<<24;
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
@@ -2545,9 +2602,12 @@ export default class Framebuffer {
                     let z = 1 / wStart;
                     let u = Math.max(Math.min((uStart *z) | 0, 15),0);
                     let v = Math.max(Math.min((vStart *z) | 0, 15),0);
-                    //console.log('u: ' + u + ' v: '+ v);
-                    let color = this.bob.texture[u + v * 16];
-                    this.framebuffer[framebufferIndex] = color;
+                    let color2 = this.bob.texture[u + v * 16];
+                    let scale =((color>>8) &0xff)/255;
+                    let r = (color2  & 0xff)*scale;
+                    let g = ((color2 >> 8)  & 0xff)*scale;
+                    let b = ((color2  >>16) & 0xff)*scale;
+                    this.framebuffer[framebufferIndex] = r |(g<<8) | (b<<16)|255<<24;
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
