@@ -443,85 +443,70 @@ class Canvas {
             this.fpsCount = 0;
         }
         this.fpsCount++;
-        let time = (Date.now() - this.start) % 210000;
+        let time = (Date.now() - this.start) % 230000;
+        /*
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
             this.framebuffer.shadingTorus(time * 0.02);
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
             //this.framebuffer.drawText(8, 192 - 18, '3D TORUS', this.texture4);
-        }
-        else if (time < 15000) {
+        } else if (time < 15000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.draw(this.texture, time);
             //this.framebuffer.drawText(8, 192 - 18, 'TEXTURED TWISTER', this.texture4);
-        }
-        else if (time < 25000) {
+        } else if (time < 25000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.drawLens(this.texture5, this.texture6, time);
             //this.framebuffer.drawText(8, 192 - 18, '2D LENS EFFECT', this.texture4);
-        }
-        else if (time < 30000) {
+        } else if (time < 30000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.shadingDemo(time * 0.02);
             // this.framebuffer.drawText(8, 192 - 18, 'SHADED 3D CUBE', this.texture4);
-        }
-        else if (time < 35000) {
+        } else if (time < 35000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.shadingSphere(time * 0.01);
             //this.framebuffer.drawText(8, 192 - 18, 'DISTORTED 3D SPHERE', this.texture4);
-        }
-        else if (time < 40000) {
+        } else if (time < 40000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.wireFrameSphereClipping(time * 0.01);
             //this.framebuffer.drawText(8, 192 - 18, 'WIREFRAME SPHERE', this.texture4);
-        }
-        else if (time < 45000) {
+        } else if (time < 45000) {
             this.framebuffer.drawVoxelLandscape2(this.texture3, time);
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
             //this.framebuffer.drawText(8, 192 - 18, 'VOXEL LANDSCAPE', this.texture4);
-        }
-        else if (time < 50000) {
+        } else if (time < 50000) {
             this.framebuffer.drawOldSchoolPlasma(time);
             //this.framebuffer.drawText(8, 192 - 18, 'OLD SCHOOL PLASMA', this.texture4);
-        }
-        else if (time < 55000) {
+        } else if (time < 55000) {
             // https://www.youtube.com/watch?v=ccYLb7cLB1I&t=773s
             this.framebuffer.drawMetaballs();
             // this.framebuffer.drawText(8, 192 - 18, '2D METABALLS', this.texture4);
-        }
-        else if (time < 60000) {
+        } else if (time < 60000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.shadingTorus2(time * 0.02);
             // this.framebuffer.drawText(8, 192 - 18, 'POLYGON CLIPPING', this.texture4);
-        }
-        else if (time < 70000) {
+        } else if (time < 70000) {
             this.framebuffer.floodFill(this.texture5, time - 60000);
             // this.framebuffer.drawText(8, 192 - 18, 'FLOOD FILL', this.texture4);
-        }
-        else if (time < 80000) {
+        } else if (time < 80000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.drawBobs(this.texture7, time);
             // this.framebuffer.drawText(8, 192 - 18, 'UNLIMITED BOBS', this.texture4);
-        }
-        else if (time < 95000) {
+        } else if (time < 95000) {
             this.framebuffer.blockFace(this.texture5, time, 80000);
             // this.framebuffer.drawText(8, 192 - 18, 'MOSAIC FADE IN', this.texture4);
-        }
-        else if (time < 140000) {
+        } else if (time < 140000) {
             this.framebuffer.scrollingBackground(this.texture8, time - 95000);
             // this.framebuffer.drawText(8, 192 - 18, 'SCROLLING BACKGROUND', this.texture4);
-        }
-        else if (time < 160000) {
+        } else if (time < 160000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture9.texture);
             this.framebuffer.cinematicScroller(this.texture4, time - 140000);
             // this.framebuffer.drawText(8, 192 - 18, 'CINEMATIC SCROLLER', this.texture4);
-        }
-        else if (time < 185000) {
+        } else if (time < 185000) {
             this.framebuffer.shadingSphereClip((time - 170000) * 0.003);
             this.framebuffer.cinematicScroller(this.texture4, time - 160000);
             //   this.framebuffer.drawText(8, 192 - 18, 'TRIANGLE NEAR PLANE CLIPPING', this.texture4);
-        }
-        else if (time < 200000) {
+        } else if (time < 200000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture12.texture);
             this.framebuffer.shadingTorus(time * 0.02);
             this.framebuffer.drawLensFlare(time - 185000, [
@@ -529,16 +514,26 @@ class Canvas {
                 { tex: this.texture11, scale: 2.3, alpha: 0.5 },
                 { tex: this.texture13, scale: 1.6, alpha: 0.25 }
             ]);
-        }
-        else {
+        } else if (time < 210000) {
             this.framebuffer.blur();
             this.framebuffer.shadingTorus3(time * 0.015);
             this.framebuffer.drawTexture(32, 70, this.texture2, 1.0);
-        }
+        } else if (time < 215000) {
+            this.framebuffer.led(time, this.texture14);
+            this.framebuffer.drawTexture(32, 64, this.texture2, 1.0);
+        } else {
+            this.framebuffer.setBob(this.texture7);
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
+            this.framebuffer.shadingTorus4(time * 0.005);
+        }*/
+        this.framebuffer.setBob(this.texture7);
+        this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
+        this.framebuffer.shadingTorus4(time * 0.005);
         // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
         // this.framebuffer.shadingTorus2(time * 0.02);
         // this.framebuffer.drawTexture(32, 60, this.texture2, 1.0);
-        // this.framebuffer.wireFrameTerrain(time*0.01, this.texture3);
+        //this.framebuffer.clear();
+        //this.framebuffer.wireFrameTerrain(time*0.01, this.texture3);
         //   this.framebuffer.pixelate();
         //     this.framebuffer.wireFrameTerrain(time*0.008,this.texture3);
         //    this.framebuffer.cinematicScroller(this.texture4, time );
@@ -592,13 +587,23 @@ class Canvas {
         }
         return conv;
     }
+    createTexture(path, hasAlpha) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                const texture = new Texture_1.default();
+                texture.texture = this.getImageData(img, hasAlpha);
+                texture.width = img.width;
+                texture.height = img.height;
+                resolve(texture);
+            };
+            img.onerror = () => resolve();
+            img.src = path;
+        });
+    }
     init() {
-        let img = new Image();
-        img.addEventListener("load", () => {
-            this.texture = new Texture_1.default();
-            this.texture.texture = this.getImageData(img);
-            this.texture.width = img.width;
-            this.texture.height = img.height;
+        this.createTexture(__webpack_require__(12), false).then((texture) => {
+            this.texture = texture;
             let img2 = new Image();
             img2.addEventListener("load", () => {
                 this.texture2 = new Texture_1.default();
@@ -671,37 +676,44 @@ class Canvas {
                                                             this.texture13.texture = this.getImageData(img13, true);
                                                             this.texture13.width = img13.width;
                                                             this.texture13.height = img13.height;
-                                                            let myAudio = new Audio(__webpack_require__(12));
-                                                            myAudio.loop = true;
-                                                            this.start = Date.now();
-                                                            myAudio.play();
-                                                            this.renderLoop(0);
+                                                            let img14 = new Image();
+                                                            img14.addEventListener("load", () => {
+                                                                this.texture14 = new Texture_1.default();
+                                                                this.texture14.texture = this.getImageData(img14, false);
+                                                                this.texture14.width = img14.width;
+                                                                this.texture14.height = img14.height;
+                                                                let myAudio = new Audio(__webpack_require__(13));
+                                                                myAudio.loop = true;
+                                                                this.start = Date.now();
+                                                                myAudio.play();
+                                                                this.renderLoop(0);
+                                                            });
+                                                            img14.src = __webpack_require__(14);
                                                         });
-                                                        img13.src = __webpack_require__(13);
+                                                        img13.src = __webpack_require__(15);
                                                     });
-                                                    img12.src = __webpack_require__(14);
+                                                    img12.src = __webpack_require__(16);
                                                 });
-                                                img11.src = __webpack_require__(15);
+                                                img11.src = __webpack_require__(17);
                                             });
-                                            img10.src = __webpack_require__(16);
+                                            img10.src = __webpack_require__(18);
                                         });
-                                        img9.src = __webpack_require__(17);
+                                        img9.src = __webpack_require__(19);
                                     });
-                                    img8.src = __webpack_require__(18);
+                                    img8.src = __webpack_require__(20);
                                 });
-                                img7.src = __webpack_require__(19);
+                                img7.src = __webpack_require__(21);
                             });
-                            img6.src = __webpack_require__(20);
+                            img6.src = __webpack_require__(22);
                         });
-                        img5.src = __webpack_require__(21);
+                        img5.src = __webpack_require__(23);
                     });
-                    img4.src = __webpack_require__(22);
+                    img4.src = __webpack_require__(24);
                 });
-                img3.src = __webpack_require__(23);
+                img3.src = __webpack_require__(25);
             });
-            img2.src = __webpack_require__(24);
+            img2.src = __webpack_require__(26);
         });
-        img.src = __webpack_require__(25);
     }
     display() {
     }
@@ -800,6 +812,9 @@ class Framebuffer {
             if (e.which == 39) this.camera.turnRight(0.05, 1.0);
         });*/
     }
+    setBob(texture) {
+        this.bob = texture;
+    }
     getImageData() {
         this.imageData.data.set(this.unsignedIntArray);
         return this.imageData;
@@ -878,6 +893,19 @@ class Framebuffer {
                 if (color & 0xff000000) {
                     this.framebuffer[frIndex] = color;
                 }
+                texIndex++;
+                frIndex++;
+            }
+            texIndex += texture.width - width;
+            frIndex += 320 - width;
+        }
+    }
+    drawTextureRectNoAlpha(xs, ys, xt, yt, width, height, texture) {
+        let texIndex = xt + yt * texture.width;
+        let frIndex = xs + ys * 320;
+        for (let h = 0; h < height; h++) {
+            for (let w = 0; w < width; w++) {
+                this.framebuffer[frIndex] = texture.texture[texIndex];
                 texIndex++;
                 frIndex++;
             }
@@ -1957,6 +1985,106 @@ class Framebuffer {
                 }
                 else {
                     this.drawTriangleDDA(v1, v2, v3, color);
+                    //this.drawTriangleDDA2(v1, v2, v3, new Vector3(0, 0, 0), new Vector3(0, 16, 0), new Vector3(16, 16, 0), color);
+                }
+            }
+        }
+    }
+    shadingTorus4(elapsedTime) {
+        this.wBuffer.fill(100);
+        let points = [];
+        const STEPS = 15;
+        const STEPS2 = 8;
+        for (let i = 0; i < STEPS; i++) {
+            let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
+            let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
+            let up = new Vector3f_1.default(0.0, 4.0, 0);
+            let right = frame2.sub(frame).cross(up);
+            for (let r = 0; r < STEPS2; r++) {
+                let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
+                points.push(pos);
+            }
+        }
+        let index = [];
+        for (let j = 0; j < STEPS; j++) {
+            for (let i = 0; i < STEPS2; i++) {
+                index.push(((STEPS2 * j) + (1 + i) % STEPS2) % points.length); // 2
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 1
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2) % points.length); //4
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 5
+            }
+        }
+        // compute normals
+        let normals = new Array();
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+            normals.push(normal);
+        }
+        let scale = 2.1;
+        let modelViewMartrix = Matrix4f_1.default.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f_1.default.constructYRotationMatrix(elapsedTime * 0.25));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f_1.default.constructXRotationMatrix(elapsedTime * 0.3));
+        /**
+         * Vertex Shader Stage
+         */
+        let points2 = new Array();
+        let normals2 = new Array();
+        for (let n = 0; n < normals.length; n++) {
+            normals2.push(modelViewMartrix.multiply(normals[n]));
+        }
+        modelViewMartrix = Matrix4f_1.default.constructTranslationMatrix(Math.sin(elapsedTime * 0.1) * 14, Math.sin(elapsedTime * 0.2) * 3, -49 + Math.sin(elapsedTime * 0.2) * 8).multiplyMatrix(modelViewMartrix);
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiply(points[p]);
+            let x = transformed.x;
+            let y = transformed.y;
+            let z = transformed.z; // TODO: use translation matrix!
+            let xx = (320 * 0.5) + (x / (-z * 0.0078));
+            let yy = (200 * 0.5) + (y / (-z * 0.0078));
+            // commented out because it breaks the winding. inversion
+            // of y has to be done after back-face culling in the
+            // viewport transform
+            // yy =(200 * 0.5) - (y / (-z * 0.0078));
+            points2.push(new Vector3f_1.default(Math.round(xx), Math.round(yy), z));
+        }
+        /**
+         * Primitive Assembly and Rasterization Stage:
+         * 1. back-face culling
+         * 2. viewport transform
+         * 3. scan conversion (rasterization)
+         */
+        for (let i = 0; i < index.length; i += 3) {
+            // Only render triangles with CCW-ordered vertices
+            // 
+            // Reference:
+            // David H. Eberly (2006).
+            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
+            // p. 69. Morgan Kaufmann Publishers, United States.
+            //
+            let v1 = points2[index[i]];
+            let v2 = points2[index[i + 1]];
+            let v3 = points2[index[i + 2]];
+            if (this.isTriangleCCW(v1, v2, v3)) {
+                let normal = normals2[i / 3];
+                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3f_1.default(0.2, 0.2, 1).normalize())) * 255), 255);
+                let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
+                if (v1.x < Framebuffer.minWindow.x ||
+                    v2.x < Framebuffer.minWindow.x ||
+                    v3.x < Framebuffer.minWindow.x ||
+                    v1.x > Framebuffer.maxWindow.x ||
+                    v2.x > Framebuffer.maxWindow.x ||
+                    v3.x > Framebuffer.maxWindow.x ||
+                    v1.y < Framebuffer.minWindow.y ||
+                    v2.y < Framebuffer.minWindow.y ||
+                    v3.y < Framebuffer.minWindow.y ||
+                    v1.y > Framebuffer.maxWindow.y ||
+                    v2.y > Framebuffer.maxWindow.y ||
+                    v3.y > Framebuffer.maxWindow.y) {
+                    this.clipConvexPolygon2(new Array(v1, v2, v3), new Array(new Vector3f_1.default(0, 0, 0), new Vector3f_1.default(0, 16, 0), new Vector3f_1.default(16, 16, 0)), color);
+                }
+                else {
+                    // this.drawTriangleDDA(v1, v2, v3, color);
+                    this.drawTriangleDDA2(v1, v2, v3, new Vector3f_1.default(0, 16, 0), new Vector3f_1.default(0, 0, 0), new Vector3f_1.default(16, 16, 0), color);
                 }
             }
         }
@@ -2052,6 +2180,36 @@ class Framebuffer {
             this.drawTriangleDDA(output[0], output[1 + i], output[2 + i], color);
         }
     }
+    clipConvexPolygon2(subject, subjectt, color) {
+        let output = subject;
+        for (let j = 0; j < Framebuffer.clipRegion.length; j++) {
+            let edge = Framebuffer.clipRegion[j];
+            let input = output;
+            output = new Array();
+            let S = input[input.length - 1];
+            for (let i = 0; i < input.length; i++) {
+                let point = input[i];
+                if (edge.isInside(point)) {
+                    if (!edge.isInside(S)) {
+                        output.push(edge.computeIntersection(S, point));
+                    }
+                    output.push(point);
+                }
+                else if (edge.isInside(S)) {
+                    output.push(edge.computeIntersection(S, point));
+                }
+                S = point;
+            }
+        }
+        ;
+        if (output.length < 3) {
+            return;
+        }
+        // triangulate new point set
+        for (let i = 0; i < output.length - 2; i++) {
+            this.drawTriangleDDA(output[0], output[1 + i], output[2 + i], color);
+        }
+    }
     drawLensFlare(elapsedTime, texture) {
         let pos = new Vector3f_1.default(Math.round(320 / 2 + Math.sin(elapsedTime * 0.00035) * 110), Math.round(200 / 2 + Math.cos(elapsedTime * 0.0003) * 80), 0);
         if (this.wBuffer[pos.x + (pos.y * 320)] == 100) {
@@ -2074,6 +2232,25 @@ class Framebuffer {
         for (let i = 0; i < texture.length; i++) {
             let temp = pos.add(dir.mul(texture[i].scale));
             this.drawTexture(Math.round(temp.x) - texture[i].tex.width / 2, Math.round(temp.y) - texture[i].tex.height / 2, texture[i].tex, texture[i].alpha * scale);
+        }
+    }
+    // TODO: create interesting pattern!
+    led(elapsedTime, texture) {
+        let time = elapsedTime * 0.0007 * 1.0;
+        let lineDirection = new Vector3f_1.default(Math.sin(time), Math.cos(time), 0);
+        let radialWaveCenter = new Vector3f_1.default(40.0 / 2.0, 35.0 / 2.0, 0).add(new Vector3f_1.default(40.0 / 2.0 *
+            Math.sin(-time * 1.2), 35.0 / 2.0 * Math.cos(-time * 1.2), 0));
+        let difference = new Vector3f_1.default(0, 0, 0);
+        for (let y = 0; y < 25; y++) {
+            for (let x = 0; x < 40; x++) {
+                let directionalWave = (Math.sin((x * lineDirection.x + y * lineDirection.y) * 0.8 + time) + 1.0) * 0.5;
+                difference.x = x - radialWaveCenter.x;
+                difference.y = y - radialWaveCenter.y;
+                let radialWave = (Math.cos(difference.length() * 0.7) + 1.0) * 0.5;
+                let waveSum = (radialWave + directionalWave) * 0.5;
+                let intensity = ((waveSum * 15) | 0) % 16;
+                this.drawTextureRectNoAlpha(x * 8, y * 8, 0, 8 * intensity, 8, 8, texture);
+            }
         }
     }
     shadingTorus(elapsedTime) {
@@ -2435,6 +2612,233 @@ class Framebuffer {
             curz2 += zslope2;
         }
     }
+    fillLongRightTriangle2(v1, v2, v3, t1, t2, t3, color) {
+        let yDistanceLeft = v2.y - v1.y;
+        let yDistanceRight = v3.y - v1.y;
+        let slope1 = (v2.x - v1.x) / yDistanceLeft;
+        let slope2 = (v3.x - v1.x) / yDistanceRight;
+        let tslope1u = (t2.x / v2.z - t1.x / v1.z) / yDistanceLeft;
+        let tslope2u = (t3.x / v3.z - t1.x / v1.z) / yDistanceRight;
+        let tslope1v = (t2.y / v2.z - t1.y / v1.z) / yDistanceLeft;
+        let tslope2v = (t3.y / v3.z - t1.y / v1.z) / yDistanceRight;
+        let zslope1 = (1 / v2.z - 1 / v1.z) / yDistanceLeft;
+        let zslope2 = (1 / v3.z - 1 / v1.z) / yDistanceRight;
+        let curx1 = v1.x;
+        let curx2 = v1.x;
+        let curz1 = 1.0 / v1.z;
+        let curz2 = 1.0 / v1.z;
+        let curu1 = t1.x / v1.z;
+        let curv1 = t1.y / v1.z;
+        let curu2 = t1.x / v1.z;
+        let curv2 = t1.y / v1.z;
+        let xPosition = v1.x;
+        let xPosition2 = v1.x;
+        let yPosition = v1.y;
+        for (let i = 0; i < yDistanceLeft; i++) {
+            let length = Math.round(xPosition2) - Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
+            let spanzStep = (curz2 - curz1) / length;
+            let spanuStep = (curu2 - curu1) / length;
+            let spanvStep = (curv2 - curv1) / length;
+            let wStart = curz1;
+            let uStart = curu1;
+            let vStart = curv1;
+            for (let j = 0; j < length; j++) {
+                if (wStart < this.wBuffer[framebufferIndex]) {
+                    this.wBuffer[framebufferIndex] = wStart;
+                    let z = 1 / wStart;
+                    let u = Math.max(Math.min((uStart * z) | 0, 15), 0);
+                    let v = Math.max(Math.min((vStart * z) | 0, 15), 0);
+                    //console.log('u: ' + u + ' v: '+ v);
+                    let color2 = this.bob.texture[u + v * 16];
+                    let scale = ((color >> 8) & 0xff) / 255;
+                    let r = (color2 & 0xff) * scale;
+                    let g = ((color2 >> 8) & 0xff) * scale;
+                    let b = ((color2 >> 16) & 0xff) * scale;
+                    this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | 255 << 24;
+                }
+                framebufferIndex++;
+                wStart += spanzStep;
+                uStart += spanuStep;
+                vStart += spanvStep;
+            }
+            xPosition += slope1;
+            xPosition2 += slope2;
+            yPosition++;
+            curx1 += slope1;
+            curx2 += slope2;
+            curz1 += zslope1;
+            curz2 += zslope2;
+            curu1 += tslope1u;
+            curu2 += tslope2u;
+            curv1 += tslope1v;
+            curv2 += tslope2v;
+        }
+        yDistanceLeft = v3.y - v2.y;
+        slope1 = (v3.x - v2.x) / yDistanceLeft;
+        zslope1 = (1 / v3.z - 1 / v2.z) / yDistanceLeft;
+        tslope1u = (t3.x / v3.z - t2.x / v2.z) / yDistanceLeft;
+        tslope1v = (t3.y / v3.z - t2.y / v2.z) / yDistanceLeft;
+        curx1 = v2.x;
+        curz1 = 1.0 / v2.z;
+        curu1 = t2.x / v2.z;
+        curv1 = t2.y / v2.z;
+        xPosition = v2.x;
+        yPosition = v2.y;
+        for (let i = 0; i < yDistanceLeft; i++) {
+            let length = Math.round(xPosition2) - Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
+            let spanzStep = (curz2 - curz1) / length;
+            let spanuStep = (curu2 - curu1) / length;
+            let spanvStep = (curv2 - curv1) / length;
+            let wStart = curz1;
+            let uStart = curu1;
+            let vStart = curv1;
+            for (let j = 0; j < length; j++) {
+                if (wStart < this.wBuffer[framebufferIndex]) {
+                    this.wBuffer[framebufferIndex] = wStart;
+                    let z = 1 / wStart;
+                    let u = Math.max(Math.min((uStart * z) | 0, 15), 0);
+                    let v = Math.max(Math.min((vStart * z) | 0, 15), 0);
+                    //console.log('u: ' + u + ' v: '+ v);
+                    let color2 = this.bob.texture[u + v * 16];
+                    let scale = ((color >> 8) & 0xff) / 255;
+                    let r = (color2 & 0xff) * scale;
+                    let g = ((color2 >> 8) & 0xff) * scale;
+                    let b = ((color2 >> 16) & 0xff) * scale;
+                    this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | 255 << 24;
+                }
+                framebufferIndex++;
+                wStart += spanzStep;
+                uStart += spanuStep;
+                vStart += spanvStep;
+            }
+            xPosition += slope1;
+            xPosition2 += slope2;
+            yPosition++;
+            curx1 += slope1;
+            curx2 += slope2;
+            curz1 += zslope1;
+            curz2 += zslope2;
+            curu1 += tslope1u;
+            curu2 += tslope2u;
+            curv1 += tslope1v;
+            curv2 += tslope2v;
+        }
+    }
+    fillLongLeftTriangle2(v1, v2, v3, t1, t2, t3, color) {
+        let yDistanceRight = v2.y - v1.y;
+        let yDistanceLeft = v3.y - v1.y;
+        let slope2 = (v2.x - v1.x) / yDistanceRight;
+        let slope1 = (v3.x - v1.x) / yDistanceLeft;
+        let tslope1u = (t3.x / v3.z - t1.x / v1.z) / yDistanceLeft;
+        let tslope2u = (t2.x / v2.z - t1.x / v1.z) / yDistanceRight;
+        let tslope1v = (t3.y / v3.z - t1.y / v1.z) / yDistanceLeft;
+        let tslope2v = (t2.y / v2.z - t1.y / v1.z) / yDistanceRight;
+        let zslope2 = (1 / v2.z - 1 / v1.z) / yDistanceRight;
+        let zslope1 = (1 / v3.z - 1 / v1.z) / yDistanceLeft;
+        let curx1 = v1.x;
+        let curx2 = v1.x;
+        let curz1 = 1.0 / v1.z;
+        let curz2 = 1.0 / v1.z;
+        let curu1 = t1.x / v1.z;
+        let curv1 = t1.y / v1.z;
+        let curu2 = t1.x / v1.z;
+        let curv2 = t1.y / v1.z;
+        let xPosition = v1.x;
+        let xPosition2 = v1.x;
+        let yPosition = v1.y;
+        for (let i = 0; i < yDistanceRight; i++) {
+            let length = Math.round(xPosition2) - Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
+            let spanzStep = (curz2 - curz1) / length;
+            let spanuStep = (curu2 - curu1) / length;
+            let spanvStep = (curv2 - curv1) / length;
+            let wStart = curz1;
+            let uStart = curu1;
+            let vStart = curv1;
+            for (let j = 0; j < length; j++) {
+                if (wStart < this.wBuffer[framebufferIndex]) {
+                    this.wBuffer[framebufferIndex] = wStart;
+                    let z = 1 / wStart;
+                    let u = Math.max(Math.min((uStart * z) | 0, 15), 0);
+                    let v = Math.max(Math.min((vStart * z) | 0, 15), 0);
+                    //console.log('u: ' + u + ' v: '+ v);
+                    let color2 = this.bob.texture[u + v * 16];
+                    let scale = ((color >> 8) & 0xff) / 255;
+                    let r = (color2 & 0xff) * scale;
+                    let g = ((color2 >> 8) & 0xff) * scale;
+                    let b = ((color2 >> 16) & 0xff) * scale;
+                    this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | 255 << 24;
+                }
+                framebufferIndex++;
+                wStart += spanzStep;
+                uStart += spanuStep;
+                vStart += spanvStep;
+            }
+            xPosition += slope1;
+            xPosition2 += slope2;
+            yPosition++;
+            curx1 += slope1;
+            curx2 += slope2;
+            curz1 += zslope1;
+            curz2 += zslope2;
+            curu1 += tslope1u;
+            curu2 += tslope2u;
+            curv1 += tslope1v;
+            curv2 += tslope2v;
+        }
+        yDistanceRight = v3.y - v2.y;
+        slope2 = (v3.x - v2.x) / yDistanceRight;
+        zslope2 = (1 / v3.z - 1 / v2.z) / yDistanceRight;
+        tslope2u = (t3.x / v3.z - t2.x / v2.z) / yDistanceRight;
+        tslope2v = (t3.y / v3.z - t2.y / v2.z) / yDistanceRight;
+        curx2 = v2.x;
+        curz2 = 1.0 / v2.z;
+        curu2 = t2.x / v2.z;
+        curv2 = t2.y / v2.z;
+        xPosition2 = v2.x;
+        yPosition = v2.y;
+        for (let i = 0; i < yDistanceRight; i++) {
+            let length = Math.round(xPosition2) - Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
+            let spanzStep = (curz2 - curz1) / length;
+            let spanuStep = (curu2 - curu1) / length;
+            let spanvStep = (curv2 - curv1) / length;
+            let wStart = curz1;
+            let uStart = curu1;
+            let vStart = curv1;
+            for (let j = 0; j < length; j++) {
+                if (wStart < this.wBuffer[framebufferIndex]) {
+                    this.wBuffer[framebufferIndex] = wStart;
+                    let z = 1 / wStart;
+                    let u = Math.max(Math.min((uStart * z) | 0, 15), 0);
+                    let v = Math.max(Math.min((vStart * z) | 0, 15), 0);
+                    let color2 = this.bob.texture[u + v * 16];
+                    let scale = ((color >> 8) & 0xff) / 255;
+                    let r = (color2 & 0xff) * scale;
+                    let g = ((color2 >> 8) & 0xff) * scale;
+                    let b = ((color2 >> 16) & 0xff) * scale;
+                    this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | 255 << 24;
+                }
+                framebufferIndex++;
+                wStart += spanzStep;
+                uStart += spanuStep;
+                vStart += spanvStep;
+            }
+            xPosition += slope1;
+            xPosition2 += slope2;
+            yPosition++;
+            curx1 += slope1;
+            curx2 += slope2;
+            curz1 += zslope1;
+            curz2 += zslope2;
+            curu1 += tslope1u;
+            curu2 += tslope2u;
+            curv1 += tslope1v;
+            curv2 += tslope2v;
+        }
+    }
     fillLongLeftTriangle(v1, v2, v3, color) {
         let yDistanceRight = v2.y - v1.y;
         let yDistanceLeft = v3.y - v1.y;
@@ -2615,6 +3019,58 @@ class Framebuffer {
             }
             else {
                 this.fillLongLeftTriangle(p1, p2, p3, color);
+            }
+        }
+    }
+    drawTriangleDDA2(p1, p2, p3, t1, t2, t3, color) {
+        if (p1.y > p3.y) {
+            let temp = p1;
+            p1 = p3;
+            p3 = temp;
+            temp = t1;
+            t1 = t3;
+            t3 = temp;
+        }
+        if (p1.y > p2.y) {
+            let temp = p1;
+            p1 = p2;
+            p2 = temp;
+            temp = t1;
+            t1 = t2;
+            t2 = temp;
+        }
+        if (p2.y > p3.y) {
+            let temp = p2;
+            p2 = p3;
+            p3 = temp;
+            temp = t2;
+            t2 = t3;
+            t3 = temp;
+        }
+        if (p1.y == p3.y) {
+            return;
+        } /*else if (p2.y == p3.y) {
+            if (p2.x > p3.x) {
+                let temp: Vector3 = p2;
+                p2 = p3;
+                p3 = temp;
+            }
+            this.fillBottomFlatTriangle(p1, p2, p3, color);
+        } else if (p1.y == p2.y) {
+            if (p1.x > p2.x) {
+                let temp: Vector3 = p1;
+                p1 = p2;
+                p2 = temp;
+            }
+            this.fillTopFlatTriangle(p1, p2, p3, color);
+        } */
+        else {
+            let x = (p3.x - p1.x) * (p2.y - p1.y) / (p3.y - p1.y) + p1.x;
+            if (x > p2.x) {
+                this.fillLongRightTriangle2(p1, p2, p3, t1, t2, t3, color);
+            }
+            else {
+                this.fillLongLeftTriangle2(p1, p2, p3, t1, t2, t3, color);
             }
         }
     }
@@ -3033,85 +3489,91 @@ exports.default = Texture;
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "0e7cabddfc9af1214d72c4201b0da9d9.mp3";
+module.exports = __webpack_require__.p + "36fbc222529fa8e2b722e7de1ca8f010.png";
 
 /***/ }),
 /* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "54e31707db0fbae7dec46d063517665a.png";
+module.exports = __webpack_require__.p + "0e7cabddfc9af1214d72c4201b0da9d9.mp3";
 
 /***/ }),
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "f1dde6672b0d9b18b4373a26d3803351.png";
+module.exports = __webpack_require__.p + "b456e9dc15d272b079029a5ca6468305.png";
 
 /***/ }),
 /* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "5c07fbf7949c365c56f8188b02827d6e.png";
+module.exports = __webpack_require__.p + "54e31707db0fbae7dec46d063517665a.png";
 
 /***/ }),
 /* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "c196269cf8b2fc9593276f497c8ffdd9.png";
+module.exports = __webpack_require__.p + "f1dde6672b0d9b18b4373a26d3803351.png";
 
 /***/ }),
 /* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "47d04e8b7dc74f4980d66796a632547c.png";
+module.exports = __webpack_require__.p + "5c07fbf7949c365c56f8188b02827d6e.png";
 
 /***/ }),
 /* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "0009cb245d8a3129bcd470b1c30a2c17.png";
+module.exports = __webpack_require__.p + "c196269cf8b2fc9593276f497c8ffdd9.png";
 
 /***/ }),
 /* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "f4f2b50d7d886d02949a38f94c217a86.png";
+module.exports = __webpack_require__.p + "47d04e8b7dc74f4980d66796a632547c.png";
 
 /***/ }),
 /* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "dad0119c8dd1a33ab48b6870bfa8b432.png";
+module.exports = __webpack_require__.p + "0009cb245d8a3129bcd470b1c30a2c17.png";
 
 /***/ }),
 /* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "bed841884f7920591d4279314a1b53da.png";
+module.exports = __webpack_require__.p + "f4f2b50d7d886d02949a38f94c217a86.png";
 
 /***/ }),
 /* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "211f2046cf2c6739bad5c6209b09dac4.png";
+module.exports = __webpack_require__.p + "dad0119c8dd1a33ab48b6870bfa8b432.png";
 
 /***/ }),
 /* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "c4e4b266fe4b4281371e908cb2fa6e89.png";
+module.exports = __webpack_require__.p + "bed841884f7920591d4279314a1b53da.png";
 
 /***/ }),
 /* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "b30d17fb175566e9e20d5584d7ae6bfb.png";
+module.exports = __webpack_require__.p + "211f2046cf2c6739bad5c6209b09dac4.png";
 
 /***/ }),
 /* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "36fbc222529fa8e2b722e7de1ca8f010.png";
+module.exports = __webpack_require__.p + "c4e4b266fe4b4281371e908cb2fa6e89.png";
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "b30d17fb175566e9e20d5584d7ae6bfb.png";
 
 /***/ })
 /******/ ]);
