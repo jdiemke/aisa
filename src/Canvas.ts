@@ -95,6 +95,7 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start) % 230000;
 
+        /*
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
             this.framebuffer.shadingTorus(time * 0.02);
@@ -175,7 +176,11 @@ export class Canvas {
             this.framebuffer.setBob(this.texture7);
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.shadingTorus4(time * 0.005);
-        }
+        }*/
+
+        this.framebuffer.setBob(this.texture7);
+        this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
+        this.framebuffer.shadingTorus4(time * 0.005);
 
         // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
         // this.framebuffer.shadingTorus2(time * 0.02);
