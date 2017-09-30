@@ -60,15 +60,15 @@ class RightEdge extends AbstractClipEdge {
         vertex.position =
             new Vector3(Framebuffer.maxWindow.x + 1,
                 Math.round(p1.position.y + (p2.position.y - p1.position.y) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x)),
-            1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x)));
+                1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x)));
 
         let textCoord = new TextureCoordinate();
         let z = vertex.position.z;
-        textCoord.u = ( p1.textureCoordinate.u / p1.position.z + (p2.textureCoordinate.u / p2.position.z -  p1.textureCoordinate.u/p1.position.z) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x))*z;
-        textCoord.v = ( p1.textureCoordinate.v / p1.position.z + ( p2.textureCoordinate.v / p2.position.z -  p1.textureCoordinate.v/p1.position.z) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x))*z;
-     
-       vertex.textureCoordinate = textCoord;
-       return vertex;
+        textCoord.u = (p1.textureCoordinate.u / p1.position.z + (p2.textureCoordinate.u / p2.position.z - p1.textureCoordinate.u / p1.position.z) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x)) * z;
+        textCoord.v = (p1.textureCoordinate.v / p1.position.z + (p2.textureCoordinate.v / p2.position.z - p1.textureCoordinate.v / p1.position.z) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x)) * z;
+
+        vertex.textureCoordinate = textCoord;
+        return vertex;
     }
 
 }
@@ -97,10 +97,11 @@ class LeftEdge extends AbstractClipEdge {
                 1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.minWindow.x - p1.position.x) / (p2.position.x - p1.position.x)));
 
         let textCoord = new TextureCoordinate();
-        textCoord.u = 1 / (1 / p1.textureCoordinate.u + (1 / p2.textureCoordinate.u - 1 / p1.textureCoordinate.u) * (Framebuffer.minWindow.x - p1.position.x) / (p2.position.x - p1.position.x));
-        textCoord.v = 1 / (1 / p1.textureCoordinate.v + (1 / p2.textureCoordinate.v - 1 / p1.textureCoordinate.v) * (Framebuffer.minWindow.x - p1.position.x) / (p2.position.x - p1.position.x));
+        let z = vertex.position.z;
+        textCoord.u = (p1.textureCoordinate.u / p1.position.z + (p2.textureCoordinate.u / p2.position.z - p1.textureCoordinate.u / p1.position.z) * (Framebuffer.minWindow.x - p1.position.x) / (p2.position.x - p1.position.x)) * z;
+        textCoord.v = (p1.textureCoordinate.v / p1.position.z + (p2.textureCoordinate.v / p2.position.z - p1.textureCoordinate.v / p1.position.z) * (Framebuffer.minWindow.x - p1.position.x) / (p2.position.x - p1.position.x)) * z;
         vertex.textureCoordinate = textCoord;
-        
+
         return vertex;
     }
 
@@ -109,32 +110,33 @@ class LeftEdge extends AbstractClipEdge {
 class TopEdge extends AbstractClipEdge {
 
     public isInside(p: Vector3): boolean {
-        return p.y < Framebuffer.maxWindow.y;
+        return p.y < Framebuffer.maxWindow.y + 1;
     }
 
     public isInside2(p: Vertex): boolean {
-        return p.position.y < Framebuffer.maxWindow.y;
+        return p.position.y < Framebuffer.maxWindow.y + 1;
     }
 
     public computeIntersection(p1: Vector3, p2: Vector3): Vector3 {
         return new Vector3(
-            Math.round(p1.x + (p2.x - p1.x) * (Framebuffer.maxWindow.y - p1.y) / (p2.y - p1.y)),
-            Framebuffer.maxWindow.y,
-            1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.maxWindow.y - p1.y) / (p2.y - p1.y)));
+            Math.round(p1.x + (p2.x - p1.x) * (Framebuffer.maxWindow.y + 1 - p1.y) / (p2.y - p1.y)),
+            Framebuffer.maxWindow.y + 1,
+            1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.maxWindow.y + 1 - p1.y) / (p2.y - p1.y)));
     }
 
     public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {
         let vertex = new Vertex();
         vertex.position =
             new Vector3(
-                Math.round(p1.position.x + (p2.position.x - p1.position.x) * (Framebuffer.maxWindow.y - p1.position.y) / (p2.position.y - p1.position.y)),
-                Framebuffer.maxWindow.y,
-                1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.maxWindow.y - p1.position.y) / (p2.position.y - p1.position.y)));
+                Math.round(p1.position.x + (p2.position.x - p1.position.x) * (Framebuffer.maxWindow.y + 1 - p1.position.y) / (p2.position.y - p1.position.y)),
+                Framebuffer.maxWindow.y + 1,
+                1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.maxWindow.y + 1 - p1.position.y) / (p2.position.y - p1.position.y)));
 
         let textCoord = new TextureCoordinate();
-        textCoord.u = 1 / (1 / p1.textureCoordinate.u + (1 / p2.textureCoordinate.u - 1 / p1.textureCoordinate.u) * (Framebuffer.maxWindow.y - p1.position.y) / (p2.position.y - p1.position.y));
-        textCoord.v = 1 / (1 / p1.textureCoordinate.v + (1 / p2.textureCoordinate.v - 1 / p1.textureCoordinate.v) * (Framebuffer.maxWindow.y - p1.position.y) / (p2.position.y - p1.position.y));
-        
+        let z = vertex.position.z;
+        textCoord.u = (p1.textureCoordinate.u / p1.position.z + (p2.textureCoordinate.u / p2.position.z - p1.textureCoordinate.u / p1.position.z) * (Framebuffer.maxWindow.y + 1 - p1.position.y) / (p2.position.y - p1.position.y)) * z;
+        textCoord.v = (p1.textureCoordinate.v / p1.position.z + (p2.textureCoordinate.v / p2.position.z - p1.textureCoordinate.v / p1.position.z) * (Framebuffer.maxWindow.y + 1 - p1.position.y) / (p2.position.y - p1.position.y)) * z;
+
         vertex.textureCoordinate = textCoord;
         return vertex;
     }
@@ -168,10 +170,11 @@ class BottomEdge extends AbstractClipEdge {
                 1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y)));
 
         let textCoord = new TextureCoordinate();
-        textCoord.u = 1 / (1 / p1.textureCoordinate.u + (1 / p2.textureCoordinate.u - 1 / p1.textureCoordinate.u) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y));
-        textCoord.v = 1 / (1 / p1.textureCoordinate.v + (1 / p2.textureCoordinate.v - 1 / p1.textureCoordinate.v) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y));
+        let z = vertex.position.z;
+        textCoord.u = (p1.textureCoordinate.u / p1.position.z + (p2.textureCoordinate.u / p2.position.z - p1.textureCoordinate.u / p1.position.z) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y)) * z;
+        textCoord.v = (p1.textureCoordinate.v / p1.position.z + (p2.textureCoordinate.v / p2.position.z - p1.textureCoordinate.v / p1.position.z) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y)) * z;
         vertex.textureCoordinate = textCoord;
-        
+
         return vertex;
     }
 
@@ -1645,6 +1648,7 @@ export default class Framebuffer {
 
         this.wBuffer.fill(100);
         let points: Array<Vector3> = [];
+        let textCoords: Array<TextureCoordinate> = [];
 
         const STEPS = 15;
         const STEPS2 = 8;
@@ -1657,6 +1661,10 @@ export default class Framebuffer {
             for (let r = 0; r < STEPS2; r++) {
                 let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
                 points.push(pos);
+                let t = new TextureCoordinate();
+                t.u = 1/(STEPS2) * r;
+                t.v = 1/(STEPS) * i;
+                textCoords.push(t);
             }
         }
 
@@ -1698,8 +1706,8 @@ export default class Framebuffer {
             normals2.push(modelViewMartrix.multiply(normals[n]));
         }
 
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(29,0//Math.sin(elapsedTime * 0.1) * 14, Math.sin(elapsedTime * 0.2) * 3
-            ,-49)// -49 + Math.sin(elapsedTime * 0.2) * 8)
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.1) * 26, Math.sin(elapsedTime * 0.2) * 10
+            , -49)
             .multiplyMatrix(modelViewMartrix);
 
         for (let p = 0; p < points.length; p++) {
@@ -1745,26 +1753,31 @@ export default class Framebuffer {
                 let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.2, 0.2, 1).normalize())) * 255), 255);
                 let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
 
-                
+
                 let textureCoordinate1 = new TextureCoordinate();
                 textureCoordinate1.u = 0;
                 textureCoordinate1.v = 0;
+                textureCoordinate1 = textCoords[index[i]];
 
                 let textureCoordinate2 = new TextureCoordinate();
                 textureCoordinate2.u = 0;
                 textureCoordinate2.v = 16;
+                textureCoordinate2 = textCoords[index[i + 1]];
+
 
                 let textureCoordinate3 = new TextureCoordinate();
                 textureCoordinate3.u = 16;
                 textureCoordinate3.v = 16;
+                textureCoordinate3 = textCoords[index[i + 2]];
+
 
                 let vertex1 = new Vertex();
                 vertex1.position = v1;
-                vertex1.textureCoordinate = textureCoordinate2;
+                vertex1.textureCoordinate = textureCoordinate1;
 
                 let vertex2 = new Vertex();
                 vertex2.position = v2;
-                vertex2.textureCoordinate = textureCoordinate1;
+                vertex2.textureCoordinate = textureCoordinate2;
 
                 let vertex3 = new Vertex();
                 vertex3.position = v3;
@@ -1784,7 +1797,7 @@ export default class Framebuffer {
                     v3.y > Framebuffer.maxWindow.y) {
 
 
-                   this.clipConvexPolygon2(new Array<Vertex>(vertex1, vertex2, vertex3), color);
+                    this.clipConvexPolygon2(new Array<Vertex>(vertex1, vertex2, vertex3), color);
                 } else {
                     // this.drawTriangleDDA(v1, v2, v3, color);
                     this.drawTriangleDDA2(vertex1, vertex2, vertex3, color);
@@ -2503,10 +2516,10 @@ export default class Framebuffer {
                 if (wStart < this.wBuffer[framebufferIndex]) {
                     this.wBuffer[framebufferIndex] = wStart;
                     let z = 1 / wStart;
-                    let u = Math.max(Math.min((uStart * z) | 0, 15), 0);
-                    let v = Math.max(Math.min((vStart * z) | 0, 15), 0);
-                    //console.log('u: ' + u + ' v: '+ v);
-                    let color2 = this.bob.texture[u + v * 16];
+                   
+                    let u = Math.max(Math.min((uStart * z*this.bob.width) , this.bob.width), 0)| 0;
+                    let v = Math.max(Math.min((vStart * z*this.bob.height) ,this.bob.height), 0)| 0;
+                    let color2 = this.bob.texture[u + v * this.bob.width];
                     let scale = ((color >> 8) & 0xff) / 255;
                     let r = (color2 & 0xff) * scale;
                     let g = ((color2 >> 8) & 0xff) * scale;
@@ -2566,10 +2579,11 @@ export default class Framebuffer {
                     this.wBuffer[framebufferIndex] = wStart;
 
                     let z = 1 / wStart;
-                    let u = Math.max(Math.min((uStart * z) | 0, 15), 0);
-                    let v = Math.max(Math.min((vStart * z) | 0, 15), 0);
-                    //console.log('u: ' + u + ' v: '+ v);
-                    let color2 = this.bob.texture[u + v * 16];
+                   
+                    
+                    let u = Math.max(Math.min((uStart * z*this.bob.width) , this.bob.width), 0)| 0;
+                    let v = Math.max(Math.min((vStart * z*this.bob.height) ,this.bob.height), 0)| 0;
+                    let color2 = this.bob.texture[u + v * this.bob.width];
                     let scale = ((color >> 8) & 0xff) / 255;
                     let r = (color2 & 0xff) * scale;
                     let g = ((color2 >> 8) & 0xff) * scale;
@@ -2647,10 +2661,11 @@ export default class Framebuffer {
                 if (wStart < this.wBuffer[framebufferIndex]) {
                     this.wBuffer[framebufferIndex] = wStart;
                     let z = 1 / wStart;
-                    let u = Math.max(Math.min((uStart * z) | 0, 15), 0);
-                    let v = Math.max(Math.min((vStart * z) | 0, 15), 0);
-                    //console.log('u: ' + u + ' v: '+ v);
-                    let color2 = this.bob.texture[u + v * 16];
+                   
+                   
+                    let u = Math.max(Math.min((uStart * z*this.bob.width) , this.bob.width), 0)| 0;
+                    let v = Math.max(Math.min((vStart * z*this.bob.height) ,this.bob.height), 0)| 0;
+                    let color2 = this.bob.texture[u + v * this.bob.width];
                     let scale = ((color >> 8) & 0xff) / 255;
                     let r = (color2 & 0xff) * scale;
                     let g = ((color2 >> 8) & 0xff) * scale;
@@ -2713,9 +2728,10 @@ export default class Framebuffer {
                 if (wStart < this.wBuffer[framebufferIndex]) {
                     this.wBuffer[framebufferIndex] = wStart;
                     let z = 1 / wStart;
-                    let u = Math.max(Math.min((uStart * z) | 0, 15), 0);
-                    let v = Math.max(Math.min((vStart * z) | 0, 15), 0);
-                    let color2 = this.bob.texture[u + v * 16];
+                   
+                    let u = Math.max(Math.min((uStart * z*this.bob.width) , this.bob.width), 0)| 0;
+                    let v = Math.max(Math.min((vStart * z*this.bob.height) ,this.bob.height), 0)| 0;
+                    let color2 = this.bob.texture[u + v * this.bob.width];
                     let scale = ((color >> 8) & 0xff) / 255;
                     let r = (color2 & 0xff) * scale;
                     let g = ((color2 >> 8) & 0xff) * scale;
@@ -3017,7 +3033,7 @@ export default class Framebuffer {
                 let tex = p1.textureCoordinate;
                 let tex2 = p2.textureCoordinate;
                 let tex3 = p3.textureCoordinate;
-               this.fillLongLeftTriangle2(p1.position, p2.position, p3.position, new Vector3(tex.u, tex.v,0), new Vector3(tex2.u, tex2.v,0), new Vector3(tex3.u, tex3.v,0), color);
+                this.fillLongLeftTriangle2(p1.position, p2.position, p3.position, new Vector3(tex.u, tex.v, 0), new Vector3(tex2.u, tex2.v, 0), new Vector3(tex3.u, tex3.v, 0), color);
             }
         }
     }
