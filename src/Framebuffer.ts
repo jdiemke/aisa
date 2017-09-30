@@ -1652,13 +1652,13 @@ export default class Framebuffer {
 
         const STEPS = 15;
         const STEPS2 = 8;
-        for (let i = 0; i < STEPS; i++) {
+        for (let i = 0; i < STEPS+1; i++) {
             let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
             let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
             let up = new Vector3(0.0, 4.0, 0);
             let right = frame2.sub(frame).cross(up);
 
-            for (let r = 0; r < STEPS2; r++) {
+            for (let r = 0; r < STEPS2+1; r++) {
                 let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
                 points.push(pos);
                 let t = new TextureCoordinate();
@@ -1672,13 +1672,13 @@ export default class Framebuffer {
 
         for (let j = 0; j < STEPS; j++) {
             for (let i = 0; i < STEPS2; i++) {
-                index.push(((STEPS2 * j) + (1 + i) % STEPS2) % points.length); // 2
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 1
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+                index.push((((STEPS2+1) * j) + (1 + i) ) ); // 2
+                index.push((((STEPS2+1) * j) + (0 + i) ) ); // 1
+                index.push((((STEPS2+1) * j) + (STEPS2+1) + (1 + i) ) ); //3
 
-                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2) % points.length); //4
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 5
+                index.push((((STEPS2+1) * j) + (STEPS2+1) + (0 + i) ) ); //4
+                index.push((((STEPS2+1) * j) + (STEPS2+1) + (1 + i) ) ); //3
+                index.push((((STEPS2+1) * j) + (0 + i) ) ); // 5
             }
         }
 
@@ -1750,9 +1750,10 @@ export default class Framebuffer {
             if (this.isTriangleCCW(v1, v2, v3)) {
 
                 let normal = normals2[i / 3];
-                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.2, 0.2, 1).normalize())) * 255), 255);
-                let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
-
+                //let scalar =255;// Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.2, 0.2, 1).normalize())) * 255), 255);
+                //let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
+                let color = 255 << 24 | 255 << 16 | 150 << 8 | 255;
+                
 
                 let textureCoordinate1 = new TextureCoordinate();
                 textureCoordinate1.u = 0;
@@ -2517,8 +2518,8 @@ export default class Framebuffer {
                     this.wBuffer[framebufferIndex] = wStart;
                     let z = 1 / wStart;
                    
-                    let u = Math.max(Math.min((uStart * z*this.bob.width) , this.bob.width), 0)| 0;
-                    let v = Math.max(Math.min((vStart * z*this.bob.height) ,this.bob.height), 0)| 0;
+                    let u = Math.max(Math.min((uStart * z*this.bob.width) , this.bob.width-1), 0)| 0;
+                    let v = Math.max(Math.min((vStart * z*this.bob.height) ,this.bob.height-1), 0)| 0;
                     let color2 = this.bob.texture[u + v * this.bob.width];
                     let scale = ((color >> 8) & 0xff) / 255;
                     let r = (color2 & 0xff) * scale;
@@ -2581,9 +2582,9 @@ export default class Framebuffer {
                     let z = 1 / wStart;
                    
                     
-                    let u = Math.max(Math.min((uStart * z*this.bob.width) , this.bob.width), 0)| 0;
-                    let v = Math.max(Math.min((vStart * z*this.bob.height) ,this.bob.height), 0)| 0;
-                    let color2 = this.bob.texture[u + v * this.bob.width];
+                    let u = Math.max(Math.min((uStart * z*this.bob.width) , this.bob.width-1), 0)| 0;
+                    let v = Math.max(Math.min((vStart * z*this.bob.height) ,this.bob.height-1), 0)| 0;
+                      let color2 = this.bob.texture[u + v * this.bob.width];
                     let scale = ((color >> 8) & 0xff) / 255;
                     let r = (color2 & 0xff) * scale;
                     let g = ((color2 >> 8) & 0xff) * scale;
@@ -2663,9 +2664,9 @@ export default class Framebuffer {
                     let z = 1 / wStart;
                    
                    
-                    let u = Math.max(Math.min((uStart * z*this.bob.width) , this.bob.width), 0)| 0;
-                    let v = Math.max(Math.min((vStart * z*this.bob.height) ,this.bob.height), 0)| 0;
-                    let color2 = this.bob.texture[u + v * this.bob.width];
+                    let u = Math.max(Math.min((uStart * z*this.bob.width) , this.bob.width-1), 0)| 0;
+                    let v = Math.max(Math.min((vStart * z*this.bob.height) ,this.bob.height-1), 0)| 0;
+                       let color2 = this.bob.texture[u + v * this.bob.width];
                     let scale = ((color >> 8) & 0xff) / 255;
                     let r = (color2 & 0xff) * scale;
                     let g = ((color2 >> 8) & 0xff) * scale;
@@ -2729,9 +2730,9 @@ export default class Framebuffer {
                     this.wBuffer[framebufferIndex] = wStart;
                     let z = 1 / wStart;
                    
-                    let u = Math.max(Math.min((uStart * z*this.bob.width) , this.bob.width), 0)| 0;
-                    let v = Math.max(Math.min((vStart * z*this.bob.height) ,this.bob.height), 0)| 0;
-                    let color2 = this.bob.texture[u + v * this.bob.width];
+                    let u = Math.max(Math.min((uStart * z*this.bob.width) , this.bob.width-1), 0)| 0;
+                    let v = Math.max(Math.min((vStart * z*this.bob.height) ,this.bob.height-1), 0)| 0;
+                      let color2 = this.bob.texture[u + v * this.bob.width];
                     let scale = ((color >> 8) & 0xff) / 255;
                     let r = (color2 & 0xff) * scale;
                     let g = ((color2 >> 8) & 0xff) * scale;
