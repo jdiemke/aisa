@@ -52,7 +52,7 @@ class RightEdge extends AbstractClipEdge {
     public computeIntersection(p1: Vector3, p2: Vector3): Vector3 {
         return new Vector3(Framebuffer.maxWindow.x + 1,
             Math.round(p1.y + (p2.y - p1.y) * (Framebuffer.maxWindow.x + 1 - p1.x) / (p2.x - p1.x)),
-            Math.round(1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.maxWindow.x + 1 - p1.x) / (p2.x - p1.x))));
+            1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.maxWindow.x + 1 - p1.x) / (p2.x - p1.x)));
     }
 
     public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {
@@ -61,9 +61,11 @@ class RightEdge extends AbstractClipEdge {
             new Vector3(Framebuffer.maxWindow.x + 1,
                 Math.round(p1.position.y + (p2.position.y - p1.position.y) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x)),
             1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x)));
+
         let textCoord = new TextureCoordinate();
-        textCoord.u = 1 / (1 / p1.textureCoordinate.u + (1 / p2.textureCoordinate.u - 1 / p1.textureCoordinate.u) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x));
-        textCoord.v = 1 / (1 / p1.textureCoordinate.v + (1 / p2.textureCoordinate.v - 1 / p1.textureCoordinate.v) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x));
+        let z = vertex.position.z;
+        textCoord.u = ( p1.textureCoordinate.u / p1.position.z + (p2.textureCoordinate.u / p2.position.z -  p1.textureCoordinate.u/p1.position.z) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x))*z;
+        textCoord.v = ( p1.textureCoordinate.v / p1.position.z + ( p2.textureCoordinate.v / p2.position.z -  p1.textureCoordinate.v/p1.position.z) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x))*z;
      
        vertex.textureCoordinate = textCoord;
        return vertex;
@@ -1696,8 +1698,9 @@ export default class Framebuffer {
             normals2.push(modelViewMartrix.multiply(normals[n]));
         }
 
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.1) * 14, Math.sin(elapsedTime * 0.2) * 3
-            , -49 + Math.sin(elapsedTime * 0.2) * 8).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(29,0//Math.sin(elapsedTime * 0.1) * 14, Math.sin(elapsedTime * 0.2) * 3
+            ,-49)// -49 + Math.sin(elapsedTime * 0.2) * 8)
+            .multiplyMatrix(modelViewMartrix);
 
         for (let p = 0; p < points.length; p++) {
             let transformed = modelViewMartrix.multiply(points[p]);
