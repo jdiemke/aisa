@@ -1652,18 +1652,18 @@ export default class Framebuffer {
 
         const STEPS = 15;
         const STEPS2 = 8;
-        for (let i = 0; i < STEPS+1; i++) {
+        for (let i = 0; i < STEPS + 1; i++) {
             let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
             let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
             let up = new Vector3(0.0, 4.0, 0);
             let right = frame2.sub(frame).cross(up);
 
-            for (let r = 0; r < STEPS2+1; r++) {
+            for (let r = 0; r < STEPS2 + 1; r++) {
                 let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
                 points.push(pos);
                 let t = new TextureCoordinate();
-                t.u = 1/(STEPS2) * r;
-                t.v = 1/(STEPS) * i;
+                t.u = 1 / (STEPS2) * r;
+                t.v = 1 / (STEPS) * i;
                 textCoords.push(t);
             }
         }
@@ -1672,13 +1672,13 @@ export default class Framebuffer {
 
         for (let j = 0; j < STEPS; j++) {
             for (let i = 0; i < STEPS2; i++) {
-                index.push((((STEPS2+1) * j) + (1 + i) ) ); // 2
-                index.push((((STEPS2+1) * j) + (0 + i) ) ); // 1
-                index.push((((STEPS2+1) * j) + (STEPS2+1) + (1 + i) ) ); //3
+                index.push((((STEPS2 + 1) * j) + (1 + i))); // 2
+                index.push((((STEPS2 + 1) * j) + (0 + i))); // 1
+                index.push((((STEPS2 + 1) * j) + (STEPS2 + 1) + (1 + i))); //3
 
-                index.push((((STEPS2+1) * j) + (STEPS2+1) + (0 + i) ) ); //4
-                index.push((((STEPS2+1) * j) + (STEPS2+1) + (1 + i) ) ); //3
-                index.push((((STEPS2+1) * j) + (0 + i) ) ); // 5
+                index.push((((STEPS2 + 1) * j) + (STEPS2 + 1) + (0 + i))); //4
+                index.push((((STEPS2 + 1) * j) + (STEPS2 + 1) + (1 + i))); //3
+                index.push((((STEPS2 + 1) * j) + (0 + i))); // 5
             }
         }
 
@@ -1706,8 +1706,8 @@ export default class Framebuffer {
             normals2.push(modelViewMartrix.multiply(normals[n]));
         }
 
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.1) * 26, Math.sin(elapsedTime * 0.2) * 10
-            , -49)
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.3) * 26, Math.sin(elapsedTime * 0.2) * 10
+            , -45)
             .multiplyMatrix(modelViewMartrix);
 
         for (let p = 0; p < points.length; p++) {
@@ -1734,6 +1734,8 @@ export default class Framebuffer {
          * 3. scan conversion (rasterization)
          */
 
+        let vertexArray = new Array<Vertex>(new Vertex(), new Vertex(), new Vertex());
+
         for (let i = 0; i < index.length; i += 3) {
 
             // Only render triangles with CCW-ordered vertices
@@ -1750,39 +1752,18 @@ export default class Framebuffer {
             if (this.isTriangleCCW(v1, v2, v3)) {
 
                 let normal = normals2[i / 3];
-                //let scalar =255;// Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.2, 0.2, 1).normalize())) * 255), 255);
-                //let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
-                let color = 255 << 24 | 255 << 16 | 150 << 8 | 255;
-                
+                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.2, 0.2, 1).normalize())) * 255), 255);
+                let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
+                //let color = 255 << 24 | 255 << 16 | 150 << 8 | 255;
 
-                let textureCoordinate1 = new TextureCoordinate();
-                textureCoordinate1.u = 0;
-                textureCoordinate1.v = 0;
-                textureCoordinate1 = textCoords[index[i]];
+                vertexArray[0].position = v1;
+                vertexArray[0].textureCoordinate = textCoords[index[i]];
 
-                let textureCoordinate2 = new TextureCoordinate();
-                textureCoordinate2.u = 0;
-                textureCoordinate2.v = 16;
-                textureCoordinate2 = textCoords[index[i + 1]];
+                vertexArray[1].position = v2;
+                vertexArray[1].textureCoordinate = textCoords[index[i + 1]];
 
-
-                let textureCoordinate3 = new TextureCoordinate();
-                textureCoordinate3.u = 16;
-                textureCoordinate3.v = 16;
-                textureCoordinate3 = textCoords[index[i + 2]];
-
-
-                let vertex1 = new Vertex();
-                vertex1.position = v1;
-                vertex1.textureCoordinate = textureCoordinate1;
-
-                let vertex2 = new Vertex();
-                vertex2.position = v2;
-                vertex2.textureCoordinate = textureCoordinate2;
-
-                let vertex3 = new Vertex();
-                vertex3.position = v3;
-                vertex3.textureCoordinate = textureCoordinate3;
+                vertexArray[2].position = v3;
+                vertexArray[2].textureCoordinate = textCoords[index[i + 2]];
 
                 if (v1.x < Framebuffer.minWindow.x ||
                     v2.x < Framebuffer.minWindow.x ||
@@ -1798,10 +1779,10 @@ export default class Framebuffer {
                     v3.y > Framebuffer.maxWindow.y) {
 
 
-                    this.clipConvexPolygon2(new Array<Vertex>(vertex1, vertex2, vertex3), color);
+                    this.clipConvexPolygon2(vertexArray, color);
                 } else {
                     // this.drawTriangleDDA(v1, v2, v3, color);
-                    this.drawTriangleDDA2(vertex1, vertex2, vertex3, color);
+                    this.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], color);
                 }
             }
         }
@@ -2517,9 +2498,9 @@ export default class Framebuffer {
                 if (wStart < this.wBuffer[framebufferIndex]) {
                     this.wBuffer[framebufferIndex] = wStart;
                     let z = 1 / wStart;
-                   
-                    let u = Math.max(Math.min((uStart * z*this.bob.width) , this.bob.width-1), 0)| 0;
-                    let v = Math.max(Math.min((vStart * z*this.bob.height) ,this.bob.height-1), 0)| 0;
+
+                    let u = Math.max(Math.min((uStart * z * this.bob.width), this.bob.width - 1), 0) | 0;
+                    let v = Math.max(Math.min((vStart * z * this.bob.height), this.bob.height - 1), 0) | 0;
                     let color2 = this.bob.texture[u + v * this.bob.width];
                     let scale = ((color >> 8) & 0xff) / 255;
                     let r = (color2 & 0xff) * scale;
@@ -2580,11 +2561,11 @@ export default class Framebuffer {
                     this.wBuffer[framebufferIndex] = wStart;
 
                     let z = 1 / wStart;
-                   
-                    
-                    let u = Math.max(Math.min((uStart * z*this.bob.width) , this.bob.width-1), 0)| 0;
-                    let v = Math.max(Math.min((vStart * z*this.bob.height) ,this.bob.height-1), 0)| 0;
-                      let color2 = this.bob.texture[u + v * this.bob.width];
+
+
+                    let u = Math.max(Math.min((uStart * z * this.bob.width), this.bob.width - 1), 0) | 0;
+                    let v = Math.max(Math.min((vStart * z * this.bob.height), this.bob.height - 1), 0) | 0;
+                    let color2 = this.bob.texture[u + v * this.bob.width];
                     let scale = ((color >> 8) & 0xff) / 255;
                     let r = (color2 & 0xff) * scale;
                     let g = ((color2 >> 8) & 0xff) * scale;
@@ -2662,11 +2643,11 @@ export default class Framebuffer {
                 if (wStart < this.wBuffer[framebufferIndex]) {
                     this.wBuffer[framebufferIndex] = wStart;
                     let z = 1 / wStart;
-                   
-                   
-                    let u = Math.max(Math.min((uStart * z*this.bob.width) , this.bob.width-1), 0)| 0;
-                    let v = Math.max(Math.min((vStart * z*this.bob.height) ,this.bob.height-1), 0)| 0;
-                       let color2 = this.bob.texture[u + v * this.bob.width];
+
+
+                    let u = Math.max(Math.min((uStart * z * this.bob.width), this.bob.width - 1), 0) | 0;
+                    let v = Math.max(Math.min((vStart * z * this.bob.height), this.bob.height - 1), 0) | 0;
+                    let color2 = this.bob.texture[u + v * this.bob.width];
                     let scale = ((color >> 8) & 0xff) / 255;
                     let r = (color2 & 0xff) * scale;
                     let g = ((color2 >> 8) & 0xff) * scale;
@@ -2729,10 +2710,10 @@ export default class Framebuffer {
                 if (wStart < this.wBuffer[framebufferIndex]) {
                     this.wBuffer[framebufferIndex] = wStart;
                     let z = 1 / wStart;
-                   
-                    let u = Math.max(Math.min((uStart * z*this.bob.width) , this.bob.width-1), 0)| 0;
-                    let v = Math.max(Math.min((vStart * z*this.bob.height) ,this.bob.height-1), 0)| 0;
-                      let color2 = this.bob.texture[u + v * this.bob.width];
+
+                    let u = Math.max(Math.min((uStart * z * this.bob.width), this.bob.width - 1), 0) | 0;
+                    let v = Math.max(Math.min((vStart * z * this.bob.height), this.bob.height - 1), 0) | 0;
+                    let color2 = this.bob.texture[u + v * this.bob.width];
                     let scale = ((color >> 8) & 0xff) / 255;
                     let r = (color2 & 0xff) * scale;
                     let g = ((color2 >> 8) & 0xff) * scale;
