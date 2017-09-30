@@ -1,3 +1,4 @@
+import { TextureCoordinate, Vertex } from './Vertex';
 import { ControllableCamera } from './ControllableCamera';
 /**
  * 3d polygon clipping:
@@ -31,7 +32,9 @@ let json = require('./assets/f16.json');
 abstract class AbstractClipEdge {
 
     public abstract isInside(p: Vector3): boolean;
+    public abstract isInside2(p: Vertex): boolean;
     public abstract computeIntersection(p1: Vector3, p2: Vector3): Vector3;
+    public abstract computeIntersection2(p1: Vertex, p2: Vertex): Vertex;
 
 }
 
@@ -41,10 +44,29 @@ class RightEdge extends AbstractClipEdge {
         return p.x < 320;
     }
 
+
+    public isInside2(p: Vertex): boolean {
+        return p.position.x < 320;
+    }
+
     public computeIntersection(p1: Vector3, p2: Vector3): Vector3 {
         return new Vector3(Framebuffer.maxWindow.x + 1,
             Math.round(p1.y + (p2.y - p1.y) * (Framebuffer.maxWindow.x + 1 - p1.x) / (p2.x - p1.x)),
             Math.round(1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.maxWindow.x + 1 - p1.x) / (p2.x - p1.x))));
+    }
+
+    public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {
+        let vertex = new Vertex();
+        vertex.position =
+            new Vector3(Framebuffer.maxWindow.x + 1,
+                Math.round(p1.position.y + (p2.position.y - p1.position.y) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x)),
+            1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x)));
+        let textCoord = new TextureCoordinate();
+        textCoord.u = 1 / (1 / p1.textureCoordinate.u + (1 / p2.textureCoordinate.u - 1 / p1.textureCoordinate.u) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x));
+        textCoord.v = 1 / (1 / p1.textureCoordinate.v + (1 / p2.textureCoordinate.v - 1 / p1.textureCoordinate.v) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x));
+     
+       vertex.textureCoordinate = textCoord;
+       return vertex;
     }
 
 }
@@ -55,10 +77,29 @@ class LeftEdge extends AbstractClipEdge {
         return p.x >= 0;
     }
 
+    public isInside2(p: Vertex): boolean {
+        return p.position.x >= 0;
+    }
+
     public computeIntersection(p1: Vector3, p2: Vector3): Vector3 {
         return new Vector3(Framebuffer.minWindow.x,
             Math.round(p1.y + (p2.y - p1.y) * (Framebuffer.minWindow.x - p1.x) / (p2.x - p1.x)),
-            Math.round(1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.minWindow.x - p1.x) / (p2.x - p1.x))));
+            1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.minWindow.x - p1.x) / (p2.x - p1.x)));
+    }
+
+    public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {
+        let vertex = new Vertex();
+        vertex.position =
+            new Vector3(Framebuffer.minWindow.x,
+                Math.round(p1.position.y + (p2.position.y - p1.position.y) * (Framebuffer.minWindow.x - p1.position.x) / (p2.position.x - p1.position.x)),
+                1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.minWindow.x - p1.position.x) / (p2.position.x - p1.position.x)));
+
+        let textCoord = new TextureCoordinate();
+        textCoord.u = 1 / (1 / p1.textureCoordinate.u + (1 / p2.textureCoordinate.u - 1 / p1.textureCoordinate.u) * (Framebuffer.minWindow.x - p1.position.x) / (p2.position.x - p1.position.x));
+        textCoord.v = 1 / (1 / p1.textureCoordinate.v + (1 / p2.textureCoordinate.v - 1 / p1.textureCoordinate.v) * (Framebuffer.minWindow.x - p1.position.x) / (p2.position.x - p1.position.x));
+        vertex.textureCoordinate = textCoord;
+        
+        return vertex;
     }
 
 }
@@ -69,12 +110,33 @@ class TopEdge extends AbstractClipEdge {
         return p.y < Framebuffer.maxWindow.y;
     }
 
+    public isInside2(p: Vertex): boolean {
+        return p.position.y < Framebuffer.maxWindow.y;
+    }
+
     public computeIntersection(p1: Vector3, p2: Vector3): Vector3 {
         return new Vector3(
             Math.round(p1.x + (p2.x - p1.x) * (Framebuffer.maxWindow.y - p1.y) / (p2.y - p1.y)),
             Framebuffer.maxWindow.y,
-            Math.round(1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.maxWindow.y - p1.y) / (p2.y - p1.y))));
+            1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.maxWindow.y - p1.y) / (p2.y - p1.y)));
     }
+
+    public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {
+        let vertex = new Vertex();
+        vertex.position =
+            new Vector3(
+                Math.round(p1.position.x + (p2.position.x - p1.position.x) * (Framebuffer.maxWindow.y - p1.position.y) / (p2.position.y - p1.position.y)),
+                Framebuffer.maxWindow.y,
+                1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.maxWindow.y - p1.position.y) / (p2.position.y - p1.position.y)));
+
+        let textCoord = new TextureCoordinate();
+        textCoord.u = 1 / (1 / p1.textureCoordinate.u + (1 / p2.textureCoordinate.u - 1 / p1.textureCoordinate.u) * (Framebuffer.maxWindow.y - p1.position.y) / (p2.position.y - p1.position.y));
+        textCoord.v = 1 / (1 / p1.textureCoordinate.v + (1 / p2.textureCoordinate.v - 1 / p1.textureCoordinate.v) * (Framebuffer.maxWindow.y - p1.position.y) / (p2.position.y - p1.position.y));
+        
+        vertex.textureCoordinate = textCoord;
+        return vertex;
+    }
+
 
 }
 
@@ -84,11 +146,31 @@ class BottomEdge extends AbstractClipEdge {
         return p.y >= Framebuffer.minWindow.y;
     }
 
+    public isInside2(p: Vertex): boolean {
+        return p.position.y >= Framebuffer.minWindow.y;
+    }
+
     public computeIntersection(p1: Vector3, p2: Vector3): Vector3 {
         return new Vector3(
             Math.round(p1.x + (p2.x - p1.x) * (Framebuffer.minWindow.y - p1.y) / (p2.y - p1.y)),
             Framebuffer.minWindow.y,
-            Math.round(1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.minWindow.y - p1.y) / (p2.y - p1.y))));
+            1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.minWindow.y - p1.y) / (p2.y - p1.y)));
+    }
+
+    public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {
+        let vertex = new Vertex();
+        vertex.position =
+            new Vector3(
+                Math.round(p1.position.x + (p2.position.x - p1.position.x) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y)),
+                Framebuffer.minWindow.y,
+                1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y)));
+
+        let textCoord = new TextureCoordinate();
+        textCoord.u = 1 / (1 / p1.textureCoordinate.u + (1 / p2.textureCoordinate.u - 1 / p1.textureCoordinate.u) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y));
+        textCoord.v = 1 / (1 / p1.textureCoordinate.v + (1 / p2.textureCoordinate.v - 1 / p1.textureCoordinate.v) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y));
+        vertex.textureCoordinate = textCoord;
+        
+        return vertex;
     }
 
 }
@@ -1561,43 +1643,43 @@ export default class Framebuffer {
 
         this.wBuffer.fill(100);
         let points: Array<Vector3> = [];
-        
-                const STEPS = 15;
-                const STEPS2 = 8;
-                for (let i = 0; i < STEPS; i++) {
-                    let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
-                    let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
-                    let up = new Vector3(0.0, 4.0, 0);
-                    let right = frame2.sub(frame).cross(up);
-        
-                    for (let r = 0; r < STEPS2; r++) {
-                        let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
-                        points.push(pos);
-                    }
-                }
-        
-                let index: Array<number> = [];
-        
-                for (let j = 0; j < STEPS; j++) {
-                    for (let i = 0; i < STEPS2; i++) {
-                        index.push(((STEPS2 * j) + (1 + i) % STEPS2) % points.length); // 2
-                        index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 1
-                        index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
-        
-                        index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2) % points.length); //4
-                        index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
-                        index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 5
-                    }
-                }
-        
-                // compute normals
-                let normals: Array<Vector3> = new Array<Vector3>();
-        
-                for (let i = 0; i < index.length; i += 3) {
-                    let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
-                    normals.push(normal);
-                }
-        
+
+        const STEPS = 15;
+        const STEPS2 = 8;
+        for (let i = 0; i < STEPS; i++) {
+            let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
+            let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
+            let up = new Vector3(0.0, 4.0, 0);
+            let right = frame2.sub(frame).cross(up);
+
+            for (let r = 0; r < STEPS2; r++) {
+                let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
+                points.push(pos);
+            }
+        }
+
+        let index: Array<number> = [];
+
+        for (let j = 0; j < STEPS; j++) {
+            for (let i = 0; i < STEPS2; i++) {
+                index.push(((STEPS2 * j) + (1 + i) % STEPS2) % points.length); // 2
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 1
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+
+                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2) % points.length); //4
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 5
+            }
+        }
+
+        // compute normals
+        let normals: Array<Vector3> = new Array<Vector3>();
+
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+            normals.push(normal);
+        }
+
 
         let scale = 2.1;
 
@@ -1614,8 +1696,8 @@ export default class Framebuffer {
             normals2.push(modelViewMartrix.multiply(normals[n]));
         }
 
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime*0.1)*14,Math.sin(elapsedTime*0.2)*3
-            , -49+Math.sin(elapsedTime*0.2)*8).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.1) * 14, Math.sin(elapsedTime * 0.2) * 3
+            , -49 + Math.sin(elapsedTime * 0.2) * 8).multiplyMatrix(modelViewMartrix);
 
         for (let p = 0; p < points.length; p++) {
             let transformed = modelViewMartrix.multiply(points[p]);
@@ -1640,7 +1722,7 @@ export default class Framebuffer {
          * 2. viewport transform
          * 3. scan conversion (rasterization)
          */
-        
+
         for (let i = 0; i < index.length; i += 3) {
 
             // Only render triangles with CCW-ordered vertices
@@ -1654,29 +1736,57 @@ export default class Framebuffer {
             let v2 = points2[index[i + 1]];
             let v3 = points2[index[i + 2]];
 
-             if (this.isTriangleCCW(v1, v2, v3)) {
+            if (this.isTriangleCCW(v1, v2, v3)) {
 
-            let normal = normals2[i / 3];
-            let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.2, 0.2, 1).normalize())) * 255), 255) ;
-            let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar ;
-            if (v1.x < Framebuffer.minWindow.x ||
-                v2.x < Framebuffer.minWindow.x ||
-                v3.x < Framebuffer.minWindow.x ||
-                v1.x > Framebuffer.maxWindow.x ||
-                v2.x > Framebuffer.maxWindow.x ||
-                v3.x > Framebuffer.maxWindow.x ||
-                v1.y < Framebuffer.minWindow.y ||
-                v2.y < Framebuffer.minWindow.y ||
-                v3.y < Framebuffer.minWindow.y ||
-                v1.y > Framebuffer.maxWindow.y ||
-                v2.y > Framebuffer.maxWindow.y ||
-                v3.y > Framebuffer.maxWindow.y) {
-                 this.clipConvexPolygon2(new Array<Vector3>(v1, v2, v3),new Array<Vector3>(new Vector3(0, 0, 0), new Vector3(0, 16, 0), new Vector3(16, 16, 0)), color);
-            } else {
-                // this.drawTriangleDDA(v1, v2, v3, color);
-                this.drawTriangleDDA2(v1, v2, v3, new Vector3(0, 16, 0), new Vector3(0, 0, 0), new Vector3(16, 16, 0), color);
+                let normal = normals2[i / 3];
+                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.2, 0.2, 1).normalize())) * 255), 255);
+                let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
+
+                
+                let textureCoordinate1 = new TextureCoordinate();
+                textureCoordinate1.u = 0;
+                textureCoordinate1.v = 0;
+
+                let textureCoordinate2 = new TextureCoordinate();
+                textureCoordinate2.u = 0;
+                textureCoordinate2.v = 16;
+
+                let textureCoordinate3 = new TextureCoordinate();
+                textureCoordinate3.u = 16;
+                textureCoordinate3.v = 16;
+
+                let vertex1 = new Vertex();
+                vertex1.position = v1;
+                vertex1.textureCoordinate = textureCoordinate2;
+
+                let vertex2 = new Vertex();
+                vertex2.position = v2;
+                vertex2.textureCoordinate = textureCoordinate1;
+
+                let vertex3 = new Vertex();
+                vertex3.position = v3;
+                vertex3.textureCoordinate = textureCoordinate3;
+
+                if (v1.x < Framebuffer.minWindow.x ||
+                    v2.x < Framebuffer.minWindow.x ||
+                    v3.x < Framebuffer.minWindow.x ||
+                    v1.x > Framebuffer.maxWindow.x ||
+                    v2.x > Framebuffer.maxWindow.x ||
+                    v3.x > Framebuffer.maxWindow.x ||
+                    v1.y < Framebuffer.minWindow.y ||
+                    v2.y < Framebuffer.minWindow.y ||
+                    v3.y < Framebuffer.minWindow.y ||
+                    v1.y > Framebuffer.maxWindow.y ||
+                    v2.y > Framebuffer.maxWindow.y ||
+                    v3.y > Framebuffer.maxWindow.y) {
+
+
+                   this.clipConvexPolygon2(new Array<Vertex>(vertex1, vertex2, vertex3), color);
+                } else {
+                    // this.drawTriangleDDA(v1, v2, v3, color);
+                    this.drawTriangleDDA2(vertex1, vertex2, vertex3, color);
+                }
             }
-             }
         }
     }
 
@@ -1802,39 +1912,39 @@ export default class Framebuffer {
     }
 
 
-    public clipConvexPolygon2(subject: Array<Vector3>,subjectt: Array<Vector3>, color: number): void {
-        
-                let output = subject;
-        
-                for (let j = 0; j < Framebuffer.clipRegion.length; j++) {
-                    let edge = Framebuffer.clipRegion[j];
-                    let input = output;
-                    output = new Array<Vector3>();
-                    let S = input[input.length - 1];
-        
-                    for (let i = 0; i < input.length; i++) {
-                        let point = input[i];
-                        if (edge.isInside(point)) {
-                            if (!edge.isInside(S)) {
-                                output.push(edge.computeIntersection(S, point));
-                            }
-                            output.push(point);
-                        } else if (edge.isInside(S)) {
-                            output.push(edge.computeIntersection(S, point));
-                        }
-                        S = point;
+    public clipConvexPolygon2(subject: Array<Vertex>, color: number): void {
+
+        let output = subject;
+
+        for (let j = 0; j < Framebuffer.clipRegion.length; j++) {
+            let edge = Framebuffer.clipRegion[j];
+            let input = output;
+            output = new Array<Vertex>();
+            let S = input[input.length - 1];
+
+            for (let i = 0; i < input.length; i++) {
+                let point = input[i];
+                if (edge.isInside2(point)) {
+                    if (!edge.isInside2(S)) {
+                        output.push(edge.computeIntersection2(S, point));
                     }
-                };
-        
-                if (output.length < 3) {
-                    return;
+                    output.push(point);
+                } else if (edge.isInside2(S)) {
+                    output.push(edge.computeIntersection2(S, point));
                 }
-        
-                // triangulate new point set
-                for (let i = 0; i < output.length - 2; i++) {
-                    this.drawTriangleDDA(output[0], output[1 + i], output[2 + i], color);
-                }
+                S = point;
             }
+        };
+
+        if (output.length < 3) {
+            return;
+        }
+
+        // triangulate new point set
+        for (let i = 0; i < output.length - 2; i++) {
+            this.drawTriangleDDA2(output[0], output[1 + i], output[2 + i], color);
+        }
+    }
 
     lensFlareVisible: boolean = false;
     lensFlareStart = 0;
@@ -2344,37 +2454,37 @@ export default class Framebuffer {
         }
     }
 
-    fillLongRightTriangle2(v1: Vector3, v2: Vector3, v3: Vector3, t1: Vector3, t2: Vector3, t3: Vector3, color: number): void {
+    fillLongRightTriangle2(v1: Vertex, v2: Vertex, v3: Vertex, color: number): void {
 
-        let yDistanceLeft = v2.y - v1.y;
-        let yDistanceRight = v3.y - v1.y;
+        let yDistanceLeft = v2.position.y - v1.position.y;
+        let yDistanceRight = v3.position.y - v1.position.y;
 
-        let slope1 = (v2.x - v1.x) / yDistanceLeft;
-        let slope2 = (v3.x - v1.x) / yDistanceRight;
+        let slope1 = (v2.position.x - v1.position.x) / yDistanceLeft;
+        let slope2 = (v3.position.x - v1.position.x) / yDistanceRight;
 
-        let tslope1u = (t2.x / v2.z - t1.x / v1.z) / yDistanceLeft;
-        let tslope2u = (t3.x / v3.z - t1.x / v1.z) / yDistanceRight;
+        let tslope1u = (v2.textureCoordinate.u / v2.position.z - v1.textureCoordinate.u / v1.position.z) / yDistanceLeft;
+        let tslope2u = (v3.textureCoordinate.u / v3.position.z - v1.textureCoordinate.u / v1.position.z) / yDistanceRight;
 
-        let tslope1v = (t2.y / v2.z - t1.y / v1.z) / yDistanceLeft;
-        let tslope2v = (t3.y / v3.z - t1.y / v1.z) / yDistanceRight;
+        let tslope1v = (v2.textureCoordinate.v / v2.position.z - v1.textureCoordinate.v / v1.position.z) / yDistanceLeft;
+        let tslope2v = (v3.textureCoordinate.v / v3.position.z - v1.textureCoordinate.v / v1.position.z) / yDistanceRight;
 
-        let zslope1 = (1 / v2.z - 1 / v1.z) / yDistanceLeft;
-        let zslope2 = (1 / v3.z - 1 / v1.z) / yDistanceRight;
+        let zslope1 = (1 / v2.position.z - 1 / v1.position.z) / yDistanceLeft;
+        let zslope2 = (1 / v3.position.z - 1 / v1.position.z) / yDistanceRight;
 
-        let curx1 = v1.x;
-        let curx2 = v1.x;
+        let curx1 = v1.position.x;
+        let curx2 = v1.position.x;
 
-        let curz1 = 1.0 / v1.z;
-        let curz2 = 1.0 / v1.z;
+        let curz1 = 1.0 / v1.position.z;
+        let curz2 = 1.0 / v1.position.z;
 
-        let curu1 = t1.x / v1.z;
-        let curv1 = t1.y / v1.z;
-        let curu2 = t1.x / v1.z;
-        let curv2 = t1.y / v1.z;
+        let curu1 = v1.textureCoordinate.u / v1.position.z;
+        let curv1 = v1.textureCoordinate.v / v1.position.z;
+        let curu2 = v1.textureCoordinate.u / v1.position.z;
+        let curv2 = v1.textureCoordinate.v / v1.position.z;
 
-        let xPosition = v1.x;
-        let xPosition2 = v1.x;
-        let yPosition = v1.y;
+        let xPosition = v1.position.x;
+        let xPosition2 = v1.position.x;
+        let yPosition = v1.position.y;
 
         for (let i = 0; i < yDistanceLeft; i++) {
             let length = Math.round(xPosition2) - Math.round(xPosition);
@@ -2390,15 +2500,15 @@ export default class Framebuffer {
                 if (wStart < this.wBuffer[framebufferIndex]) {
                     this.wBuffer[framebufferIndex] = wStart;
                     let z = 1 / wStart;
-                    let u = Math.max(Math.min((uStart *z) | 0, 15),0);
-                    let v = Math.max(Math.min((vStart *z) | 0, 15),0);
+                    let u = Math.max(Math.min((uStart * z) | 0, 15), 0);
+                    let v = Math.max(Math.min((vStart * z) | 0, 15), 0);
                     //console.log('u: ' + u + ' v: '+ v);
                     let color2 = this.bob.texture[u + v * 16];
-                    let scale =((color>>8) &0xff)/255;
-                    let r = (color2  & 0xff)*scale;
-                    let g = ((color2 >> 8)  & 0xff)*scale;
-                    let b = ((color2  >>16) & 0xff)*scale;
-                    this.framebuffer[framebufferIndex] = r |(g<<8) | (b<<16)|255<<24;
+                    let scale = ((color >> 8) & 0xff) / 255;
+                    let r = (color2 & 0xff) * scale;
+                    let g = ((color2 >> 8) & 0xff) * scale;
+                    let b = ((color2 >> 16) & 0xff) * scale;
+                    this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | 255 << 24;
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
@@ -2423,19 +2533,19 @@ export default class Framebuffer {
             curv2 += tslope2v;
         }
 
-        yDistanceLeft = v3.y - v2.y;
-        slope1 = (v3.x - v2.x) / yDistanceLeft;
-        zslope1 = (1 / v3.z - 1 / v2.z) / yDistanceLeft;
-        tslope1u = (t3.x / v3.z - t2.x / v2.z) / yDistanceLeft;
-        tslope1v = (t3.y / v3.z - t2.y / v2.z) / yDistanceLeft;
+        yDistanceLeft = v3.position.y - v2.position.y;
+        slope1 = (v3.position.x - v2.position.x) / yDistanceLeft;
+        zslope1 = (1 / v3.position.z - 1 / v2.position.z) / yDistanceLeft;
+        tslope1u = (v3.textureCoordinate.u / v3.position.z - v2.textureCoordinate.u / v2.position.z) / yDistanceLeft;
+        tslope1v = (v3.textureCoordinate.v / v3.position.z - v2.textureCoordinate.v / v2.position.z) / yDistanceLeft;
 
 
-        curx1 = v2.x;
-        curz1 = 1.0 / v2.z;
-        curu1 = t2.x / v2.z;
-        curv1 = t2.y / v2.z;
-        xPosition = v2.x;
-        yPosition = v2.y;
+        curx1 = v2.position.x;
+        curz1 = 1.0 / v2.position.z;
+        curu1 = v2.textureCoordinate.u / v2.position.z;
+        curv1 = v2.textureCoordinate.v / v2.position.z;
+        xPosition = v2.position.x;
+        yPosition = v2.position.y;
 
         for (let i = 0; i < yDistanceLeft; i++) {
             let length = Math.round(xPosition2) - Math.round(xPosition);
@@ -2453,15 +2563,15 @@ export default class Framebuffer {
                     this.wBuffer[framebufferIndex] = wStart;
 
                     let z = 1 / wStart;
-                    let u = Math.max(Math.min((uStart *z) | 0, 15),0);
-                    let v = Math.max(Math.min((vStart *z) | 0, 15),0);
+                    let u = Math.max(Math.min((uStart * z) | 0, 15), 0);
+                    let v = Math.max(Math.min((vStart * z) | 0, 15), 0);
                     //console.log('u: ' + u + ' v: '+ v);
                     let color2 = this.bob.texture[u + v * 16];
-                    let scale =((color>>8) &0xff)/255;
-                    let r = (color2  & 0xff)*scale;
-                    let g = ((color2 >> 8)  & 0xff)*scale;
-                    let b = ((color2  >>16) & 0xff)*scale;
-                    this.framebuffer[framebufferIndex] = r |(g<<8) | (b<<16)|255<<24;
+                    let scale = ((color >> 8) & 0xff) / 255;
+                    let r = (color2 & 0xff) * scale;
+                    let g = ((color2 >> 8) & 0xff) * scale;
+                    let b = ((color2 >> 16) & 0xff) * scale;
+                    this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | 255 << 24;
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
@@ -2534,15 +2644,15 @@ export default class Framebuffer {
                 if (wStart < this.wBuffer[framebufferIndex]) {
                     this.wBuffer[framebufferIndex] = wStart;
                     let z = 1 / wStart;
-                    let u = Math.max(Math.min((uStart *z) | 0, 15),0);
-                    let v = Math.max(Math.min((vStart *z) | 0, 15),0);
+                    let u = Math.max(Math.min((uStart * z) | 0, 15), 0);
+                    let v = Math.max(Math.min((vStart * z) | 0, 15), 0);
                     //console.log('u: ' + u + ' v: '+ v);
                     let color2 = this.bob.texture[u + v * 16];
-                    let scale =((color>>8) &0xff)/255;
-                    let r = (color2  & 0xff)*scale;
-                    let g = ((color2 >> 8)  & 0xff)*scale;
-                    let b = ((color2  >>16) & 0xff)*scale;
-                    this.framebuffer[framebufferIndex] = r |(g<<8) | (b<<16)|255<<24;
+                    let scale = ((color >> 8) & 0xff) / 255;
+                    let r = (color2 & 0xff) * scale;
+                    let g = ((color2 >> 8) & 0xff) * scale;
+                    let b = ((color2 >> 16) & 0xff) * scale;
+                    this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | 255 << 24;
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
@@ -2600,14 +2710,14 @@ export default class Framebuffer {
                 if (wStart < this.wBuffer[framebufferIndex]) {
                     this.wBuffer[framebufferIndex] = wStart;
                     let z = 1 / wStart;
-                    let u = Math.max(Math.min((uStart *z) | 0, 15),0);
-                    let v = Math.max(Math.min((vStart *z) | 0, 15),0);
+                    let u = Math.max(Math.min((uStart * z) | 0, 15), 0);
+                    let v = Math.max(Math.min((vStart * z) | 0, 15), 0);
                     let color2 = this.bob.texture[u + v * 16];
-                    let scale =((color>>8) &0xff)/255;
-                    let r = (color2  & 0xff)*scale;
-                    let g = ((color2 >> 8)  & 0xff)*scale;
-                    let b = ((color2  >>16) & 0xff)*scale;
-                    this.framebuffer[framebufferIndex] = r |(g<<8) | (b<<16)|255<<24;
+                    let scale = ((color >> 8) & 0xff) / 255;
+                    let r = (color2 & 0xff) * scale;
+                    let g = ((color2 >> 8) & 0xff) * scale;
+                    let b = ((color2 >> 16) & 0xff) * scale;
+                    this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | 255 << 24;
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
@@ -2858,36 +2968,29 @@ export default class Framebuffer {
         }
     }
 
-    public drawTriangleDDA2(p1: Vector3, p2: Vector3, p3: Vector3, t1: Vector3,
-        t2: Vector3, t3: Vector3, color: number): void {
-        if (p1.y > p3.y) {
-            let temp: Vector3 = p1;
+    public drawTriangleDDA2(p1: Vertex, p2: Vertex, p3: Vertex, color: number): void {
+
+        let temp: Vertex;
+
+        if (p1.position.y > p3.position.y) {
+            temp = p1;
             p1 = p3;
             p3 = temp;
-            temp = t1;
-            t1 = t3;
-            t3 = temp;
         }
 
-        if (p1.y > p2.y) {
-            let temp: Vector3 = p1;
+        if (p1.position.y > p2.position.y) {
+            temp = p1;
             p1 = p2;
             p2 = temp;
-            temp = t1;
-            t1 = t2;
-            t2 = temp;
         }
 
-        if (p2.y > p3.y) {
-            let temp: Vector3 = p2;
+        if (p2.position.y > p3.position.y) {
+            temp = p2;
             p2 = p3;
             p3 = temp;
-            temp = t2;
-            t2 = t3;
-            t3 = temp;
         }
 
-        if (p1.y == p3.y) {
+        if (p1.position.y == p3.position.y) {
             return;
         } /*else if (p2.y == p3.y) {
             if (p2.x > p3.x) {
@@ -2904,11 +3007,14 @@ export default class Framebuffer {
             }
             this.fillTopFlatTriangle(p1, p2, p3, color);
         } */else {
-            let x = (p3.x - p1.x) * (p2.y - p1.y) / (p3.y - p1.y) + p1.x;
-            if (x > p2.x) {
-                this.fillLongRightTriangle2(p1, p2, p3, t1, t2, t3, color);
+            let x = (p3.position.x - p1.position.x) * (p2.position.y - p1.position.y) / (p3.position.y - p1.position.y) + p1.position.x;
+            if (x > p2.position.x) {
+                this.fillLongRightTriangle2(p1, p2, p3, color);
             } else {
-                this.fillLongLeftTriangle2(p1, p2, p3, t1, t2, t3, color);
+                let tex = p1.textureCoordinate;
+                let tex2 = p2.textureCoordinate;
+                let tex3 = p3.textureCoordinate;
+               this.fillLongLeftTriangle2(p1.position, p2.position, p3.position, new Vector3(tex.u, tex.v,0), new Vector3(tex2.u, tex2.v,0), new Vector3(tex3.u, tex3.v,0), color);
             }
         }
     }
