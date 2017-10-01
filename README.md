@@ -27,6 +27,7 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 ### Features
 - Flat Shading
 - Perspective Correct Texture Mapping
+- Spherical Environment Mapping
 - Near Plane & Viewport Clipping
 - Lens Flare
 ### Backlog
@@ -38,5 +39,4 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Light Sources
 - Material
 - Shadows (Projection Shadows, Shadow Mapping)
-- Environment Mapping
 - Pixel Shaders (Bump Mapping, Parallax Mapping)
