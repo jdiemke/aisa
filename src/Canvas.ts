@@ -193,8 +193,12 @@ export class Canvas {
 */
         this.framebuffer.setBob(this.spheremap);
         this.framebuffer.clear();
-        this.framebuffer.shadingTorusENvironment(time * 0.002);
-
+        this.framebuffer.shadingTorusENvironment(time * 0.006);
+        this.framebuffer.drawLensFlare(time - 185000, [
+            { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+            { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+            { tex: this.texture13, scale: 1.6, alpha: 0.25 }
+        ]);
         // TODO:
         // - textured cube / dynamic textures
         // - skybox

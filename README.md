@@ -31,6 +31,8 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Near Plane & Viewport Clipping
 - Lens Flare
 ### Backlog
+- Skybox
+- Multitexturing
 - MDL / MD2 Modells
 - View Frustum Culling & Space Partitioning
 - 3D Portal Engine
