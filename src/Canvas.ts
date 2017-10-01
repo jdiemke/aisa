@@ -25,6 +25,7 @@ export class Canvas {
     private texture13: Texture;
     private texture14: Texture;
     private metal: Texture;
+    private spheremap: Texture;
     private boundRenderLoop: (time: number) => void;
 
     constructor(width: number, height: number) {
@@ -44,8 +45,8 @@ export class Canvas {
 
         let aspect = Math.round(200 / 320 * 100);
 
-        this.canvas.style.width = '100%';//640px';
-        this.canvas.style.height = '100%';//'400px';
+        this.canvas.style.width = '640px';
+        this.canvas.style.height = '400px';
 
         this.context = this.canvas.getContext('2d');
 
@@ -179,9 +180,51 @@ export class Canvas {
             this.framebuffer.shadingTorus4(time * 0.005);
         }*/
 
+        /*
         this.framebuffer.setBob(this.metal);//3
         this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
         this.framebuffer.shadingTorus4(time * 0.002);
+        this.framebuffer.drawLensFlare(time - 185000, [
+            { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+            { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+            { tex: this.texture13, scale: 1.6, alpha: 0.25 }
+        ]);
+        this.framebuffer.cinematicScroller(this.texture4, time);
+*/
+        this.framebuffer.setBob(this.spheremap);
+        this.framebuffer.clear();
+        this.framebuffer.shadingTorusENvironment(time * 0.002);
+
+        // TODO:
+        // - textured cube / dynamic textures
+        // - skybox
+        // - specular highlights
+        // - environment mapping (metal)
+        // - 3d bobs (with shadows)
+        // - plane deformation effect
+        // - sine scroller (color bar texture)
+        // - dot tunnel
+        // - 2d / 3d start field
+        // - 2d vector start
+        // - wobble logo
+        // - text writer
+        // - scroller / sine scroller
+        // - fractalplasma fade in
+        // - water effect
+        // - cross fade
+        // - 2d bump mapping ( maybe on 3d object)
+        // - smooth shading (gouraud)
+        // - voxel landscape with color
+        // - metaballs
+        // - rasterbars
+        // - 3d particles / 3d particle collision
+        // - vector morphing
+        // - voxel tunnel / sphere / torus
+        // - stencil vectors
+        // - chess zoomer / chess waver
+        // - water reflections
+        // - shadows projection
+        // - raycaster
 
         // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
         // this.framebuffer.shadingTorus2(time * 0.02);
@@ -270,137 +313,140 @@ export class Canvas {
     }
 
     public init(): void {
-        this.createTexture(require("./assets/metall.png"), false).then((texture) => {
-            this.metal = texture;
+        this.createTexture(require("./assets/spheremap.png"), false).then((texture) => {
+            this.spheremap = texture;
+            this.createTexture(require("./assets/metall.png"), false).then((texture) => {
+                this.metal = texture;
 
-            this.createTexture(require("./assets/logo.png"), false).then((texture) => {
-                this.texture = texture;
-                let img2 = new Image();
-                img2.addEventListener("load", () => {
-                    this.texture2 = new Texture();
-                    this.texture2.texture = this.getImageData(img2, true);
-                    this.texture2.width = img2.width;
-                    this.texture2.height = img2.height;
-
-
-                    let img3 = new Image();
-                    img3.addEventListener("load", () => {
-                        this.texture3 = new Texture();
-                        this.texture3.texture = this.getImageData(img3);
-                        this.texture3.width = img3.width;
-                        this.texture3.height = img3.height;
+                this.createTexture(require("./assets/logo.png"), false).then((texture) => {
+                    this.texture = texture;
+                    let img2 = new Image();
+                    img2.addEventListener("load", () => {
+                        this.texture2 = new Texture();
+                        this.texture2.texture = this.getImageData(img2, true);
+                        this.texture2.width = img2.width;
+                        this.texture2.height = img2.height;
 
 
-                        let img4 = new Image();
-                        img4.addEventListener("load", () => {
-                            this.texture4 = new Texture();
-                            this.texture4.texture = this.getImageData(img4, true);
-                            this.texture4.width = img4.width;
-                            this.texture4.height = img4.height;
+                        let img3 = new Image();
+                        img3.addEventListener("load", () => {
+                            this.texture3 = new Texture();
+                            this.texture3.texture = this.getImageData(img3);
+                            this.texture3.width = img3.width;
+                            this.texture3.height = img3.height;
 
 
-                            let img5 = new Image();
-                            img5.addEventListener("load", () => {
-                                this.texture5 = new Texture();
-                                this.texture5.texture = this.getImageData(img5);
-                                this.texture5.width = img5.width;
-                                this.texture5.height = img5.height;
-
-                                let img6 = new Image();
-                                img6.addEventListener("load", () => {
-                                    this.texture6 = new Texture();
-                                    this.texture6.texture = this.getImageData(img6, true);
-                                    this.texture6.width = img6.width;
-                                    this.texture6.height = img6.height;
-
-                                    let img7 = new Image();
-                                    img7.addEventListener("load", () => {
-                                        this.texture7 = new Texture();
-                                        this.texture7.texture = this.getImageData(img7, true);
-                                        this.texture7.width = img7.width;
-                                        this.texture7.height = img7.height;
-
-                                        let img8 = new Image();
-                                        img8.addEventListener("load", () => {
-                                            this.texture8 = new Texture();
-                                            this.texture8.texture = this.getImageData(img8);
-                                            this.texture8.width = img8.width;
-                                            this.texture8.height = img8.height;
-
-                                            let img9 = new Image();
-                                            img9.addEventListener("load", () => {
-                                                this.texture9 = new Texture();
-                                                this.texture9.texture = this.getImageData(img9);
-                                                this.texture9.width = img9.width;
-                                                this.texture9.height = img9.height;
-
-                                                let img10 = new Image();
-                                                img10.addEventListener("load", () => {
-                                                    this.texture10 = new Texture();
-                                                    this.texture10.texture = this.getImageData(img10, true);
-                                                    this.texture10.width = img10.width;
-                                                    this.texture10.height = img10.height;
+                            let img4 = new Image();
+                            img4.addEventListener("load", () => {
+                                this.texture4 = new Texture();
+                                this.texture4.texture = this.getImageData(img4, true);
+                                this.texture4.width = img4.width;
+                                this.texture4.height = img4.height;
 
 
-                                                    let img11 = new Image();
-                                                    img11.addEventListener("load", () => {
-                                                        this.texture11 = new Texture();
-                                                        this.texture11.texture = this.getImageData(img11, true);
-                                                        this.texture11.width = img11.width;
-                                                        this.texture11.height = img11.height;
+                                let img5 = new Image();
+                                img5.addEventListener("load", () => {
+                                    this.texture5 = new Texture();
+                                    this.texture5.texture = this.getImageData(img5);
+                                    this.texture5.width = img5.width;
+                                    this.texture5.height = img5.height;
 
-                                                        let img12 = new Image();
-                                                        img12.addEventListener("load", () => {
-                                                            this.texture12 = new Texture();
-                                                            this.texture12.texture = this.getImageData(img12, true);
-                                                            this.texture12.width = img12.width;
-                                                            this.texture12.height = img12.height;
+                                    let img6 = new Image();
+                                    img6.addEventListener("load", () => {
+                                        this.texture6 = new Texture();
+                                        this.texture6.texture = this.getImageData(img6, true);
+                                        this.texture6.width = img6.width;
+                                        this.texture6.height = img6.height;
 
-                                                            let img13 = new Image();
-                                                            img13.addEventListener("load", () => {
-                                                                this.texture13 = new Texture();
-                                                                this.texture13.texture = this.getImageData(img13, true);
-                                                                this.texture13.width = img13.width;
-                                                                this.texture13.height = img13.height;
+                                        let img7 = new Image();
+                                        img7.addEventListener("load", () => {
+                                            this.texture7 = new Texture();
+                                            this.texture7.texture = this.getImageData(img7, true);
+                                            this.texture7.width = img7.width;
+                                            this.texture7.height = img7.height;
 
-                                                                let img14 = new Image();
-                                                                img14.addEventListener("load", () => {
-                                                                    this.texture14 = new Texture();
-                                                                    this.texture14.texture = this.getImageData(img14, false);
-                                                                    this.texture14.width = img14.width;
-                                                                    this.texture14.height = img14.height;
-                                                                    let myAudio = new Audio(require('./assets/3dGalax.mp3'));
-                                                                    myAudio.loop = true;
-                                                                    this.start = Date.now();
-                                                                    myAudio.play();
-                                                                    this.renderLoop(0);
+                                            let img8 = new Image();
+                                            img8.addEventListener("load", () => {
+                                                this.texture8 = new Texture();
+                                                this.texture8.texture = this.getImageData(img8);
+                                                this.texture8.width = img8.width;
+                                                this.texture8.height = img8.height;
+
+                                                let img9 = new Image();
+                                                img9.addEventListener("load", () => {
+                                                    this.texture9 = new Texture();
+                                                    this.texture9.texture = this.getImageData(img9);
+                                                    this.texture9.width = img9.width;
+                                                    this.texture9.height = img9.height;
+
+                                                    let img10 = new Image();
+                                                    img10.addEventListener("load", () => {
+                                                        this.texture10 = new Texture();
+                                                        this.texture10.texture = this.getImageData(img10, true);
+                                                        this.texture10.width = img10.width;
+                                                        this.texture10.height = img10.height;
+
+
+                                                        let img11 = new Image();
+                                                        img11.addEventListener("load", () => {
+                                                            this.texture11 = new Texture();
+                                                            this.texture11.texture = this.getImageData(img11, true);
+                                                            this.texture11.width = img11.width;
+                                                            this.texture11.height = img11.height;
+
+                                                            let img12 = new Image();
+                                                            img12.addEventListener("load", () => {
+                                                                this.texture12 = new Texture();
+                                                                this.texture12.texture = this.getImageData(img12, true);
+                                                                this.texture12.width = img12.width;
+                                                                this.texture12.height = img12.height;
+
+                                                                let img13 = new Image();
+                                                                img13.addEventListener("load", () => {
+                                                                    this.texture13 = new Texture();
+                                                                    this.texture13.texture = this.getImageData(img13, true);
+                                                                    this.texture13.width = img13.width;
+                                                                    this.texture13.height = img13.height;
+
+                                                                    let img14 = new Image();
+                                                                    img14.addEventListener("load", () => {
+                                                                        this.texture14 = new Texture();
+                                                                        this.texture14.texture = this.getImageData(img14, false);
+                                                                        this.texture14.width = img14.width;
+                                                                        this.texture14.height = img14.height;
+                                                                        let myAudio = new Audio(require('./assets/3dGalax.mp3'));
+                                                                        myAudio.loop = true;
+                                                                        this.start = Date.now();
+                                                                        myAudio.play();
+                                                                        this.renderLoop(0);
+                                                                    });
+                                                                    img14.src = require("./assets/led.png");
                                                                 });
-                                                                img14.src = require("./assets/led.png");
+                                                                img13.src = require("./assets/bokeh.png");
                                                             });
-                                                            img13.src = require("./assets/bokeh.png");
+                                                            img12.src = require("./assets/sky.png");
                                                         });
-                                                        img12.src = require("./assets/sky.png");
+                                                        img11.src = require("./assets/ring.png");
                                                     });
-                                                    img11.src = require("./assets/ring.png");
-                                                });
-                                                img10.src = require("./assets/spark.png");
+                                                    img10.src = require("./assets/spark.png");
 
+                                                });
+                                                img9.src = require("./assets/battleofilona.png");
                                             });
-                                            img9.src = require("./assets/battleofilona.png");
+                                            img8.src = require("./assets/pandabear.png");
                                         });
-                                        img8.src = require("./assets/pandabear.png");
+                                        img7.src = require("./assets/ball2.png");
                                     });
-                                    img7.src = require("./assets/ball2.png");
+                                    img6.src = require("./assets/lens.png");
                                 });
-                                img6.src = require("./assets/lens.png");
+                                img5.src = require("./assets/atlantis.png");
                             });
-                            img5.src = require("./assets/atlantis.png");
+                            img4.src = require("./assets/font.png");
                         });
-                        img4.src = require("./assets/font.png");
+                        img3.src = require("./assets/heightmap.png");
                     });
-                    img3.src = require("./assets/heightmap.png");
+                    img2.src = require("./assets/razor1911.png");
                 });
-                img2.src = require("./assets/razor1911.png");
             });
         });
 

@@ -1788,6 +1788,167 @@ export default class Framebuffer {
         }
     }
 
+
+    public shadingTorusENvironment(elapsedTime: number): void {
+
+        this.wBuffer.fill(100);
+        let points: Array<Vector3> = [];
+        let textCoords: Array<TextureCoordinate> = [];
+
+        // compute normals
+        let normals: Array<Vector3> = new Array<Vector3>();
+
+
+
+        const STEPS = 15 * 2;
+        const STEPS2 = 8 * 2;
+        for (let i = 0; i < STEPS + 1; i++) {
+            let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
+            let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
+            let up = new Vector3(0.0, 4.0, 0);
+            let right = frame2.sub(frame).cross(up);
+
+            for (let r = 0; r < STEPS2 + 1; r++) {
+                let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
+                points.push(pos);
+                normals.push(frame.sub(pos).normalize());
+                let t = new TextureCoordinate();
+                t.u = 1 / (STEPS2) * r;
+                t.v = 1 / (STEPS) * i;
+                textCoords.push(t);
+            }
+        }
+
+        let index: Array<number> = [];
+
+        for (let j = 0; j < STEPS; j++) {
+            for (let i = 0; i < STEPS2; i++) {
+                index.push((((STEPS2 + 1) * j) + (1 + i))); // 2
+                index.push((((STEPS2 + 1) * j) + (0 + i))); // 1
+                index.push((((STEPS2 + 1) * j) + (STEPS2 + 1) + (1 + i))); //3
+
+                index.push((((STEPS2 + 1) * j) + (STEPS2 + 1) + (0 + i))); //4
+                index.push((((STEPS2 + 1) * j) + (STEPS2 + 1) + (1 + i))); //3
+                index.push((((STEPS2 + 1) * j) + (0 + i))); // 5
+            }
+        }
+
+
+
+
+        let scale = 2.1;
+
+        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.25));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3));
+
+        /**
+         * Vertex Shader Stage
+         */
+        let points2: Array<Vector3> = new Array<Vector3>();
+
+        let normals2: Array<Vector3> = new Array<Vector3>();
+        for (let n = 0; n < normals.length; n++) {
+            normals2.push(modelViewMartrix.multiply(normals[n]));
+        }
+
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.3) * 26, Math.sin(elapsedTime * 0.2) * 10
+            , -45)
+            .multiplyMatrix(modelViewMartrix);
+
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiply(points[p]);
+
+            let x = transformed.x;
+            let y = transformed.y;
+            let z = transformed.z; // TODO: use translation matrix!
+
+            let xx = (320 * 0.5) + (x / (-z * 0.0078));
+            let yy = (200 * 0.5) + (y / (-z * 0.0078));
+            // commented out because it breaks the winding. inversion
+            // of y has to be done after back-face culling in the
+            // viewport transform
+            // yy =(200 * 0.5) - (y / (-z * 0.0078));
+
+            points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+        }
+
+        /**
+         * Primitive Assembly and Rasterization Stage:
+         * 1. back-face culling
+         * 2. viewport transform
+         * 3. scan conversion (rasterization)
+         */
+
+        let vertexArray = new Array<Vertex>(new Vertex(), new Vertex(), new Vertex());
+
+        for (let i = 0; i < index.length; i += 3) {
+
+            // Only render triangles with CCW-ordered vertices
+            // 
+            // Reference:
+            // David H. Eberly (2006).
+            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
+            // p. 69. Morgan Kaufmann Publishers, United States.
+            //
+            let v1 = points2[index[i]];
+            let n1 = normals2[index[i]].normalize();
+
+            let v2 = points2[index[i + 1]];
+            let n2 = normals2[index[i + 1]].normalize();
+
+            let v3 = points2[index[i + 2]];
+            let n3 = normals2[index[i + 2]].normalize();
+
+            if (this.isTriangleCCW(v1, v2, v3)) {
+
+                let normal = n3;
+                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.1, 0.1, -1).normalize())) * 205 + 50), 255);
+                let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
+
+                //let color = 255 << 24 | 255 << 16 | 150 << 8 | 255;
+
+                vertexArray[0].position = v1;
+                vertexArray[0].textureCoordinate = this.fakeSphere(n1);
+
+                vertexArray[1].position = v2;
+                vertexArray[1].textureCoordinate = this.fakeSphere(n2);
+
+                vertexArray[2].position = v3;
+                vertexArray[2].textureCoordinate = this.fakeSphere(n3);
+
+                if (v1.x < Framebuffer.minWindow.x ||
+                    v2.x < Framebuffer.minWindow.x ||
+                    v3.x < Framebuffer.minWindow.x ||
+                    v1.x > Framebuffer.maxWindow.x ||
+                    v2.x > Framebuffer.maxWindow.x ||
+                    v3.x > Framebuffer.maxWindow.x ||
+                    v1.y < Framebuffer.minWindow.y ||
+                    v2.y < Framebuffer.minWindow.y ||
+                    v3.y < Framebuffer.minWindow.y ||
+                    v1.y > Framebuffer.maxWindow.y ||
+                    v2.y > Framebuffer.maxWindow.y ||
+                    v3.y > Framebuffer.maxWindow.y) {
+
+
+                    this.clipConvexPolygon2(vertexArray, color);
+                } else {
+                    // this.drawTriangleDDA(v1, v2, v3, color);
+                    this.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], color);
+                }
+            }
+        }
+    }
+
+    public fakeSphere(normal: Vector3): TextureCoordinate {
+        // https://www.mvps.org/directx/articles/spheremap.htm
+        let tex = new TextureCoordinate();
+        tex.u = 0.5 + normal.x * 0.49;
+        tex.v = 0.5 - normal.y * 0.49;
+
+        tex.u = 0.5 + Math.asin(normal.x) / Math.PI;
+        tex.v = 0.5 - Math.asin(normal.y) / Math.PI;
+        return tex;
+    }
     public shadingTorus3(elapsedTime: number): void {
         let points: Array<Vector3> = [];
         const STEPS = 15 * 2;
