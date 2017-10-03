@@ -5,7 +5,7 @@ export default class Vector4f {
     public z: number;
     public w: number;
 
-    constructor(x: number, y:number, z:number, w:number) {
+    constructor(x: number, y:number, z:number, w:number = 1) {
         this.x=x;
         this.y=y;
         this.z=z;

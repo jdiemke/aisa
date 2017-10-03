@@ -25,19 +25,22 @@ Type the following command into your shell:
 ```
 And open `http://localhost:8080/webpack-dev-server/` in your favourite web browser.
 ### Features
+- Backface Culling
 - Flat Shading
 - Perspective Correct Texture Mapping
 - Spherical Environment Mapping
 - Near Plane & Viewport Clipping
 - Lens Flare
 ### Backlog
+- Wavefront OBJ
 - Skybox
+- Camera Interpolation
+- Gouraud Shading
 - Multitexturing
 - MDL / MD2 Modells
 - View Frustum Culling & Space Partitioning
 - 3D Portal Engine
 - Camera
-- Vertex shading (Flat, Gouraud, Phong)
 - Light Sources
 - Material
 - Shadows (Projection Shadows, Shadow Mapping)

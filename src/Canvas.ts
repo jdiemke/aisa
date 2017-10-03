@@ -1,3 +1,4 @@
+import { CullFace } from './CullFace';
 import Framebuffer from './Framebuffer';
 import Texture from './Texture';
 
@@ -9,6 +10,7 @@ export class Canvas {
     private context: CanvasRenderingContext2D;
     public framebuffer: Framebuffer;
     start: number;
+  
 
     private texture: Texture;
     private texture2: Texture;
@@ -95,9 +97,10 @@ export class Canvas {
         }
         this.fpsCount++;
 
-        let time: number = (Date.now() - this.start) % 230000;
+        let time: number = (Date.now() - this.start) % 250000;
 
-        /*
+        this.framebuffer.setCullFace(CullFace.FRONT);
+
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
             this.framebuffer.shadingTorus(time * 0.02);
@@ -174,31 +177,43 @@ export class Canvas {
         } else if (time < 215000) {
             this.framebuffer.led(time, this.texture14);
             this.framebuffer.drawTexture(32, 64, this.texture2, 1.0);
-        } else {
-            this.framebuffer.setBob(this.texture7);
+        } else if (time < 230000) {
+            this.framebuffer.setBob(this.metal);
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
-            this.framebuffer.shadingTorus4(time * 0.005);
-        }*/
+            this.framebuffer.shadingTorus4(time * 0.002);
+            this.framebuffer.drawLensFlare(time - 185000, [
+                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                { tex: this.texture13, scale: 1.6, alpha: 0.25 }
+            ]);
+            this.framebuffer.cinematicScroller(this.texture4, time);
+        } else if (time < 240000) {
+            this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.clear();
+            this.framebuffer.shadingTorusENvironment(time * 0.006);
+            this.framebuffer.drawLensFlare(time - 185000, [
+                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                { tex: this.texture13, scale: 1.6, alpha: 0.25 }
+            ]);
+        } else {
+            this.framebuffer.cullMode = CullFace.BACK;
+            this.framebuffer.reproduceRazorScene(time*0.003);
+        }
 
-        /*
-        this.framebuffer.setBob(this.metal);//3
-        this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
-        this.framebuffer.shadingTorus4(time * 0.002);
-        this.framebuffer.drawLensFlare(time - 185000, [
-            { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-            { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-            { tex: this.texture13, scale: 1.6, alpha: 0.25 }
-        ]);
-        this.framebuffer.cinematicScroller(this.texture4, time);
-*/
-        this.framebuffer.setBob(this.spheremap);
-        this.framebuffer.clear();
-        this.framebuffer.shadingTorusENvironment(time * 0.006);
-        this.framebuffer.drawLensFlare(time - 185000, [
-            { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-            { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-            { tex: this.texture13, scale: 1.6, alpha: 0.25 }
-        ]);
+        
+        this.framebuffer.cullMode = CullFace.BACK;
+        this.framebuffer.reproduceRazorScene(time*0.003);
+        /**
+         * FIXME: winding problem due to projection method and culling!
+         */
+      //  this.framebuffer.shadingSphereClip((time ) * 0.003);
+       // this.framebuffer.cinematicScroller(this.texture4, time );
+        //   this.framebuffer.drawText(8, 192 - 18, 'TRIANGLE NEAR PLANE CLIPPING', this.texture4);
+
+        // RECREATE RAZOR 1911 SCENE
+        // - objects / shadows / colors / camera
+    
         // TODO:
         // - textured cube / dynamic textures
         // - skybox
@@ -253,6 +268,9 @@ export class Canvas {
         // this.framebuffer.addReflections();
 
         // this.framebuffer.drawRaster();
+        // this.framebuffer.enableBackfaceCulling();
+        // this.framebuffer.setCullFace(FRONT);
+
         this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
         // this.framebuffer.drawText(8, 26, 'TME: ' + time, this.texture4);
         // this.framebuffer.scene9(time*0.01);

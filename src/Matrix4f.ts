@@ -65,6 +65,41 @@ export default class Matrix4f {
         return matrix;
     }
 
+    static constructShadowMatrix(): Matrix4f {
+        let planePoint: Vector3f = new Vector3f(0, -1.5, 0);
+        let planeNormal: Vector3f = new Vector3f(0, 1, 0);
+        let lightPosition: Vector3f = new Vector3f(17, 13, 17);
+
+        let d = -planePoint.dot(planeNormal);
+        let NdotL = planeNormal.x * lightPosition.x +
+            planeNormal.y * lightPosition.y +
+            planeNormal.z * lightPosition.z;
+
+        let shadowMatrix: Matrix4f = new Matrix4f();
+
+        shadowMatrix.m11 = NdotL + d - lightPosition.x * planeNormal.x;
+        shadowMatrix.m12 = - lightPosition.x * planeNormal.y;
+        shadowMatrix.m13 = - lightPosition.x * planeNormal.z;
+        shadowMatrix.m14 = - lightPosition.x * d;
+
+        shadowMatrix.m21 = - lightPosition.y * planeNormal.x;
+        shadowMatrix.m22 = NdotL + d - lightPosition.y * planeNormal.y;
+        shadowMatrix.m23 = - lightPosition.y * planeNormal.z;
+        shadowMatrix.m24 = - lightPosition.y * d;
+
+        shadowMatrix.m31 = - lightPosition.z * planeNormal.x;
+        shadowMatrix.m32 = - lightPosition.z * planeNormal.y;
+        shadowMatrix.m33 = NdotL + d - lightPosition.z * planeNormal.z;
+        shadowMatrix.m34 = - lightPosition.z * d;
+
+        shadowMatrix.m41 = - planeNormal.x;
+        shadowMatrix.m42 = - planeNormal.y;
+        shadowMatrix.m43 = - planeNormal.z;
+        shadowMatrix.m44 = NdotL;
+
+        return shadowMatrix;
+    }
+
     static constructTranslationMatrix(tx: number, ty: number, tz: number): Matrix4f {
         let matrix: Matrix4f = new Matrix4f();
 

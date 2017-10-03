@@ -1,3 +1,4 @@
+import { CullFace } from './CullFace';
 import { TextureCoordinate, Vertex } from './Vertex';
 import { ControllableCamera } from './ControllableCamera';
 /**
@@ -29,6 +30,9 @@ import RandomNumberGenerator from './RandomNumberGenerator';
 declare function require(string): string;
 let json = require('./assets/f16.json');
 
+// TODO:
+// - use polymorphism in order to have different intersection methods
+// - one for plain clipping / one for tex coords / one for multitexturing / gouraud shading etc
 abstract class AbstractClipEdge {
 
     public abstract isInside(p: Vector3): boolean;
@@ -192,11 +196,16 @@ export default class Framebuffer {
     public wBuffer: Float32Array;
 
     private x: number = 0;
+    public cullMode: CullFace = CullFace.BACK;
 
     private camera: ControllableCamera;
 
     private obj: any;
     private bob: Texture;
+
+    public setCullFace(face: CullFace): void {
+        this.cullMode = face;
+    }
 
     setBob(texture: Texture) {
         this.bob = texture;
@@ -234,6 +243,14 @@ export default class Framebuffer {
     public clear() {
         let color: number = this.toColor(0);
         let count: number = this.width * this.height;
+        for (let i = 0; i < count; i++) {
+            this.framebuffer[i] = color;
+        }
+    }
+
+    public clearH(col: number ,h: number) {
+        let color: number = col;
+        let count: number = this.width * h;
         for (let i = 0; i < count; i++) {
             this.framebuffer[i] = color;
         }
@@ -821,7 +838,11 @@ export default class Framebuffer {
     }
 
     public project(t1: { x: number, y: number, z: number }): Vector3 {
+        //t1.x = Math.round((320 / 2) + (t1.x / (-t1.z * 0.0078)));
+        //t1.y = Math.round((200 / 2) - (t1.y / (-t1.z * 0.0078)));
+        //return <Vector3>t1;
         return new Vector3(Math.round((320 / 2) + (t1.x / (-t1.z * 0.0078))),
+            // negation breaks winding and cull mode!!
             Math.round((200 / 2) - (t1.y / (-t1.z * 0.0078))), t1.z);
     }
 
@@ -1391,8 +1412,403 @@ export default class Framebuffer {
         }
     }
 
+    private getDodecahedronMesh(): any {
+        let points: Array<Vector4f> = new Array<Vector4f>();
+        let normals: Array<Vector4f> = new Array<Vector4f>();
+        let index: Array<number> = new Array<number>();
+
+        // https://github.com/chiptune/lol3d/blob/master/index.html
+        let phi = (1 + Math.sqrt(5)) * 0.5;
+        let a = 1;
+        let b = 1 / phi;
+        let c = 2 - phi;
+
+        points = [
+            new Vector4f(c, 0, a), new Vector4f(-c, 0, a), new Vector4f(-b, b, b), new Vector4f(0, a, c),
+            new Vector4f(b, b, b), new Vector4f(b, -b, b), new Vector4f(0, -a, c), new Vector4f(-b, -b, b),
+            new Vector4f(c, 0, -a), new Vector4f(-c, 0, -a), new Vector4f(-b, -b, -b), new Vector4f(0, -a, -c),
+            new Vector4f(b, -b, -b), new Vector4f(b, b, -b), new Vector4f(0, a, -c), new Vector4f(-b, b, -b),
+            new Vector4f(1, c, 0), new Vector4f(-a, c, 0), new Vector4f(-1, -c, 0), new Vector4f(a, -c, 0)
+        ];
+
+        index = [
+            0, 4, 1, 1, 3, 2, 1, 4, 3, 1, 7, 0,
+            0, 6, 5, 0, 7, 6, 8, 12, 9, 9, 11, 10,
+            9, 12, 11, 9, 15, 8, 8, 14, 13, 8, 15, 14,
+            14, 3, 13, 13, 4, 16, 13, 3, 4, 3, 14, 2,
+            2, 15, 17, 2, 14, 15, 11, 6, 10, 10, 7, 18,
+            10, 6, 7, 6, 11, 5, 5, 12, 19, 5, 11, 12,
+            16, 4, 19, 19, 0, 5, 19, 4, 0, 19, 12, 16,
+            16, 8, 13, 16, 12, 8, 17, 15, 18, 18, 9, 10,
+            18, 15, 9, 18, 7, 17, 17, 1, 2, 17, 7, 1
+        ];
+
+        // todo use index array for normals to have less normal objects
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+            normals.push(normal.mul(1)); // normalize?
+        }
+
+        // Create class for objects
+        let obj = {
+            points: points,
+            normals: normals,
+            index: index,
+            points2: points.map(() => new Vector4f(0, 0, 0, 0)),
+            normals2: normals.map(() => new Vector4f(0, 0, 0, 0))
+        };
+
+        return obj;
+    }
+
+    private getIcosahedronMesh(): any {
+        let points: Array<Vector4f> = new Array<Vector4f>();
+        let normals: Array<Vector4f> = new Array<Vector4f>();
+        let index: Array<number> = new Array<number>();
+
+        // https://github.com/chiptune/lol3d/blob/master/index.html
+        let phi = (1 + Math.sqrt(5)) * 0.5;
+        let a = 0.5;
+        let b = a * 2 / (2 * phi);
+
+        points = [
+            new Vector4f(-b, 0, a), new Vector4f(b, 0, a), new Vector4f(-b, 0, -a), new Vector4f(b, 0, -a),
+            new Vector4f(0, a, b), new Vector4f(0, a, -b), new Vector4f(0, -a, b), new Vector4f(0, -a, -b),
+            new Vector4f(a, b, 0), new Vector4f(-a, b, 0), new Vector4f(a, -b, 0), new Vector4f(-a, -b, 0)
+        ];
+
+        index = [
+            1, 4, 0, 4, 9, 0, 4, 5, 9, 8, 5, 4,
+            1, 8, 4, 1, 10, 8, 10, 3, 8, 8, 3, 5,
+            3, 2, 5, 3, 7, 2, 3, 10, 7, 10, 6, 7,
+            6, 11, 7, 6, 0, 11, 6, 1, 0, 10, 1, 6,
+            11, 0, 9, 2, 11, 9, 5, 2, 9, 11, 2, 7
+        ];
+
+        // todo use index array for normals to have less normal objects
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+            normals.push(normal.mul(1)); // normalize?
+        }
+
+        // Create class for objects
+        let obj = {
+            points: points,
+            normals: normals,
+            index: index,
+            points2: points.map(() => new Vector4f(0, 0, 0, 0)),
+            normals2: normals.map(() => new Vector4f(0, 0, 0, 0))
+        };
+
+        return obj;
+    }
+
+    private getTrapezoidMesh(): any {
+        let points: Array<Vector4f> = new Array<Vector4f>();
+        let normals: Array<Vector4f> = new Array<Vector4f>();
+        let index: Array<number> = new Array<number>();
+
+        // https://github.com/chiptune/lol3d/blob/master/index.html
+        let a = 0.5;
+        let b = 0.05;
+        points = [
+            new Vector4f(-b, a, -b),
+            new Vector4f(b, a, -b),
+            new Vector4f(a, -a, -a),
+            new Vector4f(-a, -a, -a),
+            new Vector4f(-b, a, b),
+            new Vector4f(b, a, b),
+            new Vector4f(a, -a, a),
+            new Vector4f(-a, -a, a)
+        ];
+
+        index = [
+            0, 1, 2,
+            0, 2, 3,
+            5, 4, 7,
+            5, 7, 6,
+            1, 5, 6, 
+            1, 6, 2,
+            4, 0, 3,
+            4, 3, 7,
+            4, 5, 1,
+            4, 1, 0
+        ];
+
+        // todo use index array for normals to have less normal objects
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+            normals.push(normal.mul(1)); // normalize?
+        }
+
+        // Create class for objects
+        let obj = {
+            points: points,
+            normals: normals,
+            index: index,
+            points2: points.map(() => new Vector4f(0, 0, 0, 0)),
+            normals2: normals.map(() => new Vector4f(0, 0, 0, 0))
+        };
+
+        return obj;
+    }
+
+    private getCubeMesh(): any {
+        let points: Array<Vector4f> = new Array<Vector4f>();
+        let normals: Array<Vector4f> = new Array<Vector4f>();
+        let index: Array<number> = new Array<number>();
+
+        // https://github.com/chiptune/lol3d/blob/master/index.html
+        let a = 0.5;
+
+        points = [
+            new Vector4f(-a, -a, -a),
+            new Vector4f(a, -a, -a),
+            new Vector4f(a, a, -a),
+            new Vector4f(-a, a, -a),
+            new Vector4f(-a, -a, a),
+            new Vector4f(a, -a, a),
+            new Vector4f(a, a, a),
+            new Vector4f(-a, a, a)
+        ];
+
+        index = [
+            0, 2, 1, 0, 3, 2, 5, 7, 4, 5, 6, 7, 1, 6, 5, 1, 2, 6, 4, 3, 0, 4, 7, 3, 4, 1, 5, 4, 0, 1, 3, 6, 2, 3, 7, 6
+        ];
+
+        // todo use index array for normals to have less normal objects
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+            normals.push(normal.mul(1)); // normalize?
+        }
+
+        // Create class for objects
+        let obj = {
+            points: points,
+            normals: normals,
+            index: index,
+            points2: points.map(() => new Vector4f(0, 0, 0, 0)),
+            normals2: normals.map(() => new Vector4f(0, 0, 0, 0))
+        };
+
+        return obj;
+    }
+
+    private getPyramidMesh(): any {
+        let points: Array<Vector4f> = new Array<Vector4f>();
+        let normals: Array<Vector4f> = new Array<Vector4f>();
+        let index: Array<number> = new Array<number>();
+
+        // https://github.com/chiptune/lol3d/blob/master/index.html
+        let phi = (1 + Math.sqrt(5)) * 0.5;
+        let a = 0.5;
+        let b = a * 2 / (2 * phi);
+
+        points = [
+            new Vector4f(0, a, 0),
+            new Vector4f(a, -a, -a),
+            new Vector4f(-a, -a, -a),
+            new Vector4f(a, -a, a),
+            new Vector4f(-a, -a, a)
+        ];
+
+        index = [
+            0, 1, 2,
+            0, 3, 1,
+            0, 4, 3,
+            0, 2, 4
+        ];
+
+        // todo use index array for normals to have less normal objects
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+            normals.push(normal.mul(1)); // normalize?
+        }
+
+        // Create class for objects
+        let obj = {
+            points: points,
+            normals: normals,
+            index: index,
+            points2: points.map(() => new Vector4f(0, 0, 0, 0)),
+            normals2: normals.map(() => new Vector4f(0, 0, 0, 0))
+        };
+
+        return obj;
+    }
+
+    private getPlaneMesh(): any {
+        let points: Array<Vector4f> = new Array<Vector4f>();
+        let normals: Array<Vector4f> = new Array<Vector4f>();
+        let index: Array<number> = new Array<number>();
+
+        // https://github.com/chiptune/lol3d/blob/master/index.html
+
+        let a = 0.5;
+
+
+        points = [
+            new Vector4f(-a, 0, a),
+            new Vector4f(a, 0, a),
+            new Vector4f(a, 0, -a),
+            new Vector4f(-a, 0, -a),
+        ];
+
+        index = [
+            0, 1, 2, 2, 3, 0
+        ];
+
+        // todo use index array for normals to have less normal objects
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+            normals.push(normal.mul(1)); // normalize?
+        }
+
+        // Create class for objects
+        let obj = {
+            points: points,
+            normals: normals,
+            index: index,
+            points2: points.map(() => new Vector4f(0, 0, 0, 0)),
+            normals2: normals.map(() => new Vector4f(0, 0, 0, 0))
+        };
+
+        return obj;
+    }
+
     public reproduceRazorScene(elapsedTime: number): void {
+        // camerea:
+        // http://graphicsrunner.blogspot.de/search/label/Water
+        this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
+        this.clearH(42 | 46 << 8 | 58 << 16 | 255 << 24, 100);
         this.clearDepthBuffer();
+        // one line is missing due to polygon clipping in viewport!
+        let modelViewMartrix: Matrix4f;
+
+        let camera = Matrix4f.constructTranslationMatrix(0, 0, -6.4).multiplyMatrix(
+            Matrix4f.constructYRotationMatrix(elapsedTime * 0.2));
+
+        let scale = 2.0;
+        modelViewMartrix = Matrix4f.constructYRotationMatrix(elapsedTime * 0.2).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 1.0, 0).multiplyMatrix(modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(-elapsedTime * 0.2)));
+        modelViewMartrix = camera.multiplyMatrix(
+            modelViewMartrix);
+
+        this.drawObject(this.getDodecahedronMesh(), modelViewMartrix, 221, 96, 48);
+
+        let yDisplacement = -1.5;
+        let distance = 2.8;
+        scale = 1.0;
+        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 1.0, distance).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
+
+
+        this.drawObject(this.getIcosahedronMesh(), modelViewMartrix, 239, 187, 115);
+
+        scale = 1.0;
+        modelViewMartrix = Matrix4f.constructScaleMatrix(scale * 0.5, scale * 2, scale * 0.5);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 1, distance).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
+
+
+        this.drawObject(this.getCubeMesh(), modelViewMartrix, 144, 165, 116);
+
+        scale = 1.0;
+        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
+
+
+        this.drawObject(this.getCubeMesh(), modelViewMartrix, 191, 166, 154);
+
+        scale = 1.0;
+        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
+
+
+        this.drawObject(this.getPyramidMesh(), modelViewMartrix, 125, 128, 146);
+        /*
+                scale = 10.0;
+                modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
+                modelViewMartrix = Matrix4f.constructTranslationMatrix(0, yDisplacement,0).multiplyMatrix(modelViewMartrix);
+                modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
+        
+        
+                this.drawObject(this.getPlaneMesh(), modelViewMartrix, 64,48,40);
+        */
+        scale = 2.0;
+        modelViewMartrix = Matrix4f.constructYRotationMatrix(elapsedTime * 0.2).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 1.0, 0).multiplyMatrix(modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(-elapsedTime * 0.2)));
+        modelViewMartrix = camera.multiplyMatrix(
+            Matrix4f.constructShadowMatrix().multiplyMatrix(modelViewMartrix));
+
+        this.drawObject(this.getDodecahedronMesh(), modelViewMartrix, 48, 32, 24, true);
+
+
+        scale = 12.0;
+        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(60, yDisplacement + 6.0,0).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
+
+        this.drawObject(this.getTrapezoidMesh(), modelViewMartrix, 48, 32, 24, true);
+
+        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(-60, yDisplacement + 6.0,0).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
+
+        this.drawObject(this.getTrapezoidMesh(), modelViewMartrix, 48, 32, 24, true);
+
+        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, yDisplacement + 6.0,60).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
+
+        this.drawObject(this.getTrapezoidMesh(), modelViewMartrix, 48, 32, 24, true);
+
+        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, yDisplacement + 6.0,-60).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
+
+        this.drawObject(this.getTrapezoidMesh(), modelViewMartrix, 48, 32, 24, true);
+
+        scale = 1.0;
+        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = camera.multiplyMatrix(
+            Matrix4f.constructShadowMatrix().multiplyMatrix(modelViewMartrix));
+
+
+        this.drawObject(this.getPyramidMesh(), modelViewMartrix, 48, 32, 24, true);
+
+
+        scale = 1.0;
+        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = camera.multiplyMatrix(
+            Matrix4f.constructShadowMatrix().multiplyMatrix(modelViewMartrix))
+
+
+        this.drawObject(this.getCubeMesh(), modelViewMartrix, 48, 32, 24, true);
+
+        scale = 1.0;
+        modelViewMartrix = Matrix4f.constructScaleMatrix(scale * 0.5, scale * 2, scale * 0.5);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 1, distance).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = camera.multiplyMatrix(
+            Matrix4f.constructShadowMatrix().multiplyMatrix(modelViewMartrix))
+
+
+        this.drawObject(this.getCubeMesh(), modelViewMartrix, 48, 32, 24, true);
+
+        scale = 1.0;
+        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 1.0, distance).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = camera.multiplyMatrix(
+            Matrix4f.constructShadowMatrix().multiplyMatrix(modelViewMartrix))
+
+
+        this.drawObject(this.getIcosahedronMesh(), modelViewMartrix, 48, 32, 24, true);
+
     }
 
     public shadingSphereClip(elapsedTime: number): void {
@@ -1419,13 +1835,14 @@ export default class Framebuffer {
          * - backface culling
          * - no lighting for culled triangles
          * - only z clip if necessary (no clip, fully visible)
+         * - find the right time to compute the projection ( after transformation or after clipping to z plane? maybe hybrid?)
          */
 
         this.drawObject(this.obj, modelViewMartrix, 215, 30, 120);
 
     }
 
-    private drawObject(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number) {
+    private drawObject(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false) {
 
         for (let i = 0; i < obj.normals.length; i++) {
             modelViewMartrix.multiplyHomArr(obj.normals[i], obj.normals2[i]);
@@ -1441,25 +1858,32 @@ export default class Framebuffer {
             let v3 = obj.points2[obj.index[i + 2]];
 
             let normal = obj.normals2[i / 3];
-            if (normal.normalize().dot(v1.normalize()) < 0) {
-                if (this.isInFrontOfNearPlane(v1) &&
-                    this.isInFrontOfNearPlane(v2) &&
-                    this.isInFrontOfNearPlane(v3)) {
-                    let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector4f(0.5, 0.5, 0.3, 0.0).normalize()))), 1.0);
-                    let ambient = 29;
-                    let color = 255 << 24 | Math.min(scalar * blue + ambient, 255) << 16 | Math.min(scalar * green + ambient, 255) << 8 | Math.min(scalar * red + ambient, 255);
-                    this.clipConvexPolygon(new Array<Vector3>(this.project(v1), this.project(v2), this.project(v3)), color);
-                } else if (!this.isInFrontOfNearPlane(v1) &&
-                    !this.isInFrontOfNearPlane(v2) &&
-                    !this.isInFrontOfNearPlane(v3)) {
-                    continue;
-                } else {
-                    let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector4f(0.5, 0.5, 0.3, 0.0).normalize()))), 1.0);
-                    let ambient = 29;
-                    let color = 255 << 24 | Math.min(scalar * blue + ambient, 255) << 16 | Math.min(scalar * green + ambient, 255) << 8 | Math.min(scalar * red + ambient, 255);
-                    this.zClipTriangle(new Array<Vector3>(v1, v2, v3), color);
+
+            // if (this.isTriangleCCW(v1,v2,v3)) {
+            // 2d Backface culling is here not allowed because we did not project here!
+            // FIXME: find a robust way to cull without cracks!
+            if (this.isInFrontOfNearPlane(v1) && this.isInFrontOfNearPlane(v2) && this.isInFrontOfNearPlane(v3)) {
+                // TODO: clip before lighting calculation
+                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector4f(0.5, 0.5, 0.3, 0.0).normalize()))), 1.0);
+                scalar = scalar * 0.85 + 0.15;
+                let color = 255 << 24 | Math.min(scalar * blue, 255) << 16 | Math.min(scalar * green, 255) << 8 | Math.min(scalar * red, 255);
+                if (noLighting) {
+                    color = 255 << 24 | red | green << 8 | blue << 16;
                 }
+                this.clipConvexPolygon(new Array<Vector3>(this.project(v1), this.project(v2), this.project(v3)), color, true);
+
+            } else if (!this.isInFrontOfNearPlane(v1) && !this.isInFrontOfNearPlane(v2) && !this.isInFrontOfNearPlane(v3)) {
+                continue;
+            } else {
+                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector4f(0.5, 0.5, 0.3, 0.0).normalize()))), 1.0);
+                let ambient = 29;
+                let color = 255 << 24 | Math.min(scalar * blue + ambient, 255) << 16 | Math.min(scalar * green + ambient, 255) << 8 | Math.min(scalar * red + ambient, 255);
+                if (noLighting) {
+                    color = 255 << 24 | red | green << 8 | blue << 16;
+                }
+                this.zClipTriangle(new Array<Vector3>(v1, v2, v3), color);
             }
+
         }
     }
 
@@ -1503,7 +1927,7 @@ export default class Framebuffer {
             return this.project(v);
         })
 
-        this.clipConvexPolygon(projected, color);
+        this.clipConvexPolygon(projected, color, true);
     }
 
 
@@ -1635,7 +2059,7 @@ export default class Framebuffer {
                     v1.y > Framebuffer.maxWindow.y ||
                     v2.y > Framebuffer.maxWindow.y ||
                     v3.y > Framebuffer.maxWindow.y) {
-                    this.clipConvexPolygon(new Array<Vector3>(v1, v2, v3), color);
+                    this.clipConvexPolygon(new Array<Vector3>(v1, v2, v3), color, false);
                 } else {
                     this.drawTriangleDDA(v1, v2, v3, color);
                     //this.drawTriangleDDA2(v1, v2, v3, new Vector3(0, 0, 0), new Vector3(0, 16, 0), new Vector3(16, 16, 0), color);
@@ -2036,7 +2460,7 @@ export default class Framebuffer {
      * @returns {void} 
      * @memberof Framebuffer
      */
-    public clipConvexPolygon(subject: Array<Vector3>, color: number): void {
+    public clipConvexPolygon(subject: Array<Vector3>, color: number, clipping: boolean = true): void {
 
         let output = subject;
 
@@ -2066,7 +2490,9 @@ export default class Framebuffer {
 
         // triangulate new point set
         for (let i = 0; i < output.length - 2; i++) {
-            this.drawTriangleDDA(output[0], output[1 + i], output[2 + i], color);
+            if (!clipping || this.isTriangleCCW(output[0], output[1 + i], output[2 + i])) {
+                this.drawTriangleDDA(output[0], output[1 + i], output[2 + i], color);
+            }
         }
     }
 
@@ -2387,7 +2813,7 @@ export default class Framebuffer {
 
     private isTriangleCCW(v1: { x: number, y: number, z: number }, v2: { x: number, y: number, z: number }, v3: { x: number, y: number, z: number }): boolean {
         let det: number = (v2.x - v1.x) * (v3.y - v1.y) - (v2.y - v1.y) * (v3.x - v1.x);
-        return det > 0;
+        return (det < 0) == (this.cullMode == CullFace.BACK);
     }
 
     public scene10(elapsedTime: number): void {
