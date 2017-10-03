@@ -10,7 +10,7 @@ export class Canvas {
     private context: CanvasRenderingContext2D;
     public framebuffer: Framebuffer;
     start: number;
-  
+
 
     private texture: Texture;
     private texture2: Texture;
@@ -97,7 +97,7 @@ export class Canvas {
         }
         this.fpsCount++;
 
-        let time: number = (Date.now() - this.start) % 250000;
+        let time: number = (Date.now() - this.start) % 260000;
 
         this.framebuffer.setCullFace(CullFace.FRONT);
 
@@ -197,23 +197,27 @@ export class Canvas {
                 { tex: this.texture13, scale: 1.6, alpha: 0.25 }
             ]);
         } else {
-            this.framebuffer.cullMode = CullFace.BACK;
-            this.framebuffer.reproduceRazorScene(time*0.003);
+            this.framebuffer.setCullFace(CullFace.BACK);
+            this.framebuffer.reproduceRazorScene(time * 0.003);
+            this.framebuffer.drawLensFlare(time - 185000, [
+                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                { tex: this.texture13, scale: 1.6, alpha: 0.25 }
+            ]);
         }
 
-        
-        this.framebuffer.cullMode = CullFace.BACK;
-        this.framebuffer.reproduceRazorScene(time*0.003);
+
+
         /**
          * FIXME: winding problem due to projection method and culling!
          */
-      //  this.framebuffer.shadingSphereClip((time ) * 0.003);
-       // this.framebuffer.cinematicScroller(this.texture4, time );
+        //  this.framebuffer.shadingSphereClip((time ) * 0.003);
+        // this.framebuffer.cinematicScroller(this.texture4, time );
         //   this.framebuffer.drawText(8, 192 - 18, 'TRIANGLE NEAR PLANE CLIPPING', this.texture4);
 
         // RECREATE RAZOR 1911 SCENE
         // - objects / shadows / colors / camera
-    
+
         // TODO:
         // - textured cube / dynamic textures
         // - skybox
