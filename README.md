@@ -27,6 +27,7 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 ### Features
 - Backface Culling
 - Flat Shading
+- Projection Shadows
 - Perspective Correct Texture Mapping
 - Spherical Environment Mapping
 - Near Plane & Viewport Clipping
