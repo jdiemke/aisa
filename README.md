@@ -2,6 +2,7 @@
 AISA is a Software 3D Engine written in TypeScript 2.5.2
 ### Demo
 https://jdiemke.github.io/AISA/
+![demo screenshot](https://raw.githubusercontent.com/jdiemke/AISA/master/images/reflection.gif "Demo")
 ### How to get
 Type the following command into your shell:
 ```bash
