@@ -202,6 +202,7 @@ export default class Framebuffer {
     private camera: ControllableCamera;
 
     private obj: any;
+    private bunnyObj: any;
     private bob: Texture;
 
     public setCullFace(face: CullFace): void {
@@ -226,6 +227,8 @@ export default class Framebuffer {
 
 
         this.obj = this.createObject();
+        this.bunnyObj = this.createBunny();
+        
         /*
         document.addEventListener("keydown", (e) => {
             console.log('key pressed');
@@ -2376,50 +2379,66 @@ export default class Framebuffer {
      * - generate object only once
      * - dont use temp arrays / instead use always the same array preallocated
      */
-    public reflectionBunny(elapsedTime: number): void {
-        this.wBuffer.fill(100);
 
-        // vertex array
+    public createBunny(): any {
         let points: Array<Vector3> = new Array<Vector3>();
 
         bunnyJson.vertices.forEach(x => {
             points.push(new Vector3(x.x, x.y, x.z));
         });
 
-        // normal array
         let normals: Array<Vector3> = new Array<Vector3>();
-        //       let textureCoordinates: Array<TextureCoordinate> = new Array<TextureCoordinate>();
 
         bunnyJson.normals.forEach(x => {
             normals.push(new Vector3(x.x, x.y, x.z));
-
-            //         textureCoordinates.push(new TextureCoordinate());
         });
 
         let index: Array<number> = bunnyJson.faces;
+
+        let points2: Array<Vector3> = new Array<Vector3>();
+        let normals2: Array<Vector3> = new Array<Vector3>();
+        
+        for(let i=0; i < points.length; i++) {
+            points2.push(new Vector3(0,0,0));
+        }
+
+        for(let i=0; i < normals.length; i++) {
+            normals2.push(new Vector3(0,0,0));
+        }
+
+        let object = {
+            index: index,
+            points: points,
+            normals: normals,
+            points2: points2,
+            normals2:normals2
+        };
+
+        return object;
+    }
+    public reflectionBunny(elapsedTime: number): void {
+        this.wBuffer.fill(100);
+
+        let obj = this.bunnyObj;
 
         let scale = 14.1;
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.30));
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3)).multiplyMatrix(
             Matrix4f.constructTranslationMatrix(0, -0.9, 0));
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -40).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -37).multiplyMatrix(modelViewMartrix);
 
         /**
          * Vertex Shader Stage
          */
-        let points2: Array<Vector3> = new Array<Vector3>();
-
-        let normals2: Array<Vector3> = new Array<Vector3>();
-
+        
         let normalMatrix = modelViewMartrix.computeNormalMatrix();
 
-        for (let n = 0; n < normals.length; n++) {
-            normals2.push(normalMatrix.multiply(normals[n]));
-            //       this.fakeSphere2(normals2[n],textureCoordinates[n]);
+        for (let n = 0; n < obj.normals.length; n++) {
+            normalMatrix.multiplyArr(obj.normals[n], obj.normals2[n]);
         }
 
-        for (let p = 0; p < points.length; p++) {
-            let transformed = modelViewMartrix.multiply(points[p]);
+        for (let p = 0; p < obj.points.length; p++) {
+            let transformed = modelViewMartrix.multiply(obj.points[p]);
 
             let x = transformed.x;
             let y = transformed.y;
@@ -2427,12 +2446,10 @@ export default class Framebuffer {
 
             let xx = (320 * 0.5) + (x / (-z * 0.0078));
             let yy = (200 * 0.5) - (y / (-z * 0.0078));
-            // commented out because it breaks the winding. inversion
-            // of y has to be done after back-face culling in the
-            // viewport transform
-            // yy =(200 * 0.5) - (y / (-z * 0.0078));
 
-            points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+            obj.points2[p].x = Math.round(xx);
+            obj.points2[p].y = Math.round(yy);
+            obj.points2[p].z = z;
         }
 
         /**
@@ -2450,7 +2467,7 @@ export default class Framebuffer {
         vertex3.textureCoordinate = new TextureCoordinate();
         let vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
 
-        for (let i = 0; i < index.length; i += 6) {
+        for (let i = 0; i < obj.index.length; i += 6) {
 
             // Only render triangles with CCW-ordered vertices
             // 
@@ -2459,9 +2476,9 @@ export default class Framebuffer {
             // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
             // p. 69. Morgan Kaufmann Publishers, United States.
             //
-            let v1 = points2[index[i]];
-            let v2 = points2[index[i + 1]];
-            let v3 = points2[index[i + 2]];
+            let v1 = obj.points2[obj.index[i]];
+            let v2 = obj.points2[obj.index[i + 1]];
+            let v3 = obj.points2[obj.index[i + 2]];
 
             // this is the bottleneck: 20 -> 48 fps speedup
             // when normalization is removed!
@@ -2472,13 +2489,13 @@ export default class Framebuffer {
 
             if (this.isTriangleCCW(v1, v2, v3)) {
                 vertexArray[0].position = v1;
-                this.fakeSphere(normals2[index[i + 3]], vertex1);
+                this.fakeSphere(obj.normals2[obj.index[i + 3]], vertex1);
 
                 vertexArray[1].position = v2;
-                this.fakeSphere(normals2[index[i + 4]], vertex2);
+                this.fakeSphere(obj.normals2[obj.index[i + 4]], vertex2);
 
                 vertexArray[2].position = v3;
-                this.fakeSphere(normals2[index[i + 5]], vertex3);
+                this.fakeSphere(obj.normals2[obj.index[i + 5]], vertex3);
 
                 if (v1.x < Framebuffer.minWindow.x ||
                     v2.x < Framebuffer.minWindow.x ||
@@ -2509,8 +2526,8 @@ export default class Framebuffer {
         vertex.textureCoordinate.u = 0.5 + normal.x * 0.49;
         vertex.textureCoordinate.v = 0.5 - normal.y * 0.49;
 
-       // tex.u = 0.5 + Math.asin(normal.x) / Math.PI;
-       // tex.v = 0.5 - Math.asin(normal.y) / Math.PI;
+        // tex.u = 0.5 + Math.asin(normal.x) / Math.PI;
+        // tex.v = 0.5 - Math.asin(normal.y) / Math.PI;
     }
 
     public fakeSphere2(normal: Vector3, tex: TextureCoordinate): void {

@@ -210,12 +210,23 @@ export class Canvas {
 
         this.framebuffer.setCullFace(CullFace.BACK);
 
+        // http://doc.babylonjs.com/tutorials/discover_basic_elements
         this.framebuffer.setBob(this.spheremap);
-        this.framebuffer.clear();
+        
+        this.framebuffer.clearCol(255 << 24 | 221 | 221 << 8| 228 <<16);
         this.framebuffer.reflectionBunny(time * 0.002);
-
+        this.framebuffer.drawText(8, 200-24, '69630 REFLECTION MAPPED POLYGONS.', this.texture4);
         this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
-        this.framebuffer.drawText(8, 26, 'TME: ' + time, this.texture4);
+
+        // implement modells with baked shaods and lighting :)
+        // http://iquilezles.org/www/index.htm
+        // http://iquilezles.org/www/articles/normals/normals.htm
+        // http://iquilezles.org/www/articles/areas/areas.htm
+        // http://iquilezles.org/www/articles/frustum/frustum.htm
+        // http://iquilezles.org/www/articles/frustumcorrect/frustumcorrect.htm
+        // http://iquilezles.org/www/articles/deform/deform.htm
+        // http://www.gamers.org/dEngine/quake/papers/ddjzsort.html
+        // http://fabiensanglard.net/quakeSource/quakeSourceRendition.php
 
         /**
          * FIXME: winding problem due to projection method and culling!

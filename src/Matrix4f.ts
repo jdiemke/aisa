@@ -334,7 +334,12 @@ export default class Matrix4f {
         result.x = this.m11 * vector.x + this.m12 * vector.y + this.m13 * vector.z + this.m14 * vector.w;
         result.y = this.m21 * vector.x + this.m22 * vector.y + this.m23 * vector.z + this.m24 * vector.w;
         result.z = this.m31 * vector.x + this.m32 * vector.y + this.m33 * vector.z + this.m34 * vector.w;
+    }
 
+    public multiplyArr(vector: Vector3f, result: Vector3f): void {
+        result.x = this.m11 * vector.x + this.m12 * vector.y + this.m13 * vector.z + this.m14;
+        result.y = this.m21 * vector.x + this.m22 * vector.y + this.m23 * vector.z + this.m24;
+        result.z = this.m31 * vector.x + this.m32 * vector.y + this.m33 * vector.z + this.m34;
     }
 
 }
