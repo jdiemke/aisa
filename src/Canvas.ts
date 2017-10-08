@@ -47,8 +47,8 @@ export class Canvas {
 
         let aspect = Math.round(200 / 320 * 100);
 
-        this.canvas.style.width = '640px';
-        this.canvas.style.height = '400px';
+        this.canvas.style.width = `${320*2}px`;
+        this.canvas.style.height =`${200*2}px`;
 
         this.context = this.canvas.getContext('2d');
 
@@ -99,8 +99,9 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start) % 260000;
 
-        this.framebuffer.setCullFace(CullFace.FRONT);
-        time = time *6;
+       
+        /*
+      //  time = time *6;
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
             this.framebuffer.shadingTorus(time * 0.02);
@@ -205,8 +206,16 @@ export class Canvas {
                 { tex: this.texture13, scale: 1.6, alpha: 0.25 }
             ]);
         }
+        */
 
+        this.framebuffer.setCullFace(CullFace.BACK);
 
+        this.framebuffer.setBob(this.spheremap);
+        this.framebuffer.clear();
+        this.framebuffer.reflectionBunny(time * 0.002);
+
+        this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
+        this.framebuffer.drawText(8, 26, 'TME: ' + time, this.texture4);
 
         /**
          * FIXME: winding problem due to projection method and culling!
@@ -214,9 +223,6 @@ export class Canvas {
         //  this.framebuffer.shadingSphereClip((time ) * 0.003);
         // this.framebuffer.cinematicScroller(this.texture4, time );
         //   this.framebuffer.drawText(8, 192 - 18, 'TRIANGLE NEAR PLANE CLIPPING', this.texture4);
-
-        // RECREATE RAZOR 1911 SCENE
-        // - objects / shadows / colors / camera
 
         // TODO:
         // - textured cube / dynamic textures
@@ -245,8 +251,6 @@ export class Canvas {
         // - voxel tunnel / sphere / torus
         // - stencil vectors
         // - chess zoomer / chess waver
-        // - water reflections
-        // - shadows projection
         // - raycaster
 
         // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
@@ -256,7 +260,7 @@ export class Canvas {
         //this.framebuffer.clear();
 
         //this.framebuffer.wireFrameTerrain(time*0.01, this.texture3);
-        //   this.framebuffer.pixelate();
+        // this.framebuffer.pixelate();
 
 
 
@@ -275,12 +279,8 @@ export class Canvas {
         // this.framebuffer.enableBackfaceCulling();
         // this.framebuffer.setCullFace(FRONT);
 
-        this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
-        // this.framebuffer.drawText(8, 26, 'TME: ' + time, this.texture4);
-        // this.framebuffer.scene9(time*0.01);
-
-        //this.framebuffer.drawText(80 + 0, 100 + 8, '   IN JAVASCRIPT!    ', this.texture4);
-
+      
+   
         // TODO: text
         // 3d line clipping for fly by :)
         // different transitions:
@@ -292,14 +292,6 @@ export class Canvas {
         // tv noise
         // wormhole
         // glitch logo
-
-        /**
-         * TODO: lenslfare effect
-         * - procedural lens flare textures
-         * - lens flare fade in
-         * - read zbuffer
-         * - http://blackpawn.com/texts/lensflare/
-         */
     }
 
     getImageData(image: HTMLImageElement, withAlpha: boolean = false): Uint32Array {

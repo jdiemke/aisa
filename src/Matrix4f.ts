@@ -65,6 +65,66 @@ export default class Matrix4f {
         return matrix;
     }
 
+    public transpose(): Matrix4f {
+        let transpose = new Matrix4f();
+
+        transpose.m11 = this.m11;
+        transpose.m12 = this.m21;
+        transpose.m13 = this.m31;
+        transpose.m14 = this.m41;
+
+        transpose.m21 = this.m12;
+        transpose.m22 = this.m22;
+        transpose.m23 = this.m32;
+        transpose.m24 = this.m42;
+
+        transpose.m31 = this.m13;
+        transpose.m32 = this.m23;
+        transpose.m33 = this.m33;
+        transpose.m34 = this.m43;
+
+        transpose.m41 = this.m14;
+        transpose.m42 = this.m24;
+        transpose.m43 = this.m34;
+        transpose.m44 = this.m44;
+
+        return transpose;
+    }
+
+    public computeNormalMatrix(): Matrix4f {
+        // http://www.lighthouse3d.com/tutorials/glsl-12-tutorial/the-normal-matrix/
+        // https://www.gamedev.net/forums/topic/443040-inverse-of-modelview-matrix/
+        // https://computergraphics.stackexchange.com/questions/1502/why-is-the-transposed-inverse-of-the-model-view-matrix-used-to-transform-the-nor
+        return this.inverse().transpose();
+    }
+
+    public inverse(): Matrix4f {
+        // Inverse hack
+        // - only works when the MV matrix only contains
+        // translation and rotation and scaling that is the same in all directions
+
+        let inverseTranslation =  Matrix4f.constructIdentityMatrix();
+        inverseTranslation.m14 = -this.m14;
+        inverseTranslation.m24 = -this.m24;
+        inverseTranslation.m34 = -this.m34;
+
+        let scale = 1.0/ Math.sqrt(this.m11 * this.m11 + this.m12 * this.m12 + this.m13 * this.m13);
+        let inverseRotation = Matrix4f.constructIdentityMatrix();
+        inverseRotation.m11 = this.m11* scale;
+        inverseRotation.m21 = this.m12* scale;
+        inverseRotation.m31 = this.m13* scale;
+
+        inverseRotation.m12 = this.m21* scale;
+        inverseRotation.m22 = this.m22* scale;
+        inverseRotation.m32 = this.m23* scale;
+
+        inverseRotation.m13 = this.m31* scale;
+        inverseRotation.m23 = this.m32* scale;
+        inverseRotation.m33 = this.m33* scale;
+
+        return inverseRotation.multiplyMatrix(inverseTranslation);
+    }
+
     static constructShadowMatrix(): Matrix4f {
         let planePoint: Vector3f = new Vector3f(0, -1.5, 0);
         let planeNormal: Vector3f = new Vector3f(0, 1, 0);

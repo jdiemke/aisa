@@ -29,6 +29,7 @@ import Matrix4f from './Matrix4f';
 import RandomNumberGenerator from './RandomNumberGenerator';
 declare function require(string): string;
 let json = require('./assets/f16.json');
+let bunnyJson = <any>require('./assets/bunny.json');
 
 // TODO:
 // - use polymorphism in order to have different intersection methods
@@ -248,7 +249,7 @@ export default class Framebuffer {
         }
     }
 
-    public clearH(col: number ,h: number) {
+    public clearH(col: number, h: number) {
         let color: number = col;
         let count: number = this.width * h;
         for (let i = 0; i < count; i++) {
@@ -1527,7 +1528,7 @@ export default class Framebuffer {
             0, 2, 3,
             5, 4, 7,
             5, 7, 6,
-            1, 5, 6, 
+            1, 5, 6,
             1, 6, 2,
             4, 0, 3,
             4, 3, 7,
@@ -1749,25 +1750,25 @@ export default class Framebuffer {
 
         scale = 12.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(60, yDisplacement + 6.0,0).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(60, yDisplacement + 6.0, 0).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
 
         this.drawObject(this.getTrapezoidMesh(), modelViewMartrix, 48, 32, 24, true);
 
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(-60, yDisplacement + 6.0,0).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(-60, yDisplacement + 6.0, 0).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
 
         this.drawObject(this.getTrapezoidMesh(), modelViewMartrix, 48, 32, 24, true);
 
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, yDisplacement + 6.0,60).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, yDisplacement + 6.0, 60).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
 
         this.drawObject(this.getTrapezoidMesh(), modelViewMartrix, 48, 32, 24, true);
 
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, yDisplacement + 6.0,-60).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, yDisplacement + 6.0, -60).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
 
         this.drawObject(this.getTrapezoidMesh(), modelViewMartrix, 48, 32, 24, true);
@@ -2303,8 +2304,13 @@ export default class Framebuffer {
          * 3. scan conversion (rasterization)
          */
 
-        let vertexArray = new Array<Vertex>(new Vertex(), new Vertex(), new Vertex());
-
+        let vertex1 = new Vertex();
+        vertex1.textureCoordinate = new TextureCoordinate();
+        let vertex2 = new Vertex();
+        vertex2.textureCoordinate = new TextureCoordinate();
+        let vertex3 = new Vertex();
+        vertex3.textureCoordinate = new TextureCoordinate();
+        let vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
         for (let i = 0; i < index.length; i += 3) {
 
             // Only render triangles with CCW-ordered vertices
@@ -2332,13 +2338,13 @@ export default class Framebuffer {
                 //let color = 255 << 24 | 255 << 16 | 150 << 8 | 255;
 
                 vertexArray[0].position = v1;
-                vertexArray[0].textureCoordinate = this.fakeSphere(n1);
+                this.fakeSphere(n1, vertex1);
 
                 vertexArray[1].position = v2;
-                vertexArray[1].textureCoordinate = this.fakeSphere(n2);
+                this.fakeSphere(n2, vertex2);
 
                 vertexArray[2].position = v3;
-                vertexArray[2].textureCoordinate = this.fakeSphere(n3);
+                this.fakeSphere(n3, vertex3);
 
                 if (v1.x < Framebuffer.minWindow.x ||
                     v2.x < Framebuffer.minWindow.x ||
@@ -2363,15 +2369,155 @@ export default class Framebuffer {
         }
     }
 
-    public fakeSphere(normal: Vector3): TextureCoordinate {
+    /**
+     * Optimization:
+     * - no shading / only texture mapping (use function pointers to set correct rasterization function)
+     * - use delta step method from black art of 3d programming
+     * - generate object only once
+     * - dont use temp arrays / instead use always the same array preallocated
+     */
+    public reflectionBunny(elapsedTime: number): void {
+        this.wBuffer.fill(100);
+
+        // vertex array
+        let points: Array<Vector3> = new Array<Vector3>();
+
+        bunnyJson.vertices.forEach(x => {
+            points.push(new Vector3(x.x, x.y, x.z));
+        });
+
+        // normal array
+        let normals: Array<Vector3> = new Array<Vector3>();
+        //       let textureCoordinates: Array<TextureCoordinate> = new Array<TextureCoordinate>();
+
+        bunnyJson.normals.forEach(x => {
+            normals.push(new Vector3(x.x, x.y, x.z));
+
+            //         textureCoordinates.push(new TextureCoordinate());
+        });
+
+        let index: Array<number> = bunnyJson.faces;
+
+        let scale = 14.1;
+        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.30));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3)).multiplyMatrix(
+            Matrix4f.constructTranslationMatrix(0, -0.9, 0));
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -40).multiplyMatrix(modelViewMartrix);
+
+        /**
+         * Vertex Shader Stage
+         */
+        let points2: Array<Vector3> = new Array<Vector3>();
+
+        let normals2: Array<Vector3> = new Array<Vector3>();
+
+        let normalMatrix = modelViewMartrix.computeNormalMatrix();
+
+        for (let n = 0; n < normals.length; n++) {
+            normals2.push(normalMatrix.multiply(normals[n]));
+            //       this.fakeSphere2(normals2[n],textureCoordinates[n]);
+        }
+
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiply(points[p]);
+
+            let x = transformed.x;
+            let y = transformed.y;
+            let z = transformed.z; // TODO: use translation matrix!
+
+            let xx = (320 * 0.5) + (x / (-z * 0.0078));
+            let yy = (200 * 0.5) - (y / (-z * 0.0078));
+            // commented out because it breaks the winding. inversion
+            // of y has to be done after back-face culling in the
+            // viewport transform
+            // yy =(200 * 0.5) - (y / (-z * 0.0078));
+
+            points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+        }
+
+        /**
+         * Primitive Assembly and Rasterization Stage:
+         * 1. back-face culling
+         * 2. viewport transform
+         * 3. scan conversion (rasterization)
+         */
+
+        let vertex1 = new Vertex();
+        vertex1.textureCoordinate = new TextureCoordinate();
+        let vertex2 = new Vertex();
+        vertex2.textureCoordinate = new TextureCoordinate();
+        let vertex3 = new Vertex();
+        vertex3.textureCoordinate = new TextureCoordinate();
+        let vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
+
+        for (let i = 0; i < index.length; i += 6) {
+
+            // Only render triangles with CCW-ordered vertices
+            // 
+            // Reference:
+            // David H. Eberly (2006).
+            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
+            // p. 69. Morgan Kaufmann Publishers, United States.
+            //
+            let v1 = points2[index[i]];
+            let v2 = points2[index[i + 1]];
+            let v3 = points2[index[i + 2]];
+
+            // this is the bottleneck: 20 -> 48 fps speedup
+            // when normalization is removed!
+            // solution: dont use MV for normal transformation
+            // use normal matrix instead
+            // normalMatrix : transpose(inverse(MV))
+
+
+            if (this.isTriangleCCW(v1, v2, v3)) {
+                vertexArray[0].position = v1;
+                this.fakeSphere(normals2[index[i + 3]], vertex1);
+
+                vertexArray[1].position = v2;
+                this.fakeSphere(normals2[index[i + 4]], vertex2);
+
+                vertexArray[2].position = v3;
+                this.fakeSphere(normals2[index[i + 5]], vertex3);
+
+                if (v1.x < Framebuffer.minWindow.x ||
+                    v2.x < Framebuffer.minWindow.x ||
+                    v3.x < Framebuffer.minWindow.x ||
+                    v1.x > Framebuffer.maxWindow.x ||
+                    v2.x > Framebuffer.maxWindow.x ||
+                    v3.x > Framebuffer.maxWindow.x ||
+                    v1.y < Framebuffer.minWindow.y ||
+                    v2.y < Framebuffer.minWindow.y ||
+                    v3.y < Framebuffer.minWindow.y ||
+                    v1.y > Framebuffer.maxWindow.y ||
+                    v2.y > Framebuffer.maxWindow.y ||
+                    v3.y > Framebuffer.maxWindow.y) {
+
+
+                    this.clipConvexPolygon2(vertexArray, 0);
+                } else {
+                    // this.drawTriangleDDA(v1, v2, v3, color);
+                    this.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], 0);
+                }
+            }
+        }
+    }
+
+
+    public fakeSphere(normal: Vector3, vertex: Vertex): void {
         // https://www.mvps.org/directx/articles/spheremap.htm
-        let tex = new TextureCoordinate();
-        tex.u = 0.5 + normal.x * 0.49;
-        tex.v = 0.5 - normal.y * 0.49;
+        vertex.textureCoordinate.u = 0.5 + normal.x * 0.49;
+        vertex.textureCoordinate.v = 0.5 - normal.y * 0.49;
+
+       // tex.u = 0.5 + Math.asin(normal.x) / Math.PI;
+       // tex.v = 0.5 - Math.asin(normal.y) / Math.PI;
+    }
+
+    public fakeSphere2(normal: Vector3, tex: TextureCoordinate): void {
 
         tex.u = 0.5 + Math.asin(normal.x) / Math.PI;
         tex.v = 0.5 - Math.asin(normal.y) / Math.PI;
-        return tex;
+
     }
     public shadingTorus3(elapsedTime: number): void {
         let points: Array<Vector3> = [];
@@ -3089,11 +3235,14 @@ export default class Framebuffer {
                     let u = Math.max(Math.min((uStart * z * this.bob.width), this.bob.width - 1), 0) | 0;
                     let v = Math.max(Math.min((vStart * z * this.bob.height), this.bob.height - 1), 0) | 0;
                     let color2 = this.bob.texture[u + v * this.bob.width];
-                    let scale = ((color >> 8) & 0xff) / 255;
-                    let r = (color2 & 0xff) * scale;
-                    let g = ((color2 >> 8) & 0xff) * scale;
-                    let b = ((color2 >> 16) & 0xff) * scale;
-                    this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | 255 << 24;
+                    /** shading code */
+                    //let scale = ((color >> 8) & 0xff) / 255;
+                    //let r = (color2 & 0xff) * scale;
+                    //let g = ((color2 >> 8) & 0xff) * scale;
+                    //let b = ((color2 >> 16) & 0xff) * scale;
+                    //this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | 255 << 24;
+                    this.framebuffer[framebufferIndex] = color2;
+
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
@@ -3153,11 +3302,12 @@ export default class Framebuffer {
                     let u = Math.max(Math.min((uStart * z * this.bob.width), this.bob.width - 1), 0) | 0;
                     let v = Math.max(Math.min((vStart * z * this.bob.height), this.bob.height - 1), 0) | 0;
                     let color2 = this.bob.texture[u + v * this.bob.width];
-                    let scale = ((color >> 8) & 0xff) / 255;
-                    let r = (color2 & 0xff) * scale;
-                    let g = ((color2 >> 8) & 0xff) * scale;
-                    let b = ((color2 >> 16) & 0xff) * scale;
-                    this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | 255 << 24;
+                    //let scale = ((color >> 8) & 0xff) / 255;
+                    //let r = (color2 & 0xff) * scale;
+                    //let g = ((color2 >> 8) & 0xff) * scale;
+                    //let b = ((color2 >> 16) & 0xff) * scale;
+                    //this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | 255 << 24;
+                    this.framebuffer[framebufferIndex] = color2;
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
@@ -3235,11 +3385,12 @@ export default class Framebuffer {
                     let u = Math.max(Math.min((uStart * z * this.bob.width), this.bob.width - 1), 0) | 0;
                     let v = Math.max(Math.min((vStart * z * this.bob.height), this.bob.height - 1), 0) | 0;
                     let color2 = this.bob.texture[u + v * this.bob.width];
-                    let scale = ((color >> 8) & 0xff) / 255;
-                    let r = (color2 & 0xff) * scale;
-                    let g = ((color2 >> 8) & 0xff) * scale;
-                    let b = ((color2 >> 16) & 0xff) * scale;
-                    this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | 255 << 24;
+                    //let scale = ((color >> 8) & 0xff) / 255;
+                    //let r = (color2 & 0xff) * scale;
+                    //let g = ((color2 >> 8) & 0xff) * scale;
+                    //let b = ((color2 >> 16) & 0xff) * scale;
+                    //this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | 255 << 24;
+                    this.framebuffer[framebufferIndex] = color2;
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
@@ -3301,11 +3452,12 @@ export default class Framebuffer {
                     let u = Math.max(Math.min((uStart * z * this.bob.width), this.bob.width - 1), 0) | 0;
                     let v = Math.max(Math.min((vStart * z * this.bob.height), this.bob.height - 1), 0) | 0;
                     let color2 = this.bob.texture[u + v * this.bob.width];
-                    let scale = ((color >> 8) & 0xff) / 255;
-                    let r = (color2 & 0xff) * scale;
-                    let g = ((color2 >> 8) & 0xff) * scale;
-                    let b = ((color2 >> 16) & 0xff) * scale;
-                    this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | 255 << 24;
+                    //let scale = ((color >> 8) & 0xff) / 255;
+                    //let r = (color2 & 0xff) * scale;
+                    //let g = ((color2 >> 8) & 0xff) * scale;
+                    //let b = ((color2 >> 16) & 0xff) * scale;
+                    //this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | 255 << 24;
+                    this.framebuffer[framebufferIndex] = color2;
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
