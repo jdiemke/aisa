@@ -1,6 +1,6 @@
-import Vector3 from './Vector3f';
+import { Vector3f } from './Vector3f';
 
-export default class Matrix3f {
+export class Matrix3f {
 
     public m11: number;
     public m12: number;
@@ -108,8 +108,8 @@ export default class Matrix3f {
 
     }
 
-    public multiply(vector: Vector3): Vector3 {
-        return new Vector3(this.m11 * vector.x + this.m12 * vector.y + this.m13 * vector.z,
+    public multiply(vector: Vector3f): Vector3f {
+        return new Vector3f(this.m11 * vector.x + this.m12 * vector.y + this.m13 * vector.z,
             this.m21 * vector.x + this.m22 * vector.y + this.m23 * vector.z,
             this.m31 * vector.x + this.m32 * vector.y + this.m33 * vector.z);
     }

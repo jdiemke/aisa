@@ -1,4 +1,4 @@
-import  Vector3f  from './Vector3f';
+import { Vector3f } from './math';
 
 export class TextureCoordinate {
     public u: number;

@@ -29,22 +29,29 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 ### Features
 - Backface Culling
 - Flat Shading
-- Projection Shadows
+- Shadows
+    - Projection Shadows
 - Perspective Correct Texture Mapping
 - Spherical Environment Mapping
 - Near Plane & Viewport Clipping
 - Lens Flare
-### Backlog
 - Wavefront OBJ
+- Camera
+    - Controllable First Person Camera
+    - Key Frame Animated Camera
+### Backlog
+- Light Sources
+    - Directional
+    - Point Light
+    - Spot Light
+    - Ambient / Diffuse / Specular Color Components
+- Particles with Collision Detection
 - Skybox
-- Camera Interpolation
 - Gouraud Shading
 - Multitexturing
 - MDL / MD2 Modells
 - View Frustum Culling & Space Partitioning
 - 3D Portal Engine
-- Camera
-- Light Sources
 - Material
-- Shadows (Projection Shadows, Shadow Mapping)
+- Shadow Mapping
 - Pixel Shaders (Bump Mapping, Parallax Mapping)

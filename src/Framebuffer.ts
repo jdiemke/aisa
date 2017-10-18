@@ -1,6 +1,9 @@
+import { CameraKeyFrame } from './animation/CameraKeyFrame';
+import { CameraAnimator } from './animation/CameraAnimator';
+
 import { CullFace } from './CullFace';
 import { TextureCoordinate, Vertex } from './Vertex';
-import { ControllableCamera } from './ControllableCamera';
+
 /**
  * 3d polygon clipping:
  * http://www.gamers.org/dEngine/quake/papers/ddjclip.html
@@ -22,30 +25,32 @@ import { ControllableCamera } from './ControllableCamera';
  */
 import Texture from './Texture';
 import Point from './Point';
-import Vector3 from './Vector3f';
-import Vector4f from './Vector4f';
-import Matrix3 from './Matrix3';
-import Matrix4f from './Matrix4f';
+
+import { Matrix3f, Matrix4f, Vector3f, Vector4f } from './math';
+import { BasicCamera, ControllableCamera } from './camera';
+
 import RandomNumberGenerator from './RandomNumberGenerator';
+
 declare function require(string): string;
 let json = require('./assets/f16.json');
 let bunnyJson = <any>require('./assets/bunny.json');
+let worldJson = <any>require('./assets/world.json');
 
 // TODO:
 // - use polymorphism in order to have different intersection methods
 // - one for plain clipping / one for tex coords / one for multitexturing / gouraud shading etc
 abstract class AbstractClipEdge {
 
-    public abstract isInside(p: Vector3): boolean;
+    public abstract isInside(p: Vector3f): boolean;
     public abstract isInside2(p: Vertex): boolean;
-    public abstract computeIntersection(p1: Vector3, p2: Vector3): Vector3;
+    public abstract computeIntersection(p1: Vector3f, p2: Vector3f): Vector3f;
     public abstract computeIntersection2(p1: Vertex, p2: Vertex): Vertex;
 
 }
 
 class RightEdge extends AbstractClipEdge {
 
-    public isInside(p: Vector3): boolean {
+    public isInside(p: Vector3f): boolean {
         return p.x < 320;
     }
 
@@ -54,8 +59,8 @@ class RightEdge extends AbstractClipEdge {
         return p.position.x < 320;
     }
 
-    public computeIntersection(p1: Vector3, p2: Vector3): Vector3 {
-        return new Vector3(Framebuffer.maxWindow.x + 1,
+    public computeIntersection(p1: Vector3f, p2: Vector3f): Vector3f {
+        return new Vector3f(Framebuffer.maxWindow.x + 1,
             Math.round(p1.y + (p2.y - p1.y) * (Framebuffer.maxWindow.x + 1 - p1.x) / (p2.x - p1.x)),
             1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.maxWindow.x + 1 - p1.x) / (p2.x - p1.x)));
     }
@@ -63,7 +68,7 @@ class RightEdge extends AbstractClipEdge {
     public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {
         let vertex = new Vertex();
         vertex.position =
-            new Vector3(Framebuffer.maxWindow.x + 1,
+            new Vector3f(Framebuffer.maxWindow.x + 1,
                 Math.round(p1.position.y + (p2.position.y - p1.position.y) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x)),
                 1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x)));
 
@@ -80,7 +85,7 @@ class RightEdge extends AbstractClipEdge {
 
 class LeftEdge extends AbstractClipEdge {
 
-    public isInside(p: Vector3): boolean {
+    public isInside(p: Vector3f): boolean {
         return p.x >= 0;
     }
 
@@ -88,8 +93,8 @@ class LeftEdge extends AbstractClipEdge {
         return p.position.x >= 0;
     }
 
-    public computeIntersection(p1: Vector3, p2: Vector3): Vector3 {
-        return new Vector3(Framebuffer.minWindow.x,
+    public computeIntersection(p1: Vector3f, p2: Vector3f): Vector3f {
+        return new Vector3f(Framebuffer.minWindow.x,
             Math.round(p1.y + (p2.y - p1.y) * (Framebuffer.minWindow.x - p1.x) / (p2.x - p1.x)),
             1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.minWindow.x - p1.x) / (p2.x - p1.x)));
     }
@@ -97,7 +102,7 @@ class LeftEdge extends AbstractClipEdge {
     public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {
         let vertex = new Vertex();
         vertex.position =
-            new Vector3(Framebuffer.minWindow.x,
+            new Vector3f(Framebuffer.minWindow.x,
                 Math.round(p1.position.y + (p2.position.y - p1.position.y) * (Framebuffer.minWindow.x - p1.position.x) / (p2.position.x - p1.position.x)),
                 1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.minWindow.x - p1.position.x) / (p2.position.x - p1.position.x)));
 
@@ -114,7 +119,7 @@ class LeftEdge extends AbstractClipEdge {
 
 class TopEdge extends AbstractClipEdge {
 
-    public isInside(p: Vector3): boolean {
+    public isInside(p: Vector3f): boolean {
         return p.y < Framebuffer.maxWindow.y + 1;
     }
 
@@ -122,8 +127,8 @@ class TopEdge extends AbstractClipEdge {
         return p.position.y < Framebuffer.maxWindow.y + 1;
     }
 
-    public computeIntersection(p1: Vector3, p2: Vector3): Vector3 {
-        return new Vector3(
+    public computeIntersection(p1: Vector3f, p2: Vector3f): Vector3f {
+        return new Vector3f(
             Math.round(p1.x + (p2.x - p1.x) * (Framebuffer.maxWindow.y + 1 - p1.y) / (p2.y - p1.y)),
             Framebuffer.maxWindow.y + 1,
             1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.maxWindow.y + 1 - p1.y) / (p2.y - p1.y)));
@@ -132,7 +137,7 @@ class TopEdge extends AbstractClipEdge {
     public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {
         let vertex = new Vertex();
         vertex.position =
-            new Vector3(
+            new Vector3f(
                 Math.round(p1.position.x + (p2.position.x - p1.position.x) * (Framebuffer.maxWindow.y + 1 - p1.position.y) / (p2.position.y - p1.position.y)),
                 Framebuffer.maxWindow.y + 1,
                 1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.maxWindow.y + 1 - p1.position.y) / (p2.position.y - p1.position.y)));
@@ -151,7 +156,7 @@ class TopEdge extends AbstractClipEdge {
 
 class BottomEdge extends AbstractClipEdge {
 
-    public isInside(p: Vector3): boolean {
+    public isInside(p: Vector3f): boolean {
         return p.y >= Framebuffer.minWindow.y;
     }
 
@@ -159,8 +164,8 @@ class BottomEdge extends AbstractClipEdge {
         return p.position.y >= Framebuffer.minWindow.y;
     }
 
-    public computeIntersection(p1: Vector3, p2: Vector3): Vector3 {
-        return new Vector3(
+    public computeIntersection(p1: Vector3f, p2: Vector3f): Vector3f {
+        return new Vector3f(
             Math.round(p1.x + (p2.x - p1.x) * (Framebuffer.minWindow.y - p1.y) / (p2.y - p1.y)),
             Framebuffer.minWindow.y,
             1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.minWindow.y - p1.y) / (p2.y - p1.y)));
@@ -169,7 +174,7 @@ class BottomEdge extends AbstractClipEdge {
     public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {
         let vertex = new Vertex();
         vertex.position =
-            new Vector3(
+            new Vector3f(
                 Math.round(p1.position.x + (p2.position.x - p1.position.x) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y)),
                 Framebuffer.minWindow.y,
                 1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y)));
@@ -203,6 +208,7 @@ export default class Framebuffer {
 
     private obj: any;
     private bunnyObj: any;
+    private blenderObj: any;
     private bob: Texture;
 
     public setCullFace(face: CullFace): void {
@@ -228,7 +234,8 @@ export default class Framebuffer {
 
         this.obj = this.createObject();
         this.bunnyObj = this.createBunny();
-        
+        this.blenderObj = this.getBlenderScene();
+
         /*
         document.addEventListener("keydown", (e) => {
             console.log('key pressed');
@@ -569,10 +576,10 @@ export default class Framebuffer {
                 this.drawBox2(x * 10 + xoff, y * 10 + yoff, 10, 10, this.readPixel(x * 10 + xoff, y * 10 + yoff, 0));
             }
         }
-        this.drawLineDDA(new Vector3(xoff, yoff, -0.3), new Vector3(xoff + 20 * 5, yoff, -0.3), 0xffffffff);
-        this.drawLineDDA(new Vector3(xoff, yoff + 20 * 5, -0.3), new Vector3(xoff + 20 * 5, yoff + 20 * 5, -0.3), 0xffffffff);
-        this.drawLineDDA(new Vector3(xoff, yoff, -0.3), new Vector3(xoff, yoff + 20 * 5, -0.3), 0xffffffff);
-        this.drawLineDDA(new Vector3(xoff + 20 * 5, yoff, -0.3), new Vector3(xoff + 20 * 5, yoff + 20 * 5, -0.3), 0xffffffff);
+        this.drawLineDDA(new Vector3f(xoff, yoff, -0.3), new Vector3f(xoff + 20 * 5, yoff, -0.3), 0xffffffff);
+        this.drawLineDDA(new Vector3f(xoff, yoff + 20 * 5, -0.3), new Vector3f(xoff + 20 * 5, yoff + 20 * 5, -0.3), 0xffffffff);
+        this.drawLineDDA(new Vector3f(xoff, yoff, -0.3), new Vector3f(xoff, yoff + 20 * 5, -0.3), 0xffffffff);
+        this.drawLineDDA(new Vector3f(xoff + 20 * 5, yoff, -0.3), new Vector3f(xoff + 20 * 5, yoff + 20 * 5, -0.3), 0xffffffff);
     }
 
     private interpolate(start: number, end: number, current: number): number {
@@ -811,19 +818,19 @@ export default class Framebuffer {
             6, 7, 7, 4, 0, 7, 1, 6, 2, 5, 3, 4,
         ];
 
-        let points: Array<Vector3> = [
-            new Vector3(1.0, 1.0, -1.0), new Vector3(-1.0, 1.0, -1.0),
-            new Vector3(-1.0, 1.0, 1.0), new Vector3(1.0, 1.0, 1.0),
-            new Vector3(1.0, -1.0, 1.0), new Vector3(-1.0, -1.0, 1.0),
-            new Vector3(-1.0, -1.0, -1.0), new Vector3(1.0, -1.0, -1.0)
+        let points: Array<Vector3f> = [
+            new Vector3f(1.0, 1.0, -1.0), new Vector3f(-1.0, 1.0, -1.0),
+            new Vector3f(-1.0, 1.0, 1.0), new Vector3f(1.0, 1.0, 1.0),
+            new Vector3f(1.0, -1.0, 1.0), new Vector3f(-1.0, -1.0, 1.0),
+            new Vector3f(-1.0, -1.0, -1.0), new Vector3f(1.0, -1.0, -1.0)
         ];
 
         let scale = 0.8;
 
-        let modelViewMartrix = Matrix3.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3.constructYRotationMatrix(elapsedTime * 0.05));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3.constructXRotationMatrix(elapsedTime * 0.05));
+        let modelViewMartrix = Matrix3f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3f.constructYRotationMatrix(elapsedTime * 0.05));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3f.constructXRotationMatrix(elapsedTime * 0.05));
 
-        let points2: Array<Vector3> = new Array<Vector3>();
+        let points2: Array<Vector3f> = new Array<Vector3f>();
         points.forEach(element => {
             let transformed = modelViewMartrix.multiply(element);
 
@@ -831,7 +838,7 @@ export default class Framebuffer {
             let y = transformed.y;
             let z = transformed.z - 4 + Math.sin(elapsedTime * 0.09) * 2; // TODO: use translation matrix!
 
-            points2.push(new Vector3(x, y, z));
+            points2.push(new Vector3f(x, y, z));
         });
 
 
@@ -841,17 +848,17 @@ export default class Framebuffer {
         }
     }
 
-    public project(t1: { x: number, y: number, z: number }): Vector3 {
+    public project(t1: { x: number, y: number, z: number }): Vector3f {
         //t1.x = Math.round((320 / 2) + (t1.x / (-t1.z * 0.0078)));
         //t1.y = Math.round((200 / 2) - (t1.y / (-t1.z * 0.0078)));
-        //return <Vector3>t1;
-        return new Vector3(Math.round((320 / 2) + (t1.x / (-t1.z * 0.0078))),
+        //return <Vector3f>t1;
+        return new Vector3f(Math.round((320 / 2) + (t1.x*1.5 / (-t1.z * 0.0078))),
             // negation breaks winding and cull mode!!
-            Math.round((200 / 2) - (t1.y / (-t1.z * 0.0078))), t1.z);
+            Math.round((200 / 2) - (t1.y*1.5 / (-t1.z * 0.0078))), t1.z);
     }
 
     // https://math.stackexchange.com/questions/859454/maximum-number-of-vertices-in-intersection-of-triangle-with-box/
-    public nearPlaneClipping(t1: Vector3, t2: Vector3, color: number): void {
+    public nearPlaneClipping(t1: Vector3f, t2: Vector3f, color: number): void {
         const NEAR_PLANE_Z = -1.7;
 
 
@@ -861,11 +868,11 @@ export default class Framebuffer {
             return;
         } else if (t1.z < NEAR_PLANE_Z) {
             let ratio = (NEAR_PLANE_Z - t1.z) / (t2.z - t1.z);
-            let t3 = new Vector3(ratio * (t2.x - t1.x) + t1.x, ratio * (t2.y - t1.y) + t1.y, NEAR_PLANE_Z);
+            let t3 = new Vector3f(ratio * (t2.x - t1.x) + t1.x, ratio * (t2.y - t1.y) + t1.y, NEAR_PLANE_Z);
             this.cohenSutherlandLineClipper(this.project(t1), this.project(t3), color);
         } else if (t2.z < NEAR_PLANE_Z) {
             let ratio = (NEAR_PLANE_Z - t2.z) / (t1.z - t2.z);
-            let t3 = new Vector3(ratio * (t1.x - t2.x) + t2.x, ratio * (t1.y - t2.y) + t2.y, NEAR_PLANE_Z);
+            let t3 = new Vector3f(ratio * (t1.x - t2.x) + t2.x, ratio * (t1.y - t2.y) + t2.y, NEAR_PLANE_Z);
             this.cohenSutherlandLineClipper(this.project(t2), this.project(t3), color);
         }
     }
@@ -903,16 +910,16 @@ export default class Framebuffer {
             1 + 8, 2 + 8, 3 + 8, 3 + 8, 4 + 8, 1 + 8,
         ];
 
-        let points: Array<Vector3> = [
-            new Vector3(-1.0, -1.0, 1.0), new Vector3(1.0, -1.0, 1.0),
-            new Vector3(1.0, 1.0, 1.0), new Vector3(-1.0, 1.0, 1.0),
-            new Vector3(-1.0, -1.0, -1.0), new Vector3(1.0, -1.0, -1.0),
-            new Vector3(1.0, 1.0, -1.0), new Vector3(-1.0, 1.0, -1.0),
+        let points: Array<Vector3f> = [
+            new Vector3f(-1.0, -1.0, 1.0), new Vector3f(1.0, -1.0, 1.0),
+            new Vector3f(1.0, 1.0, 1.0), new Vector3f(-1.0, 1.0, 1.0),
+            new Vector3f(-1.0, -1.0, -1.0), new Vector3f(1.0, -1.0, -1.0),
+            new Vector3f(1.0, 1.0, -1.0), new Vector3f(-1.0, 1.0, -1.0),
 
-            new Vector3(-1.0, -1.0, 1.0).add(new Vector3(2.0, 0.0, 0.0)), new Vector3(1.0, -1.0, 1.0).add(new Vector3(2.0, 0.0, 0.0)),
-            new Vector3(1.0, 1.0, 1.0).add(new Vector3(2.0, 0.0, 0.0)), new Vector3(-1.0, 1.0, 1.0).add(new Vector3(2.0, 0.0, 0.0)),
-            new Vector3(-1.0, -1.0, -1.0).add(new Vector3(2.0, 0.0, 0.0)), new Vector3(1.0, -1.0, -1.0).add(new Vector3(2.0, 0.0, 0.0)),
-            new Vector3(1.0, 1.0, -1.0).add(new Vector3(2.0, 0.0, 0.0)), new Vector3(-1.0, 1.0, -1.0).add(new Vector3(2.0, 0.0, 0.0)),
+            new Vector3f(-1.0, -1.0, 1.0).add(new Vector3f(2.0, 0.0, 0.0)), new Vector3f(1.0, -1.0, 1.0).add(new Vector3f(2.0, 0.0, 0.0)),
+            new Vector3f(1.0, 1.0, 1.0).add(new Vector3f(2.0, 0.0, 0.0)), new Vector3f(-1.0, 1.0, 1.0).add(new Vector3f(2.0, 0.0, 0.0)),
+            new Vector3f(-1.0, -1.0, -1.0).add(new Vector3f(2.0, 0.0, 0.0)), new Vector3f(1.0, -1.0, -1.0).add(new Vector3f(2.0, 0.0, 0.0)),
+            new Vector3f(1.0, 1.0, -1.0).add(new Vector3f(2.0, 0.0, 0.0)), new Vector3f(-1.0, 1.0, -1.0).add(new Vector3f(2.0, 0.0, 0.0)),
         ];
 
         let colorAr: Array<number> = [
@@ -926,12 +933,12 @@ export default class Framebuffer {
 
         let scale = 3.2;
 
-        let modelViewMartrix = Matrix3.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3.constructZRotationMatrix(elapsedTime * 0.08));
+        let modelViewMartrix = Matrix3f.constructScaleMatrix(scale, scale, scale);
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3f.constructZRotationMatrix(elapsedTime * 0.08));
 
 
 
-        let points2: Array<Vector3> = new Array<Vector3>();
+        let points2: Array<Vector3f> = new Array<Vector3f>();
         points.forEach(element => {
             let transformed = modelViewMartrix.multiply(element);
 
@@ -941,7 +948,7 @@ export default class Framebuffer {
 
             let xx = (320 * 0.5) + (x / (-z * 0.0078));
             let yy = (200 * 0.5) - (y / (-z * 0.0078));
-            points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+            points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
         });
 
         for (let i = 0; i < index.length; i += 3) {
@@ -1001,11 +1008,11 @@ export default class Framebuffer {
 
     public drawOldSchoolPlasma(elapsedTime: number): void {
         let time = elapsedTime * 0.0007 * 1.0;
-        let lineDirection = new Vector3(Math.sin(time), Math.cos(time), 0);
-        let radialWaveCenter = new Vector3(470.0 / 2.0, 230.0 / 2.0, 0).add(new Vector3(470.0 / 2.0 *
+        let lineDirection = new Vector3f(Math.sin(time), Math.cos(time), 0);
+        let radialWaveCenter = new Vector3f(470.0 / 2.0, 230.0 / 2.0, 0).add(new Vector3f(470.0 / 2.0 *
             Math.sin(-time), 230.0 / 2.0 * Math.cos(-time), 0));
 
-        let difference = new Vector3(0, 0, 0);
+        let difference = new Vector3f(0, 0, 0);
         // TODO: implement sin/cos lookup tables plus starfield ;)
         let index = 0;
         for (let y = 0; y < 200; y++) {
@@ -1064,7 +1071,7 @@ export default class Framebuffer {
         /**
          * Vertex Shader Stage
          */
-        let points2: Array<Vector3> = new Array<Vector3>();
+        let points2: Array<Vector3f> = new Array<Vector3f>();
 
         for (let p = 0; p < points.length; p++) {
             let transformed = modelViewMartrix.multiplyHom(points[p]);
@@ -1080,15 +1087,15 @@ export default class Framebuffer {
             // viewport transform
             // yy =(200 * 0.5) - (y / (-z * 0.0078));
 
-            points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+            points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
         }
 
         // draw clip region
         let colred = 255 << 24 | 230 << 16 | 200 << 16 | 200;
-        this.drawLineDDA(new Vector3(Framebuffer.minWindow.x - 1, Framebuffer.minWindow.y - 1, 0), new Vector3(Framebuffer.minWindow.x - 1, Framebuffer.maxWindow.y + 1, 0), colred);
-        this.drawLineDDA(new Vector3(Framebuffer.maxWindow.x + 1, Framebuffer.minWindow.y - 1, 0), new Vector3(Framebuffer.maxWindow.x + 1, Framebuffer.maxWindow.y + 1, 0), colred);
-        this.drawLineDDA(new Vector3(Framebuffer.minWindow.x - 1, Framebuffer.minWindow.y - 1, 0), new Vector3(Framebuffer.maxWindow.x + 1, Framebuffer.minWindow.y - 1, 0), colred);
-        this.drawLineDDA(new Vector3(Framebuffer.minWindow.x - 1, Framebuffer.maxWindow.y + 1, 0), new Vector3(Framebuffer.maxWindow.x + 2, Framebuffer.maxWindow.y + 1, 0), colred);
+        this.drawLineDDA(new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.minWindow.y - 1, 0), new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.maxWindow.y + 1, 0), colred);
+        this.drawLineDDA(new Vector3f(Framebuffer.maxWindow.x + 1, Framebuffer.minWindow.y - 1, 0), new Vector3f(Framebuffer.maxWindow.x + 1, Framebuffer.maxWindow.y + 1, 0), colred);
+        this.drawLineDDA(new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.minWindow.y - 1, 0), new Vector3f(Framebuffer.maxWindow.x + 1, Framebuffer.minWindow.y - 1, 0), colred);
+        this.drawLineDDA(new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.maxWindow.y + 1, 0), new Vector3f(Framebuffer.maxWindow.x + 2, Framebuffer.maxWindow.y + 1, 0), colred);
 
         this.drawBox();
         /**
@@ -1119,12 +1126,12 @@ export default class Framebuffer {
         }
     }
 
-    public static minWindow: Vector3 = new Vector3(0, 0, 0);
-    public static maxWindow: Vector3 = new Vector3(319, 199, 0);
+    public static minWindow: Vector3f = new Vector3f(0, 0, 0);
+    public static maxWindow: Vector3f = new Vector3f(319, 199, 0);
     // seems to habe a small bug
-    public cohenSutherlandLineClipper(start: Vector3, end: Vector3, col: number) {
-        let p1: Vector3 = new Vector3(start.x, start.y, start.z);
-        let p2: Vector3 = new Vector3(end.x, end.y, end.z);
+    public cohenSutherlandLineClipper(start: Vector3f, end: Vector3f, col: number) {
+        let p1: Vector3f = new Vector3f(start.x, start.y, start.z);
+        let p2: Vector3f = new Vector3f(end.x, end.y, end.z);
 
         let code1: number = this.computeRegionCode(p1);
         let code2: number = this.computeRegionCode(p2);
@@ -1146,7 +1153,7 @@ export default class Framebuffer {
                     code1 = code2;
                     code2 = tempCode;
 
-                    let tempPoint: Vector3 = p1;
+                    let tempPoint: Vector3f = p1;
                     p1 = p2;
                     p2 = tempPoint;
                 }
@@ -1192,7 +1199,7 @@ export default class Framebuffer {
         return (dec >>> 0).toString(2);
     }
 
-    public computeRegionCode(point: Vector3): number {
+    public computeRegionCode(point: Vector3f): number {
         let regionCode: number = Framebuffer.REGION_CODE_CENTER;
 
         if (point.x < Framebuffer.minWindow.x) {
@@ -1255,7 +1262,7 @@ export default class Framebuffer {
         /**
          * Vertex Shader Stage
          */
-        let points2: Array<Vector3> = new Array<Vector3>();
+        let points2: Array<Vector3f> = new Array<Vector3f>();
 
         let normals2: Array<Vector4f> = new Array<Vector4f>();
         normals.forEach(element => {
@@ -1276,7 +1283,7 @@ export default class Framebuffer {
             // viewport transform
             // yy =(200 * 0.5) - (y / (-z * 0.0078));
 
-            points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+            points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
         });
 
         /**
@@ -1327,7 +1334,7 @@ export default class Framebuffer {
         for (let i = 0; i < STEPS; i++) {
             let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
             let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
-            let up = new Vector3(0.0, 4.0, 0);
+            let up = new Vector3f(0.0, 4.0, 0);
             let right = frame2.sub(frame).cross(up);
 
             for (let r = 0; r < STEPS2; r++) {
@@ -1349,7 +1356,7 @@ export default class Framebuffer {
 
         for (let i = 0; i < index.length; i += 3) {
             let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
-            normals.push(normal.mul(-1)); // normalize?
+            normals.push(normal.mul(-1).normalize()); // normalize?
         }
 
         // Create class for objects
@@ -1367,10 +1374,10 @@ export default class Framebuffer {
         let index: Array<number> = [
         ];
 
-        let points: Array<Vector3> = [];
+        let points: Array<Vector3f> = [];
         for (let y = 0; y < 256; y++) {
             for (let x = 0; x < 256; x++) {
-                points.push(new Vector3((x - 128) * 20.0, (heightmap.texture[x + y * 256] & 0x000000ff) * 128 / 256 - 70, (y - 128) * 20.0));
+                points.push(new Vector3f((x - 128) * 20.0, (heightmap.texture[x + y * 256] & 0x000000ff) * 128 / 256 - 70, (y - 128) * 20.0));
             }
         }
 
@@ -1391,10 +1398,10 @@ export default class Framebuffer {
 
         let scale = 0.8;
 
-        let modelViewMartrix = Matrix3.constructYRotationMatrix(elapsedTime * 0.003);
+        let modelViewMartrix = Matrix3f.constructYRotationMatrix(elapsedTime * 0.003);
 
 
-        let points2: Array<Vector3> = new Array<Vector3>();
+        let points2: Array<Vector3f> = new Array<Vector3f>();
 
         let xOff = + Math.cos(elapsedTime * 0.000001) * 128 * 20;
         let zOff = Math.sin(elapsedTime * 0.000001) * 128 * 20;
@@ -1405,7 +1412,7 @@ export default class Framebuffer {
             let y = transformed.y;
             let z = transformed.z + zOff; // TODO: use translation matrix!
 
-            points2.push(new Vector3(x, y, z));
+            points2.push(new Vector3f(x, y, z));
         });
 
 
@@ -1450,7 +1457,7 @@ export default class Framebuffer {
         // todo use index array for normals to have less normal objects
         for (let i = 0; i < index.length; i += 3) {
             let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
-            normals.push(normal.mul(1)); // normalize?
+            normals.push(normal.normalize()); // normalize?
         }
 
         // Create class for objects
@@ -1492,7 +1499,7 @@ export default class Framebuffer {
         // todo use index array for normals to have less normal objects
         for (let i = 0; i < index.length; i += 3) {
             let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
-            normals.push(normal.mul(1)); // normalize?
+            normals.push(normal.normalize()); // normalize?
         }
 
         // Create class for objects
@@ -1542,7 +1549,7 @@ export default class Framebuffer {
         // todo use index array for normals to have less normal objects
         for (let i = 0; i < index.length; i += 3) {
             let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
-            normals.push(normal.mul(1)); // normalize?
+            normals.push(normal.normalize()); // normalize?
         }
 
         // Create class for objects
@@ -1583,7 +1590,7 @@ export default class Framebuffer {
         // todo use index array for normals to have less normal objects
         for (let i = 0; i < index.length; i += 3) {
             let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
-            normals.push(normal.mul(1)); // normalize?
+            normals.push(normal.normalize()); // normalize?
         }
 
         // Create class for objects
@@ -1626,7 +1633,7 @@ export default class Framebuffer {
         // todo use index array for normals to have less normal objects
         for (let i = 0; i < index.length; i += 3) {
             let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
-            normals.push(normal.mul(1)); // normalize?
+            normals.push(normal.normalize()); // normalize?
         }
 
         // Create class for objects
@@ -1665,7 +1672,7 @@ export default class Framebuffer {
         // todo use index array for normals to have less normal objects
         for (let i = 0; i < index.length; i += 3) {
             let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
-            normals.push(normal.mul(1)); // normalize?
+            normals.push(normal.normalize()); // normalize?
         }
 
         // Create class for objects
@@ -1815,6 +1822,90 @@ export default class Framebuffer {
 
     }
 
+    private getBlenderScene(): any {
+        let points: Array<Vector4f> = new Array<Vector4f>();
+        let normals: Array<Vector4f> = new Array<Vector4f>();
+        let index: Array<number> = new Array<number>();
+
+        worldJson.vertices.forEach((v) => {
+            points.push(new Vector4f(v.x, v.y, v.z));
+        });
+
+
+
+        for (let x = 0; x < worldJson.faces.length; x += 6) {
+            index.push(worldJson.faces[x]);
+            index.push(worldJson.faces[x + 1]);
+            index.push(worldJson.faces[x + 2]);
+        }
+
+        // todo use index array for normals to have less normal objects
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+            normals.push(normal.normalize()); // normalize?
+        }
+
+        // Create class for objects
+        let obj = {
+            points: points,
+            normals: normals,
+            index: index,
+            points2: points.map(() => new Vector4f(0, 0, 0, 0)),
+            normals2: normals.map(() => new Vector4f(0, 0, 0, 0))
+        };
+
+        return obj;
+    }
+
+    /**
+     * todo:
+     * - better wavefront format that uses precomputed normals
+     * - maybe use groups for material and culling
+     * - use normal matrix instead of normalization during shading
+     * - do not create the scene every frame
+     * - create material class
+     * - use camera path :-)!!!!!
+     * - fix strange artefacts where geometry hits the plane
+     * 
+     * @param {number} elapsedTime 
+     * @memberof Framebuffer
+    
+     * 
+     */
+    public drawBlenderScene(elapsedTime: number): void {
+        // camerea:
+        // http://graphicsrunner.blogspot.de/search/label/Water
+        this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
+        this.clearDepthBuffer();
+
+        let keyFrames: Array<CameraKeyFrame> = [
+            new CameraKeyFrame(new Vector3f(-5, 3, 10), new Vector3f(0, 0, 0)),
+            new CameraKeyFrame(new Vector3f(5, 10, 10), new Vector3f(0, 0, 0.1)),
+            new CameraKeyFrame(new Vector3f(5, 10, 0), new Vector3f(1.5, -1, -0.2)),
+            new CameraKeyFrame(new Vector3f(5, 3, -10), new Vector3f(2.5, 0, -0.09)),
+            new CameraKeyFrame(new Vector3f(-5, 7, -10), new Vector3f(3.5, 0, 1)),
+            new CameraKeyFrame(new Vector3f(-5, 3, 10), new Vector3f(4, 0, 0.)),
+            new CameraKeyFrame(new Vector3f(5, 3, -2), new Vector3f(3, -0.2, 0.)),
+            new CameraKeyFrame(new Vector3f(18, 2, -0), new Vector3f(2, -0.4, 0.)),
+            new CameraKeyFrame(new Vector3f(15, 4, -0), new Vector3f(2, -0.5, 0.)),
+            new CameraKeyFrame(new Vector3f(5, 7, -10), new Vector3f(2.5, 0, -0.09)),
+        ];
+
+        let cameraAnimator = new CameraAnimator();
+        cameraAnimator.setKeyFrames(keyFrames);
+       
+        let camera = cameraAnimator.getViewMatrix(elapsedTime);
+
+        let scale = 2.0;
+
+        let modelViewMartrix: Matrix4f;
+        modelViewMartrix = camera.multiplyMatrix(Matrix4f.constructTranslationMatrix(0, -2.7, 0))
+            .multiplyMatrix(Matrix4f.constructScaleMatrix(scale));
+
+           
+        this.drawObject2(this.blenderObj, modelViewMartrix, 144, 165, 116);
+    }
+
     public shadingSphereClip(elapsedTime: number): void {
         // this.clearColorBuffer();
         this.clearDepthBuffer();
@@ -1846,15 +1937,74 @@ export default class Framebuffer {
 
     }
 
+    private drawObject2(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false) {
+        
+                let normalMatrix = modelViewMartrix.computeNormalMatrix();
+        
+                for (let i = 0; i < obj.normals.length; i++) {
+                    normalMatrix.multiplyHomArr(obj.normals[i], obj.normals2[i]);
+                }
+        
+                for (let i = 0; i < obj.points.length; i++) {
+                    modelViewMartrix.multiplyHomArr(obj.points[i], obj.points2[i]);
+                }
+        
+                let lightDirection = new Vector4f(0.5, 0.5, 0.3, 0.0).normalize();
+        
+                for (let i = 0; i < obj.index.length; i += 3) {
+                    let v1 = obj.points2[obj.index[i]];
+                    let v2 = obj.points2[obj.index[i + 1]];
+                    let v3 = obj.points2[obj.index[i + 2]];
+        
+                    let normal = obj.normals2[i / 3];
+        
+                    // if (this.isTriangleCCW(v1,v2,v3)) {
+                    // 2d Backface culling is here not allowed because we did not project here!
+                    // FIXME: find a robust way to cull without cracks!
+                    if (this.isInFrontOfNearPlane(v1) && this.isInFrontOfNearPlane(v2) && this.isInFrontOfNearPlane(v3)) {
+                        let p1 = this.project(v1);
+                        let p2 = this.project(v2);
+                        let p3 = this.project(v3);
+        
+                        if (this.isTriangleCCW(p1, p2, p3)) {
+                            // TODO: do lighting only if triangle is visible
+                            let scalar = Math.min((Math.max(0.0, normal.dot(lightDirection))), 1.0);
+                            scalar = scalar * 0.85 + 0.15;
+                            let color = 255 << 24 | Math.min(scalar * blue, 255) << 16 | Math.min(scalar * green, 255) << 8 | Math.min(scalar * red, 255);
+                            if (noLighting) {
+                                color = 255 << 24 | red | green << 8 | blue << 16;
+                            }
+        
+                            this.clipConvexPolygon(new Array<Vector3f>(p1, p2, p3), color, true);
+                        }
+                    } else if (!this.isInFrontOfNearPlane(v1) && !this.isInFrontOfNearPlane(v2) && !this.isInFrontOfNearPlane(v3)) {
+                        continue;
+                    } else {
+                        let scalar = Math.min((Math.max(0.0, normal.dot(lightDirection))), 1.0);
+                        scalar = scalar * 0.85 + 0.15;
+                        let color = 255 << 24 | Math.min(scalar * blue, 255) << 16 | Math.min(scalar * green, 255) << 8 | Math.min(scalar * red, 255);
+                        if (noLighting) {
+                            color = 255 << 24 | red | green << 8 | blue << 16;
+                        }
+                        this.zClipTriangle(new Array<Vector3f>(v1, v2, v3), color);
+                    }
+        
+                }
+            }
+
     private drawObject(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false) {
 
+        let normalMatrix = modelViewMartrix.computeNormalMatrix();
+
         for (let i = 0; i < obj.normals.length; i++) {
-            modelViewMartrix.multiplyHomArr(obj.normals[i], obj.normals2[i]);
+            normalMatrix.multiplyHomArr(obj.normals[i], obj.normals2[i]);
         }
 
         for (let i = 0; i < obj.points.length; i++) {
             modelViewMartrix.multiplyHomArr(obj.points[i], obj.points2[i]);
         }
+
+        let lightDirection = new Vector4f(0.5, 0.5, 0.3, 0.0).normalize();
 
         for (let i = 0; i < obj.index.length; i += 3) {
             let v1 = obj.points2[obj.index[i]];
@@ -1867,25 +2017,31 @@ export default class Framebuffer {
             // 2d Backface culling is here not allowed because we did not project here!
             // FIXME: find a robust way to cull without cracks!
             if (this.isInFrontOfNearPlane(v1) && this.isInFrontOfNearPlane(v2) && this.isInFrontOfNearPlane(v3)) {
-                // TODO: clip before lighting calculation
-                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector4f(0.5, 0.5, 0.3, 0.0).normalize()))), 1.0);
+                let p1 = this.project(v1);
+                let p2 = this.project(v2);
+                let p3 = this.project(v3);
+
+                if (this.isTriangleCCW(p1, p2, p3)) {
+                    // TODO: do lighting only if triangle is visible
+                    let scalar = Math.min((Math.max(0.0, normal.dot(lightDirection))), 1.0);
+                    scalar = scalar * 0.85 + 0.15;
+                    let color = 255 << 24 | Math.min(scalar * blue, 255) << 16 | Math.min(scalar * green, 255) << 8 | Math.min(scalar * red, 255);
+                    if (noLighting) {
+                        color = 255 << 24 | red | green << 8 | blue << 16;
+                    }
+
+                    this.clipConvexPolygon(new Array<Vector3f>(p1, p2, p3), color, true);
+                }
+            } else if (!this.isInFrontOfNearPlane(v1) && !this.isInFrontOfNearPlane(v2) && !this.isInFrontOfNearPlane(v3)) {
+                continue;
+            } else {
+                let scalar = Math.min((Math.max(0.0, normal.dot(lightDirection))), 1.0);
                 scalar = scalar * 0.85 + 0.15;
                 let color = 255 << 24 | Math.min(scalar * blue, 255) << 16 | Math.min(scalar * green, 255) << 8 | Math.min(scalar * red, 255);
                 if (noLighting) {
                     color = 255 << 24 | red | green << 8 | blue << 16;
                 }
-                this.clipConvexPolygon(new Array<Vector3>(this.project(v1), this.project(v2), this.project(v3)), color, true);
-
-            } else if (!this.isInFrontOfNearPlane(v1) && !this.isInFrontOfNearPlane(v2) && !this.isInFrontOfNearPlane(v3)) {
-                continue;
-            } else {
-                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector4f(0.5, 0.5, 0.3, 0.0).normalize()))), 1.0);
-                let ambient = 29;
-                let color = 255 << 24 | Math.min(scalar * blue + ambient, 255) << 16 | Math.min(scalar * green + ambient, 255) << 8 | Math.min(scalar * red + ambient, 255);
-                if (noLighting) {
-                    color = 255 << 24 | red | green << 8 | blue << 16;
-                }
-                this.zClipTriangle(new Array<Vector3>(v1, v2, v3), color);
+                this.zClipTriangle(new Array<Vector3f>(v1, v2, v3), color);
             }
 
         }
@@ -1893,21 +2049,21 @@ export default class Framebuffer {
 
     NEAR_PLANE_Z = -1.7;
 
-    public isInFrontOfNearPlane(p: Vector3): boolean {
+    public isInFrontOfNearPlane(p: Vector3f): boolean {
         return p.z < this.NEAR_PLANE_Z;
     }
 
-    public computeNearPlaneIntersection(p1: Vector3, p2: Vector3): Vector3 {
+    public computeNearPlaneIntersection(p1: Vector3f, p2: Vector3f): Vector3f {
         let ratio = (this.NEAR_PLANE_Z - p1.z) / (p2.z - p1.z);
-        return new Vector3(ratio * (p2.x - p1.x) + p1.x, ratio * (p2.y - p1.y) + p1.y, this.NEAR_PLANE_Z);
+        return new Vector3f(ratio * (p2.x - p1.x) + p1.x, ratio * (p2.y - p1.y) + p1.y, this.NEAR_PLANE_Z);
     }
 
-    public zClipTriangle(subject: Array<Vector3>, color: number): void {
+    public zClipTriangle(subject: Array<Vector3f>, color: number): void {
 
         let output = subject;
 
         let input = output;
-        output = new Array<Vector3>();
+        output = new Array<Vector3f>();
         let S = input[input.length - 1];
 
         for (let i = 0; i < input.length; i++) {
@@ -1927,16 +2083,25 @@ export default class Framebuffer {
             return;
         }
 
-        let projected: Vector3[] = output.map<Vector3>((v) => {
+        let projected: Vector3f[] = output.map<Vector3f>((v) => {
             return this.project(v);
         })
-
-        this.clipConvexPolygon(projected, color, true);
+        
+        if (output.length === 3 && !this.isTriangleCCW(projected[0], projected[1], projected[2])) {
+            return;
+        } 
+        
+        if (output.length === 4 && !this.isTriangleCCW2(projected[0], projected[1], projected[2], projected[3])) {
+            return;
+        }
+        //if (this.isTriangleCCW(projected[0], projected[1], projected[2])) {
+            this.clipConvexPolygon(projected, color, true);
+       // }
     }
 
 
-    private torusFunction(alpha: number): Vector3 {
-        return new Vector3(Math.sin(alpha) * 10, 0, Math.cos(alpha) * 10);
+    private torusFunction(alpha: number): Vector3f {
+        return new Vector3f(Math.sin(alpha) * 10, 0, Math.cos(alpha) * 10);
     }
 
 
@@ -1954,14 +2119,14 @@ export default class Framebuffer {
 
         this.wBuffer.fill(100);
 
-        let points: Array<Vector3> = [];
+        let points: Array<Vector3f> = [];
 
         const STEPS = 15;
         const STEPS2 = 12;
         for (let i = 0; i < STEPS; i++) {
             let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
             let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
-            let up = new Vector3(0.0, 4.0, 0);
+            let up = new Vector3f(0.0, 4.0, 0);
             let right = frame2.sub(frame).cross(up);
 
             for (let r = 0; r < STEPS2; r++) {
@@ -1985,7 +2150,7 @@ export default class Framebuffer {
         }
 
         // compute normals
-        let normals: Array<Vector3> = new Array<Vector3>();
+        let normals: Array<Vector3f> = new Array<Vector3f>();
 
         for (let i = 0; i < index.length; i += 3) {
             let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
@@ -2000,9 +2165,9 @@ export default class Framebuffer {
         /**
          * Vertex Shader Stage
          */
-        let points2: Array<Vector3> = new Array<Vector3>();
+        let points2: Array<Vector3f> = new Array<Vector3f>();
 
-        let normals2: Array<Vector3> = new Array<Vector3>();
+        let normals2: Array<Vector3f> = new Array<Vector3f>();
         for (let n = 0; n < normals.length; n++) {
             normals2.push(modelViewMartrix.multiply(normals[n]));
         }
@@ -2024,7 +2189,7 @@ export default class Framebuffer {
             // viewport transform
             // yy =(200 * 0.5) - (y / (-z * 0.0078));
 
-            points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+            points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
         }
 
         /**
@@ -2049,7 +2214,7 @@ export default class Framebuffer {
             if (this.isTriangleCCW(v1, v2, v3)) {
 
                 let normal = normals2[i / 3];
-                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.5, 0.5, 0.5).normalize())) * 100), 255) + 50;
+                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3f(0.5, 0.5, 0.5).normalize())) * 100), 255) + 50;
                 let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar + 100;
                 if (v1.x < Framebuffer.minWindow.x ||
                     v2.x < Framebuffer.minWindow.x ||
@@ -2063,10 +2228,10 @@ export default class Framebuffer {
                     v1.y > Framebuffer.maxWindow.y ||
                     v2.y > Framebuffer.maxWindow.y ||
                     v3.y > Framebuffer.maxWindow.y) {
-                    this.clipConvexPolygon(new Array<Vector3>(v1, v2, v3), color, false);
+                    this.clipConvexPolygon(new Array<Vector3f>(v1, v2, v3), color, false);
                 } else {
                     this.drawTriangleDDA(v1, v2, v3, color);
-                    //this.drawTriangleDDA2(v1, v2, v3, new Vector3(0, 0, 0), new Vector3(0, 16, 0), new Vector3(16, 16, 0), color);
+                    //this.drawTriangleDDA2(v1, v2, v3, new Vector3f(0, 0, 0), new Vector3f(0, 16, 0), new Vector3f(16, 16, 0), color);
                 }
             }
         }
@@ -2075,7 +2240,7 @@ export default class Framebuffer {
     public shadingTorus4(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
-        let points: Array<Vector3> = [];
+        let points: Array<Vector3f> = [];
         let textCoords: Array<TextureCoordinate> = [];
 
         const STEPS = 15;
@@ -2083,7 +2248,7 @@ export default class Framebuffer {
         for (let i = 0; i < STEPS + 1; i++) {
             let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
             let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
-            let up = new Vector3(0.0, 4.0, 0);
+            let up = new Vector3f(0.0, 4.0, 0);
             let right = frame2.sub(frame).cross(up);
 
             for (let r = 0; r < STEPS2 + 1; r++) {
@@ -2111,7 +2276,7 @@ export default class Framebuffer {
         }
 
         // compute normals
-        let normals: Array<Vector3> = new Array<Vector3>();
+        let normals: Array<Vector3f> = new Array<Vector3f>();
 
         for (let i = 0; i < index.length; i += 3) {
             let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
@@ -2127,9 +2292,9 @@ export default class Framebuffer {
         /**
          * Vertex Shader Stage
          */
-        let points2: Array<Vector3> = new Array<Vector3>();
+        let points2: Array<Vector3f> = new Array<Vector3f>();
 
-        let normals2: Array<Vector3> = new Array<Vector3>();
+        let normals2: Array<Vector3f> = new Array<Vector3f>();
         for (let n = 0; n < normals.length; n++) {
             normals2.push(modelViewMartrix.multiply(normals[n]));
         }
@@ -2152,7 +2317,7 @@ export default class Framebuffer {
             // viewport transform
             // yy =(200 * 0.5) - (y / (-z * 0.0078));
 
-            points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+            points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
         }
 
         /**
@@ -2180,7 +2345,7 @@ export default class Framebuffer {
             if (this.isTriangleCCW(v1, v2, v3)) {
 
                 let normal = normals2[i / 3];
-                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.2, 0.2, 1).normalize())) * 255), 255);
+                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3f(0.2, 0.2, 1).normalize())) * 255), 255);
                 let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
                 //let color = 255 << 24 | 255 << 16 | 150 << 8 | 255;
 
@@ -2220,11 +2385,11 @@ export default class Framebuffer {
     public shadingTorusENvironment(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
-        let points: Array<Vector3> = [];
+        let points: Array<Vector3f> = [];
         let textCoords: Array<TextureCoordinate> = [];
 
         // compute normals
-        let normals: Array<Vector3> = new Array<Vector3>();
+        let normals: Array<Vector3f> = new Array<Vector3f>();
 
 
 
@@ -2233,7 +2398,7 @@ export default class Framebuffer {
         for (let i = 0; i < STEPS + 1; i++) {
             let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
             let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
-            let up = new Vector3(0.0, 4.0, 0);
+            let up = new Vector3f(0.0, 4.0, 0);
             let right = frame2.sub(frame).cross(up);
 
             for (let r = 0; r < STEPS2 + 1; r++) {
@@ -2272,9 +2437,9 @@ export default class Framebuffer {
         /**
          * Vertex Shader Stage
          */
-        let points2: Array<Vector3> = new Array<Vector3>();
+        let points2: Array<Vector3f> = new Array<Vector3f>();
 
-        let normals2: Array<Vector3> = new Array<Vector3>();
+        let normals2: Array<Vector3f> = new Array<Vector3f>();
         for (let n = 0; n < normals.length; n++) {
             normals2.push(modelViewMartrix.multiply(normals[n]));
         }
@@ -2297,7 +2462,7 @@ export default class Framebuffer {
             // viewport transform
             // yy =(200 * 0.5) - (y / (-z * 0.0078));
 
-            points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+            points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
         }
 
         /**
@@ -2335,7 +2500,7 @@ export default class Framebuffer {
             if (this.isTriangleCCW(v1, v2, v3)) {
 
                 let normal = n3;
-                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.1, 0.1, -1).normalize())) * 205 + 50), 255);
+                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3f(0.1, 0.1, -1).normalize())) * 205 + 50), 255);
                 let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
 
                 //let color = 255 << 24 | 255 << 16 | 150 << 8 | 255;
@@ -2381,29 +2546,29 @@ export default class Framebuffer {
      */
 
     public createBunny(): any {
-        let points: Array<Vector3> = new Array<Vector3>();
+        let points: Array<Vector3f> = new Array<Vector3f>();
 
         bunnyJson.vertices.forEach(x => {
-            points.push(new Vector3(x.x, x.y, x.z));
+            points.push(new Vector3f(x.x, x.y, x.z));
         });
 
-        let normals: Array<Vector3> = new Array<Vector3>();
+        let normals: Array<Vector3f> = new Array<Vector3f>();
 
         bunnyJson.normals.forEach(x => {
-            normals.push(new Vector3(x.x, x.y, x.z));
+            normals.push(new Vector3f(x.x, x.y, x.z).normalize());
         });
 
         let index: Array<number> = bunnyJson.faces;
 
-        let points2: Array<Vector3> = new Array<Vector3>();
-        let normals2: Array<Vector3> = new Array<Vector3>();
-        
-        for(let i=0; i < points.length; i++) {
-            points2.push(new Vector3(0,0,0));
+        let points2: Array<Vector3f> = new Array<Vector3f>();
+        let normals2: Array<Vector3f> = new Array<Vector3f>();
+
+        for (let i = 0; i < points.length; i++) {
+            points2.push(new Vector3f(0, 0, 0));
         }
 
-        for(let i=0; i < normals.length; i++) {
-            normals2.push(new Vector3(0,0,0));
+        for (let i = 0; i < normals.length; i++) {
+            normals2.push(new Vector3f(0, 0, 0));
         }
 
         let object = {
@@ -2411,7 +2576,7 @@ export default class Framebuffer {
             points: points,
             normals: normals,
             points2: points2,
-            normals2:normals2
+            normals2: normals2
         };
 
         return object;
@@ -2421,16 +2586,15 @@ export default class Framebuffer {
 
         let obj = this.bunnyObj;
 
-        let scale = 14.1;
+        let scale = 64.1;
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.30));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3)).multiplyMatrix(
-            Matrix4f.constructTranslationMatrix(0, -0.9, 0));
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -37).multiplyMatrix(modelViewMartrix);
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3));
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -8).multiplyMatrix(modelViewMartrix);
 
         /**
          * Vertex Shader Stage
          */
-        
+
         let normalMatrix = modelViewMartrix.computeNormalMatrix();
 
         for (let n = 0; n < obj.normals.length; n++) {
@@ -2521,29 +2685,28 @@ export default class Framebuffer {
     }
 
 
-    public fakeSphere(normal: Vector3, vertex: Vertex): void {
+    public fakeSphere(normal: Vector3f, vertex: Vertex): void {
         // https://www.mvps.org/directx/articles/spheremap.htm
-        vertex.textureCoordinate.u = 0.5 + normal.x * 0.49;
-        vertex.textureCoordinate.v = 0.5 - normal.y * 0.49;
-
-        // tex.u = 0.5 + Math.asin(normal.x) / Math.PI;
-        // tex.v = 0.5 - Math.asin(normal.y) / Math.PI;
+        // vertex.textureCoordinate.u = 0.5 + normal.x * 0.5;
+        // vertex.textureCoordinate.v = 0.5 - normal.y * 0.5;
+        vertex.textureCoordinate.u = 0.5 + Math.asin(normal.x) / Math.PI;
+        vertex.textureCoordinate.v = 0.5 - Math.asin(normal.y) / Math.PI;
     }
 
-    public fakeSphere2(normal: Vector3, tex: TextureCoordinate): void {
+    public fakeSphere2(normal: Vector3f, tex: TextureCoordinate): void {
 
         tex.u = 0.5 + Math.asin(normal.x) / Math.PI;
         tex.v = 0.5 - Math.asin(normal.y) / Math.PI;
 
     }
     public shadingTorus3(elapsedTime: number): void {
-        let points: Array<Vector3> = [];
+        let points: Array<Vector3f> = [];
         const STEPS = 15 * 2;
         const STEPS2 = 12 * 2;
         for (let i = 0; i < STEPS; i++) {
             let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
             let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
-            let up = new Vector3(0.0, 4.0, 0);
+            let up = new Vector3f(0.0, 4.0, 0);
             let right = frame2.sub(frame).cross(up);
 
             for (let r = 0; r < STEPS2; r++) {
@@ -2560,7 +2723,7 @@ export default class Framebuffer {
         /**
          * Vertex Shader Stage
          */
-        let points2: Array<Vector3> = new Array<Vector3>();
+        let points2: Array<Vector3f> = new Array<Vector3f>();
 
 
         modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.04) * 25,
@@ -2580,7 +2743,7 @@ export default class Framebuffer {
             // viewport transform
             // yy =(200 * 0.5) - (y / (-z * 0.0078));
 
-            points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+            points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
         }
 
         /**
@@ -2616,21 +2779,21 @@ export default class Framebuffer {
      * FIXME: optimize by minimizing creation of new arrays
      * https://www.npmjs.com/package/npm-check-updates
      * 
-     * @param {Vector3} v1 
-     * @param {Vector3} v2 
-     * @param {Vector3} v3 
+     * @param {Vector3f} v1 
+     * @param {Vector3f} v2 
+     * @param {Vector3f} v3 
      * @param {number} color 
      * @returns {void} 
      * @memberof Framebuffer
      */
-    public clipConvexPolygon(subject: Array<Vector3>, color: number, clipping: boolean = true): void {
+    public clipConvexPolygon(subject: Array<Vector3f>, color: number, clipping: boolean = true): void {
 
         let output = subject;
 
         for (let j = 0; j < Framebuffer.clipRegion.length; j++) {
             let edge = Framebuffer.clipRegion[j];
             let input = output;
-            output = new Array<Vector3>();
+            output = new Array<Vector3f>();
             let S = input[input.length - 1];
 
             for (let i = 0; i < input.length; i++) {
@@ -2653,9 +2816,7 @@ export default class Framebuffer {
 
         // triangulate new point set
         for (let i = 0; i < output.length - 2; i++) {
-            if (!clipping || this.isTriangleCCW(output[0], output[1 + i], output[2 + i])) {
-                this.drawTriangleDDA(output[0], output[1 + i], output[2 + i], color);
-            }
+            this.drawTriangleDDA(output[0], output[1 + i], output[2 + i], color);
         }
     }
 
@@ -2699,7 +2860,7 @@ export default class Framebuffer {
     lensFlareEnd = 0;
 
     public drawLensFlare(elapsedTime: number, texture: { tex: Texture, scale: number, alpha: number }[]): void {
-        let pos = new Vector3(Math.round(320 / 2 + Math.sin(elapsedTime * 0.00035) * 110),
+        let pos = new Vector3f(Math.round(320 / 2 + Math.sin(elapsedTime * 0.00035) * 110),
             Math.round(200 / 2 + Math.cos(elapsedTime * 0.0003) * 80), 0);
 
         if (this.wBuffer[pos.x + (pos.y * 320)] == 100) {
@@ -2718,7 +2879,7 @@ export default class Framebuffer {
         if (this.lensFlareVisible != true) {
             scale *= (1 - this.interpolate(this.lensFlareEnd, this.lensFlareEnd + 100, elapsedTime));
         }
-        let dir = new Vector3(320 / 2, 200 / 2, 0).sub(pos);
+        let dir = new Vector3f(320 / 2, 200 / 2, 0).sub(pos);
 
 
         for (let i = 0; i < texture.length; i++) {
@@ -2730,10 +2891,10 @@ export default class Framebuffer {
     // TODO: create interesting pattern!
     public led(elapsedTime: number, texture: Texture): void {
         let time = elapsedTime * 0.0007 * 1.0;
-        let lineDirection = new Vector3(Math.sin(time), Math.cos(time), 0);
-        let radialWaveCenter = new Vector3(40.0 / 2.0, 35.0 / 2.0, 0).add(new Vector3(40.0 / 2.0 *
+        let lineDirection = new Vector3f(Math.sin(time), Math.cos(time), 0);
+        let radialWaveCenter = new Vector3f(40.0 / 2.0, 35.0 / 2.0, 0).add(new Vector3f(40.0 / 2.0 *
             Math.sin(-time * 1.2), 35.0 / 2.0 * Math.cos(-time * 1.2), 0));
-        let difference: Vector3 = new Vector3(0, 0, 0);
+        let difference: Vector3f = new Vector3f(0, 0, 0);
         for (let y = 0; y < 25; y++) {
             for (let x = 0; x < 40; x++) {
                 let directionalWave = (Math.sin((x * lineDirection.x + y * lineDirection.y) * 0.8 + time) + 1.0) * 0.5;
@@ -2752,14 +2913,14 @@ export default class Framebuffer {
 
         this.wBuffer.fill(100);
 
-        let points: Array<Vector3> = [];
+        let points: Array<Vector3f> = [];
 
         const STEPS = 15;
         const STEPS2 = 12;
         for (let i = 0; i < STEPS; i++) {
             let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
             let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
-            let up = new Vector3(0.0, 4.0, 0);
+            let up = new Vector3f(0.0, 4.0, 0);
             let right = frame2.sub(frame).cross(up);
 
             for (let r = 0; r < STEPS2; r++) {
@@ -2783,7 +2944,7 @@ export default class Framebuffer {
         }
 
         // compute normals
-        let normals: Array<Vector3> = new Array<Vector3>();
+        let normals: Array<Vector3f> = new Array<Vector3f>();
 
         for (let i = 0; i < index.length; i += 3) {
             let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
@@ -2798,9 +2959,9 @@ export default class Framebuffer {
         /**
          * Vertex Shader Stage
          */
-        let points2: Array<Vector3> = new Array<Vector3>();
+        let points2: Array<Vector3f> = new Array<Vector3f>();
 
-        let normals2: Array<Vector3> = new Array<Vector3>();
+        let normals2: Array<Vector3f> = new Array<Vector3f>();
         for (let n = 0; n < normals.length; n++) {
             normals2.push(modelViewMartrix.multiply(normals[n]));
         }
@@ -2821,7 +2982,7 @@ export default class Framebuffer {
             // viewport transform
             // yy =(200 * 0.5) - (y / (-z * 0.0078));
 
-            points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+            points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
         }
 
         /**
@@ -2845,7 +3006,7 @@ export default class Framebuffer {
 
             if (this.isTriangleCCW(v1, v2, v3)) {
                 let normal = normals2[i / 3];
-                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(0.5, 0.5, 0.5).normalize())) * 100), 255) + 50;
+                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3f(0.5, 0.5, 0.5).normalize())) * 100), 255) + 50;
                 let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar + 100;
                 this.drawTriangleDDA(v1, v2, v3, color);
             }
@@ -2880,15 +3041,15 @@ export default class Framebuffer {
             1, 6, 2, 5, 6, 1
         ];
 
-        let points: Array<Vector3> = [
-            new Vector3(-1.0, -1.0, 1.0), new Vector3(1.0, -1.0, 1.0),
-            new Vector3(1.0, 1.0, 1.0), new Vector3(-1.0, 1.0, 1.0),
-            new Vector3(-1.0, -1.0, -1.0), new Vector3(1.0, -1.0, -1.0),
-            new Vector3(1.0, 1.0, -1.0), new Vector3(-1.0, 1.0, -1.0),
+        let points: Array<Vector3f> = [
+            new Vector3f(-1.0, -1.0, 1.0), new Vector3f(1.0, -1.0, 1.0),
+            new Vector3f(1.0, 1.0, 1.0), new Vector3f(-1.0, 1.0, 1.0),
+            new Vector3f(-1.0, -1.0, -1.0), new Vector3f(1.0, -1.0, -1.0),
+            new Vector3f(1.0, 1.0, -1.0), new Vector3f(-1.0, 1.0, -1.0),
         ];
 
         // compute normals
-        let normals: Array<Vector3> = new Array<Vector3>();
+        let normals: Array<Vector3f> = new Array<Vector3f>();
 
         for (let i = 0; i < index.length; i += 3) {
             let normal = points[index[i + 1] - 1].sub(points[index[i] - 1]).cross(points[index[i + 2] - 1].sub(points[index[i] - 1]));
@@ -2907,17 +3068,17 @@ export default class Framebuffer {
 
         let scale = 3.2;
 
-        let modelViewMartrix = Matrix3.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3.constructYRotationMatrix(elapsedTime * 0.05));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3.constructXRotationMatrix(elapsedTime * 0.08));
+        let modelViewMartrix = Matrix3f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3f.constructYRotationMatrix(elapsedTime * 0.05));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3f.constructXRotationMatrix(elapsedTime * 0.08));
 
         /**
          * Vertex Shader Stage:
          * 1. Local Space -> World Space -> Eye Space -> Clip Space -> NDC Space -> Screen Space
          * 2. Computes Lighting per Vertex
          */
-        let points2: Array<Vector3> = new Array<Vector3>();
+        let points2: Array<Vector3f> = new Array<Vector3f>();
 
-        let normals2: Array<Vector3> = new Array<Vector3>();
+        let normals2: Array<Vector3f> = new Array<Vector3f>();
         normals.forEach(element => {
             normals2.push(modelViewMartrix.multiply(element));
         });
@@ -2936,7 +3097,7 @@ export default class Framebuffer {
             // viewport transform
             // yy =(200 * 0.5) - (y / (-z * 0.0078));
 
-            points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+            points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
         });
 
         /**
@@ -2961,22 +3122,59 @@ export default class Framebuffer {
             if (this.isTriangleCCW(v1, v2, v3)) {
                 let normal = normals2[i / 3];
 
-                let light = new Vector3(0.5, 0.5, 0.5);
-                let ambient = new Vector3(50, 100, 50);
-                let diffuse = new Vector3(90, 90, 90).mul(Math.max(0.0, normal.normalize().dot(light.normalize())));
-                let reflection = new Vector3(0, 0, 1).sub(light.mul(-1).normalize());
+                let light = new Vector3f(0.5, 0.5, 0.5);
+                let ambient = new Vector3f(50, 100, 50);
+                let diffuse = new Vector3f(90, 90, 90).mul(Math.max(0.0, normal.normalize().dot(light.normalize())));
+                let reflection = new Vector3f(0, 0, 1).sub(light.mul(-1).normalize());
                 // http://www.lighthouse3d.com/tutorials/glsl-tutorial/directional-lights-per-vertex-ii/
-                let specular = new Vector3(0, 0, 0);
-                let phong: Vector3 = ambient.add(diffuse).add(specular);
+                let specular = new Vector3f(0, 0, 0);
+                let phong: Vector3f = ambient.add(diffuse).add(specular);
                 let color = 255 << 24 | (phong.z & 0xff) << 16 | (phong.y & 0xff) << 8 | (phong.x & 0xff);
                 this.drawTriangleDDA(v1, v2, v3, color);
             }
         }
     }
 
+    /**
+     * based on signed polygon area computation:
+     * http://www.faqs.org/faqs/graphics/algorithms-faq/
+     * https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order
+     * http://csharphelper.com/blog/2014/07/calculate-the-area-of-a-polygon-in-c/
+     * http://mathworld.wolfram.com/PolygonArea.html
+     * 
+     * @private
+     * @param {{ x: number, y: number, z: number }} v1 
+     * @param {{ x: number, y: number, z: number }} v2 
+     * @param {{ x: number, y: number, z: number }} v3 
+     * @returns {boolean} 
+     * @memberof Framebuffer
+    
+     * 
+     */
     private isTriangleCCW(v1: { x: number, y: number, z: number }, v2: { x: number, y: number, z: number }, v3: { x: number, y: number, z: number }): boolean {
-        let det: number = (v2.x - v1.x) * (v3.y - v1.y) - (v2.y - v1.y) * (v3.x - v1.x);
-        return (det < 0) == (this.cullMode == CullFace.BACK);
+        let det: number =  //(v2.x - v1.x) * (v3.y - v1.y) - (v2.y - v1.y) * (v3.x - v1.x);
+        v1.x * v2.y - v2.x * v1.y +
+        v2.x * v3.y - v3.x * v2.y +
+        v3.x * v1.y - v1.x * v3.y;
+        if (this.cullMode == CullFace.BACK) {
+            return det < 0.0;
+        } else {
+            return det > 0.0;
+        }
+    }
+
+    private isTriangleCCW2(v1: { x: number, y: number, z: number }, v2: { x: number, y: number, z: number }, v3: { x: number, y: number, z: number },
+        v4: { x: number, y: number, z: number }): boolean {
+        let det: number = //(v2.x - v1.x) * (v3.y - v1.y) - (v2.y - v1.y) * (v3.x - v1.x) - (v3.y - v2.y) * (v4.x - v2.x);
+        v1.x * v2.y - v2.x * v1.y +
+        v2.x * v3.y - v3.x * v2.y +
+        v3.x * v4.y - v4.x * v3.y +
+        v4.x * v1.y - v1.x * v4.y;
+        if (this.cullMode == CullFace.BACK) {
+            return det < 0.0;
+        } else {
+            return det > 0.0;
+        }
     }
 
     public scene10(elapsedTime: number): void {
@@ -2994,11 +3192,11 @@ export default class Framebuffer {
             1, 6, 2, 5, 6, 1
         ];
 
-        let points: Array<Vector3> = [
-            new Vector3(-1.0, -1.0, 1.0), new Vector3(1.0, -1.0, 1.0),
-            new Vector3(1.0, 1.0, 1.0), new Vector3(-1.0, 1.0, 1.0),
-            new Vector3(-1.0, -1.0, -1.0), new Vector3(1.0, -1.0, -1.0),
-            new Vector3(1.0, 1.0, -1.0), new Vector3(-1.0, 1.0, -1.0),
+        let points: Array<Vector3f> = [
+            new Vector3f(-1.0, -1.0, 1.0), new Vector3f(1.0, -1.0, 1.0),
+            new Vector3f(1.0, 1.0, 1.0), new Vector3f(-1.0, 1.0, 1.0),
+            new Vector3f(-1.0, -1.0, -1.0), new Vector3f(1.0, -1.0, -1.0),
+            new Vector3f(1.0, 1.0, -1.0), new Vector3f(-1.0, 1.0, -1.0),
         ];
 
         let colorAr: Array<number> = [
@@ -3012,12 +3210,12 @@ export default class Framebuffer {
 
         let scale = 3.2;
 
-        let modelViewMartrix = Matrix3.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3.constructYRotationMatrix(elapsedTime * 0.05));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3.constructXRotationMatrix(elapsedTime * 0.08));
+        let modelViewMartrix = Matrix3f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3f.constructYRotationMatrix(elapsedTime * 0.05));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3f.constructXRotationMatrix(elapsedTime * 0.08));
 
         for (let i = 0; i < 2; i++) {
 
-            let points2: Array<Vector3> = new Array<Vector3>();
+            let points2: Array<Vector3f> = new Array<Vector3f>();
             points.forEach(element => {
                 let transformed = modelViewMartrix.multiply(element);
 
@@ -3027,7 +3225,7 @@ export default class Framebuffer {
 
                 let xx = (320 * 0.5) + (x / (-z * 0.0078));
                 let yy = (200 * 0.5) - (y / (-z * 0.0078));
-                points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+                points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
             });
 
             for (let i = 0; i < index.length; i += 3) {
@@ -3054,17 +3252,17 @@ export default class Framebuffer {
 
         let index: Array<number> = data.faces;
 
-        let points: Array<Vector3> = new Array<Vector3>();
+        let points: Array<Vector3f> = new Array<Vector3f>();
         data.vertices.forEach(x => {
-            points.push(new Vector3(x.x, x.y, x.z));
+            points.push(new Vector3f(x.x, x.y, x.z));
         });
 
         let scale = 4.0;
 
-        let modelViewMartrix = Matrix3.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3.constructYRotationMatrix(elapsedTime * 0.05));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3.constructXRotationMatrix(elapsedTime * 0.05));
+        let modelViewMartrix = Matrix3f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3f.constructYRotationMatrix(elapsedTime * 0.05));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3f.constructXRotationMatrix(elapsedTime * 0.05));
 
-        let points2: Array<Vector3> = new Array<Vector3>();
+        let points2: Array<Vector3f> = new Array<Vector3f>();
         points.forEach(element => {
             let transformed = modelViewMartrix.multiply(element);
 
@@ -3074,7 +3272,7 @@ export default class Framebuffer {
 
             let xx = (320 * 0.5) + (x / (-z * 0.0078));
             let yy = (200 * 0.5) - (y / (-z * 0.0078));
-            points2.push(new Vector3(Math.round(xx), Math.round(yy), z));
+            points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
         });
 
         let color = 255 | 255 << 16 | 255 << 24;
@@ -3083,7 +3281,7 @@ export default class Framebuffer {
             // backface culling
             if (points2[index[i + 1] - 1].sub(points2[index[i] - 1]).cross(points2[index[i + 2] - 1].sub(points2[index[i] - 1])).z < 0) {
                 let normal = points[index[i + 1] - 1].sub(points[index[i] - 1]).cross(points[index[i + 2] - 1].sub(points[index[i] - 1])).mul(-1);
-                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3(1, -1, 0).normalize())) * 155), 255) + 100;
+                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3f(1, -1, 0).normalize())) * 155), 255) + 100;
 
                 let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
                 let col3 = 255 << 24 | 0;
@@ -3122,7 +3320,7 @@ export default class Framebuffer {
      * https://www.scratchapixel.com/lessons/3d-basic-rendering/computing-pixel-coordinates-of-3d-point/mathematics-computing-2d-coordinates-of-3d-points
      */
 
-    fillLongRightTriangle(v1: Vector3, v2: Vector3, v3: Vector3, color: number): void {
+    fillLongRightTriangle(v1: Vector3f, v2: Vector3f, v3: Vector3f, color: number): void {
 
         let yDistanceLeft = v2.y - v1.y;
         let yDistanceRight = v3.y - v1.y;
@@ -3350,7 +3548,7 @@ export default class Framebuffer {
         }
     }
 
-    fillLongLeftTriangle2(v1: Vector3, v2: Vector3, v3: Vector3, t1: Vector3, t2: Vector3, t3: Vector3, color: number): void {
+    fillLongLeftTriangle2(v1: Vector3f, v2: Vector3f, v3: Vector3f, t1: Vector3f, t2: Vector3f, t3: Vector3f, color: number): void {
 
         let yDistanceRight = v2.y - v1.y;
         let yDistanceLeft = v3.y - v1.y;
@@ -3501,7 +3699,7 @@ export default class Framebuffer {
     }
 
 
-    fillLongLeftTriangle(v1: Vector3, v2: Vector3, v3: Vector3, color: number): void {
+    fillLongLeftTriangle(v1: Vector3f, v2: Vector3f, v3: Vector3f, color: number): void {
 
         let yDistanceRight = v2.y - v1.y;
         let yDistanceLeft = v3.y - v1.y;
@@ -3581,7 +3779,7 @@ export default class Framebuffer {
         }
     }
 
-    fillBottomFlatTriangle(v1: Vector3, v2: Vector3, v3: Vector3, color: number): void {
+    fillBottomFlatTriangle(v1: Vector3f, v2: Vector3f, v3: Vector3f, color: number): void {
 
         let yDistance = v3.y - v1.y;
 
@@ -3631,7 +3829,7 @@ export default class Framebuffer {
     }
 
 
-    fillTopFlatTriangle(v1: Vector3, v2: Vector3, v3: Vector3, color: number): void {
+    fillTopFlatTriangle(v1: Vector3f, v2: Vector3f, v3: Vector3f, color: number): void {
         let yDistance = v3.y - v1.y;
         let slope1 = (v3.x - v1.x) / yDistance;
         let slope2 = (v3.x - v2.x) / yDistance;
@@ -3680,21 +3878,21 @@ export default class Framebuffer {
      * Internally DDA is used for edge-walking.
      * TODO: rotate around center and check for correctness!!
      */
-    public drawTriangleDDA(p1: Vector3, p2: Vector3, p3: Vector3, color: number): void {
+    public drawTriangleDDA(p1: Vector3f, p2: Vector3f, p3: Vector3f, color: number): void {
         if (p1.y > p3.y) {
-            let temp: Vector3 = p1;
+            let temp: Vector3f = p1;
             p1 = p3;
             p3 = temp;
         }
 
         if (p1.y > p2.y) {
-            let temp: Vector3 = p1;
+            let temp: Vector3f = p1;
             p1 = p2;
             p2 = temp;
         }
 
         if (p2.y > p3.y) {
-            let temp: Vector3 = p2;
+            let temp: Vector3f = p2;
             p2 = p3;
             p3 = temp;
         }
@@ -3703,14 +3901,14 @@ export default class Framebuffer {
             return;
         } else if (p2.y == p3.y) {
             if (p2.x > p3.x) {
-                let temp: Vector3 = p2;
+                let temp: Vector3f = p2;
                 p2 = p3;
                 p3 = temp;
             }
             this.fillBottomFlatTriangle(p1, p2, p3, color);
         } else if (p1.y == p2.y) {
             if (p1.x > p2.x) {
-                let temp: Vector3 = p1;
+                let temp: Vector3f = p1;
                 p1 = p2;
                 p2 = temp;
             }
@@ -3751,14 +3949,14 @@ export default class Framebuffer {
             return;
         } /*else if (p2.y == p3.y) {
             if (p2.x > p3.x) {
-                let temp: Vector3 = p2;
+                let temp: Vector3f = p2;
                 p2 = p3;
                 p3 = temp;
             }
             this.fillBottomFlatTriangle(p1, p2, p3, color);
         } else if (p1.y == p2.y) {
             if (p1.x > p2.x) {
-                let temp: Vector3 = p1;
+                let temp: Vector3f = p1;
                 p1 = p2;
                 p2 = temp;
             }
@@ -3771,7 +3969,7 @@ export default class Framebuffer {
                 let tex = p1.textureCoordinate;
                 let tex2 = p2.textureCoordinate;
                 let tex3 = p3.textureCoordinate;
-                this.fillLongLeftTriangle2(p1.position, p2.position, p3.position, new Vector3(tex.u, tex.v, 0), new Vector3(tex2.u, tex2.v, 0), new Vector3(tex3.u, tex3.v, 0), color);
+                this.fillLongLeftTriangle2(p1.position, p2.position, p3.position, new Vector3f(tex.u, tex.v, 0), new Vector3f(tex2.u, tex2.v, 0), new Vector3f(tex3.u, tex3.v, 0), color);
             }
         }
     }
@@ -3781,7 +3979,7 @@ export default class Framebuffer {
      * using fixed point math.
      * renders approx 1400 lines per millisecond on my machine
      */
-    public drawLineDDA(start: Vector3, end: Vector3, color: number): void {
+    public drawLineDDA(start: Vector3f, end: Vector3f, color: number): void {
         let xDistance: number = end.x - start.x;
         let yDistance: number = end.y - start.y;
 
@@ -3964,10 +4162,10 @@ export default class Framebuffer {
     }
 
     drawMetaballs() {
-        let balls: Array<Vector3> = [
-            new Vector3(Math.sin(Date.now() * 0.002) * 100 + 150,
+        let balls: Array<Vector3f> = [
+            new Vector3f(Math.sin(Date.now() * 0.002) * 100 + 150,
                 Math.cos(Date.now() * 0.003) * 100 + 100, 0),
-            new Vector3(Math.sin(Date.now() * 0.001) * 100 + 150,
+            new Vector3f(Math.sin(Date.now() * 0.001) * 100 + 150,
                 Math.cos(Date.now() * 0.002) * 100 + 100, 0)
         ]
 

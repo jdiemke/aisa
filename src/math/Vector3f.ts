@@ -1,4 +1,4 @@
-export default class Vector3f {
+export class Vector3f {
 
     public x: number;
     public y: number;

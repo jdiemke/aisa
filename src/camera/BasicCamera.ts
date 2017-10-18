@@ -1,5 +1,4 @@
-import Matrix4f from './Matrix4f';
-import Vector3f from './Vector3f';
+import { Matrix4f, Vector3f } from '../math';
 
 export class BasicCamera {
 

@@ -27,6 +27,7 @@ export class Canvas {
     private texture13: Texture;
     private texture14: Texture;
     private metal: Texture;
+    private myAudio: HTMLAudioElement;
     private spheremap: Texture;
     private boundRenderLoop: (time: number) => void;
 
@@ -47,8 +48,8 @@ export class Canvas {
 
         let aspect = Math.round(200 / 320 * 100);
 
-        this.canvas.style.width = `${320*2}px`;
-        this.canvas.style.height =`${200*2}px`;
+        this.canvas.style.width = `${320 * 2}px`;
+        this.canvas.style.height = `${200 * 2}px`;
 
         this.context = this.canvas.getContext('2d');
 
@@ -97,11 +98,14 @@ export class Canvas {
         }
         this.fpsCount++;
 
-        let time: number = (Date.now() - this.start) % 260000;
+        let time: number = (Date.now() - this.start);
+        time = time * 3;
+        time = time % 310000
+        // time = (this.myAudio.currentTime * 1000) % 260000 ;
 
-       
-        /*
-      //  time = time *6;
+
+        this.framebuffer.setCullFace(CullFace.FRONT);
+
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
             this.framebuffer.shadingTorus(time * 0.02);
@@ -197,7 +201,7 @@ export class Canvas {
                 { tex: this.texture11, scale: 2.3, alpha: 0.5 },
                 { tex: this.texture13, scale: 1.6, alpha: 0.25 }
             ]);
-        } else {
+        } else if (time < 250000) {
             this.framebuffer.setCullFace(CullFace.BACK);
             this.framebuffer.reproduceRazorScene(time * 0.003);
             this.framebuffer.drawLensFlare(time - 185000, [
@@ -205,19 +209,21 @@ export class Canvas {
                 { tex: this.texture11, scale: 2.3, alpha: 0.5 },
                 { tex: this.texture13, scale: 1.6, alpha: 0.25 }
             ]);
+        } else if (time < 260000) {
+            this.framebuffer.setCullFace(CullFace.BACK);
+            this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.led(time, this.texture14);
+            this.framebuffer.reflectionBunny(time * 0.002);
+        } else {
+            this.framebuffer.setCullFace(CullFace.BACK);
+            this.framebuffer.drawBlenderScene(time - 260000);
         }
-        */
 
-        this.framebuffer.setCullFace(CullFace.BACK);
+        // this.framebuffer.setCullFace(CullFace.BACK);
+        // this.framebuffer.drawBlenderScene(time);
 
         // http://doc.babylonjs.com/tutorials/discover_basic_elements
-        this.framebuffer.setBob(this.spheremap);
-        
-        this.framebuffer.clearCol(255 << 24 | 221 | 221 << 8| 228 <<16);
-        this.framebuffer.reflectionBunny(time * 0.002);
-        this.framebuffer.drawText(8, 200-24, '69630 REFLECTION MAPPED POLYGONS.', this.texture4);
         this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
-
         // implement modells with baked shaods and lighting :)
         // http://iquilezles.org/www/index.htm
         // http://iquilezles.org/www/articles/normals/normals.htm
@@ -290,8 +296,8 @@ export class Canvas {
         // this.framebuffer.enableBackfaceCulling();
         // this.framebuffer.setCullFace(FRONT);
 
-      
-   
+
+
         // TODO: text
         // 3d line clipping for fly by :)
         // different transitions:
@@ -360,12 +366,12 @@ export class Canvas {
             this.createTexture(require('./assets/bokeh.png'), true).then(texture => this.texture13 = texture),
             this.createTexture(require('./assets/led.png'), false).then(texture => this.texture14 = texture),
         ]).then(() => {
-            let myAudio = new Audio(require('./assets/3dGalax.mp3'));
-            myAudio.loop = true;
+            this.myAudio = new Audio(require('./assets/3dGalax.mp3'));
+            this.myAudio.loop = true;
             this.start = Date.now();
-            myAudio.play();
+            this.myAudio.play();
             this.renderLoop(0);
-        });  
+        });
     }
 
     public display(): void {

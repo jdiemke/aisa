@@ -14,10 +14,10 @@
  * @since 2017-05-07
  */
 
-import Vector3f from './Vector3f';
-import Vector4f from './Vector4f';
+import { Vector3f } from './Vector3f';
+import { Vector4f } from './Vector4f';
 
-export default class Matrix4f {
+export class Matrix4f {
 
     public m11: number;
     public m12: number;
@@ -103,24 +103,24 @@ export default class Matrix4f {
         // - only works when the MV matrix only contains
         // translation and rotation and scaling that is the same in all directions
 
-        let inverseTranslation =  Matrix4f.constructIdentityMatrix();
+        let inverseTranslation = Matrix4f.constructIdentityMatrix();
         inverseTranslation.m14 = -this.m14;
         inverseTranslation.m24 = -this.m24;
         inverseTranslation.m34 = -this.m34;
 
-        let scale = 1.0/ Math.sqrt(this.m11 * this.m11 + this.m12 * this.m12 + this.m13 * this.m13);
+        let scale = 1.0 / Math.sqrt(this.m11 * this.m11 + this.m12 * this.m12 + this.m13 * this.m13);
         let inverseRotation = Matrix4f.constructIdentityMatrix();
-        inverseRotation.m11 = this.m11* scale;
-        inverseRotation.m21 = this.m12* scale;
-        inverseRotation.m31 = this.m13* scale;
+        inverseRotation.m11 = this.m11 * scale;
+        inverseRotation.m21 = this.m12 * scale;
+        inverseRotation.m31 = this.m13 * scale;
 
-        inverseRotation.m12 = this.m21* scale;
-        inverseRotation.m22 = this.m22* scale;
-        inverseRotation.m32 = this.m23* scale;
+        inverseRotation.m12 = this.m21 * scale;
+        inverseRotation.m22 = this.m22 * scale;
+        inverseRotation.m32 = this.m23 * scale;
 
-        inverseRotation.m13 = this.m31* scale;
-        inverseRotation.m23 = this.m32* scale;
-        inverseRotation.m33 = this.m33* scale;
+        inverseRotation.m13 = this.m31 * scale;
+        inverseRotation.m23 = this.m32 * scale;
+        inverseRotation.m33 = this.m33 * scale;
 
         return inverseRotation.multiplyMatrix(inverseTranslation);
     }
@@ -264,7 +264,7 @@ export default class Matrix4f {
         return matrix;
     }
 
-    static constructScaleMatrix(sx: number, sy: number, sz: number): Matrix4f {
+    static constructScaleMatrix(sx: number, sy: number = sx, sz: number = sy): Matrix4f {
         let matrix: Matrix4f = new Matrix4f();
 
         matrix.m11 = sx;

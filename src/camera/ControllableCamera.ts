@@ -1,4 +1,4 @@
-import Vector3f from './Vector3f';
+import { Vector3f } from '../math';
 import { BasicCamera } from './BasicCamera';
 
 export class ControllableCamera extends BasicCamera {
