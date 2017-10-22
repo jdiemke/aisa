@@ -2,10 +2,12 @@ import { CameraKeyFrame } from './CameraKeyFrame';
 import { Vector3f } from '../math/Vector3f';
 import { Matrix4f } from '../math/Matrix4f';
 import { BasicCamera } from '../camera';
+import { Vector4f } from "../math/Vector4f";
 
 export class CameraAnimator {
 
     private keyFrames: Array<CameraKeyFrame>;
+    pos: Vector3f;
 
     // TODO:
     // - should we really loop or better restart??
@@ -45,6 +47,7 @@ export class CameraAnimator {
             CubicInterpolate(this.keyFrames[zero].rotation.y,this.keyFrames[first].rotation.y, this.keyFrames[second].rotation.y,this.keyFrames[third].rotation.y, fraction),
             CubicInterpolate(this.keyFrames[zero].rotation.z,this.keyFrames[first].rotation.z, this.keyFrames[second].rotation.z,this.keyFrames[third].rotation.z, fraction)
         );
+        this.pos = position;
 
         return new BasicCamera(position, look.x, look.y, look.z).getViewMatrix();
 

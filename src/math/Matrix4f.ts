@@ -125,6 +125,24 @@ export class Matrix4f {
         return inverseRotation.multiplyMatrix(inverseTranslation);
     }
 
+    public getInverseRotation(): Matrix4f {
+        let scale = 1.0 ;
+        let inverseRotation = Matrix4f.constructIdentityMatrix();
+        inverseRotation.m11 = this.m11 * scale;
+        inverseRotation.m21 = this.m12 * scale;
+        inverseRotation.m31 = this.m13 * scale;
+
+        inverseRotation.m12 = this.m21 * scale;
+        inverseRotation.m22 = this.m22 * scale;
+        inverseRotation.m32 = this.m23 * scale;
+
+        inverseRotation.m13 = this.m31 * scale;
+        inverseRotation.m23 = this.m32 * scale;
+        inverseRotation.m33 = this.m33 * scale;
+        
+        return inverseRotation;
+    }
+
     static constructShadowMatrix(): Matrix4f {
         let planePoint: Vector3f = new Vector3f(0, -1.5, 0);
         let planeNormal: Vector3f = new Vector3f(0, 1, 0);

@@ -1,3 +1,5 @@
+import { Vector4f } from './math/index';
+import { Sphere } from './math/Sphere';
 import { CullFace } from './CullFace';
 import Framebuffer from './Framebuffer';
 import Texture from './Texture';
@@ -216,9 +218,12 @@ export class Canvas {
             this.framebuffer.reflectionBunny(time * 0.002);
         } else {
             this.framebuffer.setCullFace(CullFace.BACK);
-            this.framebuffer.drawBlenderScene(time - 260000);
+            this.framebuffer.drawBlenderScene(time - 260000, this.texture4);
         }
 
+        this.framebuffer.setCullFace(CullFace.BACK);
+        this.framebuffer.drawBlenderScene(time,this.texture4);
+       
         // this.framebuffer.setCullFace(CullFace.BACK);
         // this.framebuffer.drawBlenderScene(time);
 

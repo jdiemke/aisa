@@ -2,20 +2,24 @@
  * Defines a plane as used for primitive clipping against the
  * view frustum. 
  */
-
-import { Vector3f } from './Vector3f';
+import { Vector4f } from './index';
 
 export default class Plane {
 
     private distance: number;
-    private normal: Vector3f;
+    private normal: Vector4f;
 
-    isInsideClipVolumen(point: Vector3f): boolean {
-        return this.normal.dot(point) > this.distance;
+    constructor(normal: Vector4f, distance: number) {
+        this.normal = normal;
+        this.distance = distance;
     }
 
-    isOutsideClipVolumen(point: Vector3f): boolean {
-        return this.normal.dot(point) < this.distance;
+    public getNormal(): Vector4f {
+        return this.normal;
+    }
+
+    public getDistance(): number {
+        return this.distance;
     }
 
 }

@@ -1,3 +1,8 @@
+
+import { FrustumCuller } from './clustered-culling/FrustumCuller';
+import { ComputationalGeometryUtils } from './math/Geometry';
+
+import { Sphere } from './math/Sphere';
 import { CameraKeyFrame } from './animation/CameraKeyFrame';
 import { CameraAnimator } from './animation/CameraAnimator';
 
@@ -34,7 +39,7 @@ import RandomNumberGenerator from './RandomNumberGenerator';
 declare function require(string): string;
 let json = require('./assets/f16.json');
 let bunnyJson = <any>require('./assets/bunny.json');
-let worldJson = <any>require('./assets/world.json');
+let worldJson = <any>require('./assets/world2.json');
 
 // TODO:
 // - use polymorphism in order to have different intersection methods
@@ -852,9 +857,9 @@ export default class Framebuffer {
         //t1.x = Math.round((320 / 2) + (t1.x / (-t1.z * 0.0078)));
         //t1.y = Math.round((200 / 2) - (t1.y / (-t1.z * 0.0078)));
         //return <Vector3f>t1;
-        return new Vector3f(Math.round((320 / 2) + (t1.x*1.5 / (-t1.z * 0.0078))),
+        return new Vector3f(Math.round((320 / 2) + (t1.x * 1.5 / (-t1.z * 0.0078))),
             // negation breaks winding and cull mode!!
-            Math.round((200 / 2) - (t1.y*1.5 / (-t1.z * 0.0078))), t1.z);
+            Math.round((200 / 2) - (t1.y * 1.5 / (-t1.z * 0.0078))), t1.z);
     }
 
     // https://math.stackexchange.com/questions/859454/maximum-number-of-vertices-in-intersection-of-triangle-with-box/
@@ -1687,6 +1692,66 @@ export default class Framebuffer {
         return obj;
     }
 
+    public drawBoundingSphere(sphere: Sphere, matrix: Matrix4f, color: number): void {
+
+
+        let points: Array<Vector4f> = [];
+
+        const STEPS = 25;
+        const STEPS2 = 27;
+
+        // TODO: move into setup method
+        for (let i = 0; i <= STEPS; i++) {
+            for (let r = 0; r < STEPS2; r++) {
+
+                let pos = this.sphereFunction2(-i * Math.PI / STEPS - Math.PI / 2, -r * 2 * Math.PI / STEPS2).mul(sphere.getRadius()).add(sphere.getCenter());
+                pos.w = 1;
+                
+                points.push(    pos); 
+            }
+        }
+
+        let index: Array<number> = [];
+
+        for (let j = 0; j < STEPS; j++) {
+            for (let i = 0; i < STEPS2; i++) {
+                index.push(((STEPS2 * j) + (1 + i) % STEPS2)); // 2
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 1
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); //3
+
+                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2)); //4
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); //3
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 5
+            }
+        }
+
+
+        let modelViewMartrix = matrix;
+
+        let points2: Array<Vector3f> = new Array<Vector3f>();
+
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiplyHom(points[p]);
+            points2.push(this.project(transformed));
+        }
+
+        for (let i = 0; i < index.length; i += 3) {
+
+            let v1 = points2[index[i]];
+            let v2 = points2[index[i + 1]];
+            let v3 = points2[index[i + 2]];
+
+            if (v1.z < 0 &&
+                v2.z < 0 &&
+                v3.z < 0 &&
+                this.isTriangleCCW(v1, v2, v3)) {
+                this.cohenSutherlandLineClipper(v1, v2, color);
+                this.cohenSutherlandLineClipper(v1, v3, color);
+                this.cohenSutherlandLineClipper(v3, v2, color);
+            }
+        }
+    }
+
     public reproduceRazorScene(elapsedTime: number): void {
         // camerea:
         // http://graphicsrunner.blogspot.de/search/label/Water
@@ -1705,7 +1770,12 @@ export default class Framebuffer {
         modelViewMartrix = camera.multiplyMatrix(
             modelViewMartrix);
 
-        this.drawObject(this.getDodecahedronMesh(), modelViewMartrix, 221, 96, 48);
+            let colLine = 255 << 24 | 255 << 8;
+
+        let model = this.getDodecahedronMesh();
+        this.drawObject(model, modelViewMartrix, 221, 96, 48);
+        let bv: Sphere = new ComputationalGeometryUtils().computeBoundingSphere(model.points);
+        this.drawBoundingSphere(bv, modelViewMartrix,colLine);
 
         let yDisplacement = -1.5;
         let distance = 2.8;
@@ -1715,23 +1785,31 @@ export default class Framebuffer {
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
 
 
-        this.drawObject(this.getIcosahedronMesh(), modelViewMartrix, 239, 187, 115);
+        model = this.getIcosahedronMesh();
+        this.drawObject(model, modelViewMartrix, 239, 187, 115);
+        bv = new ComputationalGeometryUtils().computeBoundingSphere(model.points);
+        this.drawBoundingSphere(bv, modelViewMartrix,colLine);
 
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale * 0.5, scale * 2, scale * 0.5);
         modelViewMartrix = Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 1, distance).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
 
-
-        this.drawObject(this.getCubeMesh(), modelViewMartrix, 144, 165, 116);
+        model = this.getCubeMesh()
+        this.drawObject(model, modelViewMartrix, 144, 165, 116);
+        bv = new ComputationalGeometryUtils().computeBoundingSphere(model.points);
+        this.drawBoundingSphere(bv, modelViewMartrix,colLine);
 
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
         modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
 
+        model = this.getCubeMesh();
+        this.drawObject(model, modelViewMartrix, 191, 166, 154);
+        bv = new ComputationalGeometryUtils().computeBoundingSphere(model.points);
+        this.drawBoundingSphere(bv, modelViewMartrix,colLine);
 
-        this.drawObject(this.getCubeMesh(), modelViewMartrix, 191, 166, 154);
 
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
@@ -1739,7 +1817,11 @@ export default class Framebuffer {
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
 
 
-        this.drawObject(this.getPyramidMesh(), modelViewMartrix, 125, 128, 146);
+        model = this.getPyramidMesh();
+        this.drawObject(model, modelViewMartrix, 125, 128, 146);
+        bv = new ComputationalGeometryUtils().computeBoundingSphere(model.points);
+        this.drawBoundingSphere(bv, modelViewMartrix,colLine);
+
         /*
                 scale = 10.0;
                 modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
@@ -1823,38 +1905,48 @@ export default class Framebuffer {
     }
 
     private getBlenderScene(): any {
-        let points: Array<Vector4f> = new Array<Vector4f>();
-        let normals: Array<Vector4f> = new Array<Vector4f>();
-        let index: Array<number> = new Array<number>();
+        let scene = [];
 
-        worldJson.vertices.forEach((v) => {
-            points.push(new Vector4f(v.x, v.y, v.z));
+        worldJson.forEach(object => {
+            let points: Array<Vector4f> = new Array<Vector4f>();
+            let normals: Array<Vector4f> = new Array<Vector4f>();
+            let index: Array<number> = new Array<number>();
+            let faces: Array<{ vertices: number[], normals: number[] }> = new Array();
+
+            object.vertices.forEach((v) => {
+                // some transformation in order for the vertices to be in worldspace
+                points.push(new Vector4f(v.x, v.y, v.z).mul(2).add(new Vector4f(0,-2.7,0,0)));
+               //points.push(new Vector4f(v.x, v.y, v.z).mul(0.5).add(new Vector4f(0,3.7,0,0)));
+            });
+
+            for (let x = 0; x < object.faces.length; x++) {
+                index.push(object.faces[x].vertices[0]);
+                index.push(object.faces[x].vertices[1]);
+                index.push(object.faces[x].vertices[2]);
+            }
+
+            object.normals.forEach((v) => {
+                normals.push(new Vector4f(v.x, v.y, v.z));
+            });
+
+            let sphere = new ComputationalGeometryUtils().computeBoundingSphere(points);
+            console.log(JSON.stringify(sphere));
+            sphere.getCenter().w = 1;
+            // Create class for objects
+            let obj = {
+                points: points,
+                normals: normals,
+                faces: object.faces,
+                points2: points.map(() => new Vector4f(0, 0, 0, 0)),
+                normals2: normals.map(() => new Vector4f(0, 0, 0, 0)),
+                boundingSphere: sphere,
+                name: object.name
+            };
+            scene.push(obj);
         });
+        console.log(scene);
 
-
-
-        for (let x = 0; x < worldJson.faces.length; x += 6) {
-            index.push(worldJson.faces[x]);
-            index.push(worldJson.faces[x + 1]);
-            index.push(worldJson.faces[x + 2]);
-        }
-
-        // todo use index array for normals to have less normal objects
-        for (let i = 0; i < index.length; i += 3) {
-            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
-            normals.push(normal.normalize()); // normalize?
-        }
-
-        // Create class for objects
-        let obj = {
-            points: points,
-            normals: normals,
-            index: index,
-            points2: points.map(() => new Vector4f(0, 0, 0, 0)),
-            normals2: normals.map(() => new Vector4f(0, 0, 0, 0))
-        };
-
-        return obj;
+        return scene;
     }
 
     /**
@@ -1872,7 +1964,7 @@ export default class Framebuffer {
     
      * 
      */
-    public drawBlenderScene(elapsedTime: number): void {
+    public drawBlenderScene(elapsedTime: number, texture: Texture): void {
         // camerea:
         // http://graphicsrunner.blogspot.de/search/label/Water
         this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
@@ -1893,17 +1985,64 @@ export default class Framebuffer {
 
         let cameraAnimator = new CameraAnimator();
         cameraAnimator.setKeyFrames(keyFrames);
-       
+
         let camera = cameraAnimator.getViewMatrix(elapsedTime);
 
-        let scale = 2.0;
-
         let modelViewMartrix: Matrix4f;
-        modelViewMartrix = camera.multiplyMatrix(Matrix4f.constructTranslationMatrix(0, -2.7, 0))
-            .multiplyMatrix(Matrix4f.constructScaleMatrix(scale));
+        modelViewMartrix = camera;
 
+        let pos = new Vector4f(-modelViewMartrix.m14, -modelViewMartrix.m24, -modelViewMartrix.m34);
+;
+
+        let count = 0;
+
+        let frustumCuller = new FrustumCuller();
+        frustumCuller.updateFrustum(modelViewMartrix, cameraAnimator.pos);
+        let i= 0;
+
+        this.blenderObj.filter(x =>
+           true).
+        forEach(element => {
            
-        this.drawObject2(this.blenderObj, modelViewMartrix, 144, 165, 116);
+            
+            if (frustumCuller.isPotentiallyVisible(element.boundingSphere)) {
+                this.drawObject2(element, modelViewMartrix, 144, 165, 116);
+                let colLine = 255 << 24 | 255 << 8;
+              //  this.drawBoundingSphere(element.boundingSphere, modelViewMartrix, colLine);
+                element.vis = true;
+                count++;
+            } else {
+                let colLine = 255 << 24 | 255;
+              //  this.drawBoundingSphere(element.boundingSphere, modelViewMartrix, colLine);
+                element.vis = false;
+            }
+          
+        });
+
+        this.blenderObj.
+        forEach(element => {
+            
+            i++;
+            let pos = modelViewMartrix.multiplyHom(element.boundingSphere.center);
+            this.drawText(8, 18+8+8+8+i*8,(element.vis ? 'VIS':'   ')+' '+element.name.toUpperCase(), texture);
+        });
+
+        new Vector4f(0.0, 0.0, 1.0, 0.0)
+
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(
+            0,0,Math.sin(Date.now()*0.0007)*25-50).multiplyMatrix
+        (Matrix4f.constructScaleMatrix(42,42,0.01));
+      //  this.drawObject(this.getCubeMesh(), modelViewMartrix, 144, 165, 116);
+
+        this.drawText(8, 18+8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
+        this.drawText(8, 18+8+8, 'FRUSTUM CULLING: ENABLED', texture);
+
+      //  this.drawText(8, 18+8+8+8, 'pos: ' +, texture);
+    }
+
+    // TODO: implement fursutm culling here!
+    private isVisible(element: any): boolean {
+        return true;
     }
 
     public shadingSphereClip(elapsedTime: number): void {
@@ -1938,59 +2077,59 @@ export default class Framebuffer {
     }
 
     private drawObject2(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false) {
-        
-                let normalMatrix = modelViewMartrix.computeNormalMatrix();
-        
-                for (let i = 0; i < obj.normals.length; i++) {
-                    normalMatrix.multiplyHomArr(obj.normals[i], obj.normals2[i]);
-                }
-        
-                for (let i = 0; i < obj.points.length; i++) {
-                    modelViewMartrix.multiplyHomArr(obj.points[i], obj.points2[i]);
-                }
-        
-                let lightDirection = new Vector4f(0.5, 0.5, 0.3, 0.0).normalize();
-        
-                for (let i = 0; i < obj.index.length; i += 3) {
-                    let v1 = obj.points2[obj.index[i]];
-                    let v2 = obj.points2[obj.index[i + 1]];
-                    let v3 = obj.points2[obj.index[i + 2]];
-        
-                    let normal = obj.normals2[i / 3];
-        
-                    // if (this.isTriangleCCW(v1,v2,v3)) {
-                    // 2d Backface culling is here not allowed because we did not project here!
-                    // FIXME: find a robust way to cull without cracks!
-                    if (this.isInFrontOfNearPlane(v1) && this.isInFrontOfNearPlane(v2) && this.isInFrontOfNearPlane(v3)) {
-                        let p1 = this.project(v1);
-                        let p2 = this.project(v2);
-                        let p3 = this.project(v3);
-        
-                        if (this.isTriangleCCW(p1, p2, p3)) {
-                            // TODO: do lighting only if triangle is visible
-                            let scalar = Math.min((Math.max(0.0, normal.dot(lightDirection))), 1.0);
-                            scalar = scalar * 0.85 + 0.15;
-                            let color = 255 << 24 | Math.min(scalar * blue, 255) << 16 | Math.min(scalar * green, 255) << 8 | Math.min(scalar * red, 255);
-                            if (noLighting) {
-                                color = 255 << 24 | red | green << 8 | blue << 16;
-                            }
-        
-                            this.clipConvexPolygon(new Array<Vector3f>(p1, p2, p3), color, true);
-                        }
-                    } else if (!this.isInFrontOfNearPlane(v1) && !this.isInFrontOfNearPlane(v2) && !this.isInFrontOfNearPlane(v3)) {
-                        continue;
-                    } else {
-                        let scalar = Math.min((Math.max(0.0, normal.dot(lightDirection))), 1.0);
-                        scalar = scalar * 0.85 + 0.15;
-                        let color = 255 << 24 | Math.min(scalar * blue, 255) << 16 | Math.min(scalar * green, 255) << 8 | Math.min(scalar * red, 255);
-                        if (noLighting) {
-                            color = 255 << 24 | red | green << 8 | blue << 16;
-                        }
-                        this.zClipTriangle(new Array<Vector3f>(v1, v2, v3), color);
+
+        let normalMatrix = modelViewMartrix.computeNormalMatrix();
+
+        for (let i = 0; i < obj.normals.length; i++) {
+            normalMatrix.multiplyHomArr(obj.normals[i], obj.normals2[i]);
+        }
+
+        for (let i = 0; i < obj.points.length; i++) {
+            modelViewMartrix.multiplyHomArr(obj.points[i], obj.points2[i]);
+        }
+
+        let lightDirection = new Vector4f(0.5, 0.5, 0.3, 0.0).normalize();
+
+        for (let i = 0; i < obj.faces.length; i++) {
+            let v1 = obj.points2[obj.faces[i].vertices[0]];
+            let v2 = obj.points2[obj.faces[i].vertices[1]];
+            let v3 = obj.points2[obj.faces[i].vertices[2]];
+
+            let normal = obj.normals2[obj.faces[i].normals[0]];
+
+            // if (this.isTriangleCCW(v1,v2,v3)) {
+            // 2d Backface culling is here not allowed because we did not project here!
+            // FIXME: find a robust way to cull without cracks!
+            if (this.isInFrontOfNearPlane(v1) && this.isInFrontOfNearPlane(v2) && this.isInFrontOfNearPlane(v3)) {
+                let p1 = this.project(v1);
+                let p2 = this.project(v2);
+                let p3 = this.project(v3);
+
+                if (this.isTriangleCCW(p1, p2, p3)) {
+                    // TODO: do lighting only if triangle is visible
+                    let scalar = Math.min((Math.max(0.0, normal.dot(lightDirection))), 1.0);
+                    scalar = scalar * 0.85 + 0.15;
+                    let color = 255 << 24 | Math.min(scalar * blue, 255) << 16 | Math.min(scalar * green, 255) << 8 | Math.min(scalar * red, 255);
+                    if (noLighting) {
+                        color = 255 << 24 | red | green << 8 | blue << 16;
                     }
-        
+
+                    this.clipConvexPolygon(new Array<Vector3f>(p1, p2, p3), color, true);
                 }
+            } else if (!this.isInFrontOfNearPlane(v1) && !this.isInFrontOfNearPlane(v2) && !this.isInFrontOfNearPlane(v3)) {
+                continue;
+            } else {
+                let scalar = Math.min((Math.max(0.0, normal.dot(lightDirection))), 1.0);
+                scalar = scalar * 0.85 + 0.15;
+                let color = 255 << 24 | Math.min(scalar * blue, 255) << 16 | Math.min(scalar * green, 255) << 8 | Math.min(scalar * red, 255);
+                if (noLighting) {
+                    color = 255 << 24 | red | green << 8 | blue << 16;
+                }
+                this.zClipTriangle(new Array<Vector3f>(v1, v2, v3), color);
             }
+
+        }
+    }
 
     private drawObject(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false) {
 
@@ -2086,17 +2225,17 @@ export default class Framebuffer {
         let projected: Vector3f[] = output.map<Vector3f>((v) => {
             return this.project(v);
         })
-        
+
         if (output.length === 3 && !this.isTriangleCCW(projected[0], projected[1], projected[2])) {
             return;
-        } 
-        
+        }
+
         if (output.length === 4 && !this.isTriangleCCW2(projected[0], projected[1], projected[2], projected[3])) {
             return;
         }
         //if (this.isTriangleCCW(projected[0], projected[1], projected[2])) {
-            this.clipConvexPolygon(projected, color, true);
-       // }
+        this.clipConvexPolygon(projected, color, true);
+        // }
     }
 
 
@@ -3153,9 +3292,9 @@ export default class Framebuffer {
      */
     private isTriangleCCW(v1: { x: number, y: number, z: number }, v2: { x: number, y: number, z: number }, v3: { x: number, y: number, z: number }): boolean {
         let det: number =  //(v2.x - v1.x) * (v3.y - v1.y) - (v2.y - v1.y) * (v3.x - v1.x);
-        v1.x * v2.y - v2.x * v1.y +
-        v2.x * v3.y - v3.x * v2.y +
-        v3.x * v1.y - v1.x * v3.y;
+            v1.x * v2.y - v2.x * v1.y +
+            v2.x * v3.y - v3.x * v2.y +
+            v3.x * v1.y - v1.x * v3.y;
         if (this.cullMode == CullFace.BACK) {
             return det < 0.0;
         } else {
@@ -3166,10 +3305,10 @@ export default class Framebuffer {
     private isTriangleCCW2(v1: { x: number, y: number, z: number }, v2: { x: number, y: number, z: number }, v3: { x: number, y: number, z: number },
         v4: { x: number, y: number, z: number }): boolean {
         let det: number = //(v2.x - v1.x) * (v3.y - v1.y) - (v2.y - v1.y) * (v3.x - v1.x) - (v3.y - v2.y) * (v4.x - v2.x);
-        v1.x * v2.y - v2.x * v1.y +
-        v2.x * v3.y - v3.x * v2.y +
-        v3.x * v4.y - v4.x * v3.y +
-        v4.x * v1.y - v1.x * v4.y;
+            v1.x * v2.y - v2.x * v1.y +
+            v2.x * v3.y - v3.x * v2.y +
+            v3.x * v4.y - v4.x * v3.y +
+            v4.x * v1.y - v1.x * v4.y;
         if (this.cullMode == CullFace.BACK) {
             return det < 0.0;
         } else {
