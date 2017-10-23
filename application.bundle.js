@@ -2182,29 +2182,25 @@ class Framebuffer {
         ];
         let cameraAnimator = new CameraAnimator_1.CameraAnimator();
         cameraAnimator.setKeyFrames(keyFrames);
-        let camera = cameraAnimator.getViewMatrix(elapsedTime);
-        let modelViewMartrix;
-        modelViewMartrix = camera;
+        let modelViewMartrix = cameraAnimator.getViewMatrix(elapsedTime);
         let pos = new math_1.Vector4f(-modelViewMartrix.m14, -modelViewMartrix.m24, -modelViewMartrix.m34);
-        ;
         let count = 0;
         let frustumCuller = new FrustumCuller_1.FrustumCuller();
         frustumCuller.updateFrustum(modelViewMartrix, cameraAnimator.pos);
         let i = 0;
-        this.blenderObj.
-            forEach(element => {
-            if (frustumCuller.isPotentiallyVisible(element.boundingSphere)) {
-                this.drawObject2(element, modelViewMartrix, 144, 165, 116);
+        for (let j = 0; j < this.blenderObj.length; j++) {
+            if (frustumCuller.isPotentiallyVisible(this.blenderObj[j].boundingSphere)) {
+                this.drawObject2(this.blenderObj[j], modelViewMartrix, 144, 165, 116);
                 // let colLine = 255 << 24 | 255 << 8;
                 // this.drawBoundingSphere(element.boundingSphere, modelViewMartrix, colLine);
                 // element.vis = true;
                 count++;
             } /*else {
-                let colLine = 255 << 24 | 255;
-                this.drawBoundingSphere(element.boundingSphere, modelViewMartrix, colLine);
-                element.vis = false;
-            }*/
-        });
+                    let colLine = 255 << 24 | 255;
+                    this.drawBoundingSphere(element.boundingSphere, modelViewMartrix, colLine);
+                    element.vis = false;
+               // }*/
+        }
         /*
                 this.blenderObj.
                     forEach(element => {
@@ -4557,11 +4553,7 @@ class Sphere {
      * @memberof Sphere
      */
     isInsidePositiveHalfSpace(plane) {
-        console.log('abstand: ' + (plane.getNormal().dot(this.center)));
-        console.log('abstand2:' + (plane.getNormal().dot(this.center) - plane.getDistance()));
-        console.log('radius: ' + this.radius);
-        let dist = (plane.getNormal().dot(this.center) - plane.getDistance()) > -this.radius;
-        return dist;
+        return plane.getNormal().dot(this.center) - plane.getDistance() > -this.radius;
     }
     getTran(mat) {
         return mat.multiplyHom(this.center);
