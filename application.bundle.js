@@ -341,85 +341,71 @@ class Canvas {
         time = time * 3;
         time = time % 310000;
         // time = (this.myAudio.currentTime * 1000) % 260000 ;
-        this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
+        /*
+        this.framebuffer.setCullFace(CullFace.FRONT);
+
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
             this.framebuffer.shadingTorus(time * 0.02);
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
             //this.framebuffer.drawText(8, 192 - 18, '3D TORUS', this.texture4);
-        }
-        else if (time < 15000) {
+        } else if (time < 15000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.draw(this.texture, time);
             //this.framebuffer.drawText(8, 192 - 18, 'TEXTURED TWISTER', this.texture4);
-        }
-        else if (time < 25000) {
+        } else if (time < 25000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.drawLens(this.texture5, this.texture6, time);
             //this.framebuffer.drawText(8, 192 - 18, '2D LENS EFFECT', this.texture4);
-        }
-        else if (time < 30000) {
+        } else if (time < 30000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.shadingDemo(time * 0.02);
             // this.framebuffer.drawText(8, 192 - 18, 'SHADED 3D CUBE', this.texture4);
-        }
-        else if (time < 35000) {
+        } else if (time < 35000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.shadingSphere(time * 0.01);
             //this.framebuffer.drawText(8, 192 - 18, 'DISTORTED 3D SPHERE', this.texture4);
-        }
-        else if (time < 40000) {
+        } else if (time < 40000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.wireFrameSphereClipping(time * 0.01);
             //this.framebuffer.drawText(8, 192 - 18, 'WIREFRAME SPHERE', this.texture4);
-        }
-        else if (time < 45000) {
+        } else if (time < 45000) {
             this.framebuffer.drawVoxelLandscape2(this.texture3, time);
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
             //this.framebuffer.drawText(8, 192 - 18, 'VOXEL LANDSCAPE', this.texture4);
-        }
-        else if (time < 50000) {
+        } else if (time < 50000) {
             this.framebuffer.drawOldSchoolPlasma(time);
             //this.framebuffer.drawText(8, 192 - 18, 'OLD SCHOOL PLASMA', this.texture4);
-        }
-        else if (time < 55000) {
+        } else if (time < 55000) {
             // https://www.youtube.com/watch?v=ccYLb7cLB1I&t=773s
             this.framebuffer.drawMetaballs();
             // this.framebuffer.drawText(8, 192 - 18, '2D METABALLS', this.texture4);
-        }
-        else if (time < 60000) {
+        } else if (time < 60000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.shadingTorus2(time * 0.02);
             // this.framebuffer.drawText(8, 192 - 18, 'POLYGON CLIPPING', this.texture4);
-        }
-        else if (time < 70000) {
+        } else if (time < 70000) {
             this.framebuffer.floodFill(this.texture5, time - 60000);
             // this.framebuffer.drawText(8, 192 - 18, 'FLOOD FILL', this.texture4);
-        }
-        else if (time < 80000) {
+        } else if (time < 80000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.drawBobs(this.texture7, time);
             // this.framebuffer.drawText(8, 192 - 18, 'UNLIMITED BOBS', this.texture4);
-        }
-        else if (time < 95000) {
+        } else if (time < 95000) {
             this.framebuffer.blockFace(this.texture5, time, 80000);
             // this.framebuffer.drawText(8, 192 - 18, 'MOSAIC FADE IN', this.texture4);
-        }
-        else if (time < 140000) {
+        } else if (time < 140000) {
             this.framebuffer.scrollingBackground(this.texture8, time - 95000);
             // this.framebuffer.drawText(8, 192 - 18, 'SCROLLING BACKGROUND', this.texture4);
-        }
-        else if (time < 160000) {
+        } else if (time < 160000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture9.texture);
             this.framebuffer.cinematicScroller(this.texture4, time - 140000);
             // this.framebuffer.drawText(8, 192 - 18, 'CINEMATIC SCROLLER', this.texture4);
-        }
-        else if (time < 185000) {
+        } else if (time < 185000) {
             this.framebuffer.shadingSphereClip((time - 170000) * 0.003);
             this.framebuffer.cinematicScroller(this.texture4, time - 160000);
             //   this.framebuffer.drawText(8, 192 - 18, 'TRIANGLE NEAR PLANE CLIPPING', this.texture4);
-        }
-        else if (time < 200000) {
+        } else if (time < 200000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture12.texture);
             this.framebuffer.shadingTorus(time * 0.02);
             this.framebuffer.drawLensFlare(time - 185000, [
@@ -427,17 +413,14 @@ class Canvas {
                 { tex: this.texture11, scale: 2.3, alpha: 0.5 },
                 { tex: this.texture13, scale: 1.6, alpha: 0.25 }
             ]);
-        }
-        else if (time < 210000) {
+        } else if (time < 210000) {
             this.framebuffer.blur();
             this.framebuffer.shadingTorus3(time * 0.015);
             this.framebuffer.drawTexture(32, 70, this.texture2, 1.0);
-        }
-        else if (time < 215000) {
+        } else if (time < 215000) {
             this.framebuffer.led(time, this.texture14);
             this.framebuffer.drawTexture(32, 64, this.texture2, 1.0);
-        }
-        else if (time < 230000) {
+        } else if (time < 230000) {
             this.framebuffer.setBob(this.metal);
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.shadingTorus4(time * 0.002);
@@ -447,8 +430,7 @@ class Canvas {
                 { tex: this.texture13, scale: 1.6, alpha: 0.25 }
             ]);
             this.framebuffer.cinematicScroller(this.texture4, time);
-        }
-        else if (time < 240000) {
+        } else if (time < 240000) {
             this.framebuffer.setBob(this.spheremap);
             this.framebuffer.clear();
             this.framebuffer.shadingTorusENvironment(time * 0.006);
@@ -457,26 +439,24 @@ class Canvas {
                 { tex: this.texture11, scale: 2.3, alpha: 0.5 },
                 { tex: this.texture13, scale: 1.6, alpha: 0.25 }
             ]);
-        }
-        else if (time < 250000) {
-            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+        } else if (time < 250000) {
+            this.framebuffer.setCullFace(CullFace.BACK);
             this.framebuffer.reproduceRazorScene(time * 0.003);
             this.framebuffer.drawLensFlare(time - 185000, [
                 { tex: this.texture10, scale: 0.0, alpha: 1.0 },
                 { tex: this.texture11, scale: 2.3, alpha: 0.5 },
                 { tex: this.texture13, scale: 1.6, alpha: 0.25 }
             ]);
-        }
-        else if (time < 260000) {
-            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+        } else if (time < 260000) {
+            this.framebuffer.setCullFace(CullFace.BACK);
             this.framebuffer.setBob(this.spheremap);
             this.framebuffer.led(time, this.texture14);
             this.framebuffer.reflectionBunny(time * 0.002);
-        }
-        else {
-            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+        } else {
+            this.framebuffer.setCullFace(CullFace.BACK);
             this.framebuffer.drawBlenderScene(time - 260000, this.texture4);
         }
+        */
         this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
         this.framebuffer.drawBlenderScene(time * 0.9, this.texture4);
         // this.framebuffer.setCullFace(CullFace.BACK);
