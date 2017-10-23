@@ -2,8 +2,6 @@
 AISA is a Software 3D Engine written in TypeScript 2.5.2
 ### Demo
 https://jdiemke.github.io/AISA/
-
-![demo screenshot](https://raw.githubusercontent.com/jdiemke/AISA/master/images/reflection.gif "Demo")
 ### How to get
 Type the following command into your shell:
 ```bash
@@ -27,7 +25,11 @@ Type the following command into your shell:
 ```
 And open `http://localhost:8080/webpack-dev-server/` in your favourite web browser.
 ### Features
-- Backface Culling
+- Speed-Up Techniques
+    - Backface Culling
+    - View Frustum Culling
+    - Bounding Volumes
+        - Sphere
 - Flat Shading
 - Shadows
     - Projection Shadows
@@ -40,17 +42,27 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
     - Controllable First Person Camera
     - Key Frame Animated Camera
 ### Backlog
+- Bounding Volume Hierachies
+- Bounding Volumes
+    - Axis-Aligned Bounding Boxes (AABB)
+    - Oriented Bounding Boxes (OBB)
+- Quaternions
+    - Spherical Linear Interpolation (SLERP)
+- Perspective Projection Matrix
 - Light Sources
     - Directional
     - Point Light
     - Spot Light
     - Ambient / Diffuse / Specular Color Components
+- Transparency
+- Fog
 - Particles with Collision Detection
+- Billboarding
+- Planar Reflections
 - Skybox
 - Gouraud Shading
 - Multitexturing
 - MDL / MD2 Modells
-- View Frustum Culling & Space Partitioning
 - 3D Portal Engine
 - Material
 - Shadow Mapping

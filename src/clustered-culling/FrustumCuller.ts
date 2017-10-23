@@ -22,18 +22,14 @@ export class FrustumCuller {
         let bottom = modelViewMatrix.getInverseRotation().multiplyHom(new Vector4f(0, -Math.cos(Math.PI * 2 / 360 * fov2), -Math.sin(Math.PI * 2 / 360 * fov2), 0.0));
         let top = modelViewMatrix.getInverseRotation().multiplyHom(new Vector4f(0, Math.cos(Math.PI * 2 / 360 * -fov2), Math.sin(-Math.PI * 2 / 360 * fov2), 0.0));
 
-
-
         let pos = new Vector4f(-position.x, -position.y, -position.z);
 
-        this.planes.push(new Plane(nearPlaneNormal, -nearPlaneNormal.dot(pos)+1.7 ));
-       // this.planes.push(new Plane(farPlaneNormal, farPlaneNormal.dot(pos) - 71));
+        this.planes.push(new Plane(nearPlaneNormal, -nearPlaneNormal.dot(pos) + 1.7));
+        // this.planes.push(new Plane(farPlaneNormal, farPlaneNormal.dot(pos) - 71));
         this.planes.push(new Plane(left, -left.dot(pos)));
-        this.planes.push(new Plane(right,- right.dot(pos)));
-
-
+        this.planes.push(new Plane(right, - right.dot(pos)));
         this.planes.push(new Plane(bottom, -bottom.dot(pos)));
-       this.planes.push(new Plane(top, -top.dot(pos)));
+        this.planes.push(new Plane(top, -top.dot(pos)));
     }
 
     public isPotentiallyVisible(boudingVolume: Sphere): boolean {
@@ -42,7 +38,6 @@ export class FrustumCuller {
                 return false;
             }
         }
-
         return true;
     }
 

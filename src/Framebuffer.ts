@@ -1698,13 +1698,13 @@ export default class Framebuffer {
         let points: Array<Vector4f> = [];
 
         const STEPS = 10;
-        const STEPS2 =10;
+        const STEPS2 = 10;
 
         // TODO: move into setup method
         for (let i = 0; i <= STEPS; i++) {
             for (let r = 0; r < STEPS2; r++) {
 
-                let pos = this.sphereFunction2(-i * Math.PI / STEPS - Math.PI / 2, -r * 2 * Math.PI / STEPS2).mul(sphere.getRadius()+0.01).add(sphere.getCenter());
+                let pos = this.sphereFunction2(-i * Math.PI / STEPS - Math.PI / 2, -r * 2 * Math.PI / STEPS2).mul(sphere.getRadius() + 0.01).add(sphere.getCenter());
                 pos.w = 1;
 
                 points.push(pos);
@@ -1982,13 +1982,10 @@ export default class Framebuffer {
         let cameraAnimator = new CameraAnimator();
         cameraAnimator.setKeyFrames(keyFrames);
 
-        let camera = cameraAnimator.getViewMatrix(elapsedTime);
+        let modelViewMartrix: Matrix4f = cameraAnimator.getViewMatrix(elapsedTime);
 
-        let modelViewMartrix: Matrix4f;
-        modelViewMartrix = camera;
 
         let pos = new Vector4f(-modelViewMartrix.m14, -modelViewMartrix.m24, -modelViewMartrix.m34);
-        ;
 
         let count = 0;
 
@@ -1996,41 +1993,35 @@ export default class Framebuffer {
         frustumCuller.updateFrustum(modelViewMartrix, cameraAnimator.pos);
         let i = 0;
 
-        this.blenderObj.
-            forEach(element => {
+        for (let j = 0; j < this.blenderObj.length; j++) {
 
 
-                if (frustumCuller.isPotentiallyVisible(element.boundingSphere)) {
-                    this.drawObject2(element, modelViewMartrix, 144, 165, 116);
-                    let colLine = 255 << 24 | 255 << 8;
-                    this.drawBoundingSphere(element.boundingSphere, modelViewMartrix, colLine);
-                    element.vis = true;
-                    count++;
-                } else {
+
+            if (frustumCuller.isPotentiallyVisible(this.blenderObj[j].boundingSphere)) {
+                this.drawObject2(this.blenderObj[j], modelViewMartrix, 144, 165, 116);
+                // let colLine = 255 << 24 | 255 << 8;
+                // this.drawBoundingSphere(element.boundingSphere, modelViewMartrix, colLine);
+                // element.vis = true;
+                count++;
+            } /*else {
                     let colLine = 255 << 24 | 255;
                     this.drawBoundingSphere(element.boundingSphere, modelViewMartrix, colLine);
                     element.vis = false;
-                }
+               // }*/
 
-            });
-
-        this.blenderObj.
-            forEach(element => {
-
-                i++;
-                let pos = modelViewMartrix.multiplyHom(element.boundingSphere.center);
-                this.drawText(8, 18 + 8 + 8 + 8 + i * 8, (element.vis ? '+' : ' ') + ' ' + element.name.toUpperCase(), texture);
-            });
-
-        new Vector4f(0.0, 0.0, 1.0, 0.0)
-
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(
-            0, 0, Math.sin(Date.now() * 0.0007) * 25 - 50).multiplyMatrix
-            (Matrix4f.constructScaleMatrix(42, 42, 0.01));
-        //  this.drawObject(this.getCubeMesh(), modelViewMartrix, 144, 165, 116);
-
-        this.drawText(8, 18 + 8+8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
-        this.drawText(8, 18  + 8, 'FRUSTUM CULLING: ENABLED', texture);
+        }
+        /*
+                this.blenderObj.
+                    forEach(element => {
+        
+                        i++;
+                        let pos = modelViewMartrix.multiplyHom(element.boundingSphere.center);
+                        this.drawText(8, 18 + 8 + 8 + 8 + i * 8, (element.vis ? '+' : ' ') + ' ' + element.name.toUpperCase(), texture);
+                    });
+        
+        */
+        this.drawText(8, 18 + 8 + 8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
+        //this.drawText(8, 18  + 8, 'FRUSTUM CULLING: ENABLED', texture);
 
         //  this.drawText(8, 18+8+8+8, 'pos: ' +, texture);
     }

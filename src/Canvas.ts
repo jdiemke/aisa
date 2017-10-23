@@ -105,7 +105,7 @@ export class Canvas {
         time = time % 310000
         // time = (this.myAudio.currentTime * 1000) % 260000 ;
 
-
+        /*
         this.framebuffer.setCullFace(CullFace.FRONT);
 
         if (time < 5000) {
@@ -220,7 +220,7 @@ export class Canvas {
             this.framebuffer.setCullFace(CullFace.BACK);
             this.framebuffer.drawBlenderScene(time - 260000, this.texture4);
         }
-
+        */
         this.framebuffer.setCullFace(CullFace.BACK);
         this.framebuffer.drawBlenderScene(time*0.9,this.texture4);
        
