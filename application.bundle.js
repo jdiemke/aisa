@@ -2195,28 +2195,28 @@ class Framebuffer {
             forEach(element => {
             if (frustumCuller.isPotentiallyVisible(element.boundingSphere)) {
                 this.drawObject2(element, modelViewMartrix, 144, 165, 116);
-                let colLine = 255 << 24 | 255 << 8;
-                this.drawBoundingSphere(element.boundingSphere, modelViewMartrix, colLine);
-                element.vis = true;
+                // let colLine = 255 << 24 | 255 << 8;
+                // this.drawBoundingSphere(element.boundingSphere, modelViewMartrix, colLine);
+                // element.vis = true;
                 count++;
-            }
-            else {
+            } /*else {
                 let colLine = 255 << 24 | 255;
                 this.drawBoundingSphere(element.boundingSphere, modelViewMartrix, colLine);
                 element.vis = false;
-            }
+            }*/
         });
-        this.blenderObj.
-            forEach(element => {
-            i++;
-            let pos = modelViewMartrix.multiplyHom(element.boundingSphere.center);
-            this.drawText(8, 18 + 8 + 8 + 8 + i * 8, (element.vis ? '+' : ' ') + ' ' + element.name.toUpperCase(), texture);
-        });
-        new math_1.Vector4f(0.0, 0.0, 1.0, 0.0);
-        modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(0, 0, Math.sin(Date.now() * 0.0007) * 25 - 50).multiplyMatrix(math_1.Matrix4f.constructScaleMatrix(42, 42, 0.01));
-        //  this.drawObject(this.getCubeMesh(), modelViewMartrix, 144, 165, 116);
+        /*
+                this.blenderObj.
+                    forEach(element => {
+        
+                        i++;
+                        let pos = modelViewMartrix.multiplyHom(element.boundingSphere.center);
+                        this.drawText(8, 18 + 8 + 8 + 8 + i * 8, (element.vis ? '+' : ' ') + ' ' + element.name.toUpperCase(), texture);
+                    });
+        
+        */
         this.drawText(8, 18 + 8 + 8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
-        this.drawText(8, 18 + 8, 'FRUSTUM CULLING: ENABLED', texture);
+        //this.drawText(8, 18  + 8, 'FRUSTUM CULLING: ENABLED', texture);
         //  this.drawText(8, 18+8+8+8, 'pos: ' +, texture);
     }
     // TODO: implement fursutm culling here!
