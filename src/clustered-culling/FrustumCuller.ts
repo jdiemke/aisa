@@ -15,8 +15,8 @@ export class FrustumCuller {
         this.mat = modelViewMatrix;
         let nearPlaneNormal = modelViewMatrix.getInverseRotation().multiplyHom(new Vector4f(0.0, 0.0, -1.0, 0.0));
         let farPlaneNormal = modelViewMatrix.getInverseRotation().multiplyHom(new Vector4f(0.0, 0.0, 1.0, 0.0));
-        let fov = 108;
-        let fov2 = 88;
+        let fov = 39;
+        let fov2 = 28;
         let right = modelViewMatrix.getInverseRotation().multiplyHom(new Vector4f(-Math.cos(Math.PI * 2 / 360 * fov), 0, -Math.sin(Math.PI * 2 / 360 * fov), 0.0));
         let left = modelViewMatrix.getInverseRotation().multiplyHom(new Vector4f(Math.cos(Math.PI * 2 / 360 * -fov), 0, Math.sin(-Math.PI * 2 / 360 * fov), 0.0));
         let bottom = modelViewMatrix.getInverseRotation().multiplyHom(new Vector4f(0, -Math.cos(Math.PI * 2 / 360 * fov2), -Math.sin(Math.PI * 2 / 360 * fov2), 0.0));
@@ -26,14 +26,14 @@ export class FrustumCuller {
 
         let pos = new Vector4f(-position.x, -position.y, -position.z);
 
-        this.planes.push(new Plane(nearPlaneNormal, -nearPlaneNormal.dot(pos) ));
-        this.planes.push(new Plane(farPlaneNormal, -farPlaneNormal.dot(pos) - 71));
+        this.planes.push(new Plane(nearPlaneNormal, -nearPlaneNormal.dot(pos)+1.7 ));
+       // this.planes.push(new Plane(farPlaneNormal, farPlaneNormal.dot(pos) - 71));
         this.planes.push(new Plane(left, -left.dot(pos)));
-        this.planes.push(new Plane(right, -right.dot(pos)));
+        this.planes.push(new Plane(right,- right.dot(pos)));
 
 
         this.planes.push(new Plane(bottom, -bottom.dot(pos)));
-        this.planes.push(new Plane(top, -top.dot(pos)));
+       this.planes.push(new Plane(top, -top.dot(pos)));
     }
 
     public isPotentiallyVisible(boudingVolume: Sphere): boolean {

@@ -222,7 +222,7 @@ export class Canvas {
         }
 
         this.framebuffer.setCullFace(CullFace.BACK);
-        this.framebuffer.drawBlenderScene(time,this.texture4);
+        this.framebuffer.drawBlenderScene(time*0.9,this.texture4);
        
         // this.framebuffer.setCullFace(CullFace.BACK);
         // this.framebuffer.drawBlenderScene(time);

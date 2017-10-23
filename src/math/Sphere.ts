@@ -14,11 +14,17 @@ export class Sphere implements BoundingVolume {
         this.radius = radius;
     }
 
+    /**
+     * 
+     * @param {Plane} plane 
+     * @returns {boolean} 
+     * @memberof Sphere
+     */
     public isInsidePositiveHalfSpace(plane: Plane): boolean {
         console.log('abstand: '+(plane.getNormal().dot(this.center)));
         console.log('abstand2:'+ (plane.getNormal().dot(this.center) - plane.getDistance()) );
         console.log('radius: '+this.radius);
-        let dist = (plane.getNormal().dot(this.center) - plane.getDistance()) > this.radius;
+        let dist = (plane.getNormal().dot(this.center) - plane.getDistance()) >- this.radius;
         return dist;
     }
 

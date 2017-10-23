@@ -1697,17 +1697,17 @@ export default class Framebuffer {
 
         let points: Array<Vector4f> = [];
 
-        const STEPS = 25;
-        const STEPS2 = 27;
+        const STEPS = 10;
+        const STEPS2 =10;
 
         // TODO: move into setup method
         for (let i = 0; i <= STEPS; i++) {
             for (let r = 0; r < STEPS2; r++) {
 
-                let pos = this.sphereFunction2(-i * Math.PI / STEPS - Math.PI / 2, -r * 2 * Math.PI / STEPS2).mul(sphere.getRadius()).add(sphere.getCenter());
+                let pos = this.sphereFunction2(-i * Math.PI / STEPS - Math.PI / 2, -r * 2 * Math.PI / STEPS2).mul(sphere.getRadius()+0.01).add(sphere.getCenter());
                 pos.w = 1;
-                
-                points.push(    pos); 
+
+                points.push(pos);
             }
         }
 
@@ -1732,7 +1732,7 @@ export default class Framebuffer {
 
         for (let p = 0; p < points.length; p++) {
             let transformed = modelViewMartrix.multiplyHom(points[p]);
-            points2.push(this.project(transformed));
+            points2.push(new Vector3f(transformed.x, transformed.y, transformed.z));
         }
 
         for (let i = 0; i < index.length; i += 3) {
@@ -1741,14 +1741,10 @@ export default class Framebuffer {
             let v2 = points2[index[i + 1]];
             let v3 = points2[index[i + 2]];
 
-            if (v1.z < 0 &&
-                v2.z < 0 &&
-                v3.z < 0 &&
-                this.isTriangleCCW(v1, v2, v3)) {
-                this.cohenSutherlandLineClipper(v1, v2, color);
-                this.cohenSutherlandLineClipper(v1, v3, color);
-                this.cohenSutherlandLineClipper(v3, v2, color);
-            }
+            this.nearPlaneClipping(v1, v2, color);
+            this.nearPlaneClipping(v1, v3, color);
+            this.nearPlaneClipping(v3, v2, color);
+
         }
     }
 
@@ -1770,12 +1766,12 @@ export default class Framebuffer {
         modelViewMartrix = camera.multiplyMatrix(
             modelViewMartrix);
 
-            let colLine = 255 << 24 | 255 << 8;
+        let colLine = 255 << 24 | 255 << 8;
 
         let model = this.getDodecahedronMesh();
         this.drawObject(model, modelViewMartrix, 221, 96, 48);
         let bv: Sphere = new ComputationalGeometryUtils().computeBoundingSphere(model.points);
-        this.drawBoundingSphere(bv, modelViewMartrix,colLine);
+        this.drawBoundingSphere(bv, modelViewMartrix, colLine);
 
         let yDisplacement = -1.5;
         let distance = 2.8;
@@ -1788,7 +1784,7 @@ export default class Framebuffer {
         model = this.getIcosahedronMesh();
         this.drawObject(model, modelViewMartrix, 239, 187, 115);
         bv = new ComputationalGeometryUtils().computeBoundingSphere(model.points);
-        this.drawBoundingSphere(bv, modelViewMartrix,colLine);
+        this.drawBoundingSphere(bv, modelViewMartrix, colLine);
 
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale * 0.5, scale * 2, scale * 0.5);
@@ -1798,7 +1794,7 @@ export default class Framebuffer {
         model = this.getCubeMesh()
         this.drawObject(model, modelViewMartrix, 144, 165, 116);
         bv = new ComputationalGeometryUtils().computeBoundingSphere(model.points);
-        this.drawBoundingSphere(bv, modelViewMartrix,colLine);
+        this.drawBoundingSphere(bv, modelViewMartrix, colLine);
 
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
@@ -1808,7 +1804,7 @@ export default class Framebuffer {
         model = this.getCubeMesh();
         this.drawObject(model, modelViewMartrix, 191, 166, 154);
         bv = new ComputationalGeometryUtils().computeBoundingSphere(model.points);
-        this.drawBoundingSphere(bv, modelViewMartrix,colLine);
+        this.drawBoundingSphere(bv, modelViewMartrix, colLine);
 
 
         scale = 1.0;
@@ -1820,7 +1816,7 @@ export default class Framebuffer {
         model = this.getPyramidMesh();
         this.drawObject(model, modelViewMartrix, 125, 128, 146);
         bv = new ComputationalGeometryUtils().computeBoundingSphere(model.points);
-        this.drawBoundingSphere(bv, modelViewMartrix,colLine);
+        this.drawBoundingSphere(bv, modelViewMartrix, colLine);
 
         /*
                 scale = 10.0;
@@ -1915,8 +1911,8 @@ export default class Framebuffer {
 
             object.vertices.forEach((v) => {
                 // some transformation in order for the vertices to be in worldspace
-                points.push(new Vector4f(v.x, v.y, v.z).mul(2).add(new Vector4f(0,-2.7,0,0)));
-               //points.push(new Vector4f(v.x, v.y, v.z).mul(0.5).add(new Vector4f(0,3.7,0,0)));
+                points.push(new Vector4f(v.x, v.y, v.z).mul(2).add(new Vector4f(0, -2.7, 0, 0)));
+                //points.push(new Vector4f(v.x, v.y, v.z).mul(0.5).add(new Vector4f(0,3.7,0,0)));
             });
 
             for (let x = 0; x < object.faces.length; x++) {
@@ -1992,52 +1988,51 @@ export default class Framebuffer {
         modelViewMartrix = camera;
 
         let pos = new Vector4f(-modelViewMartrix.m14, -modelViewMartrix.m24, -modelViewMartrix.m34);
-;
+        ;
 
         let count = 0;
 
         let frustumCuller = new FrustumCuller();
         frustumCuller.updateFrustum(modelViewMartrix, cameraAnimator.pos);
-        let i= 0;
-
-        this.blenderObj.filter(x =>
-           true).
-        forEach(element => {
-           
-            
-            if (frustumCuller.isPotentiallyVisible(element.boundingSphere)) {
-                this.drawObject2(element, modelViewMartrix, 144, 165, 116);
-                let colLine = 255 << 24 | 255 << 8;
-              //  this.drawBoundingSphere(element.boundingSphere, modelViewMartrix, colLine);
-                element.vis = true;
-                count++;
-            } else {
-                let colLine = 255 << 24 | 255;
-              //  this.drawBoundingSphere(element.boundingSphere, modelViewMartrix, colLine);
-                element.vis = false;
-            }
-          
-        });
+        let i = 0;
 
         this.blenderObj.
-        forEach(element => {
-            
-            i++;
-            let pos = modelViewMartrix.multiplyHom(element.boundingSphere.center);
-            this.drawText(8, 18+8+8+8+i*8,(element.vis ? 'VIS':'   ')+' '+element.name.toUpperCase(), texture);
-        });
+            forEach(element => {
+
+
+                if (frustumCuller.isPotentiallyVisible(element.boundingSphere)) {
+                    this.drawObject2(element, modelViewMartrix, 144, 165, 116);
+                    let colLine = 255 << 24 | 255 << 8;
+                    this.drawBoundingSphere(element.boundingSphere, modelViewMartrix, colLine);
+                    element.vis = true;
+                    count++;
+                } else {
+                    let colLine = 255 << 24 | 255;
+                    this.drawBoundingSphere(element.boundingSphere, modelViewMartrix, colLine);
+                    element.vis = false;
+                }
+
+            });
+
+        this.blenderObj.
+            forEach(element => {
+
+                i++;
+                let pos = modelViewMartrix.multiplyHom(element.boundingSphere.center);
+                this.drawText(8, 18 + 8 + 8 + 8 + i * 8, (element.vis ? '+' : ' ') + ' ' + element.name.toUpperCase(), texture);
+            });
 
         new Vector4f(0.0, 0.0, 1.0, 0.0)
 
         modelViewMartrix = Matrix4f.constructTranslationMatrix(
-            0,0,Math.sin(Date.now()*0.0007)*25-50).multiplyMatrix
-        (Matrix4f.constructScaleMatrix(42,42,0.01));
-      //  this.drawObject(this.getCubeMesh(), modelViewMartrix, 144, 165, 116);
+            0, 0, Math.sin(Date.now() * 0.0007) * 25 - 50).multiplyMatrix
+            (Matrix4f.constructScaleMatrix(42, 42, 0.01));
+        //  this.drawObject(this.getCubeMesh(), modelViewMartrix, 144, 165, 116);
 
-        this.drawText(8, 18+8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
-        this.drawText(8, 18+8+8, 'FRUSTUM CULLING: ENABLED', texture);
+        this.drawText(8, 18 + 8+8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
+        this.drawText(8, 18  + 8, 'FRUSTUM CULLING: ENABLED', texture);
 
-      //  this.drawText(8, 18+8+8+8, 'pos: ' +, texture);
+        //  this.drawText(8, 18+8+8+8, 'pos: ' +, texture);
     }
 
     // TODO: implement fursutm culling here!
