@@ -8,53 +8,74 @@ import { Vector3f } from "../math/Vector3f";
 export class FrustumCuller {
 
     private planes: Array<Plane>;
+    private pos: Vector4f;
+    private normals: Array<Vector4f>;
+    private near: number;
+    private far: number;
 
-    public updateFrustum(modelViewMatrix: Matrix4f, position: Vector3f): void {
+    public constructor() {
+        this.planes = new Array<Plane>();
+
+        for (let i = 0; i < 6; i++) {
+            this.planes.push(new Plane(new Vector4f(0, 0, 0, 0), 0));
+        }
+
+        this.pos = new Vector4f(0, 0, 0, 0);
+
         const DISTANCE = 192;
-        let fov = 2.0 * Math.atan(320/2 / (2.0 * DISTANCE))*0.5;
-        let fov2 = 2.0 * Math.atan(200/2 / (2.0 * DISTANCE))*0.5;
 
-        const HORIZONTAL_FOV: number = 39;
-        const VERTICAL_FOV: number = 28;
+        let SCREEN_HEIGHT = 320 / 2;
+        let SCREEN_WIDTH = 200 / 2;
+
+        let HORIZONTAL_FIELD_OF_VIEW = 2.0 * Math.atan(SCREEN_HEIGHT / (2.0 * DISTANCE));
+        let VERTICAL_FIELD_OF_VIEW = 2.0 * Math.atan(SCREEN_WIDTH / (2.0 * DISTANCE));
+
+        let HALF_HORIZONTAL_FOV = HORIZONTAL_FIELD_OF_VIEW * 0.5;
+        let HALF_VERTICAL_FOV = VERTICAL_FIELD_OF_VIEW * 0.5;
+
         const NEAR_DISTANCE: number = 1.7;
         const FAR_DISTANCE: number = 30.0;
 
-        console.log('fov: '+fov + " " + fov2)
-        console.log('fovr: '+((Math.PI * 2 / 360 * HORIZONTAL_FOV)) + " " + ((Math.PI * 2 / 360 * VERTICAL_FOV)))
-        
+        this.near = NEAR_DISTANCE;
+        this.far = FAR_DISTANCE;
 
-
-        this.planes = [];
-
-        const inverseRotation = modelViewMatrix.getInverseRotation();
-
-        let nearPlaneNormal = inverseRotation.multiplyHom(new Vector4f(0.0, 0.0, -1.0, 0.0));
-        let farPlaneNormal = inverseRotation.multiplyHom(new Vector4f(0.0, 0.0, 1.0, 0.0));
-
-     /*   let right = inverseRotation.multiplyHom(new Vector4f(-Math.cos(Math.PI * 2 / 360 * HORIZONTAL_FOV), 0, -Math.sin(Math.PI * 2 / 360 * HORIZONTAL_FOV), 0.0));
-        let left = inverseRotation.multiplyHom(new Vector4f(Math.cos(Math.PI * 2 / 360 * -HORIZONTAL_FOV), 0, Math.sin(-Math.PI * 2 / 360 * HORIZONTAL_FOV), 0.0));
-        let bottom = inverseRotation.multiplyHom(new Vector4f(0, -Math.cos(Math.PI * 2 / 360 * VERTICAL_FOV), -Math.sin(Math.PI * 2 / 360 * VERTICAL_FOV), 0.0));
-        let top = inverseRotation.multiplyHom(new Vector4f(0, Math.cos(Math.PI * 2 / 360 * -VERTICAL_FOV), Math.sin(-Math.PI * 2 / 360 * VERTICAL_FOV), 0.0));
-*/
-        let right = inverseRotation.multiplyHom(new Vector4f(-Math.cos(fov), 0, -Math.sin(fov), 0.0));
-        let left = inverseRotation.multiplyHom(new Vector4f(Math.cos(-fov), 0, Math.sin(-fov), 0.0));
-        let bottom = inverseRotation.multiplyHom(new Vector4f(0, -Math.cos(fov2), -Math.sin(fov2), 0.0));
-        let top = inverseRotation.multiplyHom(new Vector4f(0, Math.cos(-fov2), Math.sin(-fov2), 0.0));
-
-
-        let pos = new Vector4f(-position.x, -position.y, -position.z);
-
-        this.planes.push(new Plane(nearPlaneNormal, -nearPlaneNormal.dot(pos) + NEAR_DISTANCE));
-        this.planes.push(new Plane(farPlaneNormal, -farPlaneNormal.dot(pos) - FAR_DISTANCE));
-        this.planes.push(new Plane(left, -left.dot(pos)));
-        this.planes.push(new Plane(right, - right.dot(pos)));
-        this.planes.push(new Plane(bottom, -bottom.dot(pos)));
-        this.planes.push(new Plane(top, -top.dot(pos)));
+        this.normals = [
+            new Vector4f(Math.cos(-HALF_HORIZONTAL_FOV), 0, Math.sin(-HALF_HORIZONTAL_FOV), 0.0),
+            new Vector4f(-Math.cos(HALF_HORIZONTAL_FOV), 0, -Math.sin(HALF_HORIZONTAL_FOV), 0.0),
+            new Vector4f(0, -Math.cos(HALF_VERTICAL_FOV), -Math.sin(HALF_VERTICAL_FOV), 0.0),
+            new Vector4f(0, Math.cos(-HALF_VERTICAL_FOV), Math.sin(-HALF_VERTICAL_FOV), 0.0),
+            new Vector4f(0.0, 0.0, -1.0, 0.0),
+            new Vector4f(0.0, 0.0, 1.0, 0.0)
+        ];
     }
 
-    public isPotentiallyVisible(boudingVolume: Sphere): boolean {
+    // precompute normal vectors in constructor
+    // dont create temp objects
+    public updateFrustum(modelViewMatrix: Matrix4f, position: Vector3f): void {
+        const inverseRotation = modelViewMatrix.getInverseRotation();
+
+        inverseRotation.multiplyHomArr(this.normals[0], this.planes[0].normal); // left
+        inverseRotation.multiplyHomArr(this.normals[1], this.planes[1].normal); // right
+        inverseRotation.multiplyHomArr(this.normals[2], this.planes[2].normal); // bottom
+        inverseRotation.multiplyHomArr(this.normals[3], this.planes[3].normal); // top
+        inverseRotation.multiplyHomArr(this.normals[4], this.planes[4].normal); // near
+        inverseRotation.multiplyHomArr(this.normals[5], this.planes[5].normal); // far
+
+        this.pos.x = -position.x;
+        this.pos.y = -position.y;
+        this.pos.z = -position.z;
+
+        this.planes[0].distance = -this.planes[0].normal.dot(this.pos);
+        this.planes[1].distance = -this.planes[1].normal.dot(this.pos);
+        this.planes[2].distance = -this.planes[2].normal.dot(this.pos);
+        this.planes[3].distance = -this.planes[3].normal.dot(this.pos);
+        this.planes[4].distance = -this.planes[4].normal.dot(this.pos) + this.near;
+        this.planes[5].distance = -this.planes[3].normal.dot(this.pos) - this.far;
+    }
+
+    public isPotentiallyVisible(boundingVolume: Sphere): boolean {
         for (let i = 0; i < this.planes.length; i++) {
-            if (!boudingVolume.isInsidePositiveHalfSpace(this.planes[i])) {
+            if (!boundingVolume.isInsidePositiveHalfSpace(this.planes[i])) {
                 return false;
             }
         }

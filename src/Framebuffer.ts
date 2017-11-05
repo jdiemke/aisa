@@ -1696,8 +1696,8 @@ export default class Framebuffer {
 
         let points: Array<Vector4f> = [];
 
-        const STEPS = 10;
-        const STEPS2 = 10;
+        const STEPS = 8;
+        const STEPS2 = 8;
 
         // TODO: move into setup method
         for (let i = 0; i <= STEPS; i++) {

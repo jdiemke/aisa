@@ -6,8 +6,8 @@ import { Vector4f } from './index';
 
 export default class Plane {
 
-    private distance: number;
-    private normal: Vector4f;
+    public distance: number;
+    public normal: Vector4f;
 
     constructor(normal: Vector4f, distance: number) {
         this.normal = normal;
