@@ -854,11 +854,10 @@ export default class Framebuffer {
     }
 
     public project(t1: { x: number, y: number, z: number }): Vector3f {
-        //t1.x = Math.round((320 / 2) + (t1.x / (-t1.z * 0.0078)));
-        //t1.y = Math.round((200 / 2) - (t1.y / (-t1.z * 0.0078)));
-        //return <Vector3f>t1;
-        return new Vector3f(Math.round((320 / 2) + (t1.x * 1.5 / (-t1.z * 0.0078))),
-            // negation breaks winding and cull mode!!
+        /* return new Vector3f(Math.round((320 / 2) + (t1.x * 1.5 / (-t1.z * 0.0078))),
+             // negation breaks winding and cull mode!!
+             Math.round((200 / 2) - (t1.y * 1.5 / (-t1.z * 0.0078))), t1.z);*/
+        return new Vector3f(Math.round((320 / 2) + (192 * t1.x / (-t1.z))),
             Math.round((200 / 2) - (t1.y * 1.5 / (-t1.z * 0.0078))), t1.z);
     }
 
@@ -1995,19 +1994,19 @@ export default class Framebuffer {
 
         for (let j = 0; j < this.blenderObj.length; j++) {
 
+            let model = this.blenderObj[j];
 
-
-            if (frustumCuller.isPotentiallyVisible(this.blenderObj[j].boundingSphere)) {
-                this.drawObject2(this.blenderObj[j], modelViewMartrix, 144, 165, 116);
-                // let colLine = 255 << 24 | 255 << 8;
-                // this.drawBoundingSphere(element.boundingSphere, modelViewMartrix, colLine);
+            if (frustumCuller.isPotentiallyVisible(model.boundingSphere)) {
+                this.drawObject2(model, modelViewMartrix, 144, 165, 116);
+                let colLine = 255 << 24 | 255 << 8;
+                this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
                 // element.vis = true;
                 count++;
-            } /*else {
-                    let colLine = 255 << 24 | 255;
-                    this.drawBoundingSphere(element.boundingSphere, modelViewMartrix, colLine);
-                    element.vis = false;
-               // }*/
+            } else {
+                let colLine = 255 << 24 | 255;
+                this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
+                //   element.vis = false;
+            }
 
         }
         /*
@@ -2024,6 +2023,13 @@ export default class Framebuffer {
         //this.drawText(8, 18  + 8, 'FRUSTUM CULLING: ENABLED', texture);
 
         //  this.drawText(8, 18+8+8+8, 'pos: ' +, texture);
+        let colred = 255 << 24 | 255|255 << 8 | 255 <<16;
+        let width = 320 / 2;
+        let height = 200 / 2;
+        this.drawLineDDANoZ(new Vector3f(width / 2, height / 2, 0), new Vector3f(width / 2 + width, height / 2, -100), colred);
+        this.drawLineDDANoZ(new Vector3f(width / 2, height / 2, 0), new Vector3f(width / 2, height / 2 + height, -100), colred);
+        this.drawLineDDANoZ(new Vector3f(width / 2 + width, height / 2, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
+        this.drawLineDDANoZ(new Vector3f(width / 2, height / 2 + height, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
     }
 
     // TODO: implement fursutm culling here!
@@ -4137,6 +4143,38 @@ export default class Framebuffer {
             wStart += wDelta;
         }
     }
+
+    public drawLineDDANoZ(start: Vector3f, end: Vector3f, color: number): void {
+        let xDistance: number = end.x - start.x;
+        let yDistance: number = end.y - start.y;
+
+        let dx: number, dy: number, length: number;
+
+        if (Math.abs(xDistance) > Math.abs(yDistance)) {
+            dx = Math.sign(xDistance);
+            dy = yDistance / Math.abs(xDistance);
+            length = Math.abs(xDistance);
+        } else {
+            dx = xDistance / Math.abs(yDistance);
+            dy = Math.sign(yDistance);
+            length = Math.abs(yDistance);
+        }
+
+        let xPosition: number = start.x;
+        let yPosition: number = start.y;
+
+
+
+        for (let i = 0; i <= length; i++) {
+
+            this.drawPixel(Math.round(xPosition), Math.round(yPosition), color);
+
+            xPosition += dx;
+            yPosition += dy;
+
+        }
+    }
+
 
     /**
      * TODO:
