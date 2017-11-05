@@ -59,7 +59,6 @@ class RightEdge extends AbstractClipEdge {
         return p.x < 320;
     }
 
-
     public isInside2(p: Vertex): boolean {
         return p.position.x < 320;
     }
@@ -468,9 +467,6 @@ export default class Framebuffer {
         // plus razor logo
     }
 
-    public planeDeformation() {
-        // with lookup
-    }
 
     // Crossfade 2 effects
     public crossFade() {
@@ -623,7 +619,7 @@ export default class Framebuffer {
         // TODO: different fadeArray algorithms
         for (let y = 0; y < 10; y++) {
             for (let x = 0; x < 16; x++) {
-                fadeArray[x + y * 16] = 500 + Math.round(rng.getInteger() * 600000) % 10000;
+                fadeArray[x + y * 16] = 500 + Math.round(rng.getFloat() * 600000) % 10000;
             }
         }
         this.clear();
@@ -726,6 +722,35 @@ export default class Framebuffer {
                 index2--;
             }
             index2 += 320;
+        }
+    }
+
+    public drawTextureScaledLame(xp: number, yp: number, width: number, height: number, texture: Texture) {
+        let xStep = texture.width / width;
+        let yStep = texture.height / height;
+        let xx = 0;
+        let yy = 0;
+
+        const alphaScale = 1 / 255;
+        for (let y = 0; y < height; y++) {
+
+            for (let x = 0; x < width; x++) {
+                let index = Math.round(xx) + Math.round(yy) * texture.width;
+                let index2 = ((xp + x) | 0) + ((yp + y) | 0) * 320;
+
+                let alpha = (texture.texture[index] >> 24 & 0xff) * alphaScale;
+                let inverseAlpha = 1 - alpha;
+
+                let r = (this.framebuffer[index2] >> 0 & 0xff) * inverseAlpha + (texture.texture[index] >> 0 & 0xff) * alpha;
+                let g = (this.framebuffer[index2] >> 8 & 0xff) * inverseAlpha + (texture.texture[index] >> 8 & 0xff) * alpha;
+                let b = (this.framebuffer[index2] >> 16 & 0xff) * inverseAlpha + (texture.texture[index] >> 16 & 0xff) * alpha;
+
+                this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
+
+                xx += yStep;
+            }
+            yy += yStep;
+            xx = 0;
         }
     }
 
@@ -1769,9 +1794,7 @@ export default class Framebuffer {
 
         let model = this.getDodecahedronMesh();
         this.drawObject(model, modelViewMartrix, 221, 96, 48);
-        let bv: Sphere = new ComputationalGeometryUtils().computeBoundingSphere(model.points);
-        this.drawBoundingSphere(bv, modelViewMartrix, colLine);
-
+       
         let yDisplacement = -1.5;
         let distance = 2.8;
         scale = 1.0;
@@ -1782,9 +1805,7 @@ export default class Framebuffer {
 
         model = this.getIcosahedronMesh();
         this.drawObject(model, modelViewMartrix, 239, 187, 115);
-        bv = new ComputationalGeometryUtils().computeBoundingSphere(model.points);
-        this.drawBoundingSphere(bv, modelViewMartrix, colLine);
-
+       
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale * 0.5, scale * 2, scale * 0.5);
         modelViewMartrix = Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 1, distance).multiplyMatrix(modelViewMartrix);
@@ -1792,9 +1813,7 @@ export default class Framebuffer {
 
         model = this.getCubeMesh()
         this.drawObject(model, modelViewMartrix, 144, 165, 116);
-        bv = new ComputationalGeometryUtils().computeBoundingSphere(model.points);
-        this.drawBoundingSphere(bv, modelViewMartrix, colLine);
-
+       
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
         modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
@@ -1802,10 +1821,7 @@ export default class Framebuffer {
 
         model = this.getCubeMesh();
         this.drawObject(model, modelViewMartrix, 191, 166, 154);
-        bv = new ComputationalGeometryUtils().computeBoundingSphere(model.points);
-        this.drawBoundingSphere(bv, modelViewMartrix, colLine);
-
-
+       
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
         modelViewMartrix = Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
@@ -1814,9 +1830,7 @@ export default class Framebuffer {
 
         model = this.getPyramidMesh();
         this.drawObject(model, modelViewMartrix, 125, 128, 146);
-        bv = new ComputationalGeometryUtils().computeBoundingSphere(model.points);
-        this.drawBoundingSphere(bv, modelViewMartrix, colLine);
-
+       
         /*
                 scale = 10.0;
                 modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
@@ -2018,17 +2032,125 @@ export default class Framebuffer {
                     });
         
         */
-        this.drawText(8, 18 + 8 , 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
+        this.drawText(8, 18 + 8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
         //this.drawText(8, 18  + 8, 'FRUSTUM CULLING: ENABLED', texture);
 
         //  this.drawText(8, 18+8+8+8, 'pos: ' +, texture);
-        let colred = 255 << 24 | 255|255 << 8 | 255 <<16;
+        let colred = 255 << 24 | 255 | 255 << 8 | 255 << 16;
         let width = 320 / 2;
         let height = 200 / 2;
         this.drawLineDDANoZ(new Vector3f(width / 2, height / 2, 0), new Vector3f(width / 2 + width, height / 2, -100), colred);
         this.drawLineDDANoZ(new Vector3f(width / 2, height / 2, 0), new Vector3f(width / 2, height / 2 + height, -100), colred);
         this.drawLineDDANoZ(new Vector3f(width / 2 + width, height / 2, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
         this.drawLineDDANoZ(new Vector3f(width / 2, height / 2 + height, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
+    }
+    public drawPlaneDeformation(elapsedTime: number, texture: Texture): void {
+        // optimize
+        // power of two modulo with &
+        // this.framebuffer.clearColor(new Color());
+        // precompute LUD + render to half size backbuffer
+        const IMG_WIDTH = texture.width;
+        const IMG_HEIGHT = texture.height;
+
+        let framebufferIndex = 0;
+
+        for (let y = 0; y < 200; y++) {
+            for (let x = 0; x < 320; x++) {
+
+                let xx = (-1.00 + 2.00 * x / 320);
+                let yy = (-1.00 + 2.00 * y / 200);
+                let d = Math.sqrt(xx * xx + yy * yy);
+                let a = Math.atan2(yy, xx);
+
+                // magic formulas here
+                let u = ((xx / Math.abs(yy)) * IMG_WIDTH * 0.05) | 0;
+                let v = (1.0 / Math.abs(yy) * IMG_HEIGHT * 0.05 + elapsedTime * 0.008) | 0;
+
+                let scale = 1 - Math.max(Math.min(1 / Math.abs(yy) * 0.2, 1), 0);
+                let color = texture.texture[(u & 0xff) + (v & 0xff) * IMG_WIDTH];
+                let r = ((color >> 0) & 0xff) * scale;
+                let g = ((color >> 8) & 0xff) * scale;
+                let b = ((color >> 16) & 0xff) * scale;
+                color = (255 << 24) | (b << 16) | (g << 8) | (r << 0);
+
+                this.drawPixel(x, y, color);
+                this.framebuffer[framebufferIndex++] = color;
+            }
+        }
+    }
+
+    /**
+     * this rountine is pretty slow:
+     * - optimize scaled blittinh
+     * - optimize geometry stage by reusing arrays
+     * - dont us forEach!
+     */
+    public scene7(elapsedTime: number, texture: Texture): void {
+        let points: Array<Vector3f> = new Array<Vector3f>(120);
+
+        for (let i = 0; i < 120; i++) {
+            points.push(new Vector3f(Math.sin(i * 0.25) * 8, i * 0.3 - 18, Math.cos(i * 0.25) * 8));
+        }
+
+
+        let rotMat = Matrix3f.constructYRotationMatrix(elapsedTime * 0.0005);
+        rotMat = rotMat.multiplyMatrix(Matrix3f.constructXRotationMatrix(elapsedTime * 0.0002));
+
+        let points2: Array<Vector3f> = new Array<Vector3f>(points.length);
+        points.forEach(element => {
+            let alpha = -elapsedTime * 0.0013;
+
+            let transformed = rotMat.multiply(element);
+
+            let x = transformed.x;
+            let y = transformed.y;
+            let z = transformed.z - 30;
+            let xx = 320 / 2 + (x / (z * 0.0058));
+            let yy = 200 / 2 + (y / (z * 0.0058));
+            points2.push(new Vector3f(xx, yy, z));
+        });
+
+        points2.sort(function (a, b) {
+            return a.z - b.z;
+        });
+
+        points2.forEach(element => {
+            let size = -(1.9 / (element.z * 0.0058)) | 0;
+
+            if (element.x > 10 && element.x < 310 &&
+                element.y > 10 && element.y < 190) {
+                this.drawTextureScaledLame(element.x - size / 2, element.y - size / 2, size, size, texture);
+            }
+        });
+    }
+
+
+    public drawStarField(elapsedTime: number): void {
+        let darkStarColor = 255 << 24 | 128 << 16 | 128 << 8 | 128;
+        let lightStarColor = 255 << 24 | 255 << 16 | 255 << 8 | 255;
+        let backgroundColor = 255 << 24 | 87 << 16 | 62 << 8 | 47;
+
+        let rng = new RandomNumberGenerator();
+        rng.setSeed(666);
+        let stars = new Array<Vector3f>();
+        let stars2 = new Array<Vector3f>();
+
+        for (let i = 0; i < 100; i++) {
+            stars.push(new Vector3f(rng.getFloat() * 320, Math.round(rng.getFloat() * 200), 0));
+        }
+
+        for (let i = 0; i < 60; i++) {
+            stars2.push(new Vector3f(rng.getFloat() * 320, Math.round(rng.getFloat() * 200), 0));
+        }
+
+        this.clearCol(backgroundColor);
+        for (let i = 0; i < 100; i++) {
+            this.drawPixel(((stars[i].x + elapsedTime * 0.02) | 0) % 320, stars[i].y, darkStarColor);
+        }
+
+        for (let i = 0; i < 60; i++) {
+            this.drawPixel(((stars2[i].x + elapsedTime * 0.04) | 0) % 320, stars2[i].y, lightStarColor);
+        }
     }
 
     // TODO: implement fursutm culling here!

@@ -6,7 +6,7 @@ export default class RandomNumberGenerator {
         this.seed = 6;
     }
 
-    getInteger() {
+    getFloat() {
         this.seed = (this.seed * 9301 + 49297) % 233280;
         return this.seed / 233280;
     }

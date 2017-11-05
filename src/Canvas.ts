@@ -102,10 +102,10 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3;
-        time = time % 310000
-        // time = (this.myAudio.currentTime * 1000) % 260000 ;
+        time = time % 290000;
+        //time = (this.myAudio.currentTime * 1000) % 290000 ;
 
-        /*
+
         this.framebuffer.setCullFace(CullFace.FRONT);
 
         if (time < 5000) {
@@ -216,19 +216,20 @@ export class Canvas {
             this.framebuffer.setBob(this.spheremap);
             this.framebuffer.led(time, this.texture14);
             this.framebuffer.reflectionBunny(time * 0.002);
-        } else {
+        } else if (time < 270000) {
             this.framebuffer.setCullFace(CullFace.BACK);
             this.framebuffer.drawBlenderScene(time - 260000, this.texture4);
+        } else if (time < 280000) {
+            this.framebuffer.drawStarField(time * 0.9);
+            this.framebuffer.scene7(time, this.texture7);
+        } else {
+            this.framebuffer.drawPlaneDeformation(time, this.metal);
+            this.framebuffer.drawTexture(32, 69, this.texture2, 1.0);
         }
-        */
-        this.framebuffer.setCullFace(CullFace.BACK);
-        this.framebuffer.drawBlenderScene(time*0.9,this.texture4);
-       
-        // this.framebuffer.setCullFace(CullFace.BACK);
-        // this.framebuffer.drawBlenderScene(time);
 
         // http://doc.babylonjs.com/tutorials/discover_basic_elements
         this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
+
         // implement modells with baked shaods and lighting :)
         // http://iquilezles.org/www/index.htm
         // http://iquilezles.org/www/articles/normals/normals.htm
