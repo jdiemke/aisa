@@ -1925,8 +1925,8 @@ export default class Framebuffer {
             });
 
             let sphere = new ComputationalGeometryUtils().computeBoundingSphere(points);
-            console.log(JSON.stringify(sphere));
             sphere.getCenter().w = 1;
+
             // Create class for objects
             let obj = {
                 points: points,
@@ -1939,7 +1939,6 @@ export default class Framebuffer {
             };
             scene.push(obj);
         });
-        console.log(scene);
 
         return scene;
     }
@@ -2019,7 +2018,7 @@ export default class Framebuffer {
                     });
         
         */
-        this.drawText(8, 18 + 8 + 8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
+        this.drawText(8, 18 + 8 , 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
         //this.drawText(8, 18  + 8, 'FRUSTUM CULLING: ENABLED', texture);
 
         //  this.drawText(8, 18+8+8+8, 'pos: ' +, texture);

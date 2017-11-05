@@ -26,7 +26,6 @@ export class ComputationalGeometryUtils {
             radius = Math.max(radius, center.sub(point).length());
         });
 
-        console.log('center:' +center);
         return new Sphere(center, radius);
     }
 
