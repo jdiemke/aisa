@@ -1291,12 +1291,10 @@ class Framebuffer {
         }
     }
     project(t1) {
-        //t1.x = Math.round((320 / 2) + (t1.x / (-t1.z * 0.0078)));
-        //t1.y = Math.round((200 / 2) - (t1.y / (-t1.z * 0.0078)));
-        //return <Vector3f>t1;
-        return new math_1.Vector3f(Math.round((320 / 2) + (t1.x * 1.5 / (-t1.z * 0.0078))), 
-        // negation breaks winding and cull mode!!
-        Math.round((200 / 2) - (t1.y * 1.5 / (-t1.z * 0.0078))), t1.z);
+        /* return new Vector3f(Math.round((320 / 2) + (t1.x * 1.5 / (-t1.z * 0.0078))),
+             // negation breaks winding and cull mode!!
+             Math.round((200 / 2) - (t1.y * 1.5 / (-t1.z * 0.0078))), t1.z);*/
+        return new math_1.Vector3f(Math.round((320 / 2) + (192 * t1.x / (-t1.z))), Math.round((200 / 2) - (t1.y * 1.5 / (-t1.z * 0.0078))), t1.z);
     }
     // https://math.stackexchange.com/questions/859454/maximum-number-of-vertices-in-intersection-of-triangle-with-box/
     nearPlaneClipping(t1, t2, color) {
@@ -1970,8 +1968,8 @@ class Framebuffer {
     }
     drawBoundingSphere(sphere, matrix, color) {
         let points = [];
-        const STEPS = 10;
-        const STEPS2 = 10;
+        const STEPS = 8;
+        const STEPS2 = 8;
         // TODO: move into setup method
         for (let i = 0; i <= STEPS; i++) {
             for (let r = 0; r < STEPS2; r++) {
@@ -2131,7 +2129,6 @@ class Framebuffer {
                 normals.push(new math_1.Vector4f(v.x, v.y, v.z));
             });
             let sphere = new Geometry_1.ComputationalGeometryUtils().computeBoundingSphere(points);
-            console.log(JSON.stringify(sphere));
             sphere.getCenter().w = 1;
             // Create class for objects
             let obj = {
@@ -2145,7 +2142,6 @@ class Framebuffer {
             };
             scene.push(obj);
         });
-        console.log(scene);
         return scene;
     }
     /**
@@ -2189,17 +2185,19 @@ class Framebuffer {
         frustumCuller.updateFrustum(modelViewMartrix, cameraAnimator.pos);
         let i = 0;
         for (let j = 0; j < this.blenderObj.length; j++) {
-            if (frustumCuller.isPotentiallyVisible(this.blenderObj[j].boundingSphere)) {
-                this.drawObject2(this.blenderObj[j], modelViewMartrix, 144, 165, 116);
-                // let colLine = 255 << 24 | 255 << 8;
-                // this.drawBoundingSphere(element.boundingSphere, modelViewMartrix, colLine);
+            let model = this.blenderObj[j];
+            if (frustumCuller.isPotentiallyVisible(model.boundingSphere)) {
+                this.drawObject2(model, modelViewMartrix, 144, 165, 116);
+                let colLine = 255 << 24 | 255 << 8;
+                this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
                 // element.vis = true;
                 count++;
-            } /*else {
-                    let colLine = 255 << 24 | 255;
-                    this.drawBoundingSphere(element.boundingSphere, modelViewMartrix, colLine);
-                    element.vis = false;
-               // }*/
+            }
+            else {
+                let colLine = 255 << 24 | 255;
+                this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
+                //   element.vis = false;
+            }
         }
         /*
                 this.blenderObj.
@@ -2211,9 +2209,16 @@ class Framebuffer {
                     });
         
         */
-        this.drawText(8, 18 + 8 + 8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
+        this.drawText(8, 18 + 8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
         //this.drawText(8, 18  + 8, 'FRUSTUM CULLING: ENABLED', texture);
         //  this.drawText(8, 18+8+8+8, 'pos: ' +, texture);
+        let colred = 255 << 24 | 255 | 255 << 8 | 255 << 16;
+        let width = 320 / 2;
+        let height = 200 / 2;
+        this.drawLineDDANoZ(new math_1.Vector3f(width / 2, height / 2, 0), new math_1.Vector3f(width / 2 + width, height / 2, -100), colred);
+        this.drawLineDDANoZ(new math_1.Vector3f(width / 2, height / 2, 0), new math_1.Vector3f(width / 2, height / 2 + height, -100), colred);
+        this.drawLineDDANoZ(new math_1.Vector3f(width / 2 + width, height / 2, 0), new math_1.Vector3f(width / 2 + width, height / 2 + height, -100), colred);
+        this.drawLineDDANoZ(new math_1.Vector3f(width / 2, height / 2 + height, 0), new math_1.Vector3f(width / 2 + width, height / 2 + height, -100), colred);
     }
     // TODO: implement fursutm culling here!
     isVisible(element) {
@@ -3897,6 +3902,28 @@ class Framebuffer {
             wStart += wDelta;
         }
     }
+    drawLineDDANoZ(start, end, color) {
+        let xDistance = end.x - start.x;
+        let yDistance = end.y - start.y;
+        let dx, dy, length;
+        if (Math.abs(xDistance) > Math.abs(yDistance)) {
+            dx = Math.sign(xDistance);
+            dy = yDistance / Math.abs(xDistance);
+            length = Math.abs(xDistance);
+        }
+        else {
+            dx = xDistance / Math.abs(yDistance);
+            dy = Math.sign(yDistance);
+            length = Math.abs(yDistance);
+        }
+        let xPosition = start.x;
+        let yPosition = start.y;
+        for (let i = 0; i <= length; i++) {
+            this.drawPixel(Math.round(xPosition), Math.round(yPosition), color);
+            xPosition += dx;
+            yPosition += dy;
+        }
+    }
     /**
      * TODO:
      * - adjust method in order to have window coordinates as parameter
@@ -4092,28 +4119,55 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = __webpack_require__(0);
 const Plane_1 = __webpack_require__(12);
 class FrustumCuller {
-    updateFrustum(modelViewMatrix, position) {
-        this.planes = [];
-        this.mat = modelViewMatrix;
-        let nearPlaneNormal = modelViewMatrix.getInverseRotation().multiplyHom(new index_1.Vector4f(0.0, 0.0, -1.0, 0.0));
-        let farPlaneNormal = modelViewMatrix.getInverseRotation().multiplyHom(new index_1.Vector4f(0.0, 0.0, 1.0, 0.0));
-        let fov = 39;
-        let fov2 = 28;
-        let right = modelViewMatrix.getInverseRotation().multiplyHom(new index_1.Vector4f(-Math.cos(Math.PI * 2 / 360 * fov), 0, -Math.sin(Math.PI * 2 / 360 * fov), 0.0));
-        let left = modelViewMatrix.getInverseRotation().multiplyHom(new index_1.Vector4f(Math.cos(Math.PI * 2 / 360 * -fov), 0, Math.sin(-Math.PI * 2 / 360 * fov), 0.0));
-        let bottom = modelViewMatrix.getInverseRotation().multiplyHom(new index_1.Vector4f(0, -Math.cos(Math.PI * 2 / 360 * fov2), -Math.sin(Math.PI * 2 / 360 * fov2), 0.0));
-        let top = modelViewMatrix.getInverseRotation().multiplyHom(new index_1.Vector4f(0, Math.cos(Math.PI * 2 / 360 * -fov2), Math.sin(-Math.PI * 2 / 360 * fov2), 0.0));
-        let pos = new index_1.Vector4f(-position.x, -position.y, -position.z);
-        this.planes.push(new Plane_1.default(nearPlaneNormal, -nearPlaneNormal.dot(pos) + 1.7));
-        // this.planes.push(new Plane(farPlaneNormal, farPlaneNormal.dot(pos) - 71));
-        this.planes.push(new Plane_1.default(left, -left.dot(pos)));
-        this.planes.push(new Plane_1.default(right, -right.dot(pos)));
-        this.planes.push(new Plane_1.default(bottom, -bottom.dot(pos)));
-        this.planes.push(new Plane_1.default(top, -top.dot(pos)));
+    constructor() {
+        this.planes = new Array();
+        for (let i = 0; i < 6; i++) {
+            this.planes.push(new Plane_1.default(new index_1.Vector4f(0, 0, 0, 0), 0));
+        }
+        this.pos = new index_1.Vector4f(0, 0, 0, 0);
+        const DISTANCE = 192;
+        let SCREEN_HEIGHT = 320 / 2;
+        let SCREEN_WIDTH = 200 / 2;
+        let HORIZONTAL_FIELD_OF_VIEW = 2.0 * Math.atan(SCREEN_HEIGHT / (2.0 * DISTANCE));
+        let VERTICAL_FIELD_OF_VIEW = 2.0 * Math.atan(SCREEN_WIDTH / (2.0 * DISTANCE));
+        let HALF_HORIZONTAL_FOV = HORIZONTAL_FIELD_OF_VIEW * 0.5;
+        let HALF_VERTICAL_FOV = VERTICAL_FIELD_OF_VIEW * 0.5;
+        const NEAR_DISTANCE = 1.7;
+        const FAR_DISTANCE = 30.0;
+        this.near = NEAR_DISTANCE;
+        this.far = FAR_DISTANCE;
+        this.normals = [
+            new index_1.Vector4f(Math.cos(-HALF_HORIZONTAL_FOV), 0, Math.sin(-HALF_HORIZONTAL_FOV), 0.0),
+            new index_1.Vector4f(-Math.cos(HALF_HORIZONTAL_FOV), 0, -Math.sin(HALF_HORIZONTAL_FOV), 0.0),
+            new index_1.Vector4f(0, -Math.cos(HALF_VERTICAL_FOV), -Math.sin(HALF_VERTICAL_FOV), 0.0),
+            new index_1.Vector4f(0, Math.cos(-HALF_VERTICAL_FOV), Math.sin(-HALF_VERTICAL_FOV), 0.0),
+            new index_1.Vector4f(0.0, 0.0, -1.0, 0.0),
+            new index_1.Vector4f(0.0, 0.0, 1.0, 0.0)
+        ];
     }
-    isPotentiallyVisible(boudingVolume) {
+    // precompute normal vectors in constructor
+    // dont create temp objects
+    updateFrustum(modelViewMatrix, position) {
+        const inverseRotation = modelViewMatrix.getInverseRotation();
+        inverseRotation.multiplyHomArr(this.normals[0], this.planes[0].normal); // left
+        inverseRotation.multiplyHomArr(this.normals[1], this.planes[1].normal); // right
+        inverseRotation.multiplyHomArr(this.normals[2], this.planes[2].normal); // bottom
+        inverseRotation.multiplyHomArr(this.normals[3], this.planes[3].normal); // top
+        inverseRotation.multiplyHomArr(this.normals[4], this.planes[4].normal); // near
+        inverseRotation.multiplyHomArr(this.normals[5], this.planes[5].normal); // far
+        this.pos.x = -position.x;
+        this.pos.y = -position.y;
+        this.pos.z = -position.z;
+        this.planes[0].distance = -this.planes[0].normal.dot(this.pos);
+        this.planes[1].distance = -this.planes[1].normal.dot(this.pos);
+        this.planes[2].distance = -this.planes[2].normal.dot(this.pos);
+        this.planes[3].distance = -this.planes[3].normal.dot(this.pos);
+        this.planes[4].distance = -this.planes[4].normal.dot(this.pos) + this.near;
+        this.planes[5].distance = -this.planes[3].normal.dot(this.pos) - this.far;
+    }
+    isPotentiallyVisible(boundingVolume) {
         for (let i = 0; i < this.planes.length; i++) {
-            if (!boudingVolume.isInsidePositiveHalfSpace(this.planes[i])) {
+            if (!boundingVolume.isInsidePositiveHalfSpace(this.planes[i])) {
                 return false;
             }
         }
@@ -4527,7 +4581,6 @@ class ComputationalGeometryUtils {
         vertices.forEach(point => {
             radius = Math.max(radius, center.sub(point).length());
         });
-        console.log('center:' + center);
         return new Sphere_1.Sphere(center, radius);
     }
 }
