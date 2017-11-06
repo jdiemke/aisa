@@ -2073,7 +2073,6 @@ export default class Framebuffer {
                 let b = ((color >> 16) & 0xff) * scale;
                 color = (255 << 24) | (b << 16) | (g << 8) | (r << 0);
 
-                this.drawPixel(x, y, color);
                 this.framebuffer[framebufferIndex++] = color;
             }
         }
