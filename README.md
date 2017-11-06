@@ -42,6 +42,9 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
     - Controllable First Person Camera
     - Key Frame Animated Camera
 ### Backlog
+- Refactoring
+    - Split Framebuffer.ts into multiple classes
+    - Scenes / Effects / Core 3D Engine
 - Bounding Volume Hierachies
 - Bounding Volumes
     - Axis-Aligned Bounding Boxes (AABB)

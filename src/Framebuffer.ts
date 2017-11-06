@@ -2055,10 +2055,12 @@ export default class Framebuffer {
         let framebufferIndex = 0;
 
         for (let y = 0; y < 200; y++) {
+            let yy = (-1.00 + 2.00 * y / 200);
+
             for (let x = 0; x < 320; x++) {
 
                 let xx = (-1.00 + 2.00 * x / 320);
-                let yy = (-1.00 + 2.00 * y / 200);
+  
                 let d = Math.sqrt(xx * xx + yy * yy);
                 let a = Math.atan2(yy, xx);
 
