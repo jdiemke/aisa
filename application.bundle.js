@@ -339,73 +339,87 @@ class Canvas {
         this.fpsCount++;
         let time = (Date.now() - this.start);
         time = time * 3;
-        time = time % 310000;
-        // time = (this.myAudio.currentTime * 1000) % 260000 ;
-        /*
-        this.framebuffer.setCullFace(CullFace.FRONT);
-
+        time = time % 290000;
+        //time = (this.myAudio.currentTime * 1000) % 290000 ;
+        this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
             this.framebuffer.shadingTorus(time * 0.02);
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
             //this.framebuffer.drawText(8, 192 - 18, '3D TORUS', this.texture4);
-        } else if (time < 15000) {
+        }
+        else if (time < 15000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.draw(this.texture, time);
             //this.framebuffer.drawText(8, 192 - 18, 'TEXTURED TWISTER', this.texture4);
-        } else if (time < 25000) {
+        }
+        else if (time < 25000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.drawLens(this.texture5, this.texture6, time);
             //this.framebuffer.drawText(8, 192 - 18, '2D LENS EFFECT', this.texture4);
-        } else if (time < 30000) {
+        }
+        else if (time < 30000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.shadingDemo(time * 0.02);
             // this.framebuffer.drawText(8, 192 - 18, 'SHADED 3D CUBE', this.texture4);
-        } else if (time < 35000) {
+        }
+        else if (time < 35000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.shadingSphere(time * 0.01);
             //this.framebuffer.drawText(8, 192 - 18, 'DISTORTED 3D SPHERE', this.texture4);
-        } else if (time < 40000) {
+        }
+        else if (time < 40000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.wireFrameSphereClipping(time * 0.01);
             //this.framebuffer.drawText(8, 192 - 18, 'WIREFRAME SPHERE', this.texture4);
-        } else if (time < 45000) {
+        }
+        else if (time < 45000) {
             this.framebuffer.drawVoxelLandscape2(this.texture3, time);
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
             //this.framebuffer.drawText(8, 192 - 18, 'VOXEL LANDSCAPE', this.texture4);
-        } else if (time < 50000) {
+        }
+        else if (time < 50000) {
             this.framebuffer.drawOldSchoolPlasma(time);
             //this.framebuffer.drawText(8, 192 - 18, 'OLD SCHOOL PLASMA', this.texture4);
-        } else if (time < 55000) {
+        }
+        else if (time < 55000) {
             // https://www.youtube.com/watch?v=ccYLb7cLB1I&t=773s
             this.framebuffer.drawMetaballs();
             // this.framebuffer.drawText(8, 192 - 18, '2D METABALLS', this.texture4);
-        } else if (time < 60000) {
+        }
+        else if (time < 60000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.shadingTorus2(time * 0.02);
             // this.framebuffer.drawText(8, 192 - 18, 'POLYGON CLIPPING', this.texture4);
-        } else if (time < 70000) {
+        }
+        else if (time < 70000) {
             this.framebuffer.floodFill(this.texture5, time - 60000);
             // this.framebuffer.drawText(8, 192 - 18, 'FLOOD FILL', this.texture4);
-        } else if (time < 80000) {
+        }
+        else if (time < 80000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.drawBobs(this.texture7, time);
             // this.framebuffer.drawText(8, 192 - 18, 'UNLIMITED BOBS', this.texture4);
-        } else if (time < 95000) {
+        }
+        else if (time < 95000) {
             this.framebuffer.blockFace(this.texture5, time, 80000);
             // this.framebuffer.drawText(8, 192 - 18, 'MOSAIC FADE IN', this.texture4);
-        } else if (time < 140000) {
+        }
+        else if (time < 140000) {
             this.framebuffer.scrollingBackground(this.texture8, time - 95000);
             // this.framebuffer.drawText(8, 192 - 18, 'SCROLLING BACKGROUND', this.texture4);
-        } else if (time < 160000) {
+        }
+        else if (time < 160000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture9.texture);
             this.framebuffer.cinematicScroller(this.texture4, time - 140000);
             // this.framebuffer.drawText(8, 192 - 18, 'CINEMATIC SCROLLER', this.texture4);
-        } else if (time < 185000) {
+        }
+        else if (time < 185000) {
             this.framebuffer.shadingSphereClip((time - 170000) * 0.003);
             this.framebuffer.cinematicScroller(this.texture4, time - 160000);
             //   this.framebuffer.drawText(8, 192 - 18, 'TRIANGLE NEAR PLANE CLIPPING', this.texture4);
-        } else if (time < 200000) {
+        }
+        else if (time < 200000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture12.texture);
             this.framebuffer.shadingTorus(time * 0.02);
             this.framebuffer.drawLensFlare(time - 185000, [
@@ -413,14 +427,17 @@ class Canvas {
                 { tex: this.texture11, scale: 2.3, alpha: 0.5 },
                 { tex: this.texture13, scale: 1.6, alpha: 0.25 }
             ]);
-        } else if (time < 210000) {
+        }
+        else if (time < 210000) {
             this.framebuffer.blur();
             this.framebuffer.shadingTorus3(time * 0.015);
             this.framebuffer.drawTexture(32, 70, this.texture2, 1.0);
-        } else if (time < 215000) {
+        }
+        else if (time < 215000) {
             this.framebuffer.led(time, this.texture14);
             this.framebuffer.drawTexture(32, 64, this.texture2, 1.0);
-        } else if (time < 230000) {
+        }
+        else if (time < 230000) {
             this.framebuffer.setBob(this.metal);
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.shadingTorus4(time * 0.002);
@@ -430,7 +447,8 @@ class Canvas {
                 { tex: this.texture13, scale: 1.6, alpha: 0.25 }
             ]);
             this.framebuffer.cinematicScroller(this.texture4, time);
-        } else if (time < 240000) {
+        }
+        else if (time < 240000) {
             this.framebuffer.setBob(this.spheremap);
             this.framebuffer.clear();
             this.framebuffer.shadingTorusENvironment(time * 0.006);
@@ -439,28 +457,40 @@ class Canvas {
                 { tex: this.texture11, scale: 2.3, alpha: 0.5 },
                 { tex: this.texture13, scale: 1.6, alpha: 0.25 }
             ]);
-        } else if (time < 250000) {
-            this.framebuffer.setCullFace(CullFace.BACK);
+        }
+        else if (time < 250000) {
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
             this.framebuffer.reproduceRazorScene(time * 0.003);
             this.framebuffer.drawLensFlare(time - 185000, [
                 { tex: this.texture10, scale: 0.0, alpha: 1.0 },
                 { tex: this.texture11, scale: 2.3, alpha: 0.5 },
                 { tex: this.texture13, scale: 1.6, alpha: 0.25 }
             ]);
-        } else if (time < 260000) {
-            this.framebuffer.setCullFace(CullFace.BACK);
+        }
+        else if (time < 260000) {
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
             this.framebuffer.setBob(this.spheremap);
             this.framebuffer.led(time, this.texture14);
             this.framebuffer.reflectionBunny(time * 0.002);
-        } else {
-            this.framebuffer.setCullFace(CullFace.BACK);
+        }
+        else if (time < 270000) {
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
             this.framebuffer.drawBlenderScene(time - 260000, this.texture4);
         }
-        */
+        else if (time < 280000) {
+            this.framebuffer.drawStarField(time * 0.9);
+            this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+            this.framebuffer.reflectionBunny(time * 0.002);
+            this.framebuffer.scene7(time * 0.2, this.texture7);
+        }
+        else {
+            this.framebuffer.drawPlaneDeformation(time, this.metal);
+            this.framebuffer.drawTexture(32, 69, this.texture2, 1.0);
+        }
         this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
-        this.framebuffer.drawBlenderScene(time * 0.9, this.texture4);
-        // this.framebuffer.setCullFace(CullFace.BACK);
-        // this.framebuffer.drawBlenderScene(time);
+        this.framebuffer.drawBlenderScene(time, this.texture4, this.texture7);
+        //  this.framebuffer.drawTextureScaledLame(0,0, 16,16, this.texture7);
         // http://doc.babylonjs.com/tutorials/discover_basic_elements
         this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
         // implement modells with baked shaods and lighting :)
@@ -946,9 +976,6 @@ class Framebuffer {
     starField() {
         // plus razor logo
     }
-    planeDeformation() {
-        // with lookup
-    }
     // Crossfade 2 effects
     crossFade() {
     }
@@ -1080,7 +1107,7 @@ class Framebuffer {
         // TODO: different fadeArray algorithms
         for (let y = 0; y < 10; y++) {
             for (let x = 0; x < 16; x++) {
-                fadeArray[x + y * 16] = 500 + Math.round(rng.getInteger() * 600000) % 10000;
+                fadeArray[x + y * 16] = 500 + Math.round(rng.getFloat() * 600000) % 10000;
             }
         }
         this.clear();
@@ -1197,6 +1224,63 @@ class Framebuffer {
                 index2--;
             }
             index2 += 320;
+        }
+    }
+    drawTextureScaledLame(xp, yp, width, height, texture, z) {
+        let xStep = texture.width / width;
+        let yStep = texture.height / height;
+        let xx = 0;
+        let yy = 0;
+        let newHeight;
+        let newWidth;
+        let yStart;
+        let xStart;
+        if (yp + height < 0 ||
+            yp > 199 ||
+            xp + width < 0 ||
+            xp > 319) {
+            return;
+        }
+        if (yp < 0) {
+            yy = yStep * -yp;
+            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            yStart = 0;
+        }
+        else {
+            yStart = yp;
+            newHeight = height - Math.max(yp + height - 200, 0);
+        }
+        let xTextureStart;
+        if (xp < 0) {
+            xTextureStart = xx = xStep * -xp;
+            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            xStart = 0;
+        }
+        else {
+            xTextureStart = 0;
+            xStart = xp;
+            newWidth = width - Math.max(xp + width - 320, 0);
+        }
+        const alphaScale = 1 / 255 * 0.6;
+        let index2 = (xStart) + (yStart) * 320;
+        for (let y = 0; y < newHeight; y++) {
+            for (let x = 0; x < newWidth; x++) {
+                if (this.wBuffer[index2] > z) {
+                    this.wBuffer[index2] = z;
+                    let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
+                    let alpha = (texture.texture[textureIndex] >> 24 & 0xff) * alphaScale;
+                    let inverseAlpha = 1 - alpha;
+                    let r = (this.framebuffer[index2] >> 0 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 0 & 0xff) * alpha;
+                    let g = (this.framebuffer[index2] >> 8 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 8 & 0xff) * alpha;
+                    let b = (this.framebuffer[index2] >> 16 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 16 & 0xff) * alpha;
+                    this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
+                }
+                xx += yStep;
+                index2++;
+            }
+            yy += yStep;
+            xx = xTextureStart;
+            index2 += -newWidth + 320;
         }
     }
     drawTexture(x, y, texture, alpha2) {
@@ -2020,8 +2104,6 @@ class Framebuffer {
         let colLine = 255 << 24 | 255 << 8;
         let model = this.getDodecahedronMesh();
         this.drawObject(model, modelViewMartrix, 221, 96, 48);
-        let bv = new Geometry_1.ComputationalGeometryUtils().computeBoundingSphere(model.points);
-        this.drawBoundingSphere(bv, modelViewMartrix, colLine);
         let yDisplacement = -1.5;
         let distance = 2.8;
         scale = 1.0;
@@ -2030,32 +2112,24 @@ class Framebuffer {
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
         model = this.getIcosahedronMesh();
         this.drawObject(model, modelViewMartrix, 239, 187, 115);
-        bv = new Geometry_1.ComputationalGeometryUtils().computeBoundingSphere(model.points);
-        this.drawBoundingSphere(bv, modelViewMartrix, colLine);
         scale = 1.0;
         modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale * 0.5, scale * 2, scale * 0.5);
         modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 1, distance).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
         model = this.getCubeMesh();
         this.drawObject(model, modelViewMartrix, 144, 165, 116);
-        bv = new Geometry_1.ComputationalGeometryUtils().computeBoundingSphere(model.points);
-        this.drawBoundingSphere(bv, modelViewMartrix, colLine);
         scale = 1.0;
         modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale);
         modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
         model = this.getCubeMesh();
         this.drawObject(model, modelViewMartrix, 191, 166, 154);
-        bv = new Geometry_1.ComputationalGeometryUtils().computeBoundingSphere(model.points);
-        this.drawBoundingSphere(bv, modelViewMartrix, colLine);
         scale = 1.0;
         modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale);
         modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
         model = this.getPyramidMesh();
         this.drawObject(model, modelViewMartrix, 125, 128, 146);
-        bv = new Geometry_1.ComputationalGeometryUtils().computeBoundingSphere(model.points);
-        this.drawBoundingSphere(bv, modelViewMartrix, colLine);
         /*
                 scale = 10.0;
                 modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
@@ -2159,7 +2233,7 @@ class Framebuffer {
     
      *
      */
-    drawBlenderScene(elapsedTime, texture) {
+    drawBlenderScene(elapsedTime, texture, texture2) {
         // camerea:
         // http://graphicsrunner.blogspot.de/search/label/Water
         this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
@@ -2189,36 +2263,125 @@ class Framebuffer {
             if (frustumCuller.isPotentiallyVisible(model.boundingSphere)) {
                 this.drawObject2(model, modelViewMartrix, 144, 165, 116);
                 let colLine = 255 << 24 | 255 << 8;
-                this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
+                // this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
                 // element.vis = true;
                 count++;
             }
             else {
                 let colLine = 255 << 24 | 255;
-                this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
+                // this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
                 //   element.vis = false;
             }
         }
-        /*
-                this.blenderObj.
-                    forEach(element => {
-        
-                        i++;
-                        let pos = modelViewMartrix.multiplyHom(element.boundingSphere.center);
-                        this.drawText(8, 18 + 8 + 8 + 8 + i * 8, (element.vis ? '+' : ' ') + ' ' + element.name.toUpperCase(), texture);
-                    });
-        
-        */
+        if (texture2) {
+            let points = new Array();
+            for (let i = 0; i < 120; i++) {
+                points.push(new math_1.Vector3f(Math.sin(i * 0.25) * 8, i * 0.3 - 18, Math.cos(i * 0.25) * 8));
+            }
+            points.push(new math_1.Vector3f(0, 0, 5));
+            let points2 = new Array(points.length);
+            points.forEach(element => {
+                let transformed = this.project(modelViewMartrix.multiply(element));
+                points2.push(transformed);
+            });
+            points2.sort(function (a, b) {
+                return a.z - b.z;
+            });
+            points2.forEach(element => {
+                let size = -(1.9 * 192 / (element.z)) | 0;
+                this.drawTextureScaledLame((element.x - size / 2) | 0, (element.y - size / 2) | 0, size, size, texture2, 1 / element.z);
+            });
+        }
         this.drawText(8, 18 + 8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
-        //this.drawText(8, 18  + 8, 'FRUSTUM CULLING: ENABLED', texture);
-        //  this.drawText(8, 18+8+8+8, 'pos: ' +, texture);
         let colred = 255 << 24 | 255 | 255 << 8 | 255 << 16;
         let width = 320 / 2;
         let height = 200 / 2;
-        this.drawLineDDANoZ(new math_1.Vector3f(width / 2, height / 2, 0), new math_1.Vector3f(width / 2 + width, height / 2, -100), colred);
-        this.drawLineDDANoZ(new math_1.Vector3f(width / 2, height / 2, 0), new math_1.Vector3f(width / 2, height / 2 + height, -100), colred);
-        this.drawLineDDANoZ(new math_1.Vector3f(width / 2 + width, height / 2, 0), new math_1.Vector3f(width / 2 + width, height / 2 + height, -100), colred);
-        this.drawLineDDANoZ(new math_1.Vector3f(width / 2, height / 2 + height, 0), new math_1.Vector3f(width / 2 + width, height / 2 + height, -100), colred);
+        //this.drawLineDDANoZ(new Vector3f(width / 2, height / 2, 0), new Vector3f(width / 2 + width, height / 2, -100), colred);
+        //this.drawLineDDANoZ(new Vector3f(width / 2, height / 2, 0), new Vector3f(width / 2, height / 2 + height, -100), colred);
+        //this.drawLineDDANoZ(new Vector3f(width / 2 + width, height / 2, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
+        //this.drawLineDDANoZ(new Vector3f(width / 2, height / 2 + height, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
+    }
+    drawPlaneDeformation(elapsedTime, texture) {
+        // optimize
+        // power of two modulo with &
+        // this.framebuffer.clearColor(new Color());
+        // precompute LUD + render to half size backbuffer
+        const IMG_WIDTH = texture.width;
+        const IMG_HEIGHT = texture.height;
+        let framebufferIndex = 0;
+        for (let y = 0; y < 200; y++) {
+            let yy = (-1.00 + 2.00 * y / 200);
+            for (let x = 0; x < 320; x++) {
+                let xx = (-1.00 + 2.00 * x / 320);
+                let d = Math.sqrt(xx * xx + yy * yy);
+                let a = Math.atan2(yy, xx);
+                // magic formulas here
+                let u = ((xx / Math.abs(yy)) * IMG_WIDTH * 0.05) | 0;
+                let v = (1.0 / Math.abs(yy) * IMG_HEIGHT * 0.05 + elapsedTime * 0.008) | 0;
+                let scale = 1 - Math.max(Math.min(1 / Math.abs(yy) * 0.2, 1), 0);
+                let color = texture.texture[(u & 0xff) + (v & 0xff) * IMG_WIDTH];
+                let r = ((color >> 0) & 0xff) * scale;
+                let g = ((color >> 8) & 0xff) * scale;
+                let b = ((color >> 16) & 0xff) * scale;
+                color = (255 << 24) | (b << 16) | (g << 8) | (r << 0);
+                this.framebuffer[framebufferIndex++] = color;
+            }
+        }
+    }
+    /**
+     * this rountine is pretty slow:
+     * - optimize scaled blittinh
+     * - optimize geometry stage by reusing arrays
+     * - dont us forEach!
+     */
+    scene7(elapsedTime, texture) {
+        let points = new Array();
+        for (let i = 0; i < 120; i++) {
+            points.push(new math_1.Vector3f(Math.sin(i * 0.25) * 8, i * 0.3 - 18, Math.cos(i * 0.25) * 8));
+        }
+        points.push(new math_1.Vector3f(0, 0, 5));
+        let rotMat = math_1.Matrix3f.constructYRotationMatrix(elapsedTime * 0.0005);
+        rotMat = rotMat.multiplyMatrix(math_1.Matrix3f.constructXRotationMatrix(elapsedTime * 0.0002));
+        let points2 = new Array(points.length);
+        points.forEach(element => {
+            let alpha = -elapsedTime * 0.0013;
+            let transformed = rotMat.multiply(element);
+            let x = transformed.x;
+            let y = transformed.y;
+            let z = transformed.z - 10;
+            let xx = 320 / 2 + (x / (z * 0.0058));
+            let yy = 200 / 2 + (y / (z * 0.0058));
+            points2.push(new math_1.Vector3f(xx, yy, z));
+        });
+        points2.sort(function (a, b) {
+            return a.z - b.z;
+        });
+        points2.forEach(element => {
+            let size = -(1.9 / (element.z * 0.0058)) | 0;
+            this.drawTextureScaledLame((element.x - size / 2) | 0, (element.y - size / 2) | 0, size, size, texture, 1 / element.z);
+        });
+    }
+    drawStarField(elapsedTime) {
+        let darkStarColor = 255 << 24 | 128 << 16 | 128 << 8 | 128;
+        let lightStarColor = 255 << 24 | 255 << 16 | 255 << 8 | 255;
+        let backgroundColor = 255 << 24 | 87 << 16 | 62 << 8 | 47;
+        let rng = new RandomNumberGenerator_1.default();
+        rng.setSeed(666);
+        let stars = new Array();
+        let stars2 = new Array();
+        for (let i = 0; i < 100; i++) {
+            stars.push(new math_1.Vector3f(rng.getFloat() * 320, Math.round(rng.getFloat() * 200), 0));
+        }
+        for (let i = 0; i < 60; i++) {
+            stars2.push(new math_1.Vector3f(rng.getFloat() * 320, Math.round(rng.getFloat() * 200), 0));
+        }
+        this.clearCol(backgroundColor);
+        for (let i = 0; i < 100; i++) {
+            this.drawPixel(((stars[i].x + elapsedTime * 0.02) | 0) % 320, stars[i].y, darkStarColor);
+        }
+        for (let i = 0; i < 60; i++) {
+            this.drawPixel(((stars2[i].x + elapsedTime * 0.04) | 0) % 320, stars2[i].y, lightStarColor);
+        }
     }
     // TODO: implement fursutm culling here!
     isVisible(element) {
@@ -4130,8 +4293,8 @@ class FrustumCuller {
         let SCREEN_WIDTH = 200 / 2;
         let HORIZONTAL_FIELD_OF_VIEW = 2.0 * Math.atan(SCREEN_HEIGHT / (2.0 * DISTANCE));
         let VERTICAL_FIELD_OF_VIEW = 2.0 * Math.atan(SCREEN_WIDTH / (2.0 * DISTANCE));
-        let HALF_HORIZONTAL_FOV = HORIZONTAL_FIELD_OF_VIEW * 0.5;
-        let HALF_VERTICAL_FOV = VERTICAL_FIELD_OF_VIEW * 0.5;
+        let HALF_HORIZONTAL_FOV = HORIZONTAL_FIELD_OF_VIEW * 1.0;
+        let HALF_VERTICAL_FOV = VERTICAL_FIELD_OF_VIEW * 1.0;
         const NEAR_DISTANCE = 1.7;
         const FAR_DISTANCE = 30.0;
         this.near = NEAR_DISTANCE;
@@ -4761,7 +4924,7 @@ class RandomNumberGenerator {
     constructor() {
         this.seed = 6;
     }
-    getInteger() {
+    getFloat() {
         this.seed = (this.seed * 9301 + 49297) % 233280;
         return this.seed / 233280;
     }
