@@ -61,7 +61,8 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Transparency
 - Water Relfection / Refraction
 - Fog
-- Particles with Collision Detection
+- Soft Particles
+- Particles Collision
 - Planar Reflections
 - Skybox
 - Gouraud Shading
