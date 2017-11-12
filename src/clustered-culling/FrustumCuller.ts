@@ -30,8 +30,8 @@ export class FrustumCuller {
         let HORIZONTAL_FIELD_OF_VIEW = 2.0 * Math.atan(SCREEN_HEIGHT / (2.0 * DISTANCE));
         let VERTICAL_FIELD_OF_VIEW = 2.0 * Math.atan(SCREEN_WIDTH / (2.0 * DISTANCE));
 
-        let HALF_HORIZONTAL_FOV = HORIZONTAL_FIELD_OF_VIEW * 0.5;
-        let HALF_VERTICAL_FOV = VERTICAL_FIELD_OF_VIEW * 0.5;
+        let HALF_HORIZONTAL_FOV = HORIZONTAL_FIELD_OF_VIEW * 1.0;
+        let HALF_VERTICAL_FOV = VERTICAL_FIELD_OF_VIEW * 1.0;
 
         const NEAR_DISTANCE: number = 1.7;
         const FAR_DISTANCE: number = 30.0;

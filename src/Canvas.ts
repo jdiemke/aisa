@@ -230,6 +230,9 @@ export class Canvas {
             this.framebuffer.drawTexture(32, 69, this.texture2, 1.0);
         }
 
+
+        this.framebuffer.setCullFace(CullFace.BACK);
+        this.framebuffer.drawBlenderScene(time, this.texture4, this.texture7);
         //  this.framebuffer.drawTextureScaledLame(0,0, 16,16, this.texture7);
         // http://doc.babylonjs.com/tutorials/discover_basic_elements
         this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);

@@ -764,12 +764,12 @@ export default class Framebuffer {
             newWidth = width - Math.max(xp + width - 320, 0);
         }
 
-        const alphaScale = 1 / 255;
+        const alphaScale = 1 / 255*0.6;
         let index2 = (xStart) + (yStart) * 320;
         for (let y = 0; y < newHeight; y++) {
             for (let x = 0; x < newWidth; x++) {
                 if (this.wBuffer[index2] > z) {
-                    this.wBuffer[index2]=z;
+                    this.wBuffer[index2] = z;
                     let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
 
                     let alpha = (texture.texture[textureIndex] >> 24 & 0xff) * alphaScale;
@@ -2008,7 +2008,7 @@ export default class Framebuffer {
     
      * 
      */
-    public drawBlenderScene(elapsedTime: number, texture: Texture): void {
+    public drawBlenderScene(elapsedTime: number, texture: Texture, texture2?: Texture): void {
         // camerea:
         // http://graphicsrunner.blogspot.de/search/label/Water
         this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
@@ -2048,37 +2048,53 @@ export default class Framebuffer {
             if (frustumCuller.isPotentiallyVisible(model.boundingSphere)) {
                 this.drawObject2(model, modelViewMartrix, 144, 165, 116);
                 let colLine = 255 << 24 | 255 << 8;
-                this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
+               // this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
                 // element.vis = true;
                 count++;
             } else {
                 let colLine = 255 << 24 | 255;
-                this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
+               // this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
                 //   element.vis = false;
             }
 
         }
-        /*
-                this.blenderObj.
-                    forEach(element => {
-        
-                        i++;
-                        let pos = modelViewMartrix.multiplyHom(element.boundingSphere.center);
-                        this.drawText(8, 18 + 8 + 8 + 8 + i * 8, (element.vis ? '+' : ' ') + ' ' + element.name.toUpperCase(), texture);
-                    });
-        
-        */
-        this.drawText(8, 18 + 8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
-        //this.drawText(8, 18  + 8, 'FRUSTUM CULLING: ENABLED', texture);
 
-        //  this.drawText(8, 18+8+8+8, 'pos: ' +, texture);
+        if (texture2) {
+            let points: Array<Vector3f> = new Array<Vector3f>();
+
+            for (let i = 0; i < 120; i++) {
+                points.push(new Vector3f(Math.sin(i * 0.25) * 8, i * 0.3 - 18, Math.cos(i * 0.25) * 8));
+            }
+
+            points.push(new Vector3f(0, 0, 5));
+
+
+            let points2: Array<Vector3f> = new Array<Vector3f>(points.length);
+            points.forEach(element => {
+
+
+                let transformed = this.project(modelViewMartrix.multiply(element));
+
+                points2.push(transformed);
+            });
+
+            points2.sort(function (a, b) {
+                return a.z - b.z;
+            });
+
+            points2.forEach(element => {
+                let size = -(1.9 *192/ (element.z)) | 0;
+                this.drawTextureScaledLame((element.x - size / 2) | 0, (element.y - size / 2) | 0, size, size, texture2, 1 / element.z);
+            });
+        }
+        this.drawText(8, 18 + 8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
         let colred = 255 << 24 | 255 | 255 << 8 | 255 << 16;
         let width = 320 / 2;
         let height = 200 / 2;
-        this.drawLineDDANoZ(new Vector3f(width / 2, height / 2, 0), new Vector3f(width / 2 + width, height / 2, -100), colred);
-        this.drawLineDDANoZ(new Vector3f(width / 2, height / 2, 0), new Vector3f(width / 2, height / 2 + height, -100), colred);
-        this.drawLineDDANoZ(new Vector3f(width / 2 + width, height / 2, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
-        this.drawLineDDANoZ(new Vector3f(width / 2, height / 2 + height, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
+        //this.drawLineDDANoZ(new Vector3f(width / 2, height / 2, 0), new Vector3f(width / 2 + width, height / 2, -100), colred);
+        //this.drawLineDDANoZ(new Vector3f(width / 2, height / 2, 0), new Vector3f(width / 2, height / 2 + height, -100), colred);
+        //this.drawLineDDANoZ(new Vector3f(width / 2 + width, height / 2, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
+        //this.drawLineDDANoZ(new Vector3f(width / 2, height / 2 + height, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
     }
     public drawPlaneDeformation(elapsedTime: number, texture: Texture): void {
         // optimize
@@ -2128,8 +2144,8 @@ export default class Framebuffer {
         for (let i = 0; i < 120; i++) {
             points.push(new Vector3f(Math.sin(i * 0.25) * 8, i * 0.3 - 18, Math.cos(i * 0.25) * 8));
         }
-      
-        points.push(new Vector3f(0,0,5));
+
+        points.push(new Vector3f(0, 0, 5));
 
         let rotMat = Matrix3f.constructYRotationMatrix(elapsedTime * 0.0005);
         rotMat = rotMat.multiplyMatrix(Matrix3f.constructXRotationMatrix(elapsedTime * 0.0002));
@@ -2154,7 +2170,7 @@ export default class Framebuffer {
 
         points2.forEach(element => {
             let size = -(1.9 / (element.z * 0.0058)) | 0;
-            this.drawTextureScaledLame((element.x - size / 2) | 0, (element.y - size / 2) | 0, size, size, texture, 1/element.z);
+            this.drawTextureScaledLame((element.x - size / 2) | 0, (element.y - size / 2) | 0, size, size, texture, 1 / element.z);
         });
     }
 
