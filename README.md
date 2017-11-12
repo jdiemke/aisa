@@ -37,6 +37,7 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Spherical Environment Mapping
 - Near Plane & Viewport Clipping
 - Lens Flare
+- Billboarding
 - Wavefront OBJ
 - Camera
     - Controllable First Person Camera
@@ -60,13 +61,11 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Transparency
 - Fog
 - Particles with Collision Detection
-- Billboarding
 - Planar Reflections
 - Skybox
 - Gouraud Shading
 - Multitexturing
 - MDL / MD2 Modells
-- 3D Portal Engine
 - Material
 - Shadow Mapping
 - Pixel Shaders (Bump Mapping, Parallax Mapping)

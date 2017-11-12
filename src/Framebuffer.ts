@@ -725,32 +725,68 @@ export default class Framebuffer {
         }
     }
 
-    public drawTextureScaledLame(xp: number, yp: number, width: number, height: number, texture: Texture) {
+    public drawTextureScaledLame(xp: number, yp: number, width: number, height: number, texture: Texture, z: number): void {
         let xStep = texture.width / width;
         let yStep = texture.height / height;
         let xx = 0;
         let yy = 0;
 
+        let newHeight: number;
+        let newWidth: number
+        let yStart: number;
+        let xStart: number;
+
+        if (yp + height < 0 ||
+            yp > 199 ||
+            xp + width < 0 ||
+            xp > 319) {
+            return;
+        }
+
+        if (yp < 0) {
+            yy = yStep * -yp;
+            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            yStart = 0;
+        } else {
+            yStart = yp;
+            newHeight = height - Math.max(yp + height - 200, 0);
+        }
+
+        let xTextureStart: number;
+
+        if (xp < 0) {
+            xTextureStart = xx = xStep * -xp;
+            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            xStart = 0;
+        } else {
+            xTextureStart = 0;
+            xStart = xp;
+            newWidth = width - Math.max(xp + width - 320, 0);
+        }
+
         const alphaScale = 1 / 255;
-        for (let y = 0; y < height; y++) {
+        let index2 = (xStart) + (yStart) * 320;
+        for (let y = 0; y < newHeight; y++) {
+            for (let x = 0; x < newWidth; x++) {
+                if (this.wBuffer[index2] > z) {
+                    this.wBuffer[index2]=z;
+                    let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
 
-            for (let x = 0; x < width; x++) {
-                let index = Math.round(xx) + Math.round(yy) * texture.width;
-                let index2 = ((xp + x) | 0) + ((yp + y) | 0) * 320;
+                    let alpha = (texture.texture[textureIndex] >> 24 & 0xff) * alphaScale;
+                    let inverseAlpha = 1 - alpha;
 
-                let alpha = (texture.texture[index] >> 24 & 0xff) * alphaScale;
-                let inverseAlpha = 1 - alpha;
+                    let r = (this.framebuffer[index2] >> 0 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 0 & 0xff) * alpha;
+                    let g = (this.framebuffer[index2] >> 8 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 8 & 0xff) * alpha;
+                    let b = (this.framebuffer[index2] >> 16 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 16 & 0xff) * alpha;
 
-                let r = (this.framebuffer[index2] >> 0 & 0xff) * inverseAlpha + (texture.texture[index] >> 0 & 0xff) * alpha;
-                let g = (this.framebuffer[index2] >> 8 & 0xff) * inverseAlpha + (texture.texture[index] >> 8 & 0xff) * alpha;
-                let b = (this.framebuffer[index2] >> 16 & 0xff) * inverseAlpha + (texture.texture[index] >> 16 & 0xff) * alpha;
-
-                this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
-
+                    this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
+                }
                 xx += yStep;
+                index2++;
             }
             yy += yStep;
-            xx = 0;
+            xx = xTextureStart;
+            index2 += -newWidth + 320;
         }
     }
 
@@ -1794,7 +1830,7 @@ export default class Framebuffer {
 
         let model = this.getDodecahedronMesh();
         this.drawObject(model, modelViewMartrix, 221, 96, 48);
-       
+
         let yDisplacement = -1.5;
         let distance = 2.8;
         scale = 1.0;
@@ -1805,7 +1841,7 @@ export default class Framebuffer {
 
         model = this.getIcosahedronMesh();
         this.drawObject(model, modelViewMartrix, 239, 187, 115);
-       
+
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale * 0.5, scale * 2, scale * 0.5);
         modelViewMartrix = Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 1, distance).multiplyMatrix(modelViewMartrix);
@@ -1813,7 +1849,7 @@ export default class Framebuffer {
 
         model = this.getCubeMesh()
         this.drawObject(model, modelViewMartrix, 144, 165, 116);
-       
+
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
         modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
@@ -1821,7 +1857,7 @@ export default class Framebuffer {
 
         model = this.getCubeMesh();
         this.drawObject(model, modelViewMartrix, 191, 166, 154);
-       
+
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
         modelViewMartrix = Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
@@ -1830,7 +1866,7 @@ export default class Framebuffer {
 
         model = this.getPyramidMesh();
         this.drawObject(model, modelViewMartrix, 125, 128, 146);
-       
+
         /*
                 scale = 10.0;
                 modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
@@ -2060,7 +2096,7 @@ export default class Framebuffer {
             for (let x = 0; x < 320; x++) {
 
                 let xx = (-1.00 + 2.00 * x / 320);
-  
+
                 let d = Math.sqrt(xx * xx + yy * yy);
                 let a = Math.atan2(yy, xx);
 
@@ -2087,12 +2123,13 @@ export default class Framebuffer {
      * - dont us forEach!
      */
     public scene7(elapsedTime: number, texture: Texture): void {
-        let points: Array<Vector3f> = new Array<Vector3f>(120);
+        let points: Array<Vector3f> = new Array<Vector3f>();
 
         for (let i = 0; i < 120; i++) {
             points.push(new Vector3f(Math.sin(i * 0.25) * 8, i * 0.3 - 18, Math.cos(i * 0.25) * 8));
         }
-
+      
+        points.push(new Vector3f(0,0,5));
 
         let rotMat = Matrix3f.constructYRotationMatrix(elapsedTime * 0.0005);
         rotMat = rotMat.multiplyMatrix(Matrix3f.constructXRotationMatrix(elapsedTime * 0.0002));
@@ -2105,7 +2142,7 @@ export default class Framebuffer {
 
             let x = transformed.x;
             let y = transformed.y;
-            let z = transformed.z - 30;
+            let z = transformed.z - 10;
             let xx = 320 / 2 + (x / (z * 0.0058));
             let yy = 200 / 2 + (y / (z * 0.0058));
             points2.push(new Vector3f(xx, yy, z));
@@ -2117,11 +2154,7 @@ export default class Framebuffer {
 
         points2.forEach(element => {
             let size = -(1.9 / (element.z * 0.0058)) | 0;
-
-            if (element.x > 10 && element.x < 310 &&
-                element.y > 10 && element.y < 190) {
-                this.drawTextureScaledLame(element.x - size / 2, element.y - size / 2, size, size, texture);
-            }
+            this.drawTextureScaledLame((element.x - size / 2) | 0, (element.y - size / 2) | 0, size, size, texture, 1/element.z);
         });
     }
 
