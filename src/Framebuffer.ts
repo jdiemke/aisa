@@ -725,6 +725,69 @@ export default class Framebuffer {
         }
     }
 
+
+    public drawTexturedBillboard(xp: number, yp: number, width: number, height: number, texture: Texture, z: number): void {
+        let xStep = texture.width / width;
+        let yStep = texture.height / height;
+        let xx = 0;
+        let yy = 0;
+
+        let newHeight: number;
+        let newWidth: number
+        let yStart: number;
+        let xStart: number;
+
+        if (yp + height < 0 ||
+            yp > 199 ||
+            xp + width < 0 ||
+            xp > 319) {
+            return;
+        }
+
+        if (yp < 0) {
+            yy = yStep * -yp;
+            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            yStart = 0;
+        } else {
+            yStart = yp;
+            newHeight = height - Math.max(yp + height - 200, 0);
+        }
+
+        let xTextureStart: number;
+
+        if (xp < 0) {
+            xTextureStart = xx = xStep * -xp;
+            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            xStart = 0;
+        } else {
+            xTextureStart = 0;
+            xStart = xp;
+            newWidth = width - Math.max(xp + width - 320, 0);
+        }
+
+
+        let index2 = (xStart) + (yStart) * 320;
+        for (let y = 0; y < newHeight; y++) {
+            for (let x = 0; x < newWidth; x++) {
+                if (this.wBuffer[index2] > z) {
+                    this.wBuffer[index2] = z;
+                    let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
+
+                    let r = (this.framebuffer[index2] >> 0 & 0xff) + (texture.texture[textureIndex] >> 0 & 0xff);
+                    let g = (this.framebuffer[index2] >> 8 & 0xff) + (texture.texture[textureIndex] >> 8 & 0xff);
+                    let b = (this.framebuffer[index2] >> 16 & 0xff) + (texture.texture[textureIndex] >> 16 & 0xff);
+
+                    this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
+                }
+                xx += yStep;
+                index2++;
+            }
+            yy += yStep;
+            xx = xTextureStart;
+            index2 += -newWidth + 320;
+        }
+    }
+
     public drawTextureScaledLame(xp: number, yp: number, width: number, height: number, texture: Texture, z: number): void {
         let xStep = texture.width / width;
         let yStep = texture.height / height;
@@ -764,7 +827,7 @@ export default class Framebuffer {
             newWidth = width - Math.max(xp + width - 320, 0);
         }
 
-        const alphaScale = 1 / 255*0.6;
+        const alphaScale = 1 / 255 * 0.6;
         let index2 = (xStart) + (yStart) * 320;
         for (let y = 0; y < newHeight; y++) {
             for (let x = 0; x < newWidth; x++) {
@@ -2048,12 +2111,12 @@ export default class Framebuffer {
             if (frustumCuller.isPotentiallyVisible(model.boundingSphere)) {
                 this.drawObject2(model, modelViewMartrix, 144, 165, 116);
                 let colLine = 255 << 24 | 255 << 8;
-               // this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
+                // this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
                 // element.vis = true;
                 count++;
             } else {
                 let colLine = 255 << 24 | 255;
-               // this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
+                // this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
                 //   element.vis = false;
             }
 
@@ -2083,8 +2146,8 @@ export default class Framebuffer {
             });
 
             points2.forEach(element => {
-                let size = -(1.9 *192/ (element.z)) | 0;
-                this.drawTextureScaledLame((element.x - size / 2) | 0, (element.y - size / 2) | 0, size, size, texture2, 1 / element.z);
+                let size = -(1.9 * 192 / (element.z));
+                this.drawTextureScaledLame(Math.round(element.x) - Math.round(size / 2), Math.round(element.y) - Math.round(size / 2), Math.round(size), Math.round(size), texture2, 1 / element.z);
             });
         }
         this.drawText(8, 18 + 8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
