@@ -38,6 +38,7 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Near Plane & Viewport Clipping
 - Lens Flare
 - Billboarding
+- Soft Particles
 - Wavefront OBJ
 - Camera
     - Controllable First Person Camera
@@ -61,7 +62,6 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Transparency
 - Water Relfection / Refraction
 - Fog
-- Soft Particles
 - Particles Collision
 - Planar Reflections
 - Skybox
