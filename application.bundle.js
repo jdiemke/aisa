@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -74,9 +74,9 @@ var Vector4f_1 = __webpack_require__(3);
 exports.Vector4f = Vector4f_1.Vector4f;
 var Vector3f_1 = __webpack_require__(1);
 exports.Vector3f = Vector3f_1.Vector3f;
-var Matrix3_1 = __webpack_require__(10);
+var Matrix3_1 = __webpack_require__(11);
 exports.Matrix3f = Matrix3_1.Matrix3f;
-var Matrix4f_1 = __webpack_require__(11);
+var Matrix4f_1 = __webpack_require__(12);
 exports.Matrix4f = Matrix4f_1.Matrix4f;
 
 
@@ -185,7 +185,7 @@ exports.Vector4f = Vector4f;
 Object.defineProperty(exports, "__esModule", { value: true });
 var BasicCamera_1 = __webpack_require__(5);
 exports.BasicCamera = BasicCamera_1.BasicCamera;
-var ControllableCamera_1 = __webpack_require__(17);
+var ControllableCamera_1 = __webpack_require__(18);
 exports.ControllableCamera = ControllableCamera_1.ControllableCamera;
 
 
@@ -222,7 +222,29 @@ exports.BasicCamera = BasicCamera;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const AISA = __webpack_require__(7);
+class RandomNumberGenerator {
+    constructor() {
+        this.seed = 6;
+    }
+    getFloat() {
+        this.seed = (this.seed * 9301 + 49297) % 233280;
+        return this.seed / 233280;
+    }
+    setSeed(seed) {
+        this.seed = seed;
+    }
+}
+exports.default = RandomNumberGenerator;
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const AISA = __webpack_require__(8);
 // https://hacks.mozilla.org/2011/12/faster-canvas-pixel-manipulation-with-typed-arrays/
 // angabe von canvas und framebuffer size!
 class ImagePreloader {
@@ -277,15 +299,16 @@ new Application().main();
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const CullFace_1 = __webpack_require__(2);
-const Framebuffer_1 = __webpack_require__(8);
+const Framebuffer_1 = __webpack_require__(9);
 const Texture_1 = __webpack_require__(23);
+const RandomNumberGenerator_1 = __webpack_require__(6);
 class Canvas {
     constructor(width, height) {
         this.fpsStartTime = Date.now();
@@ -339,7 +362,7 @@ class Canvas {
         this.fpsCount++;
         let time = (Date.now() - this.start);
         time = time * 3;
-        time = time % 290000;
+        time = time % 330000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
         this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
         if (time < 5000) {
@@ -484,15 +507,35 @@ class Canvas {
             this.framebuffer.reflectionBunny(time * 0.002);
             this.framebuffer.scene7(time * 0.2, this.texture7);
         }
-        else {
+        else if (time < 290000) {
             this.framebuffer.drawPlaneDeformation(time, this.metal);
             this.framebuffer.drawTexture(32, 69, this.texture2, 1.0);
         }
+        else if (time < 310000) {
+            this.framebuffer.drawLedTunnel(time, this.texture14);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+            this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
+            this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
+        }
+        else {
+            this.framebuffer.drawParticleTorus(time, this.particleTexture);
+            this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
+        }
         this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
-        this.framebuffer.drawBlenderScene(time, this.texture4, this.texture7);
+        // this.framebuffer.drawBlenderScene(time, this.texture4, this.particleTexture);
+        // TODO: DOF flares
+        /*
+         */
+        //  this.framebuffer.cinematicScroller(this.texture4, time);
         //  this.framebuffer.drawTextureScaledLame(0,0, 16,16, this.texture7);
         // http://doc.babylonjs.com/tutorials/discover_basic_elements
-        this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
+        //  this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
+        let xScale = this.texture15.width / 2 + (Math.sin(time * 0.0006) + 1) * 6 * this.texture15.width;
+        let yScale = this.texture15.height / 2 + (Math.sin(time * 0.0006) + 1) * 6 * this.texture15.height;
+        let xpos = (320 / 2 - xScale / 2) | 0;
+        let ypos = (200 / 2 - yScale / 2) | 0;
+        //this.framebuffer.drawScaledTextureClip(xpos, ypos, (xScale) | 0, (yScale) | 0, this.texture2, 1.0);
+        // this.framebuffer.drawScaledTextureClip(xpos, ypos, (xScale) | 0, (yScale) | 0, this.texture15, 0.3);
         // implement modells with baked shaods and lighting :)
         // http://iquilezles.org/www/index.htm
         // http://iquilezles.org/www/articles/normals/normals.htm
@@ -599,6 +642,46 @@ class Canvas {
             img.src = path;
         });
     }
+    createProceduralTexture() {
+        return new Promise((resolve) => {
+            const texture = new Texture_1.default();
+            texture.texture = new Uint32Array(256 * 256);
+            let rng = new RandomNumberGenerator_1.default();
+            rng.setSeed(100);
+            for (let y = 0; y < 256; y++) {
+                for (let x = 0; x < 256; x++) {
+                    texture.texture[x + y * 256] = (rng.getFloat() * 256) | 0 | 255 << 24;
+                }
+            }
+            texture.width = 256;
+            texture.height = 256;
+            resolve(texture);
+        });
+    }
+    createProceduralTexture2() {
+        return new Promise((resolve) => {
+            const texture = new Texture_1.default();
+            texture.texture = new Uint32Array(256 * 256);
+            let rng = new RandomNumberGenerator_1.default();
+            rng.setSeed(100);
+            for (let y = 0; y < 256; y++) {
+                for (let x = 0; x < 256; x++) {
+                    let dx = 127 - x;
+                    let dy = 127 - y;
+                    let r = Math.sqrt(dx * dx + dy * dy) / 127;
+                    let c = 1 - r;
+                    c = c * c;
+                    if (r > 1)
+                        c = 0;
+                    c = Math.min(1, c * 40);
+                    texture.texture[x + y * 256] = 255 | 205 << 8 | 255 << 16 | (c * 255) << 24;
+                }
+            }
+            texture.width = 256;
+            texture.height = 256;
+            resolve(texture);
+        });
+    }
     init() {
         Promise.all([
             this.createTexture(__webpack_require__(24), false).then(texture => this.spheremap = texture),
@@ -617,8 +700,11 @@ class Canvas {
             this.createTexture(__webpack_require__(37), true).then(texture => this.texture12 = texture),
             this.createTexture(__webpack_require__(38), true).then(texture => this.texture13 = texture),
             this.createTexture(__webpack_require__(39), false).then(texture => this.texture14 = texture),
+            this.createProceduralTexture().then(texture => this.texture15 = texture),
+            this.createProceduralTexture2().then(texture => this.particleTexture = texture),
+            this.createTexture(__webpack_require__(40), true).then(texture => this.hoodlumLogo = texture)
         ]).then(() => {
-            this.myAudio = new Audio(__webpack_require__(40));
+            this.myAudio = new Audio(__webpack_require__(41));
             this.myAudio.loop = true;
             this.start = Date.now();
             this.myAudio.play();
@@ -645,21 +731,21 @@ exports.Canvas = Canvas;
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const FrustumCuller_1 = __webpack_require__(9);
-const Geometry_1 = __webpack_require__(13);
-const CameraKeyFrame_1 = __webpack_require__(15);
-const CameraAnimator_1 = __webpack_require__(16);
+const FrustumCuller_1 = __webpack_require__(10);
+const Geometry_1 = __webpack_require__(14);
+const CameraKeyFrame_1 = __webpack_require__(16);
+const CameraAnimator_1 = __webpack_require__(17);
 const CullFace_1 = __webpack_require__(2);
-const Vertex_1 = __webpack_require__(18);
+const Vertex_1 = __webpack_require__(19);
 const math_1 = __webpack_require__(0);
 const camera_1 = __webpack_require__(4);
-const RandomNumberGenerator_1 = __webpack_require__(19);
+const RandomNumberGenerator_1 = __webpack_require__(6);
 let json = __webpack_require__(20);
 let bunnyJson = __webpack_require__(21);
 let worldJson = __webpack_require__(22);
@@ -1226,7 +1312,7 @@ class Framebuffer {
             index2 += 320;
         }
     }
-    drawTextureScaledLame(xp, yp, width, height, texture, z) {
+    drawTexturedBillboard(xp, yp, width, height, texture, z) {
         let xStep = texture.width / width;
         let yStep = texture.height / height;
         let xx = 0;
@@ -1261,21 +1347,132 @@ class Framebuffer {
             xStart = xp;
             newWidth = width - Math.max(xp + width - 320, 0);
         }
-        const alphaScale = 1 / 255 * 0.6;
         let index2 = (xStart) + (yStart) * 320;
         for (let y = 0; y < newHeight; y++) {
             for (let x = 0; x < newWidth; x++) {
                 if (this.wBuffer[index2] > z) {
                     this.wBuffer[index2] = z;
                     let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
-                    let alpha = (texture.texture[textureIndex] >> 24 & 0xff) * alphaScale;
+                    let r = (this.framebuffer[index2] >> 0 & 0xff) + (texture.texture[textureIndex] >> 0 & 0xff);
+                    let g = (this.framebuffer[index2] >> 8 & 0xff) + (texture.texture[textureIndex] >> 8 & 0xff);
+                    let b = (this.framebuffer[index2] >> 16 & 0xff) + (texture.texture[textureIndex] >> 16 & 0xff);
+                    this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
+                }
+                xx += yStep;
+                index2++;
+            }
+            yy += yStep;
+            xx = xTextureStart;
+            index2 += -newWidth + 320;
+        }
+    }
+    drawSoftParticle(xp, yp, width, height, texture, z, alphaBlend) {
+        let xStep = texture.width / width;
+        let yStep = texture.height / height;
+        let xx = 0;
+        let yy = 0;
+        let newHeight;
+        let newWidth;
+        let yStart;
+        let xStart;
+        if (yp + height < 0 ||
+            yp > 199 ||
+            xp + width < 0 ||
+            xp > 319) {
+            return;
+        }
+        if (yp < 0) {
+            yy = yStep * -yp;
+            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            yStart = 0;
+        }
+        else {
+            yStart = yp;
+            newHeight = height - Math.max(yp + height - 200, 0);
+        }
+        let xTextureStart;
+        if (xp < 0) {
+            xTextureStart = xx = xStep * -xp;
+            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            xStart = 0;
+        }
+        else {
+            xTextureStart = 0;
+            xStart = xp;
+            newWidth = width - Math.max(xp + width - 320, 0);
+        }
+        const alphaScale = 1 / 255 * alphaBlend;
+        let index2 = (xStart) + (yStart) * 320;
+        for (let y = 0; y < newHeight; y++) {
+            for (let x = 0; x < newWidth; x++) {
+                if (this.wBuffer[index2] > z) {
+                    // float scale = 0.2f;
+                    // float fade = clamp((depthMapDepth.x-depth)*scale, 0.0, 1.0);
+                    let zDist = Math.max(Math.min((this.wBuffer[index2] - z) * 120, 1.0), 0.0);
+                    // this.wBuffer[index2] = z;
+                    let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
+                    let alpha = (texture.texture[textureIndex] >> 24 & 0xff) * alphaScale * zDist;
                     let inverseAlpha = 1 - alpha;
                     let r = (this.framebuffer[index2] >> 0 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 0 & 0xff) * alpha;
                     let g = (this.framebuffer[index2] >> 8 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 8 & 0xff) * alpha;
                     let b = (this.framebuffer[index2] >> 16 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 16 & 0xff) * alpha;
                     this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
                 }
-                xx += yStep;
+                xx += xStep;
+                index2++;
+            }
+            yy += yStep;
+            xx = xTextureStart;
+            index2 += -newWidth + 320;
+        }
+    }
+    drawScaledTextureClip(xp, yp, width, height, texture, alphaBlend) {
+        let xStep = texture.width / width;
+        let yStep = texture.height / height;
+        let xx = 0;
+        let yy = 0;
+        let newHeight;
+        let newWidth;
+        let yStart;
+        let xStart;
+        if (yp + height < 0 ||
+            yp > 199 ||
+            xp + width < 0 ||
+            xp > 319) {
+            return;
+        }
+        if (yp < 0) {
+            yy = yStep * -yp;
+            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            yStart = 0;
+        }
+        else {
+            yStart = yp;
+            newHeight = height - Math.max(yp + height - 200, 0);
+        }
+        let xTextureStart;
+        if (xp < 0) {
+            xTextureStart = xx = xStep * -xp;
+            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            xStart = 0;
+        }
+        else {
+            xTextureStart = 0;
+            xStart = xp;
+            newWidth = width - Math.max(xp + width - 320, 0);
+        }
+        const alphaScale = 1 / 255 * alphaBlend;
+        let index2 = (xStart) + (yStart) * 320;
+        for (let y = 0; y < newHeight; y++) {
+            for (let x = 0; x < newWidth; x++) {
+                let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
+                let alpha = (texture.texture[textureIndex] >> 24 & 0xff) * alphaScale;
+                let inverseAlpha = 1 - alpha;
+                let r = (this.framebuffer[index2] >> 0 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 0 & 0xff) * alpha;
+                let g = (this.framebuffer[index2] >> 8 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 8 & 0xff) * alpha;
+                let b = (this.framebuffer[index2] >> 16 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 16 & 0xff) * alpha;
+                this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
+                xx += xStep;
                 index2++;
             }
             yy += yStep;
@@ -2218,6 +2415,49 @@ class Framebuffer {
         });
         return scene;
     }
+    drawLedTunnel(elapsedTime, texture) {
+        for (let y = 0; y < 25; y++) {
+            for (let x = 0; x < 40; x++) {
+                let distance = 160 / (Math.sqrt((x - 40 / 2.0) * (x - 40 / 2.0) + (y - 25 / 2.0) * (y - 25 / 2.0)) * 1.4);
+                /*let power = 2.0;
+                let distance = Math.pow(Math.pow((x - 40 / 2.0) * (x - 40 / 2.0),power) + Math.pow((y - 25 / 2.0) * (y - 25 / 2.0),power),1/(2*power));
+                let waveSum: number =  (Math.sin(distance+elapsedTime*0.005)+1)*0.5*(1-Math.min(distance*0.03, 1.0));
+                */
+                let waveSum = (Math.sin(distance + elapsedTime * 0.005) + 1) * 0.5 * (1 - Math.min(distance * 0.03, 1.0));
+                let intensity = ((waveSum * 15) | 0) % 16;
+                this.drawTextureRectNoAlpha(x * 8, y * 8, 0, 8 * intensity, 8, 8, texture);
+            }
+        }
+    }
+    drawParticleTorus(elapsedTime, texture) {
+        this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
+        this.clearDepthBuffer();
+        let points = new Array();
+        const num = 300;
+        for (let i = 0; i < num; i++) {
+            let radi = 3.4 * (2 + Math.sin((i * Math.PI / (num / 2)) * 2 + elapsedTime * 0.0004)); //*sinf(Time*0.0008f)));
+            let move = elapsedTime * 0.0015;
+            let x = radi * Math.cos(((move + i) * Math.PI / (num / 2)) * 7);
+            let y = radi * Math.cos(((move + i) * Math.PI / (num / 2)) * 4);
+            let z = radi * Math.sin(((move + i) * Math.PI / (num / 2)) * 7);
+            points.push(new math_1.Vector3f(x, y, z));
+        }
+        let modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(0, 0, -20)
+            .multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 0.0003)
+            .multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(elapsedTime * 0.0003)));
+        let points2 = new Array(points.length);
+        points.forEach(element => {
+            let transformed = this.project(modelViewMartrix.multiply(element));
+            points2.push(transformed);
+        });
+        points2.sort(function (a, b) {
+            return a.z - b.z;
+        });
+        points2.forEach(element => {
+            let size = -(1.2 * 192 / (element.z));
+            this.drawSoftParticle(Math.round(element.x) - Math.round(size / 2), Math.round(element.y) - Math.round(size / 2), Math.round(size), Math.round(size), texture, 1 / element.z, 1.0);
+        });
+    }
     /**
      * todo:
      * - better wavefront format that uses precomputed normals
@@ -2276,7 +2516,7 @@ class Framebuffer {
         if (texture2) {
             let points = new Array();
             for (let i = 0; i < 120; i++) {
-                points.push(new math_1.Vector3f(Math.sin(i * 0.25) * 8, i * 0.3 - 18, Math.cos(i * 0.25) * 8));
+                points.push(new math_1.Vector3f(Math.sin(i * 0.25) * 8, i * 0.3 - 18 + 10 * Math.sin(elapsedTime * 0.0001), Math.cos(i * 0.25) * 8));
             }
             points.push(new math_1.Vector3f(0, 0, 5));
             let points2 = new Array(points.length);
@@ -2288,8 +2528,8 @@ class Framebuffer {
                 return a.z - b.z;
             });
             points2.forEach(element => {
-                let size = -(1.9 * 192 / (element.z)) | 0;
-                this.drawTextureScaledLame((element.x - size / 2) | 0, (element.y - size / 2) | 0, size, size, texture2, 1 / element.z);
+                let size = -(1.9 * 192 / (element.z));
+                this.drawSoftParticle(Math.round(element.x) - Math.round(size / 2), Math.round(element.y) - Math.round(size / 2), Math.round(size), Math.round(size), texture2, 1 / element.z, 1.0);
             });
         }
         this.drawText(8, 18 + 8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
@@ -2358,7 +2598,7 @@ class Framebuffer {
         });
         points2.forEach(element => {
             let size = -(1.9 / (element.z * 0.0058)) | 0;
-            this.drawTextureScaledLame((element.x - size / 2) | 0, (element.y - size / 2) | 0, size, size, texture, 1 / element.z);
+            this.drawSoftParticle((element.x - size / 2) | 0, (element.y - size / 2) | 0, size, size, texture, 1 / element.z, 1.0);
         });
     }
     drawStarField(elapsedTime) {
@@ -2548,6 +2788,11 @@ class Framebuffer {
     torusFunction(alpha) {
         return new math_1.Vector3f(Math.sin(alpha) * 10, 0, Math.cos(alpha) * 10);
     }
+    torusFunction2(alpha) {
+        let p = 2, q = 3;
+        let r = 0.5 * (2 + Math.sin(q * alpha));
+        return new math_1.Vector3f(r * Math.cos(p * alpha), r * Math.cos(q * alpha), r * Math.sin(p * alpha));
+    }
     /**
      * https://www.youtube.com/watch?v=VMD7fsCYO9o
      * http://www.cs.jhu.edu/~misha/Fall16/13.pdf
@@ -2607,6 +2852,122 @@ class Framebuffer {
             let z = transformed.z; // TODO: use translation matrix!
             let xx = (320 * 0.5) + (x / (-z * 0.0078));
             let yy = (200 * 0.5) + (y / (-z * 0.0078));
+            // commented out because it breaks the winding. inversion
+            // of y has to be done after back-face culling in the
+            // viewport transform
+            // yy =(200 * 0.5) - (y / (-z * 0.0078));
+            points2.push(new math_1.Vector3f(Math.round(xx), Math.round(yy), z));
+        }
+        /**
+         * Primitive Assembly and Rasterization Stage:
+         * 1. back-face culling
+         * 2. viewport transform
+         * 3. scan conversion (rasterization)
+         */
+        for (let i = 0; i < index.length; i += 3) {
+            // Only render triangles with CCW-ordered vertices
+            // 
+            // Reference:
+            // David H. Eberly (2006).
+            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
+            // p. 69. Morgan Kaufmann Publishers, United States.
+            //
+            let v1 = points2[index[i]];
+            let v2 = points2[index[i + 1]];
+            let v3 = points2[index[i + 2]];
+            if (this.isTriangleCCW(v1, v2, v3)) {
+                let normal = normals2[i / 3];
+                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new math_1.Vector3f(0.5, 0.5, 0.5).normalize())) * 100), 255) + 50;
+                let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar + 100;
+                if (v1.x < Framebuffer.minWindow.x ||
+                    v2.x < Framebuffer.minWindow.x ||
+                    v3.x < Framebuffer.minWindow.x ||
+                    v1.x > Framebuffer.maxWindow.x ||
+                    v2.x > Framebuffer.maxWindow.x ||
+                    v3.x > Framebuffer.maxWindow.x ||
+                    v1.y < Framebuffer.minWindow.y ||
+                    v2.y < Framebuffer.minWindow.y ||
+                    v3.y < Framebuffer.minWindow.y ||
+                    v1.y > Framebuffer.maxWindow.y ||
+                    v2.y > Framebuffer.maxWindow.y ||
+                    v3.y > Framebuffer.maxWindow.y) {
+                    this.clipConvexPolygon(new Array(v1, v2, v3), color, false);
+                }
+                else {
+                    this.drawTriangleDDA(v1, v2, v3, color);
+                    //this.drawTriangleDDA2(v1, v2, v3, new Vector3f(0, 0, 0), new Vector3f(0, 16, 0), new Vector3f(16, 16, 0), color);
+                }
+            }
+        }
+    }
+    cosineInterpolate(y1, y2, mu) {
+        let mu2;
+        if (mu <= y1)
+            return 0;
+        if (mu >= y2)
+            return 1;
+        mu2 = (mu - y1) / (y2 - y1);
+        return (1 - Math.cos(mu2 * Math.PI)) / 2;
+    }
+    shadingTorus5(elapsedTime, sync) {
+        this.wBuffer.fill(100);
+        let points = [];
+        const STEPS = 80;
+        const STEPS2 = 8;
+        for (let i = 0; i < STEPS; i++) {
+            let frame = this.torusFunction2(i * 2 * Math.PI / STEPS);
+            let frame2 = this.torusFunction2(i * 2 * Math.PI / STEPS + 0.1);
+            let tangent = frame2.sub(frame);
+            let up = frame.add(frame2).normalize();
+            let right = tangent.cross(up).normalize().mul(0.4);
+            up = right.cross(tangent).normalize().mul(0.4);
+            for (let r = 0; r < STEPS2; r++) {
+                let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
+                points.push(pos.mul(10));
+            }
+        }
+        let index = [];
+        for (let j = 0; j < STEPS; j++) {
+            for (let i = 0; i < STEPS2; i++) {
+                index.push(((STEPS2 * j) + (1 + i) % STEPS2) % points.length); // 2
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 1
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2) % points.length); //4
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 5
+            }
+        }
+        // compute normals
+        let normals = new Array();
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+            normals.push(normal);
+        }
+        let scale = 1.0;
+        let modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 0.035));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(elapsedTime * 0.04));
+        /**
+         * Vertex Shader Stage
+         */
+        let points2 = new Array();
+        let normals2 = new Array();
+        for (let n = 0; n < normals.length; n++) {
+            normals2.push(modelViewMartrix.multiply(normals[n]));
+        }
+        let ukBasslineBpm = 140;
+        let ukBasslineClapMs = 428.5 * 2;
+        let smashTime = sync % ukBasslineClapMs;
+        let smash = (this.cosineInterpolate(0, 15, smashTime) - this.cosineInterpolate(15, 200, smashTime) +
+            0.4 * this.cosineInterpolate(200, 300, smashTime) - 0.4 * this.cosineInterpolate(300, 400, smashTime))
+            * 12;
+        modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.04) * 20, Math.sin(elapsedTime * 0.05) * 8 - smash, -28).multiplyMatrix(modelViewMartrix);
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiply(points[p]);
+            let x = transformed.x;
+            let y = transformed.y;
+            let z = transformed.z; // TODO: use translation matrix!
+            let xx = (320 * 0.5) + (x / (-z * 0.0078));
+            let yy = (200 * 0.5) - (y / (-z * 0.0078));
             // commented out because it breaks the winding. inversion
             // of y has to be done after back-face culling in the
             // viewport transform
@@ -4273,14 +4634,14 @@ exports.default = Framebuffer;
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = __webpack_require__(0);
-const Plane_1 = __webpack_require__(12);
+const Plane_1 = __webpack_require__(13);
 class FrustumCuller {
     constructor() {
         this.planes = new Array();
@@ -4341,7 +4702,7 @@ exports.FrustumCuller = FrustumCuller;
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4424,7 +4785,7 @@ exports.Matrix3f = Matrix3f;
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4697,7 +5058,7 @@ exports.Matrix4f = Matrix4f;
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4719,14 +5080,14 @@ exports.default = Plane;
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = __webpack_require__(0);
-const Sphere_1 = __webpack_require__(14);
+const Sphere_1 = __webpack_require__(15);
 class ComputationalGeometryUtils {
     computeBoundingSphere(vertices) {
         if (vertices.length === 0) {
@@ -4751,7 +5112,7 @@ exports.ComputationalGeometryUtils = ComputationalGeometryUtils;
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4785,7 +5146,7 @@ exports.Sphere = Sphere;
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4801,7 +5162,7 @@ exports.CameraKeyFrame = CameraKeyFrame;
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4856,7 +5217,7 @@ function CubicInterpolate(y0, y1, y2, y3, mu) {
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4899,7 +5260,7 @@ exports.ControllableCamera = ControllableCamera;
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4911,28 +5272,6 @@ exports.TextureCoordinate = TextureCoordinate;
 class Vertex {
 }
 exports.Vertex = Vertex;
-
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-class RandomNumberGenerator {
-    constructor() {
-        this.seed = 6;
-    }
-    getFloat() {
-        this.seed = (this.seed * 9301 + 49297) % 233280;
-        return this.seed / 233280;
-    }
-    setSeed(seed) {
-        this.seed = seed;
-    }
-}
-exports.default = RandomNumberGenerator;
 
 
 /***/ }),
@@ -5063,6 +5402,12 @@ module.exports = __webpack_require__.p + "b456e9dc15d272b079029a5ca6468305.png";
 
 /***/ }),
 /* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "042200790f9c9b7eb4c1dcdc1bfa6778.png";
+
+/***/ }),
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "0e7cabddfc9af1214d72c4201b0da9d9.mp3";
