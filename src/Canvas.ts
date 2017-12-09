@@ -3,6 +3,7 @@ import { Sphere } from './math/Sphere';
 import { CullFace } from './CullFace';
 import Framebuffer from './Framebuffer';
 import Texture from './Texture';
+import RandomNumberGenerator from './RandomNumberGenerator';
 
 declare function require(string): string;
 
@@ -28,6 +29,9 @@ export class Canvas {
     private texture12: Texture;
     private texture13: Texture;
     private texture14: Texture;
+    private texture15: Texture;
+    private hoodlumLogo: Texture;
+    private particleTexture: Texture;
     private metal: Texture;
     private myAudio: HTMLAudioElement;
     private spheremap: Texture;
@@ -102,7 +106,7 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3;
-        time = time % 290000;
+        time = time % 330000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
 
 
@@ -225,17 +229,50 @@ export class Canvas {
             this.framebuffer.setCullFace(CullFace.BACK);
             this.framebuffer.reflectionBunny(time * 0.002);
             this.framebuffer.scene7(time * 0.2, this.texture7);
-        } else {
+        } else if (time < 290000) {
             this.framebuffer.drawPlaneDeformation(time, this.metal);
             this.framebuffer.drawTexture(32, 69, this.texture2, 1.0);
+        } else if (time < 310000) {
+            this.framebuffer.drawLedTunnel(time, this.texture14);
+            this.framebuffer.setCullFace(CullFace.BACK);
+            this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
+            this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
+        } else {
+            this.framebuffer.drawParticleTorus(time, this.particleTexture);
+            this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
         }
 
-
+        /**
+         * TODO:
+         * - Tunnel with to textures multiplied
+         * - particle ball pulsating (https://www.youtube.com/watch?v=NPZEkhtXhgE)
+         * - wobbling metall ball (sphere mapping)
+         * - metaballs
+         * - textured wobbling cylinder
+         * - particle stream
+         * - scene with baked lighting & wobbling ball & camera animation
+         * - DOF flares
+         * - demo tool http://peisik.untergrund.net/engines/
+         * - https://www.youtube.com/watch?v=ghX1-EUx-fQ&index=7&list=PLPnuj18PSHazbti_tw1zoQ23fqx8-ZZP7 (min 15)
+         */
+        /**this.framebuffer.drawLedTunnel(time, this.texture14);
         this.framebuffer.setCullFace(CullFace.BACK);
-        this.framebuffer.drawBlenderScene(time, this.texture4, this.texture7);
+        this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
+        this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
+        */
+        /*  
+         */
+        //  this.framebuffer.cinematicScroller(this.texture4, time);
         //  this.framebuffer.drawTextureScaledLame(0,0, 16,16, this.texture7);
         // http://doc.babylonjs.com/tutorials/discover_basic_elements
-        this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
+        //  this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
+        let xScale = this.texture15.width / 2 + (Math.sin(time * 0.0006) + 1) * 6 * this.texture15.width;
+        let yScale = this.texture15.height / 2 + (Math.sin(time * 0.0006) + 1) * 6 * this.texture15.height;
+        let xpos = (320 / 2 - xScale / 2) | 0;
+        let ypos = (200 / 2 - yScale / 2) | 0;
+        //this.framebuffer.drawScaledTextureClip(xpos, ypos, (xScale) | 0, (yScale) | 0, this.texture2, 1.0);
+        // this.framebuffer.drawScaledTextureClip(xpos, ypos, (xScale) | 0, (yScale) | 0, this.texture15, 0.3);
+
 
         // implement modells with baked shaods and lighting :)
         // http://iquilezles.org/www/index.htm
@@ -360,6 +397,53 @@ export class Canvas {
         });
     }
 
+    public createProceduralTexture(): Promise<Texture> {
+        return new Promise((resolve) => {
+            const texture = new Texture();
+            texture.texture = new Uint32Array(256 * 256);
+
+            let rng = new RandomNumberGenerator();
+            rng.setSeed(100);
+
+            for (let y = 0; y < 256; y++) {
+                for (let x = 0; x < 256; x++) {
+                    texture.texture[x + y * 256] = (rng.getFloat() * 256) | 0 | 255 << 24;
+                }
+            }
+
+            texture.width = 256;
+            texture.height = 256;
+            resolve(texture);
+        });
+    }
+
+    public createProceduralTexture2(): Promise<Texture> {
+        return new Promise((resolve) => {
+            const texture = new Texture();
+            texture.texture = new Uint32Array(256 * 256);
+
+            let rng = new RandomNumberGenerator();
+            rng.setSeed(100);
+
+            for (let y = 0; y < 256; y++) {
+                for (let x = 0; x < 256; x++) {
+                    let dx = 127 - x
+                    let dy = 127 - y
+                    let r = Math.sqrt(dx * dx + dy * dy) / 127;
+                    let c = 1 - r;
+                    c = c * c;
+                    if (r > 1) c = 0;
+                    c = Math.min(1, c * 40);
+                    texture.texture[x + y * 256] = 255 | 205 << 8 | 255 << 16 | (c * 255) << 24;
+                }
+            }
+
+            texture.width = 256;
+            texture.height = 256;
+            resolve(texture);
+        });
+    }
+
     public init(): void {
         Promise.all([
             this.createTexture(require('./assets/spheremap.png'), false).then(texture => this.spheremap = texture),
@@ -378,6 +462,9 @@ export class Canvas {
             this.createTexture(require('./assets/sky.png'), true).then(texture => this.texture12 = texture),
             this.createTexture(require('./assets/bokeh.png'), true).then(texture => this.texture13 = texture),
             this.createTexture(require('./assets/led.png'), false).then(texture => this.texture14 = texture),
+            this.createProceduralTexture().then(texture => this.texture15 = texture),
+            this.createProceduralTexture2().then(texture => this.particleTexture = texture),
+            this.createTexture(require('./assets/hoodlumLogo.png'), true).then(texture => this.hoodlumLogo = texture)
         ]).then(() => {
             this.myAudio = new Audio(require('./assets/3dGalax.mp3'));
             this.myAudio.loop = true;
