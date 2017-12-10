@@ -362,85 +362,69 @@ class Canvas {
         this.fpsCount++;
         let time = (Date.now() - this.start);
         time = time * 3;
-        time = time % 330000;
+        time = time % 380000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
         this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
         if (time < 5000) {
             this.framebuffer.drawTitanEffect();
             this.framebuffer.shadingTorus(time * 0.02);
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
-            //this.framebuffer.drawText(8, 192 - 18, '3D TORUS', this.texture4);
         }
         else if (time < 15000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.draw(this.texture, time);
-            //this.framebuffer.drawText(8, 192 - 18, 'TEXTURED TWISTER', this.texture4);
         }
         else if (time < 25000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.drawLens(this.texture5, this.texture6, time);
-            //this.framebuffer.drawText(8, 192 - 18, '2D LENS EFFECT', this.texture4);
         }
         else if (time < 30000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.shadingDemo(time * 0.02);
-            // this.framebuffer.drawText(8, 192 - 18, 'SHADED 3D CUBE', this.texture4);
         }
         else if (time < 35000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.shadingSphere(time * 0.01);
-            //this.framebuffer.drawText(8, 192 - 18, 'DISTORTED 3D SPHERE', this.texture4);
         }
         else if (time < 40000) {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.wireFrameSphereClipping(time * 0.01);
-            //this.framebuffer.drawText(8, 192 - 18, 'WIREFRAME SPHERE', this.texture4);
         }
         else if (time < 45000) {
             this.framebuffer.drawVoxelLandscape2(this.texture3, time);
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
-            //this.framebuffer.drawText(8, 192 - 18, 'VOXEL LANDSCAPE', this.texture4);
         }
         else if (time < 50000) {
             this.framebuffer.drawOldSchoolPlasma(time);
-            //this.framebuffer.drawText(8, 192 - 18, 'OLD SCHOOL PLASMA', this.texture4);
         }
         else if (time < 55000) {
             // https://www.youtube.com/watch?v=ccYLb7cLB1I&t=773s
             this.framebuffer.drawMetaballs();
-            // this.framebuffer.drawText(8, 192 - 18, '2D METABALLS', this.texture4);
         }
         else if (time < 60000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.shadingTorus2(time * 0.02);
-            // this.framebuffer.drawText(8, 192 - 18, 'POLYGON CLIPPING', this.texture4);
         }
         else if (time < 70000) {
             this.framebuffer.floodFill(this.texture5, time - 60000);
-            // this.framebuffer.drawText(8, 192 - 18, 'FLOOD FILL', this.texture4);
         }
         else if (time < 80000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.drawBobs(this.texture7, time);
-            // this.framebuffer.drawText(8, 192 - 18, 'UNLIMITED BOBS', this.texture4);
         }
         else if (time < 95000) {
             this.framebuffer.blockFace(this.texture5, time, 80000);
-            // this.framebuffer.drawText(8, 192 - 18, 'MOSAIC FADE IN', this.texture4);
         }
         else if (time < 140000) {
             this.framebuffer.scrollingBackground(this.texture8, time - 95000);
-            // this.framebuffer.drawText(8, 192 - 18, 'SCROLLING BACKGROUND', this.texture4);
         }
         else if (time < 160000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture9.texture);
             this.framebuffer.cinematicScroller(this.texture4, time - 140000);
-            // this.framebuffer.drawText(8, 192 - 18, 'CINEMATIC SCROLLER', this.texture4);
         }
         else if (time < 185000) {
             this.framebuffer.shadingSphereClip((time - 170000) * 0.003);
             this.framebuffer.cinematicScroller(this.texture4, time - 160000);
-            //   this.framebuffer.drawText(8, 192 - 18, 'TRIANGLE NEAR PLANE CLIPPING', this.texture4);
         }
         else if (time < 200000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture12.texture);
@@ -511,31 +495,57 @@ class Canvas {
             this.framebuffer.drawPlaneDeformation(time, this.metal);
             this.framebuffer.drawTexture(32, 69, this.texture2, 1.0);
         }
-        else if (time < 310000) {
+        else if (time < 330000) {
             this.framebuffer.drawLedTunnel(time, this.texture14);
             this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
             this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
             this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
         }
-        else {
+        else if (time < 360000) {
             this.framebuffer.drawParticleTorus(time, this.particleTexture);
             this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
         }
-        this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
-        // this.framebuffer.drawBlenderScene(time, this.texture4, this.particleTexture);
-        // TODO: DOF flares
-        /*
+        else {
+            this.framebuffer.drawPlanedeformationTunnel(time, this.texture3, this.metal);
+            let ukBasslineBpm = 140;
+            let ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+            let smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+            let smash = (this.framebuffer.cosineInterpolate(0, 15, smashTime) - this.framebuffer.cosineInterpolate(15, 200, smashTime) +
+                0.4 * this.framebuffer.cosineInterpolate(200, 300, smashTime) - 0.4 * this.framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
+            this.framebuffer.drawScaledTextureClip((320 / 2 - (this.hoodlumLogo.width + smash) / 2) | 0, (200 / 2 - (this.hoodlumLogo.height - smash) / 2) | 0, this.hoodlumLogo.width + smash, (this.hoodlumLogo.height - smash) | 0, this.hoodlumLogo, 1.0);
+        }
+        /**
+         * Inspiration:
+         * - https://www.youtube.com/watch?v=7kLNXg4BmM8
+         * - https://www.youtube.com/watch?v=PLrio-uwvwk
+         * - https://www.youtube.com/watch?v=XJKDb4ByZ7Y
+         */
+        /**
+         * TODO:
+         * - http://sol.gfxile.net/gp/ch18.html
+         * - http://insolitdust.sourceforge.net/code.html
+         * - http://sol.gfxile.net/sphere/index.html
+         * - http://4matprojects.blogspot.de/
+         * - http://sol.gfxile.net/particle/index.html
+         * - http://sol.gfxile.net/gp/ch19.html
+         * - http://www.flipcode.com/archives/The_Art_of_Demomaking-Issue_07_Bump_Mapping.shtml
+         * - http://sol.gfxile.net/interpolation/index.html
+         * - http://adrianboeing.blogspot.de/2011/06/deform-textured-interference-effect-in.html
+         * - Tunnel with to textures multiplied
+         * - particle ball pulsating (https://www.youtube.com/watch?v=NPZEkhtXhgE)
+         * - wobbling metall ball (sphere mapping)
+         * - metaballs
+         * - textured wobbling cylinder
+         * - particle stream
+         * - scene with baked lighting & wobbling ball & camera animation
+         * - DOF flares
+         * - demo tool http://peisik.untergrund.net/engines/
+         * - https://www.youtube.com/watch?v=ghX1-EUx-fQ&index=7&list=PLPnuj18PSHazbti_tw1zoQ23fqx8-ZZP7 (min 15)
          */
         //  this.framebuffer.cinematicScroller(this.texture4, time);
         //  this.framebuffer.drawTextureScaledLame(0,0, 16,16, this.texture7);
         // http://doc.babylonjs.com/tutorials/discover_basic_elements
         //  this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
-        let xScale = this.texture15.width / 2 + (Math.sin(time * 0.0006) + 1) * 6 * this.texture15.width;
-        let yScale = this.texture15.height / 2 + (Math.sin(time * 0.0006) + 1) * 6 * this.texture15.height;
-        let xpos = (320 / 2 - xScale / 2) | 0;
-        let ypos = (200 / 2 - yScale / 2) | 0;
-        //this.framebuffer.drawScaledTextureClip(xpos, ypos, (xScale) | 0, (yScale) | 0, this.texture2, 1.0);
-        // this.framebuffer.drawScaledTextureClip(xpos, ypos, (xScale) | 0, (yScale) | 0, this.texture15, 0.3);
         // implement modells with baked shaods and lighting :)
         // http://iquilezles.org/www/index.htm
         // http://iquilezles.org/www/articles/normals/normals.htm
@@ -2415,6 +2425,36 @@ class Framebuffer {
         });
         return scene;
     }
+    /**
+     * http://sol.gfxile.net/gp/ch17.html
+     * TODO:
+     * - better textures
+     * - precalc lookup tables
+     * - fadeout
+     * - substraction to create black holes
+     */
+    drawPlanedeformationTunnel(elapsedTime, texture, texture2) {
+        let i = 0;
+        for (let y = 0; y < 200; y++) {
+            for (let x = 0; x < 320; x++) {
+                let xdist = (x - 320 / 2);
+                let ydist = (y - 200 / 2);
+                let dist = 256 * 20 / Math.max(1.0, Math.sqrt(xdist * xdist + ydist * ydist));
+                let dist2 = dist;
+                dist += elapsedTime * 0.02;
+                dist2 += elapsedTime * 0.039;
+                let angle = (Math.atan2(xdist, ydist) / Math.PI + 1.0) * 128 + elapsedTime * 0.0069;
+                let color1 = texture.texture[(dist2 & 0xff) + (angle & 0xff) * 255];
+                let color2 = texture2.texture[(dist & 0xff) + (angle & 0xff) * 255];
+                let alpha = 0.4;
+                let inverseAlpha = 1 - alpha;
+                let r = (((color1 >> 0) & 0xff) * (inverseAlpha) + (((color2) >> 0) & 0xff) * (alpha)) | 0;
+                let g = (((color1 >> 8) & 0xff) * (inverseAlpha) + (((color2) >> 8) & 0xff) * (alpha)) | 0;
+                let b = (((color1 >> 16) & 0xff) * (inverseAlpha) + ((color2 >> 16) & 0xff) * (alpha)) | 0;
+                this.framebuffer[i++] = r | g << 8 | b << 16 | 255 << 24;
+            }
+        }
+    }
     drawLedTunnel(elapsedTime, texture) {
         for (let y = 0; y < 25; y++) {
             for (let x = 0; x < 40; x++) {
@@ -2424,6 +2464,8 @@ class Framebuffer {
                 let waveSum: number =  (Math.sin(distance+elapsedTime*0.005)+1)*0.5*(1-Math.min(distance*0.03, 1.0));
                 */
                 let waveSum = (Math.sin(distance + elapsedTime * 0.005) + 1) * 0.5 * (1 - Math.min(distance * 0.03, 1.0));
+                // FIXME: put this into a reusable method to remove
+                // code duplications? ie. LedBuffer class wit arrayy and draw method :)
                 let intensity = ((waveSum * 15) | 0) % 16;
                 this.drawTextureRectNoAlpha(x * 8, y * 8, 0, 8 * intensity, 8, 8, texture);
             }
@@ -2954,8 +2996,8 @@ class Framebuffer {
         for (let n = 0; n < normals.length; n++) {
             normals2.push(modelViewMartrix.multiply(normals[n]));
         }
-        let ukBasslineBpm = 140;
-        let ukBasslineClapMs = 428.5 * 2;
+        let ukBasslineBpm = 85;
+        let ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
         let smashTime = sync % ukBasslineClapMs;
         let smash = (this.cosineInterpolate(0, 15, smashTime) - this.cosineInterpolate(15, 200, smashTime) +
             0.4 * this.cosineInterpolate(200, 300, smashTime) - 0.4 * this.cosineInterpolate(300, 400, smashTime))
