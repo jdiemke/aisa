@@ -2122,6 +2122,42 @@ export default class Framebuffer {
         return scene;
     }
 
+    /**
+     * http://sol.gfxile.net/gp/ch17.html
+     * TODO:
+     * - better textures
+     * - precalc lookup tables
+     * - fadeout
+     * - substraction to create black holes
+     */
+    drawPlanedeformationTunnel(elapsedTime: number, texture: Texture, texture2: Texture) {
+  
+        let i = 0;
+        for (let y = 0; y < 200; y++) {
+            for (let x = 0; x < 320; x++) {
+                let xdist = (x - 320 / 2);
+                let ydist = (y - 200 / 2);
+                let dist = 256 * 20 / Math.max(1.0, Math.sqrt(xdist * xdist + ydist * ydist));
+                let dist2 = dist;
+                dist += elapsedTime * 0.02;
+                dist2 += elapsedTime * 0.039;
+                let angle = (Math.atan2(xdist, ydist) / Math.PI + 1.0) * 128+ elapsedTime * 0.0069;
+
+                let color1 = texture.texture[(dist2 & 0xff) + (angle & 0xff) * 255];
+                let color2 = texture2.texture[(dist & 0xff) + (angle & 0xff) * 255];
+
+                let alpha = 0.4;
+                let inverseAlpha = 1 - alpha;
+
+                let r = (((color1 >> 0) & 0xff) * (inverseAlpha) + (((color2) >> 0) & 0xff) * (alpha)) | 0;
+                let g = (((color1 >> 8) & 0xff) * (inverseAlpha) + (((color2) >> 8) & 0xff) * (alpha)) | 0;
+                let b = (((color1 >> 16) & 0xff) * (inverseAlpha) + ((color2 >> 16) & 0xff) * (alpha)) | 0;
+
+                this.framebuffer[i++] = r | g << 8 | b << 16 | 255 << 24;
+            }
+        }
+    }
+
     drawLedTunnel(elapsedTime: number, texture: Texture) {
         for (let y = 0; y < 25; y++) {
             for (let x = 0; x < 40; x++) {
@@ -2739,9 +2775,9 @@ export default class Framebuffer {
 
     public cosineInterpolate(y1: number, y2: number, mu: number): number {
         let mu2: number;
-        if(mu <= y1) return 0;
-        if(mu >= y2) return 1;
-        mu2 = (mu-y1)/(y2 -y1);
+        if (mu <= y1) return 0;
+        if (mu >= y2) return 1;
+        mu2 = (mu - y1) / (y2 - y1);
         return (1 - Math.cos(mu2 * Math.PI)) / 2;
     }
 
@@ -2806,12 +2842,12 @@ export default class Framebuffer {
         }
 
         let ukBasslineBpm = 85;
-        let ukBasslineClapMs = 60000/ukBasslineBpm*2;
+        let ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
         let smashTime = sync % ukBasslineClapMs;
-        let smash = (this.cosineInterpolate(0, 15, smashTime) - this.cosineInterpolate(15, 200, smashTime)+
-                    0.4*this.cosineInterpolate(200, 300, smashTime) - 0.4*this.cosineInterpolate(300, 400, smashTime)
-                    )
-                    * 12;
+        let smash = (this.cosineInterpolate(0, 15, smashTime) - this.cosineInterpolate(15, 200, smashTime) +
+            0.4 * this.cosineInterpolate(200, 300, smashTime) - 0.4 * this.cosineInterpolate(300, 400, smashTime)
+        )
+            * 12;
         modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.04) * 20,
             Math.sin(elapsedTime * 0.05) * 8 - smash, -28).multiplyMatrix(modelViewMartrix);
 
