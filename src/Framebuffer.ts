@@ -2131,7 +2131,7 @@ export default class Framebuffer {
      * - substraction to create black holes
      */
     drawPlanedeformationTunnel(elapsedTime: number, texture: Texture, texture2: Texture) {
-  
+
         let i = 0;
         for (let y = 0; y < 200; y++) {
             for (let x = 0; x < 320; x++) {
@@ -2141,7 +2141,7 @@ export default class Framebuffer {
                 let dist2 = dist;
                 dist += elapsedTime * 0.02;
                 dist2 += elapsedTime * 0.039;
-                let angle = (Math.atan2(xdist, ydist) / Math.PI + 1.0) * 128+ elapsedTime * 0.0069;
+                let angle = (Math.atan2(xdist, ydist) / Math.PI + 1.0) * 128 + elapsedTime * 0.0069;
 
                 let color1 = texture.texture[(dist2 & 0xff) + (angle & 0xff) * 255];
                 let color2 = texture2.texture[(dist & 0xff) + (angle & 0xff) * 255];
@@ -2154,6 +2154,36 @@ export default class Framebuffer {
                 let b = (((color1 >> 16) & 0xff) * (inverseAlpha) + ((color2 >> 16) & 0xff) * (alpha)) | 0;
 
                 this.framebuffer[i++] = r | g << 8 | b << 16 | 255 << 24;
+            }
+        }
+    }
+
+
+    drawPlanedeformationTunnelV2(elapsedTime: number, texture: Texture, texture2: Texture) {
+        let i = 0;
+        for (let y = 0; y < 200; y++) {
+            for (let x = 0; x < 320; x++) {
+                let scale = 1.2;
+                let xdist = (x - 320 / 2)+Math.sin(elapsedTime*0.0001)*80*scale;
+                let ydist = (y - 200 / 2)+Math.cos(elapsedTime*0.0001)*80*scale;
+                let xdist2 = (x - 320 / 2)+Math.sin(elapsedTime*0.0001+Math.PI)*80*scale;
+                let ydist2 = (y - 200 / 2)+Math.cos(elapsedTime*0.0001+Math.PI)*80*scale;
+                let dist = 256 * 20 / Math.max(1.0, Math.sqrt(xdist * xdist + ydist * ydist));
+                dist += Math.sin(Math.atan2(xdist, ydist) * 5) * 8;
+                let dist2 = 256 *20 / Math.max(1.0, Math.sqrt(xdist2 * xdist2 + ydist2 * ydist2));
+                dist2 += Math.sin(Math.atan2(xdist2, ydist2) * 5) * 8;
+                let finalDist = dist - dist2 + elapsedTime * 0.019;
+
+                let angle = (Math.atan2(xdist, ydist) / Math.PI + 1.0) * 128.5 + elapsedTime * 0.0069;
+                angle -= (Math.atan2(xdist2, ydist2) / Math.PI + 1.0) * 128.5 + elapsedTime * 0.0069;
+
+                let color1 = texture.texture[(finalDist & 0xff) + (angle & 0xff) * 255];
+                let cScale = Math.min(60/(dist*2),1.0)*Math.min(60/(dist2*2),1.0);
+                let r = (color1 & 0xff)* cScale;
+                let g = (color1>>8 & 0xff)* cScale;
+                let b = (color1>>16 & 0xff)* cScale;
+                
+                this.framebuffer[i++] =r | g <<8 |b <<16 | 255 <<24;
             }
         }
     }

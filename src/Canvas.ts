@@ -33,6 +33,7 @@ export class Canvas {
     private hoodlumLogo: Texture;
     private particleTexture: Texture;
     private metal: Texture;
+    private abstract: Texture;
     private myAudio: HTMLAudioElement;
     private spheremap: Texture;
     private boundRenderLoop: (time: number) => void;
@@ -106,7 +107,7 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3;
-        time = time % 380000;
+        time = time % 400000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
 
 
@@ -224,7 +225,7 @@ export class Canvas {
         } else if (time < 360000) {
             this.framebuffer.drawParticleTorus(time, this.particleTexture);
             this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
-        } else {
+        } else if (time < 380000){
             this.framebuffer.drawPlanedeformationTunnel(time, this.texture3, this.metal);
             let ukBasslineBpm = 140;
             let ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
@@ -233,8 +234,17 @@ export class Canvas {
                 0.4 * this.framebuffer.cosineInterpolate(200, 300, smashTime) - 0.4 * this.framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
             this.framebuffer.drawScaledTextureClip((320 / 2 - (this.hoodlumLogo.width + smash) / 2) | 0,
                 (200 / 2 - (this.hoodlumLogo.height - smash) / 2) | 0, this.hoodlumLogo.width + smash, (this.hoodlumLogo.height - smash) | 0, this.hoodlumLogo, 1.0);
+        } else {
+            this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
+            this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);    
         }
-
+        
+        /**
+         * Inspiration:
+         * - https://www.youtube.com/watch?v=7kLNXg4BmM8
+         * - https://www.youtube.com/watch?v=PLrio-uwvwk
+         * - https://www.youtube.com/watch?v=XJKDb4ByZ7Y
+         */
         /**
          * TODO:
          * - http://sol.gfxile.net/gp/ch18.html
@@ -454,7 +464,8 @@ export class Canvas {
             this.createTexture(require('./assets/led.png'), false).then(texture => this.texture14 = texture),
             this.createProceduralTexture().then(texture => this.texture15 = texture),
             this.createProceduralTexture2().then(texture => this.particleTexture = texture),
-            this.createTexture(require('./assets/hoodlumLogo.png'), true).then(texture => this.hoodlumLogo = texture)
+            this.createTexture(require('./assets/hoodlumLogo.png'), true).then(texture => this.hoodlumLogo = texture),
+            this.createTexture(require('./assets/abstract.png'), false).then(texture => this.abstract = texture)
         ]).then(() => {
             this.myAudio = new Audio(require('./assets/3dGalax.mp3'));
             this.myAudio.loop = true;
