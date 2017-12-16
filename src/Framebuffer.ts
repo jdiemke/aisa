@@ -2160,7 +2160,13 @@ export default class Framebuffer {
         }
     }
 
-
+    /**
+     * This code is pretty slow. About 12 fps with 6 x slowdown int chrome!
+     * FIXME:
+     * - optimize
+     * - precompute dist & angle
+     * - maybe use 8 * 8 block interpolation
+     */
     drawPlanedeformationTunnelV2(elapsedTime: number, texture: Texture, texture2: Texture) {
         let i = 0;
         for (let y = 0; y < 200; y++) {
@@ -3327,7 +3333,7 @@ export default class Framebuffer {
         let points2: Array<Vector3f> = [];
         let normals: Array<Vector3f> = [];
         let normals2: Array<Vector3f> = [];
-        
+
         let index: Array<number> = [];
 
         k.index.forEach(i => {
@@ -3364,6 +3370,7 @@ export default class Framebuffer {
 
         let result = this.sphere;
 
+        
         for(let i = 0; i < result.points.length; i++) {
             result.points2[i].y = result.points[i].y;
             result.points2[i].x = result.points[i].x + Math.sin(result.points[i].y * 5.2 + elapsedTime * 5.83) * 0.3;
@@ -3377,20 +3384,20 @@ export default class Framebuffer {
         let index = result.index;
         let normals = result.normals;
 
-        let norm: Vector3f = new Vector3f(0,0,0);
-        let norm2: Vector3f = new Vector3f(0,0,0);
-        let cross: Vector3f = new Vector3f(0,0,0);
+        let norm: Vector3f = new Vector3f(0, 0, 0);
+        let norm2: Vector3f = new Vector3f(0, 0, 0);
+        let cross: Vector3f = new Vector3f(0, 0, 0);
         for (let i = 0; i < index.length; i += 3) {
             let v1: Vector3f = points[index[i]];
             let v2: Vector3f = points[index[i + 1]];
             let v3: Vector3f = points[index[i + 2]];
-            norm.sub2(v2,v1);
-            norm2.sub2(v3,v1);
-            cross.cross2(norm,norm2);
+            norm.sub2(v2, v1);
+            norm2.sub2(v3, v1);
+            cross.cross2(norm, norm2);
             let normal = cross;
-            normals[index[i]].add2(normals[index[i]],normal);
-            normals[index[i + 1]].add2(normals[index[i + 1]],normal);
-            normals[index[i + 2]].add2(normals[index[i + 2]],normal);
+            normals[index[i]].add2(normals[index[i]], normal);
+            normals[index[i + 1]].add2(normals[index[i + 1]], normal);
+            normals[index[i + 2]].add2(normals[index[i + 2]], normal);
         }
 
         // FIXME: speed up
@@ -3402,21 +3409,19 @@ export default class Framebuffer {
             normals[i].normalize2();
         }
 
-        let scale = 40.1;
+        let scale = 37.1;
 
-        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 1.25));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 1.3));
+        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 3.25));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 2.3));
         modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 1.0) * 46, Math.sin(elapsedTime * 1.2) * 20
-        , -85)
-        .multiplyMatrix(modelViewMartrix);
+            , -85)
+            .multiplyMatrix(modelViewMartrix);
 
         /**
          * Vertex Shader Stage
          */
-        let points2: Array<Vector3f> = new Array<Vector3f>();
-
+        let points2: Array<Vector3f> = result.points2;
         let normals2: Array<Vector3f> = result.normals2;
-            
 
         let normalMatrix = modelViewMartrix.computeNormalMatrix();
 
@@ -3427,14 +3432,9 @@ export default class Framebuffer {
         for (let p = 0; p < points.length; p++) {
             let transformed = modelViewMartrix.multiply(points[p]);
 
-            let x = transformed.x;
-            let y = transformed.y;
-            let z = transformed.z; // TODO: use translation matrix!
-
-            let xx = (320 * 0.5) + (x / (-z * 0.0078));
-            let yy = (200 * 0.5) - (y / (-z * 0.0078));
-
-            points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
+            points2[p].x = Math.round((320 * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
+            points2[p].y = Math.round((200 * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
+            points2[p].z = transformed.z;
         }
 
         /**
@@ -3656,8 +3656,8 @@ export default class Framebuffer {
 
     public fakeSphere(normal: Vector3f, vertex: Vertex): void {
         // https://www.mvps.org/directx/articles/spheremap.htm
-        // vertex.textureCoordinate.u = 0.5 + normal.x * 0.5;
-        // vertex.textureCoordinate.v = 0.5 - normal.y * 0.5;
+        //vertex.textureCoordinate.u = 0.5 + normal.x * 0.5;
+        //vertex.textureCoordinate.v = 0.5 - normal.y * 0.5;
         vertex.textureCoordinate.u = 0.5 + Math.asin(normal.x) / Math.PI;
         vertex.textureCoordinate.v = 0.5 - Math.asin(normal.y) / Math.PI;
     }

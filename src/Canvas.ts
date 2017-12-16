@@ -33,7 +33,7 @@ export class Canvas {
     private hoodlumLogo: Texture;
     private particleTexture: Texture;
     private particleTexture2: Texture;
- 
+
     private metal: Texture;
     private abstract: Texture;
     private myAudio: HTMLAudioElement;
@@ -109,7 +109,7 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3;
-        time = time % 420000;
+        time = time % 440000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
 
         this.framebuffer.setCullFace(CullFace.FRONT);
@@ -226,7 +226,7 @@ export class Canvas {
         } else if (time < 360000) {
             this.framebuffer.drawParticleTorus(time, this.particleTexture);
             this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
-        } else if (time < 380000){
+        } else if (time < 380000) {
             this.framebuffer.drawPlanedeformationTunnel(time, this.texture3, this.metal);
             let ukBasslineBpm = 140;
             let ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
@@ -235,14 +235,15 @@ export class Canvas {
                 0.4 * this.framebuffer.cosineInterpolate(200, 300, smashTime) - 0.4 * this.framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
             this.framebuffer.drawScaledTextureClip((320 / 2 - (this.hoodlumLogo.width + smash) / 2) | 0,
                 (200 / 2 - (this.hoodlumLogo.height - smash) / 2) | 0, this.hoodlumLogo.width + smash, (this.hoodlumLogo.height - smash) | 0, this.hoodlumLogo, 1.0);
-        } else if (time < 400000 ){
+        } else if (time < 400000) {
+            // THE NEXT LINE IS THE BOTTLENECK NOT THE SPHERE!
             this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
-            this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);    
+            this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
         } else {
             this.framebuffer.setCullFace(CullFace.BACK);
             this.framebuffer.setBob(this.spheremap);
-            this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);  
-            this.framebuffer.shadingSphereEnv(time*0.0002);
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
+            this.framebuffer.shadingSphereEnv(time * 0.0002);
         }
 
         /*
@@ -253,7 +254,7 @@ export class Canvas {
         this.framebuffer.shadingSphereEnv(time*0.0002);
          this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);  
         */
-       
+
         /**
          * Inspiration:
          * - https://www.youtube.com/watch?v=7kLNXg4BmM8
@@ -283,7 +284,7 @@ export class Canvas {
          * - https://www.youtube.com/watch?v=ghX1-EUx-fQ&index=7&list=PLPnuj18PSHazbti_tw1zoQ23fqx8-ZZP7 (min 15)
          */
 
-      
+
         //  this.framebuffer.cinematicScroller(this.texture4, time);
         //  this.framebuffer.drawTextureScaledLame(0,0, 16,16, this.texture7);
         // http://doc.babylonjs.com/tutorials/discover_basic_elements
@@ -477,7 +478,7 @@ export class Canvas {
                     c = c * c * c;
                     if (r > 1) c = 0;
                     c = Math.min(1, c * 1.5);
-     
+
                     texture.texture[x + y * 256] = 243 | 255 << 8 | 97 << 16 | (c * 255) << 24;
                 }
             }
