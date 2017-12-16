@@ -214,6 +214,7 @@ export default class Framebuffer {
     private bunnyObj: any;
     private blenderObj: any;
     private bob: Texture;
+    private sphere: any;
 
     public setCullFace(face: CullFace): void {
         this.cullMode = face;
@@ -239,6 +240,7 @@ export default class Framebuffer {
         this.obj = this.createObject();
         this.bunnyObj = this.createBunny();
         this.blenderObj = this.getBlenderScene();
+        this.sphere = this.createSphere();
 
         /*
         document.addEventListener("keydown", (e) => {
@@ -834,7 +836,7 @@ export default class Framebuffer {
                 if (this.wBuffer[index2] > z) {
                     // float scale = 0.2f;
                     // float fade = clamp((depthMapDepth.x-depth)*scale, 0.0, 1.0);
-                    let zDist = Math.max(Math.min((this.wBuffer[index2] - z) * 120, 1.0), 0.0);
+                    let zDist = Math.min(Math.max(((1 / z - 1 / this.wBuffer[index2])), 0.0), 1.0);
                     // this.wBuffer[index2] = z;
                     let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
 
@@ -1093,7 +1095,7 @@ export default class Framebuffer {
      * http://insolitdust.sourceforge.net/code.html
      */
     private clearDepthBuffer(): void {
-        this.wBuffer.fill(100);
+        this.wBuffer.fill(-1 / 100);
     }
 
     public debug(elapsedTime: number): void {
@@ -2164,13 +2166,13 @@ export default class Framebuffer {
         for (let y = 0; y < 200; y++) {
             for (let x = 0; x < 320; x++) {
                 let scale = 1.2;
-                let xdist = (x - 320 / 2)+Math.sin(elapsedTime*0.0001)*80*scale;
-                let ydist = (y - 200 / 2)+Math.cos(elapsedTime*0.0001)*80*scale;
-                let xdist2 = (x - 320 / 2)+Math.sin(elapsedTime*0.0001+Math.PI)*80*scale;
-                let ydist2 = (y - 200 / 2)+Math.cos(elapsedTime*0.0001+Math.PI)*80*scale;
+                let xdist = (x - 320 / 2) + Math.sin(elapsedTime * 0.0001) * 80 * scale;
+                let ydist = (y - 200 / 2) + Math.cos(elapsedTime * 0.0001) * 80 * scale;
+                let xdist2 = (x - 320 / 2) + Math.sin(elapsedTime * 0.0001 + Math.PI) * 80 * scale;
+                let ydist2 = (y - 200 / 2) + Math.cos(elapsedTime * 0.0001 + Math.PI) * 80 * scale;
                 let dist = 256 * 20 / Math.max(1.0, Math.sqrt(xdist * xdist + ydist * ydist));
                 dist += Math.sin(Math.atan2(xdist, ydist) * 5) * 8;
-                let dist2 = 256 *20 / Math.max(1.0, Math.sqrt(xdist2 * xdist2 + ydist2 * ydist2));
+                let dist2 = 256 * 20 / Math.max(1.0, Math.sqrt(xdist2 * xdist2 + ydist2 * ydist2));
                 dist2 += Math.sin(Math.atan2(xdist2, ydist2) * 5) * 8;
                 let finalDist = dist - dist2 + elapsedTime * 0.019;
 
@@ -2178,12 +2180,12 @@ export default class Framebuffer {
                 angle -= (Math.atan2(xdist2, ydist2) / Math.PI + 1.0) * 128.5 + elapsedTime * 0.0069;
 
                 let color1 = texture.texture[(finalDist & 0xff) + (angle & 0xff) * 255];
-                let cScale = Math.min(60/(dist*2),1.0)*Math.min(60/(dist2*2),1.0);
-                let r = (color1 & 0xff)* cScale;
-                let g = (color1>>8 & 0xff)* cScale;
-                let b = (color1>>16 & 0xff)* cScale;
-                
-                this.framebuffer[i++] =r | g <<8 |b <<16 | 255 <<24;
+                let cScale = Math.min(60 / (dist * 2), 1.0) * Math.min(60 / (dist2 * 2), 1.0);
+                let r = (color1 & 0xff) * cScale;
+                let g = (color1 >> 8 & 0xff) * cScale;
+                let b = (color1 >> 16 & 0xff) * cScale;
+
+                this.framebuffer[i++] = r | g << 8 | b << 16 | 255 << 24;
             }
         }
     }
@@ -2301,7 +2303,7 @@ export default class Framebuffer {
             let model = this.blenderObj[j];
 
             if (frustumCuller.isPotentiallyVisible(model.boundingSphere)) {
-                this.drawObject2(model, modelViewMartrix, 144, 165, 116);
+                // this.drawObject2(model, modelViewMartrix, 144, 165, 116);
                 let colLine = 255 << 24 | 255 << 8;
                 // this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
                 // element.vis = true;
@@ -2314,14 +2316,23 @@ export default class Framebuffer {
 
         }
 
+        this.clear();
         if (texture2) {
             let points: Array<Vector3f> = new Array<Vector3f>();
 
-            for (let i = 0; i < 120; i++) {
-                points.push(new Vector3f(Math.sin(i * 0.25) * 8, i * 0.3 - 18 + 10 * Math.sin(elapsedTime * 0.0001), Math.cos(i * 0.25) * 8));
+            let rng = new RandomNumberGenerator();
+            rng.setSeed(66);
+            for (let i = 0; i < 640; i++) {
+                //points.push(new Vector3f(rng.getFloat() * 30 - 15, rng.getFloat() * 10 - 1, rng.getFloat() * 30 - 15));
+                let x = rng.getFloat() * 30 - 15;
+                x += Math.sin(elapsedTime * 0.0008 + x) * 2;
+                let y = rng.getFloat() * 30 - 15;
+                y += Math.sin(elapsedTime * 0.0009 + y) * 2;
+                let z = rng.getFloat() * 30 - 15;
+                z += Math.sin(elapsedTime * 0.0011 + z) * 2;
+                points.push(new Vector3f(x, y, z));
             }
 
-            points.push(new Vector3f(0, 0, 5));
 
 
             let points2: Array<Vector3f> = new Array<Vector3f>(points.length);
@@ -2338,10 +2349,10 @@ export default class Framebuffer {
             });
 
             points2.forEach(element => {
-                let size = -(1.9 * 192 / (element.z));
+                let size = -(3.1 * 192 / (element.z));
                 this.drawSoftParticle(
-                    Math.round(element.x) - Math.round(size / 2),
-                    Math.round(element.y) - Math.round(size / 2),
+                    Math.round(element.x - size * 0.5),
+                    Math.round(element.y - size * 0.5),
                     Math.round(size), Math.round(size), texture2, 1 / element.z, 1.0);
             });
         }
@@ -3243,6 +3254,258 @@ export default class Framebuffer {
             }
         }
     }
+
+    public divideSphere(points: Array<Vector3f>, index: Array<number>, steps: number) {
+
+        let points2: Array<Vector3f> = [];
+        let normals2: Array<Vector3f> = [];
+        let index2: Array<number> = [];
+
+        let c = 0;
+        for (let i = 0; i < index.length; i += 3) {
+            let v1 = points[index[i]];
+            let v2 = points[index[i + 1]];
+            let v3 = points[index[i + 2]];
+
+            let vn1 = v2.sub(v1).mul(0.5).add(v1).normalize();
+            let vn2 = v3.sub(v2).mul(0.5).add(v2).normalize();
+            let vn3 = v1.sub(v3).mul(0.5).add(v3).normalize();
+
+            points2.push(v1); points2.push(vn1); points2.push(vn3);
+            normals2.push(v1); normals2.push(vn1); normals2.push(vn3);
+            index2.push(c++); index2.push(c++); index2.push(c++);
+
+            points2.push(vn1); points2.push(v2); points2.push(vn2);
+            normals2.push(vn1); normals2.push(v2); normals2.push(vn2);
+            index2.push(c++); index2.push(c++); index2.push(c++);
+
+            points2.push(vn1); points2.push(vn2); points2.push(vn3);
+            normals2.push(vn1); normals2.push(vn2); normals2.push(vn3);
+            index2.push(c++); index2.push(c++); index2.push(c++);
+
+            points2.push(vn3); points2.push(vn2); points2.push(v3);
+            normals2.push(vn3); normals2.push(vn2); normals2.push(v3);
+            index2.push(c++); index2.push(c++); index2.push(c++);
+        }
+
+        if (steps > 0) {
+            return this.divideSphere(points2, index2, --steps);
+        } else {
+            return {
+                points: points2,
+                normals: normals2,
+                index: index2
+            }
+        }
+    }
+
+    public createSphere() {
+
+        let pointsA: Array<Vector3f> = [
+            new Vector3f(0.0, -1.0, 0.0),
+            new Vector3f(1.0, 0.0, 0.0),
+            new Vector3f(0.0, 0.0, 1.0),
+            new Vector3f(-1.0, 0.0, 0.0),
+            new Vector3f(0.0, 0.0, -1.0),
+            new Vector3f(0.0, 1.0, 0.0)
+        ];
+
+        let indexA: Array<number> = [
+            0, 1, 2,
+            0, 2, 3,
+            0, 3, 4,
+            0, 4, 1,
+            1, 5, 2,
+            2, 5, 3,
+            3, 5, 4,
+            4, 5, 1
+        ];
+
+        let k = this.divideSphere(pointsA, indexA, 3);
+
+        // optimize
+        let points: Array<Vector3f> = [];
+        let points2: Array<Vector3f> = [];
+        let normals: Array<Vector3f> = [];
+        let normals2: Array<Vector3f> = [];
+        
+        let index: Array<number> = [];
+
+        k.index.forEach(i => {
+            let p = k.points[i];
+
+            let point = points.find(point => point.sub(p).length() < 0.001);
+
+            if (point) {
+                let idx = points.indexOf(point);
+                index.push(idx);
+            } else {
+                index.push(points.push(p) - 1);
+            }
+        });
+
+        points.forEach(p => {
+            normals.push(new Vector3f(0, 0, 0));
+            normals2.push(new Vector3f(0, 0, 0));
+            points2.push(new Vector3f(0, 0, 0));
+        })
+
+        return {
+            points,
+            points2,
+            normals,
+            normals2,
+            index
+        }
+    }
+
+    public shadingSphereEnv(elapsedTime: number): void {
+
+        this.wBuffer.fill(100);
+
+        let result = this.sphere;
+
+        for(let i = 0; i < result.points.length; i++) {
+            result.points2[i].y = result.points[i].y;
+            result.points2[i].x = result.points[i].x + Math.sin(result.points[i].y * 5.2 + elapsedTime * 5.83) * 0.3;
+            result.points2[i].z = result.points[i].z +  Math.sin(result.points[i].x * 10.2 + elapsedTime * 3.83) * 0.15;
+            result.normals[i].x = 0;
+            result.normals[i].y = 0;
+            result.normals[i].z = 0;
+        }
+
+        let points = result.points2;
+        let index = result.index;
+        let normals = result.normals;
+
+        let norm: Vector3f = new Vector3f(0,0,0);
+        let norm2: Vector3f = new Vector3f(0,0,0);
+        let cross: Vector3f = new Vector3f(0,0,0);
+        for (let i = 0; i < index.length; i += 3) {
+            let v1: Vector3f = points[index[i]];
+            let v2: Vector3f = points[index[i + 1]];
+            let v3: Vector3f = points[index[i + 2]];
+            norm.sub2(v2,v1);
+            norm2.sub2(v3,v1);
+            cross.cross2(norm,norm2);
+            let normal = cross;
+            normals[index[i]].add2(normals[index[i]],normal);
+            normals[index[i + 1]].add2(normals[index[i + 1]],normal);
+            normals[index[i + 2]].add2(normals[index[i + 2]],normal);
+        }
+
+        // FIXME: speed up
+        // - remove normalie from lighting
+        // - remove normalize after normal transformation!
+        // - precreate array for transformed vertices and normals
+
+        for (let i = 0; i < normals.length; i++) {
+            normals[i].normalize2();
+        }
+
+        let scale = 40.1;
+
+        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 1.25));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 1.3));
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 1.0) * 46, Math.sin(elapsedTime * 1.2) * 20
+        , -85)
+        .multiplyMatrix(modelViewMartrix);
+
+        /**
+         * Vertex Shader Stage
+         */
+        let points2: Array<Vector3f> = new Array<Vector3f>();
+
+        let normals2: Array<Vector3f> = result.normals2;
+            
+
+        let normalMatrix = modelViewMartrix.computeNormalMatrix();
+
+        for (let n = 0; n < normals.length; n++) {
+            normalMatrix.multiplyArr(normals[n], normals2[n]);
+        }
+
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiply(points[p]);
+
+            let x = transformed.x;
+            let y = transformed.y;
+            let z = transformed.z; // TODO: use translation matrix!
+
+            let xx = (320 * 0.5) + (x / (-z * 0.0078));
+            let yy = (200 * 0.5) - (y / (-z * 0.0078));
+
+            points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
+        }
+
+        /**
+         * Primitive Assembly and Rasterization Stage:
+         * 1. back-face culling
+         * 2. viewport transform
+         * 3. scan conversion (rasterization)
+         */
+
+        let vertex1 = new Vertex();
+        vertex1.textureCoordinate = new TextureCoordinate();
+        let vertex2 = new Vertex();
+        vertex2.textureCoordinate = new TextureCoordinate();
+        let vertex3 = new Vertex();
+        vertex3.textureCoordinate = new TextureCoordinate();
+        let vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
+        for (let i = 0; i < index.length; i += 3) {
+
+            // Only render triangles with CCW-ordered vertices
+            // 
+            // Reference:
+            // David H. Eberly (2006).
+            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
+            // p. 69. Morgan Kaufmann Publishers, United States.
+            //
+            let v1 = points2[index[i]];
+            let n1 = normals2[index[i]];
+
+            let v2 = points2[index[i + 1]];
+            let n2 = normals2[index[i + 1]];
+
+            let v3 = points2[index[i + 2]];
+            let n3 = normals2[index[i + 2]];
+
+            if (this.isTriangleCCW(v1, v2, v3)) {
+
+                let color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
+
+                vertexArray[0].position = v1;
+                this.fakeSphere(n1, vertex1);
+
+                vertexArray[1].position = v2;
+                this.fakeSphere(n2, vertex2);
+
+                vertexArray[2].position = v3;
+                this.fakeSphere(n3, vertex3);
+
+                if (v1.x < Framebuffer.minWindow.x ||
+                    v2.x < Framebuffer.minWindow.x ||
+                    v3.x < Framebuffer.minWindow.x ||
+                    v1.x > Framebuffer.maxWindow.x ||
+                    v2.x > Framebuffer.maxWindow.x ||
+                    v3.x > Framebuffer.maxWindow.x ||
+                    v1.y < Framebuffer.minWindow.y ||
+                    v2.y < Framebuffer.minWindow.y ||
+                    v3.y < Framebuffer.minWindow.y ||
+                    v1.y > Framebuffer.maxWindow.y ||
+                    v2.y > Framebuffer.maxWindow.y ||
+                    v3.y > Framebuffer.maxWindow.y) {
+
+
+                    this.clipConvexPolygon2(vertexArray, color);
+                } else {
+                    // this.drawTriangleDDA(v1, v2, v3, color);
+                    this.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], color);
+                }
+            }
+        }
+    }
+
 
     /**
      * Optimization:

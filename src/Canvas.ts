@@ -32,6 +32,8 @@ export class Canvas {
     private texture15: Texture;
     private hoodlumLogo: Texture;
     private particleTexture: Texture;
+    private particleTexture2: Texture;
+ 
     private metal: Texture;
     private abstract: Texture;
     private myAudio: HTMLAudioElement;
@@ -107,9 +109,8 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3;
-        time = time % 400000;
+        time = time % 420000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
-
 
         this.framebuffer.setCullFace(CullFace.FRONT);
 
@@ -234,11 +235,25 @@ export class Canvas {
                 0.4 * this.framebuffer.cosineInterpolate(200, 300, smashTime) - 0.4 * this.framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
             this.framebuffer.drawScaledTextureClip((320 / 2 - (this.hoodlumLogo.width + smash) / 2) | 0,
                 (200 / 2 - (this.hoodlumLogo.height - smash) / 2) | 0, this.hoodlumLogo.width + smash, (this.hoodlumLogo.height - smash) | 0, this.hoodlumLogo, 1.0);
-        } else {
+        } else if (time < 400000 ){
             this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
             this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);    
+        } else {
+            this.framebuffer.setCullFace(CullFace.BACK);
+            this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);  
+            this.framebuffer.shadingSphereEnv(time*0.0002);
         }
-        
+
+        /*
+        this.framebuffer.setCullFace(CullFace.BACK);
+        //this.framebuffer.drawBlenderScene(time, this.texture4, this.particleTexture2);
+        this.framebuffer.setBob(this.spheremap);
+        this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);  
+        this.framebuffer.shadingSphereEnv(time*0.0002);
+         this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);  
+        */
+       
         /**
          * Inspiration:
          * - https://www.youtube.com/watch?v=7kLNXg4BmM8
@@ -272,7 +287,7 @@ export class Canvas {
         //  this.framebuffer.cinematicScroller(this.texture4, time);
         //  this.framebuffer.drawTextureScaledLame(0,0, 16,16, this.texture7);
         // http://doc.babylonjs.com/tutorials/discover_basic_elements
-        //  this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
+        this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
 
         // implement modells with baked shaods and lighting :)
         // http://iquilezles.org/www/index.htm
@@ -444,6 +459,35 @@ export class Canvas {
         });
     }
 
+
+    public createProceduralTexture3(): Promise<Texture> {
+        return new Promise((resolve) => {
+            const texture = new Texture();
+            texture.texture = new Uint32Array(256 * 256);
+
+            let rng = new RandomNumberGenerator();
+            rng.setSeed(100);
+
+            for (let y = 0; y < 256; y++) {
+                for (let x = 0; x < 256; x++) {
+                    let dx = 127 - x
+                    let dy = 127 - y
+                    let r = Math.sqrt(dx * dx + dy * dy) / 127;
+                    let c = 1 - r;
+                    c = c * c * c;
+                    if (r > 1) c = 0;
+                    c = Math.min(1, c * 1.5);
+     
+                    texture.texture[x + y * 256] = 243 | 255 << 8 | 97 << 16 | (c * 255) << 24;
+                }
+            }
+
+            texture.width = 256;
+            texture.height = 256;
+            resolve(texture);
+        });
+    }
+
     public init(): void {
         Promise.all([
             this.createTexture(require('./assets/spheremap.png'), false).then(texture => this.spheremap = texture),
@@ -464,6 +508,7 @@ export class Canvas {
             this.createTexture(require('./assets/led.png'), false).then(texture => this.texture14 = texture),
             this.createProceduralTexture().then(texture => this.texture15 = texture),
             this.createProceduralTexture2().then(texture => this.particleTexture = texture),
+            this.createProceduralTexture3().then(texture => this.particleTexture2 = texture),
             this.createTexture(require('./assets/hoodlumLogo.png'), true).then(texture => this.hoodlumLogo = texture),
             this.createTexture(require('./assets/abstract.png'), false).then(texture => this.abstract = texture)
         ]).then(() => {
