@@ -2303,7 +2303,7 @@ export default class Framebuffer {
             let model = this.blenderObj[j];
 
             if (frustumCuller.isPotentiallyVisible(model.boundingSphere)) {
-                // this.drawObject2(model, modelViewMartrix, 144, 165, 116);
+                this.drawObject2(model, modelViewMartrix, 144, 165, 116);
                 let colLine = 255 << 24 | 255 << 8;
                 // this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
                 // element.vis = true;
@@ -2316,7 +2316,6 @@ export default class Framebuffer {
 
         }
 
-        this.clear();
         if (texture2) {
             let points: Array<Vector3f> = new Array<Vector3f>();
 
@@ -3552,7 +3551,7 @@ export default class Framebuffer {
         return object;
     }
     public reflectionBunny(elapsedTime: number): void {
-        this.wBuffer.fill(100);
+        this.clearDepthBuffer();
 
         let obj = this.bunnyObj;
 
