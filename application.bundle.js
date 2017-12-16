@@ -99,14 +99,29 @@ class Vector3f {
     sub(vec) {
         return new Vector3f(this.x - vec.x, this.y - vec.y, this.z - vec.z);
     }
+    sub2(vec1, vec2) {
+        this.x = vec1.x - vec2.x;
+        this.y = vec1.y - vec2.y;
+        this.z = vec1.z - vec2.z;
+    }
     mul(scal) {
         return new Vector3f(this.x * scal, this.y * scal, this.z * scal);
     }
     add(vec) {
         return new Vector3f(this.x + vec.x, this.y + vec.y, this.z + vec.z);
     }
+    add2(vec, vec2) {
+        this.x = vec.x + vec2.x;
+        this.y = vec.y + vec2.y;
+        this.z = vec.z + vec2.z;
+    }
     cross(vec) {
         return new Vector3f(this.y * vec.z - this.z * vec.y, this.z * vec.x - this.x * vec.z, this.x * vec.y - this.y * vec.x);
+    }
+    cross2(vec1, vec2) {
+        this.x = vec1.y * vec2.z - vec1.z * vec2.y;
+        this.y = vec1.z * vec2.x - vec1.x * vec2.z;
+        this.z = vec1.x * vec2.y - vec1.y * vec2.x;
     }
     length() {
         return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
@@ -114,6 +129,12 @@ class Vector3f {
     normalize() {
         let reci = 1.0 / this.length();
         return this.mul(reci);
+    }
+    normalize2() {
+        let reci = 1.0 / this.length();
+        this.x *= reci;
+        this.y *= reci;
+        this.z *= reci;
     }
     dot(vec) {
         return this.x * vec.x + this.y * vec.y + this.z * vec.z;
@@ -362,7 +383,7 @@ class Canvas {
         this.fpsCount++;
         let time = (Date.now() - this.start);
         time = time * 3;
-        time = time % 400000;
+        time = time % 420000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
         this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
         if (time < 5000) {
@@ -514,10 +535,24 @@ class Canvas {
                 0.4 * this.framebuffer.cosineInterpolate(200, 300, smashTime) - 0.4 * this.framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
             this.framebuffer.drawScaledTextureClip((320 / 2 - (this.hoodlumLogo.width + smash) / 2) | 0, (200 / 2 - (this.hoodlumLogo.height - smash) / 2) | 0, this.hoodlumLogo.width + smash, (this.hoodlumLogo.height - smash) | 0, this.hoodlumLogo, 1.0);
         }
-        else {
+        else if (time < 400000) {
             this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
             this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
         }
+        else {
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+            this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
+            this.framebuffer.shadingSphereEnv(time * 0.0002);
+        }
+        /*
+        this.framebuffer.setCullFace(CullFace.BACK);
+        //this.framebuffer.drawBlenderScene(time, this.texture4, this.particleTexture2);
+        this.framebuffer.setBob(this.spheremap);
+        this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
+        this.framebuffer.shadingSphereEnv(time*0.0002);
+         this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
+        */
         /**
          * Inspiration:
          * - https://www.youtube.com/watch?v=7kLNXg4BmM8
@@ -549,7 +584,7 @@ class Canvas {
         //  this.framebuffer.cinematicScroller(this.texture4, time);
         //  this.framebuffer.drawTextureScaledLame(0,0, 16,16, this.texture7);
         // http://doc.babylonjs.com/tutorials/discover_basic_elements
-        //  this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
+        this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
         // implement modells with baked shaods and lighting :)
         // http://iquilezles.org/www/index.htm
         // http://iquilezles.org/www/articles/normals/normals.htm
@@ -696,6 +731,30 @@ class Canvas {
             resolve(texture);
         });
     }
+    createProceduralTexture3() {
+        return new Promise((resolve) => {
+            const texture = new Texture_1.default();
+            texture.texture = new Uint32Array(256 * 256);
+            let rng = new RandomNumberGenerator_1.default();
+            rng.setSeed(100);
+            for (let y = 0; y < 256; y++) {
+                for (let x = 0; x < 256; x++) {
+                    let dx = 127 - x;
+                    let dy = 127 - y;
+                    let r = Math.sqrt(dx * dx + dy * dy) / 127;
+                    let c = 1 - r;
+                    c = c * c * c;
+                    if (r > 1)
+                        c = 0;
+                    c = Math.min(1, c * 1.5);
+                    texture.texture[x + y * 256] = 243 | 255 << 8 | 97 << 16 | (c * 255) << 24;
+                }
+            }
+            texture.width = 256;
+            texture.height = 256;
+            resolve(texture);
+        });
+    }
     init() {
         Promise.all([
             this.createTexture(__webpack_require__(24), false).then(texture => this.spheremap = texture),
@@ -716,6 +775,7 @@ class Canvas {
             this.createTexture(__webpack_require__(39), false).then(texture => this.texture14 = texture),
             this.createProceduralTexture().then(texture => this.texture15 = texture),
             this.createProceduralTexture2().then(texture => this.particleTexture = texture),
+            this.createProceduralTexture3().then(texture => this.particleTexture2 = texture),
             this.createTexture(__webpack_require__(40), true).then(texture => this.hoodlumLogo = texture),
             this.createTexture(__webpack_require__(41), false).then(texture => this.abstract = texture)
         ]).then(() => {
@@ -881,6 +941,7 @@ class Framebuffer {
         this.obj = this.createObject();
         this.bunnyObj = this.createBunny();
         this.blenderObj = this.getBlenderScene();
+        this.sphere = this.createSphere();
         /*
         document.addEventListener("keydown", (e) => {
             console.log('key pressed');
@@ -1423,7 +1484,7 @@ class Framebuffer {
                 if (this.wBuffer[index2] > z) {
                     // float scale = 0.2f;
                     // float fade = clamp((depthMapDepth.x-depth)*scale, 0.0, 1.0);
-                    let zDist = Math.max(Math.min((this.wBuffer[index2] - z) * 120, 1.0), 0.0);
+                    let zDist = Math.min(Math.max(((1 / z - 1 / this.wBuffer[index2])), 0.0), 1.0);
                     // this.wBuffer[index2] = z;
                     let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
                     let alpha = (texture.texture[textureIndex] >> 24 & 0xff) * alphaScale * zDist;
@@ -1634,7 +1695,7 @@ class Framebuffer {
      * http://insolitdust.sourceforge.net/code.html
      */
     clearDepthBuffer() {
-        this.wBuffer.fill(100);
+        this.wBuffer.fill(-1 / 100);
     }
     debug(elapsedTime) {
         this.clearDepthBuffer();
@@ -2587,10 +2648,18 @@ class Framebuffer {
         }
         if (texture2) {
             let points = new Array();
-            for (let i = 0; i < 120; i++) {
-                points.push(new math_1.Vector3f(Math.sin(i * 0.25) * 8, i * 0.3 - 18 + 10 * Math.sin(elapsedTime * 0.0001), Math.cos(i * 0.25) * 8));
+            let rng = new RandomNumberGenerator_1.default();
+            rng.setSeed(66);
+            for (let i = 0; i < 640; i++) {
+                //points.push(new Vector3f(rng.getFloat() * 30 - 15, rng.getFloat() * 10 - 1, rng.getFloat() * 30 - 15));
+                let x = rng.getFloat() * 30 - 15;
+                x += Math.sin(elapsedTime * 0.0008 + x) * 2;
+                let y = rng.getFloat() * 30 - 15;
+                y += Math.sin(elapsedTime * 0.0009 + y) * 2;
+                let z = rng.getFloat() * 30 - 15;
+                z += Math.sin(elapsedTime * 0.0011 + z) * 2;
+                points.push(new math_1.Vector3f(x, y, z));
             }
-            points.push(new math_1.Vector3f(0, 0, 5));
             let points2 = new Array(points.length);
             points.forEach(element => {
                 let transformed = this.project(modelViewMartrix.multiply(element));
@@ -2600,8 +2669,8 @@ class Framebuffer {
                 return a.z - b.z;
             });
             points2.forEach(element => {
-                let size = -(1.9 * 192 / (element.z));
-                this.drawSoftParticle(Math.round(element.x) - Math.round(size / 2), Math.round(element.y) - Math.round(size / 2), Math.round(size), Math.round(size), texture2, 1 / element.z, 1.0);
+                let size = -(3.1 * 192 / (element.z));
+                this.drawSoftParticle(Math.round(element.x - size * 0.5), Math.round(element.y - size * 0.5), Math.round(size), Math.round(size), texture2, 1 / element.z, 1.0);
             });
         }
         this.drawText(8, 18 + 8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
@@ -3320,6 +3389,231 @@ class Framebuffer {
             }
         }
     }
+    divideSphere(points, index, steps) {
+        let points2 = [];
+        let normals2 = [];
+        let index2 = [];
+        let c = 0;
+        for (let i = 0; i < index.length; i += 3) {
+            let v1 = points[index[i]];
+            let v2 = points[index[i + 1]];
+            let v3 = points[index[i + 2]];
+            let vn1 = v2.sub(v1).mul(0.5).add(v1).normalize();
+            let vn2 = v3.sub(v2).mul(0.5).add(v2).normalize();
+            let vn3 = v1.sub(v3).mul(0.5).add(v3).normalize();
+            points2.push(v1);
+            points2.push(vn1);
+            points2.push(vn3);
+            normals2.push(v1);
+            normals2.push(vn1);
+            normals2.push(vn3);
+            index2.push(c++);
+            index2.push(c++);
+            index2.push(c++);
+            points2.push(vn1);
+            points2.push(v2);
+            points2.push(vn2);
+            normals2.push(vn1);
+            normals2.push(v2);
+            normals2.push(vn2);
+            index2.push(c++);
+            index2.push(c++);
+            index2.push(c++);
+            points2.push(vn1);
+            points2.push(vn2);
+            points2.push(vn3);
+            normals2.push(vn1);
+            normals2.push(vn2);
+            normals2.push(vn3);
+            index2.push(c++);
+            index2.push(c++);
+            index2.push(c++);
+            points2.push(vn3);
+            points2.push(vn2);
+            points2.push(v3);
+            normals2.push(vn3);
+            normals2.push(vn2);
+            normals2.push(v3);
+            index2.push(c++);
+            index2.push(c++);
+            index2.push(c++);
+        }
+        if (steps > 0) {
+            return this.divideSphere(points2, index2, --steps);
+        }
+        else {
+            return {
+                points: points2,
+                normals: normals2,
+                index: index2
+            };
+        }
+    }
+    createSphere() {
+        let pointsA = [
+            new math_1.Vector3f(0.0, -1.0, 0.0),
+            new math_1.Vector3f(1.0, 0.0, 0.0),
+            new math_1.Vector3f(0.0, 0.0, 1.0),
+            new math_1.Vector3f(-1.0, 0.0, 0.0),
+            new math_1.Vector3f(0.0, 0.0, -1.0),
+            new math_1.Vector3f(0.0, 1.0, 0.0)
+        ];
+        let indexA = [
+            0, 1, 2,
+            0, 2, 3,
+            0, 3, 4,
+            0, 4, 1,
+            1, 5, 2,
+            2, 5, 3,
+            3, 5, 4,
+            4, 5, 1
+        ];
+        let k = this.divideSphere(pointsA, indexA, 3);
+        // optimize
+        let points = [];
+        let points2 = [];
+        let normals = [];
+        let normals2 = [];
+        let index = [];
+        k.index.forEach(i => {
+            let p = k.points[i];
+            let point = points.find(point => point.sub(p).length() < 0.001);
+            if (point) {
+                let idx = points.indexOf(point);
+                index.push(idx);
+            }
+            else {
+                index.push(points.push(p) - 1);
+            }
+        });
+        points.forEach(p => {
+            normals.push(new math_1.Vector3f(0, 0, 0));
+            normals2.push(new math_1.Vector3f(0, 0, 0));
+            points2.push(new math_1.Vector3f(0, 0, 0));
+        });
+        return {
+            points,
+            points2,
+            normals,
+            normals2,
+            index
+        };
+    }
+    shadingSphereEnv(elapsedTime) {
+        this.wBuffer.fill(100);
+        let result = this.sphere;
+        for (let i = 0; i < result.points.length; i++) {
+            result.points2[i].y = result.points[i].y;
+            result.points2[i].x = result.points[i].x + Math.sin(result.points[i].y * 5.2 + elapsedTime * 5.83) * 0.3;
+            result.points2[i].z = result.points[i].z + Math.sin(result.points[i].x * 10.2 + elapsedTime * 3.83) * 0.15;
+            result.normals[i].x = 0;
+            result.normals[i].y = 0;
+            result.normals[i].z = 0;
+        }
+        let points = result.points2;
+        let index = result.index;
+        let normals = result.normals;
+        let norm = new math_1.Vector3f(0, 0, 0);
+        let norm2 = new math_1.Vector3f(0, 0, 0);
+        let cross = new math_1.Vector3f(0, 0, 0);
+        for (let i = 0; i < index.length; i += 3) {
+            let v1 = points[index[i]];
+            let v2 = points[index[i + 1]];
+            let v3 = points[index[i + 2]];
+            norm.sub2(v2, v1);
+            norm2.sub2(v3, v1);
+            cross.cross2(norm, norm2);
+            let normal = cross;
+            normals[index[i]].add2(normals[index[i]], normal);
+            normals[index[i + 1]].add2(normals[index[i + 1]], normal);
+            normals[index[i + 2]].add2(normals[index[i + 2]], normal);
+        }
+        // FIXME: speed up
+        // - remove normalie from lighting
+        // - remove normalize after normal transformation!
+        // - precreate array for transformed vertices and normals
+        for (let i = 0; i < normals.length; i++) {
+            normals[i].normalize2();
+        }
+        let scale = 40.1;
+        let modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 1.25));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(elapsedTime * 1.3));
+        modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 1.0) * 46, Math.sin(elapsedTime * 1.2) * 20, -85)
+            .multiplyMatrix(modelViewMartrix);
+        /**
+         * Vertex Shader Stage
+         */
+        let points2 = new Array();
+        let normals2 = result.normals2;
+        let normalMatrix = modelViewMartrix.computeNormalMatrix();
+        for (let n = 0; n < normals.length; n++) {
+            normalMatrix.multiplyArr(normals[n], normals2[n]);
+        }
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiply(points[p]);
+            let x = transformed.x;
+            let y = transformed.y;
+            let z = transformed.z; // TODO: use translation matrix!
+            let xx = (320 * 0.5) + (x / (-z * 0.0078));
+            let yy = (200 * 0.5) - (y / (-z * 0.0078));
+            points2.push(new math_1.Vector3f(Math.round(xx), Math.round(yy), z));
+        }
+        /**
+         * Primitive Assembly and Rasterization Stage:
+         * 1. back-face culling
+         * 2. viewport transform
+         * 3. scan conversion (rasterization)
+         */
+        let vertex1 = new Vertex_1.Vertex();
+        vertex1.textureCoordinate = new Vertex_1.TextureCoordinate();
+        let vertex2 = new Vertex_1.Vertex();
+        vertex2.textureCoordinate = new Vertex_1.TextureCoordinate();
+        let vertex3 = new Vertex_1.Vertex();
+        vertex3.textureCoordinate = new Vertex_1.TextureCoordinate();
+        let vertexArray = new Array(vertex1, vertex2, vertex3);
+        for (let i = 0; i < index.length; i += 3) {
+            // Only render triangles with CCW-ordered vertices
+            // 
+            // Reference:
+            // David H. Eberly (2006).
+            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
+            // p. 69. Morgan Kaufmann Publishers, United States.
+            //
+            let v1 = points2[index[i]];
+            let n1 = normals2[index[i]];
+            let v2 = points2[index[i + 1]];
+            let n2 = normals2[index[i + 1]];
+            let v3 = points2[index[i + 2]];
+            let n3 = normals2[index[i + 2]];
+            if (this.isTriangleCCW(v1, v2, v3)) {
+                let color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
+                vertexArray[0].position = v1;
+                this.fakeSphere(n1, vertex1);
+                vertexArray[1].position = v2;
+                this.fakeSphere(n2, vertex2);
+                vertexArray[2].position = v3;
+                this.fakeSphere(n3, vertex3);
+                if (v1.x < Framebuffer.minWindow.x ||
+                    v2.x < Framebuffer.minWindow.x ||
+                    v3.x < Framebuffer.minWindow.x ||
+                    v1.x > Framebuffer.maxWindow.x ||
+                    v2.x > Framebuffer.maxWindow.x ||
+                    v3.x > Framebuffer.maxWindow.x ||
+                    v1.y < Framebuffer.minWindow.y ||
+                    v2.y < Framebuffer.minWindow.y ||
+                    v3.y < Framebuffer.minWindow.y ||
+                    v1.y > Framebuffer.maxWindow.y ||
+                    v2.y > Framebuffer.maxWindow.y ||
+                    v3.y > Framebuffer.maxWindow.y) {
+                    this.clipConvexPolygon2(vertexArray, color);
+                }
+                else {
+                    // this.drawTriangleDDA(v1, v2, v3, color);
+                    this.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], color);
+                }
+            }
+        }
+    }
     /**
      * Optimization:
      * - no shading / only texture mapping (use function pointers to set correct rasterization function)
@@ -3355,7 +3649,7 @@ class Framebuffer {
         return object;
     }
     reflectionBunny(elapsedTime) {
-        this.wBuffer.fill(100);
+        this.clearDepthBuffer();
         let obj = this.bunnyObj;
         let scale = 64.1;
         let modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 0.30));
