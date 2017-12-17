@@ -383,7 +383,7 @@ class Canvas {
         this.fpsCount++;
         let time = (Date.now() - this.start);
         time = time * 3;
-        time = time % 420000;
+        time = time % 440000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
         this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
         if (time < 5000) {
@@ -536,13 +536,14 @@ class Canvas {
             this.framebuffer.drawScaledTextureClip((320 / 2 - (this.hoodlumLogo.width + smash) / 2) | 0, (200 / 2 - (this.hoodlumLogo.height - smash) / 2) | 0, this.hoodlumLogo.width + smash, (this.hoodlumLogo.height - smash) | 0, this.hoodlumLogo, 1.0);
         }
         else if (time < 400000) {
+            // THE NEXT LINE IS THE BOTTLENECK NOT THE SPHERE!
             this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
             this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
         }
         else {
             this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
             this.framebuffer.setBob(this.spheremap);
-            this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.shadingSphereEnv(time * 0.0002);
         }
         /*
@@ -2521,6 +2522,13 @@ class Framebuffer {
             }
         }
     }
+    /**
+     * This code is pretty slow. About 12 fps with 6 x slowdown int chrome!
+     * FIXME:
+     * - optimize
+     * - precompute dist & angle
+     * - maybe use 8 * 8 block interpolation
+     */
     drawPlanedeformationTunnelV2(elapsedTime, texture, texture2) {
         let i = 0;
         for (let y = 0; y < 200; y++) {
@@ -3535,15 +3543,15 @@ class Framebuffer {
         for (let i = 0; i < normals.length; i++) {
             normals[i].normalize2();
         }
-        let scale = 40.1;
-        let modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 1.25));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(elapsedTime * 1.3));
+        let scale = 37.1;
+        let modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 3.25));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(elapsedTime * 2.3));
         modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 1.0) * 46, Math.sin(elapsedTime * 1.2) * 20, -85)
             .multiplyMatrix(modelViewMartrix);
         /**
          * Vertex Shader Stage
          */
-        let points2 = new Array();
+        let points2 = result.points2;
         let normals2 = result.normals2;
         let normalMatrix = modelViewMartrix.computeNormalMatrix();
         for (let n = 0; n < normals.length; n++) {
@@ -3551,12 +3559,9 @@ class Framebuffer {
         }
         for (let p = 0; p < points.length; p++) {
             let transformed = modelViewMartrix.multiply(points[p]);
-            let x = transformed.x;
-            let y = transformed.y;
-            let z = transformed.z; // TODO: use translation matrix!
-            let xx = (320 * 0.5) + (x / (-z * 0.0078));
-            let yy = (200 * 0.5) - (y / (-z * 0.0078));
-            points2.push(new math_1.Vector3f(Math.round(xx), Math.round(yy), z));
+            points2[p].x = Math.round((320 * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
+            points2[p].y = Math.round((200 * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
+            points2[p].z = transformed.z;
         }
         /**
          * Primitive Assembly and Rasterization Stage:
@@ -3732,8 +3737,8 @@ class Framebuffer {
     }
     fakeSphere(normal, vertex) {
         // https://www.mvps.org/directx/articles/spheremap.htm
-        // vertex.textureCoordinate.u = 0.5 + normal.x * 0.5;
-        // vertex.textureCoordinate.v = 0.5 - normal.y * 0.5;
+        //vertex.textureCoordinate.u = 0.5 + normal.x * 0.5;
+        //vertex.textureCoordinate.v = 0.5 - normal.y * 0.5;
         vertex.textureCoordinate.u = 0.5 + Math.asin(normal.x) / Math.PI;
         vertex.textureCoordinate.v = 0.5 - Math.asin(normal.y) / Math.PI;
     }
