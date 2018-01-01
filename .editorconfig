@@ -1,0 +1,17 @@
+# EditorConfig specifying coding styles like charset, indent style,
+# indent size as well as a final newline at the end of each file
+
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+[*.{js,ts}]
+charset = utf-8
+indent_style = space
+indent_size = 4
+
+[package.json]
+indent_style = space
+indent_size = 2

@@ -228,8 +228,8 @@ export class Canvas {
             this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
         } else if (time < 380000) {
             this.framebuffer.drawPlanedeformationTunnel(time, this.texture3, this.metal);
-            let ukBasslineBpm = 140;
-            let ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+            const ukBasslineBpm = 140;
+            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
             let smashTime = (Date.now() - this.start) % ukBasslineClapMs;
             let smash = (this.framebuffer.cosineInterpolate(0, 15, smashTime) - this.framebuffer.cosineInterpolate(15, 200, smashTime) +
                 0.4 * this.framebuffer.cosineInterpolate(200, 300, smashTime) - 0.4 * this.framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;

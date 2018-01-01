@@ -44,6 +44,7 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
     - Controllable First Person Camera
     - Key Frame Animated Camera
 ### Backlog
+- Add Editorconfig
 - Configurable Clipping Regions (Sprites / Geometry)
 - Procedural Textures
 - Render To Texture
