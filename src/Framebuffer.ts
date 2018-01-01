@@ -717,6 +717,13 @@ export default class Framebuffer {
 
     tmpGlitch = new Uint32Array(320 * 200);
 
+    public raveMoview(elapsedTime: number, texture: Texture) : void {
+
+  
+        this.fastFramebufferCopyOffset(this.framebuffer, texture.texture, -(((elapsedTime/200) |0)%11)*200);
+
+    }
+
     public glitchScreen(elapsedTime: number, texture: Texture): void {
 
         const glitchFactor = (Math.sin(elapsedTime*0.0003)*0.5+0.5);
@@ -2963,8 +2970,8 @@ export default class Framebuffer {
             normals2.push(modelViewMartrix.multiply(normals[n]));
         }
 
-        let ukBasslineBpm = 85;
-        let ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+        let ukBasslineBpm = 130/2;
+        let ukBasslineClapMs = 60000 / ukBasslineBpm;
         let smashTime = sync % ukBasslineClapMs;
         let smash = (this.cosineInterpolate(0, 15, smashTime) - this.cosineInterpolate(15, 200, smashTime) +
             0.4 * this.cosineInterpolate(200, 300, smashTime) - 0.4 * this.cosineInterpolate(300, 400, smashTime)

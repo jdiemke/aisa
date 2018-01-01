@@ -34,6 +34,7 @@ export class Canvas {
     private particleTexture: Texture;
     private particleTexture2: Texture;
     private noise: Texture;
+    private rave: Texture;
     private metal: Texture;
     private abstract: Texture;
     private myAudio: HTMLAudioElement;
@@ -241,8 +242,11 @@ export class Canvas {
             this.framebuffer.shadingSphereEnv(time * 0.0002);
         }
 
+        this.framebuffer.raveMoview(time, this.rave);
+        this.framebuffer.setCullFace(CullFace.BACK);
+        this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
         this.framebuffer.glitchScreen(time, this.noise);
-
+        this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
         /*
         this.framebuffer.setCullFace(CullFace.BACK);
         //this.framebuffer.drawBlenderScene(time, this.texture4, this.particleTexture2);
@@ -529,7 +533,8 @@ export class Canvas {
             this.createProceduralTexture3().then(texture => this.particleTexture2 = texture),
             this.createProceduralTexture4().then(texture => this.noise = texture),
             this.createTexture(require('./assets/hoodlumLogo.png'), true).then(texture => this.hoodlumLogo = texture),
-            this.createTexture(require('./assets/abstract.png'), false).then(texture => this.abstract = texture)
+            this.createTexture(require('./assets/abstract.png'), false).then(texture => this.abstract = texture),
+            this.createTexture(require('./assets/rave.png'), false).then(texture => this.rave = texture)
         ]).then(() => {
             this.myAudio = new Audio(require('./assets/3dGalax.mp3'));
             this.myAudio.loop = true;
