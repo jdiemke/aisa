@@ -304,6 +304,18 @@ export default class Framebuffer {
         }
     }
 
+    public drawRect2(x, y, width,height, color) {
+        let start = x + y * this.width;
+        for (let j = 0; j < height; j++) {
+        for (let i = 0; i < width; i++) {
+        
+                this.framebuffer[start++] = color;
+                
+            }
+            start += 320-width;
+        }
+    }
+
     public drawText(x: number, y: number, text: string, texture: Texture): void {
         let xpos = x;
         let firstIndex = ' '.charCodeAt(0);
@@ -700,6 +712,70 @@ export default class Framebuffer {
             let y = (Math.sin(4 * scaledTime * 0.002 + i * 0.11) * (200 / 2 - BALL_SIZE / 2)) | 0;
             //this.drawTexture(320 / 2 - BALL_SIZE / 2 + x, 200 / 2 - BALL_SIZE / 2 + y, texture, 1.0);
             this.drawTextureNoClipAlpha(320 / 2 - BALL_SIZE / 2 + x, 200 / 2 - BALL_SIZE / 2 + y, texture);
+        }
+    }
+
+    tmpGlitch = new Uint32Array(320 * 200);
+
+    public glitchScreen(elapsedTime: number, texture: Texture): void {
+
+        const glitchFactor = (Math.sin(elapsedTime*0.0003)*0.5+0.5);
+        let rng = new RandomNumberGenerator();
+        rng.setSeed((elapsedTime / 250) | 0);
+        let texture2 = new Texture();
+        texture2.height = 200;
+        texture2.width = 320;
+        texture2.texture = this.framebuffer;
+        for (let x = 0; x < 16; x++) {
+            for (let y = 0; y < 10; y++) {
+                if(rng.getFloat() > 0.25) {
+                    continue;
+                }
+
+                this.drawTextureRect(20*(16-x), 20*((16*rng.getFloat())|0), 20*x, 20*y, 20, 20, texture2, 0.1+0.35*glitchFactor);
+            }
+        }
+
+        for (let x = 0; x < 16; x++) {
+            for (let y = 0; y < 10; y++) {
+                this.drawTextureRect(x*20, y*20, 20*(Math.round(elapsedTime/100+x+y)%12), 0, 20, 20, texture, 0.1+0.3*glitchFactor);
+            }
+        }
+
+        this.fastFramebufferCopy(this.tmpGlitch, this.framebuffer);
+
+        // now distort the tmpGlitch buffer and render to framebuffer again
+
+
+        
+        let rng2 = new RandomNumberGenerator();
+       
+        for (let k = 0; k < 8; k++) {
+            let yStart = Math.round(rng.getFloat() * 180);
+            const size = 3 + Math.round(rng.getFloat() * 20);
+            rng2.setSeed((elapsedTime / 250) | 0);
+            let scale = rng2.getFloat() * glitchFactor;
+            let off = rng.getFloat()* glitchFactor;
+            for (let y = 0; y < size; y++) {
+                const offset = Math.abs(Math.round(off * 25) + Math.round(rng2.getFloat() * 3)
+                    + Math.round(Math.cos(y * 0.01 + elapsedTime * 0.002 + off) * scale * 5));
+
+                let index = yStart* 320;
+                let glIndex = yStart * 320 + 320 - offset;
+
+                for (let i = 0; i < Math.max(0, offset); i++) {
+                    this.framebuffer[index++] = this.tmpGlitch[glIndex++];
+                }
+
+                
+                glIndex = yStart * 320;
+                let count = 320 - offset;
+
+                for (let i = 0; i < count; i++) {
+                    this.framebuffer[index++] = this.tmpGlitch[glIndex++];
+                }
+                yStart++;
+            }
         }
     }
 
@@ -3370,11 +3446,11 @@ export default class Framebuffer {
 
         let result = this.sphere;
 
-        
-        for(let i = 0; i < result.points.length; i++) {
+
+        for (let i = 0; i < result.points.length; i++) {
             result.points2[i].y = result.points[i].y;
             result.points2[i].x = result.points[i].x + Math.sin(result.points[i].y * 5.2 + elapsedTime * 5.83) * 0.3;
-            result.points2[i].z = result.points[i].z +  Math.sin(result.points[i].x * 10.2 + elapsedTime * 3.83) * 0.15;
+            result.points2[i].z = result.points[i].z + Math.sin(result.points[i].x * 10.2 + elapsedTime * 3.83) * 0.15;
             result.normals[i].x = 0;
             result.normals[i].y = 0;
             result.normals[i].z = 0;

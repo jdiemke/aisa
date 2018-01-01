@@ -20,7 +20,8 @@
             "member-variable-declaration",
             "object-destructuring",
             "array-destructuring"
-        ]
+        ],
+        "no-bitwise": false
     },
     "rulesDirectory": []
 }
