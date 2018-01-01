@@ -8,7 +8,19 @@
         "quotemark": [true, "single"],
         "interface-name": [true, "never-prefix"],
         "array-type": [true, "generic"],
-        "linebreak-style": [true, "LF"]
+        "linebreak-style": [true, "LF"],
+        "typedef": [
+            true, 
+            "call-signature",
+            "arrow-call-signature",
+            "parameter",
+            "arrow-parameter",
+            "property-declaration",
+            "variable-declaration",
+            "member-variable-declaration",
+            "object-destructuring",
+            "array-destructuring"
+        ]
     },
     "rulesDirectory": []
 }

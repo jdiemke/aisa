@@ -1,5 +1,5 @@
 # AISA
-AISA is a Software 3D Engine written in TypeScript 2.5.2
+AISA is a Software 3D Engine written in TypeScript 2.6.2
 ### Demo
 https://jdiemke.github.io/AISA/
 ### How to get
@@ -44,7 +44,6 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
     - Controllable First Person Camera
     - Key Frame Animated Camera
 ### Backlog
-- Add Editorconfig
 - Configurable Clipping Regions (Sprites / Geometry)
 - Procedural Textures
 - Render To Texture
@@ -78,3 +77,9 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Material
 - Shadow Mapping
 - Pixel Shaders (Bump Mapping, Parallax Mapping)
+### References
+- https://hacks.mozilla.org/2011/12/faster-canvas-pixel-manipulation-with-typed-arrays/
+- http://www.ecere.com/3dbhole/
+- https://www.davrous.com/2013/06/21/tutorial-part-4-learning-how-to-write-a-3d-software-engine-in-c-ts-or-js-rasterization-z-buffering/
+- http://joshbeam.com/articles/triangle_rasterization/
+- http://forum.devmaster.net/t/advanced-rasterization/6145

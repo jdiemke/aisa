@@ -1,11 +1,11 @@
-import { Vector4f } from './math/index';
-import { Sphere } from './math/Sphere';
 import { CullFace } from './CullFace';
 import Framebuffer from './Framebuffer';
-import Texture from './Texture';
+import { Vector4f } from './math/index';
+import { Sphere } from './math/Sphere';
 import RandomNumberGenerator from './RandomNumberGenerator';
+import Texture from './Texture';
 
-declare function require(string): string;
+declare function require(resource: string): string;
 
 export class Canvas {
 
@@ -40,6 +40,10 @@ export class Canvas {
     private spheremap: Texture;
     private boundRenderLoop: (time: number) => void;
 
+    private fpsStartTime = Date.now();
+    private fpsCount = 0;
+    private fps: number = 0;
+
     constructor(width: number, height: number) {
         this.canvas = document.createElement('canvas');
 
@@ -55,10 +59,8 @@ export class Canvas {
             'image-rendering: pixelated; ' + // Future browsers
             '-ms-interpolation-mode: nearest-neighbor;'; // IE
 
-        let aspect = Math.round(200 / 320 * 100);
-
-        this.canvas.style.width = `${320 * 2}px`;
-        this.canvas.style.height = `${200 * 2}px`;
+        this.canvas.style.width = `${width * 2}px`;
+        this.canvas.style.height = `${height * 2}px`;
 
         this.context = this.canvas.getContext('2d');
 
@@ -66,18 +68,9 @@ export class Canvas {
         this.context.imageSmoothingEnabled = false;
         this.context.webkitImageSmoothingEnabled = false;
 
-
         this.framebuffer = new Framebuffer(320, 200);
-
-
-
-        this.boundRenderLoop = this.renderLoop.bind(this)
+        this.boundRenderLoop = this.renderLoop.bind(this);
     }
-
-
-    fpsStartTime = Date.now();
-    fpsCount = 0;
-    fps: number = 0;
 
     /**
      * http://www.hugi.scene.org/online/coding/hugi%20se%204%20-%20index%20sorted%20by%20topic.htm
@@ -230,9 +223,11 @@ export class Canvas {
             this.framebuffer.drawPlanedeformationTunnel(time, this.texture3, this.metal);
             const ukBasslineBpm = 140;
             const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
-            let smashTime = (Date.now() - this.start) % ukBasslineClapMs;
-            let smash = (this.framebuffer.cosineInterpolate(0, 15, smashTime) - this.framebuffer.cosineInterpolate(15, 200, smashTime) +
-                0.4 * this.framebuffer.cosineInterpolate(200, 300, smashTime) - 0.4 * this.framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
+            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+            const smash = (this.framebuffer.cosineInterpolate(0, 15, smashTime) -
+                this.framebuffer.cosineInterpolate(15, 200, smashTime) +
+                0.4 * this.framebuffer.cosineInterpolate(200, 300, smashTime) -
+                0.4 * this.framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
             this.framebuffer.drawScaledTextureClip((320 / 2 - (this.hoodlumLogo.width + smash) / 2) | 0,
                 (200 / 2 - (this.hoodlumLogo.height - smash) / 2) | 0, this.hoodlumLogo.width + smash, (this.hoodlumLogo.height - smash) | 0, this.hoodlumLogo, 1.0);
         } else if (time < 400000) {
