@@ -103,7 +103,7 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3;
-        time = time % 440000;
+        time = time % 480000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
 
         this.framebuffer.setCullFace(CullFace.FRONT);
@@ -235,18 +235,45 @@ export class Canvas {
             // THE NEXT LINE IS THE BOTTLENECK NOT THE SPHERE!
             this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
             this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
-        } else {
+        } else if (time < 420000) {
             this.framebuffer.setCullFace(CullFace.BACK);
             this.framebuffer.setBob(this.spheremap);
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.shadingSphereEnv(time * 0.0002);
+        } else if (time < 440000) {
+            this.framebuffer.raveMoview(time, this.rave);
+            this.framebuffer.setCullFace(CullFace.BACK);
+            this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
+            this.framebuffer.glitchScreen(time, this.noise);
+            this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
+        } else if (time < 450000) {
+            this.framebuffer.drawVoxelLandscape3(this.texture3, time);
+            let tempTexture = new Texture();
+            tempTexture.texture =  new Uint32Array(256*256);
+            for (let y = 0; y < 256; y++) {
+                for (let x = 0; x < 256; x++) {
+                    let ypos = Math.round(200 / 256 * x);
+                    let xpos = Math.round(320 / 256 * y);
+                    tempTexture.texture[x + y * 256] = this.framebuffer.framebuffer[xpos + ypos * 320];
+                }
+            }
+            this.framebuffer.drawPolarDistotion(time, tempTexture);
+        } else {
+            this.framebuffer.drawVoxelLandscape4(this.texture3, time);
+            let tempTexture = new Texture();
+            tempTexture.texture =  new Uint32Array(256*256);
+            for (let y = 0; y < 256; y++) {
+                for (let x = 0; x < 256; x++) {
+                    let ypos = 199 - Math.round(200 / 256 * x);
+                    let xpos = Math.round(320 / 256 * y);
+                    tempTexture.texture[x + y * 256] = this.framebuffer.framebuffer[xpos + ypos * 320];
+                }
+            }
+            this.framebuffer.drawPolarDistotion2(time, tempTexture);
+            this.framebuffer.noise(time, this.noise);
         }
 
-        this.framebuffer.raveMoview(time, this.rave);
-        this.framebuffer.setCullFace(CullFace.BACK);
-        this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
-        this.framebuffer.glitchScreen(time, this.noise);
-        this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
+
         /*
         this.framebuffer.setCullFace(CullFace.BACK);
         //this.framebuffer.drawBlenderScene(time, this.texture4, this.particleTexture2);

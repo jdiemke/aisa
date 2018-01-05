@@ -724,6 +724,49 @@ export default class Framebuffer {
 
     }
 
+    public drawPolarDistotion(elapsedTime: number, texture: Texture):void {
+        let i=0;
+        for (let y = 0; y < 200; y++) {
+            for (let x = 0; x < 320; x++) {
+                let xdist = (x - 320 / 2);
+                let ydist = (y - 200 / 2);
+                let dist = Math.sqrt(xdist * xdist + ydist * ydist)*1.355;
+                let angle = Math.atan2(xdist, ydist)/(Math.PI*2)*256 ;
+
+                let color1 = texture.texture[(dist & 0xff) + (angle & 0xff) * 256];
+   
+                this.framebuffer[i++] =color1;
+            }
+        }
+    }
+
+    public drawPolarDistotion2(elapsedTime: number, texture: Texture):void {
+        let i=0;
+        let distScale = 1.355*(0.4+0.6*0.5*(1+Math.sin(elapsedTime*0.00017)));
+        for (let y = 0; y < 200; y++) {
+            for (let x = 0; x < 320; x++) {
+                let xdist = (x - 320 / 2);
+                let ydist = (y - 200 / 2);
+                let dist = Math.sqrt(xdist * xdist + ydist * ydist)*distScale;
+                let angle = Math.atan2(xdist, ydist)/(Math.PI*2)*256 ;
+
+                let color1 = texture.texture[(dist & 0xff) + (angle & 0xff) * 256];
+   
+                this.framebuffer[i++] =color1;
+            }
+        }
+    }
+
+    public noise(elapsedTime: number, texture: Texture): void {
+        const glitchFactor = Math.sin(elapsedTime*0.0003);
+    
+        for (let x = 0; x < 16; x++) {
+            for (let y = 0; y < 10; y++) {
+                this.drawTextureRect(x*20, y*20, 20*(Math.round(elapsedTime/100+x+y)%12), 0, 20, 20, texture, 0.07);
+            }
+        }
+    }
+
     public glitchScreen(elapsedTime: number, texture: Texture): void {
 
         const glitchFactor = (Math.sin(elapsedTime*0.0003)*0.5+0.5);
@@ -2268,6 +2311,7 @@ export default class Framebuffer {
                 let angle = (Math.atan2(xdist, ydist) / Math.PI + 1.0) * 128.5 + elapsedTime * 0.0069;
                 angle -= (Math.atan2(xdist2, ydist2) / Math.PI + 1.0) * 128.5 + elapsedTime * 0.0069;
 
+                // FIXME: scale by 256
                 let color1 = texture.texture[(finalDist & 0xff) + (angle & 0xff) * 255];
                 let cScale = Math.min(60 / (dist * 2), 1.0) * Math.min(60 / (dist2 * 2), 1.0);
                 let r = (color1 & 0xff) * cScale;
@@ -5168,6 +5212,7 @@ export default class Framebuffer {
             let dirX = Math.cos(time * 0.0005 + x * 0.005) * 0.4;
             let dirY = Math.sin(time * 0.0005 + x * 0.005) * 0.4;
 
+
             let highestPoint = 0;
 
             let rayX = camX + dirX * MIN_DIST;
@@ -5201,6 +5246,118 @@ export default class Framebuffer {
             }
         }
     }
+
+    drawVoxelLandscape3(texture: Texture, time: number) {
+        this.clearCol(255 << 24);
+
+        const MIN_DIST =10;
+        const MAX_DIST = 100;
+   
+        let camX = time * 0.006;
+        let camY = 0;
+
+        const focus = 28.7;
+        const center = 220;
+        const eye = 120;
+
+        for (let x = 0; x < 320; x++) {
+            let dirX = Math.cos(time * 0.0005 + x * 0.005) * 0.4;
+            let dirY = Math.sin(time * 0.0005 + x * 0.005) * 0.4;
+
+             dirX = Math.cos(time * 0.0001 + Math.PI*2/320*x) * 0.4;
+             dirY = Math.sin(time * 0.0001 + Math.PI*2/320*x) * 0.4;
+
+            let highestPoint = 0;
+
+            let rayX = camX + dirX * MIN_DIST;
+            let rayY = camY + dirY * MIN_DIST;
+
+            for (let dist = MIN_DIST; dist < MAX_DIST; dist++) {
+
+                let height = //this.getBilinearFilteredPixel(texture, rayX, rayY)*0.6;
+                (texture.texture[(rayX & 0xff) + (rayY & 0xff) * 256]&0xff)*0.6;
+                let projHeight = Math.round((height - eye) * focus / dist + center)-50;
+                let color = (Math.round(height)*200/255+55) *Math.min(1.0, (1 - (dist - MIN_DIST) / (MAX_DIST - MIN_DIST)));
+                let packedRGB = 255 << 24 | (color *0.7) << 16 | (color) << 8 | (color*0.8);
+
+                if (projHeight > highestPoint) {
+                    let index = x + (199 - highestPoint) * 320;
+                    let max = Math.min(projHeight, 200);
+
+                    for (let i = highestPoint; i < max; i++) {
+                        this.framebuffer[index] = packedRGB;
+                        index -= 320;
+                    }
+
+                    if (max == 200) {
+                        break;
+                    }
+
+                    highestPoint = projHeight;
+                }
+
+                rayX += dirX;
+                rayY += dirY;
+            }
+        }
+    }
+
+
+    drawVoxelLandscape4(texture: Texture, time: number) {
+        this.clearCol(255 << 24);
+
+        const MIN_DIST =14;
+        const MAX_DIST = 80;
+   
+        let camX = time * 0.02;
+        let camY = 0;
+
+        const focus = 29.7;
+        const center = 90;
+        const eye = 10;
+
+        for (let x = 0; x < 320; x++) {
+            let dirX;
+            let dirY;
+
+             dirX = Math.cos(time * 0.0001 + Math.PI*2/320*x) * 1.99;
+             dirY = Math.sin(time * 0.0001 + Math.PI*2/320*x) * 1.99;
+
+            let highestPoint = 0;
+
+            let rayX = camX + dirX * MIN_DIST;
+            let rayY = camY + dirY * MIN_DIST;
+
+            for (let dist = MIN_DIST; dist < MAX_DIST; dist++) {
+
+                let height = //this.getBilinearFilteredPixel(texture, rayX, rayY)*0.6;
+                (texture.texture[(rayX & 0xff) + (rayY & 0xff) * 256]&0xff)*Math.sin(Math.abs((dist-MIN_DIST)*0.5/(MAX_DIST-MIN_DIST)))*3.5;
+                let projHeight = Math.round((height - eye) * focus / dist + center)-50;
+                let color = (Math.round(height)*200/255+55) *Math.min(1.0, (1 - (dist - MIN_DIST) / (MAX_DIST - MIN_DIST)));
+                let packedRGB = 255 << 24 | (color *0.7) << 16 | (color) << 8 | (color*0.8);
+
+                if (projHeight > highestPoint) {
+                    let index = x + (199 - highestPoint) * 320;
+                    let max = Math.min(projHeight, 200);
+
+                    for (let i = highestPoint; i < max; i++) {
+                        this.framebuffer[index] = packedRGB;
+                        index -= 320;
+                    }
+
+                    if (max == 200) {
+                        break;
+                    }
+
+                    highestPoint = projHeight;
+                }
+
+                rayX += dirX;
+                rayY += dirY;
+            }
+        }
+    }
+
 
     getPixel(texture: Texture, x: number, y: number) {
         return texture.texture[(x & 0xff) + (y & 0xff) * 256];
