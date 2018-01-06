@@ -93,7 +93,8 @@ export class Canvas {
     public render(): void {
 
 
-        let currentTime: number = Date.now();
+        const currentTime: number = Date.now();
+
         if (currentTime > this.fpsStartTime + 1000) {
             this.fpsStartTime = currentTime;
             this.fps = this.fpsCount;
@@ -103,7 +104,7 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3;
-        time = time % 480000;
+        time = time % 520000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
 
         this.framebuffer.setCullFace(CullFace.FRONT);
@@ -249,7 +250,7 @@ export class Canvas {
         } else if (time < 450000) {
             this.framebuffer.drawVoxelLandscape3(this.texture3, time);
             let tempTexture = new Texture();
-            tempTexture.texture =  new Uint32Array(256*256);
+            tempTexture.texture = new Uint32Array(256 * 256);
             for (let y = 0; y < 256; y++) {
                 for (let x = 0; x < 256; x++) {
                     let ypos = Math.round(200 / 256 * x);
@@ -258,10 +259,10 @@ export class Canvas {
                 }
             }
             this.framebuffer.drawPolarDistotion(time, tempTexture);
-        } else {
+        } else if (time < 490000) {
             this.framebuffer.drawVoxelLandscape4(this.texture3, time);
             let tempTexture = new Texture();
-            tempTexture.texture =  new Uint32Array(256*256);
+            tempTexture.texture = new Uint32Array(256 * 256);
             for (let y = 0; y < 256; y++) {
                 for (let x = 0; x < 256; x++) {
                     let ypos = 199 - Math.round(200 / 256 * x);
@@ -271,7 +272,26 @@ export class Canvas {
             }
             this.framebuffer.drawPolarDistotion2(time, tempTexture);
             this.framebuffer.noise(time, this.noise);
+        } else {
+            this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
+            this.framebuffer.noise(time, this.noise);
+
+            let scale = 1 / (99 - ((time * 0.02) % 100));
+            let width = (this.hoodlumLogo.width * scale * 10) | 0;
+            let height = (this.hoodlumLogo.height * scale * 10) | 0;
+
+            this.framebuffer.drawScaledTextureClip(
+                Math.round(320 / 2 - width / 2),
+                Math.round(200 / 2 - height / 2),
+                width, height, this.hoodlumLogo, 1.0);
         }
+
+
+        // NEW EFFECTS:
+        // * https://www.youtube.com/watch?v=bg-MTl_nRiU
+        // * SPIKEBALL KYLE
+        // plane deformation with texture to LED
+        // 16 / 9 --> 320 x 180
 
 
         /*
