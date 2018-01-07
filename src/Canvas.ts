@@ -104,7 +104,7 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3;
-        time = time % 520000;
+        time = time % 550000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
 
         this.framebuffer.setCullFace(CullFace.FRONT);
@@ -272,7 +272,7 @@ export class Canvas {
             }
             this.framebuffer.drawPolarDistotion2(time, tempTexture);
             this.framebuffer.noise(time, this.noise);
-        } else {
+        } else if (time < 520000) {
             this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
             this.framebuffer.noise(time, this.noise);
 
@@ -284,6 +284,12 @@ export class Canvas {
                 Math.round(320 / 2 - width / 2),
                 Math.round(200 / 2 - height / 2),
                 width, height, this.hoodlumLogo, 1.0);
+        } else {
+            this.framebuffer.raveMoview(time, this.rave);
+            this.framebuffer.glitchScreen(time, this.noise);
+            this.framebuffer.setCullFace(CullFace.BACK);
+            this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.shadingPlaneEnv(time * 0.0002);
         }
 
 
