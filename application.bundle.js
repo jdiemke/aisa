@@ -342,7 +342,7 @@ class Canvas {
      * @memberof Canvas
      */
     render() {
-        let currentTime = Date.now();
+        const currentTime = Date.now();
         if (currentTime > this.fpsStartTime + 1000) {
             this.fpsStartTime = currentTime;
             this.fps = this.fpsCount;
@@ -351,7 +351,7 @@ class Canvas {
         this.fpsCount++;
         let time = (Date.now() - this.start);
         time = time * 3;
-        time = time % 440000;
+        time = time % 570000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
         this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
         if (time < 5000) {
@@ -510,17 +510,113 @@ class Canvas {
             this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
             this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
         }
-        else {
+        else if (time < 420000) {
             this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
             this.framebuffer.setBob(this.spheremap);
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
             this.framebuffer.shadingSphereEnv(time * 0.0002);
         }
-        this.framebuffer.raveMoview(time, this.rave);
-        this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
-        this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
-        this.framebuffer.glitchScreen(time, this.noise);
-        this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
+        else if (time < 440000) {
+            this.framebuffer.raveMoview(time, this.rave);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+            this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
+            this.framebuffer.glitchScreen(time, this.noise);
+            this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
+        }
+        else if (time < 450000) {
+            this.framebuffer.drawVoxelLandscape3(this.texture3, time);
+            let tempTexture = new Texture_1.default();
+            tempTexture.texture = new Uint32Array(256 * 256);
+            for (let y = 0; y < 256; y++) {
+                for (let x = 0; x < 256; x++) {
+                    let ypos = Math.round(200 / 256 * x);
+                    let xpos = Math.round(320 / 256 * y);
+                    tempTexture.texture[x + y * 256] = this.framebuffer.framebuffer[xpos + ypos * 320];
+                }
+            }
+            this.framebuffer.drawPolarDistotion(time, tempTexture);
+        }
+        else if (time < 490000) {
+            this.framebuffer.drawVoxelLandscape4(this.texture3, time);
+            let tempTexture = new Texture_1.default();
+            tempTexture.texture = new Uint32Array(256 * 256);
+            for (let y = 0; y < 256; y++) {
+                for (let x = 0; x < 256; x++) {
+                    let ypos = 199 - Math.round(200 / 256 * x);
+                    let xpos = Math.round(320 / 256 * y);
+                    tempTexture.texture[x + y * 256] = this.framebuffer.framebuffer[xpos + ypos * 320];
+                }
+            }
+            this.framebuffer.drawPolarDistotion2(time, tempTexture);
+            this.framebuffer.noise(time, this.noise);
+        }
+        else if (time < 520000) {
+            this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
+            this.framebuffer.noise(time, this.noise);
+            let scale = 1 / (99 - ((time * 0.02) % 100));
+            let width = (this.hoodlumLogo.width * scale * 10) | 0;
+            let height = (this.hoodlumLogo.height * scale * 10) | 0;
+            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, this.hoodlumLogo, 1.0);
+        }
+        else if (time < 550000) {
+            this.framebuffer.raveMoview(time, this.rave);
+            this.framebuffer.glitchScreen(time, this.noise);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+            this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.shadingPlaneEnv(time * 0.0002);
+        }
+        else {
+            this.framebuffer.drawVoxelLandscape4(this.texture3, time);
+            let tempTexture = new Texture_1.default();
+            tempTexture.texture = new Uint32Array(256 * 256);
+            for (let y = 0; y < 256; y++) {
+                for (let x = 0; x < 256; x++) {
+                    let ypos = 199 - Math.round(200 / 256 * x);
+                    let xpos = Math.round(320 / 256 * y);
+                    tempTexture.texture[x + y * 256] = this.framebuffer.framebuffer[xpos + ypos * 320];
+                }
+            }
+            this.framebuffer.drawPolarDistotion2(time, tempTexture);
+            const ukBasslineBpm = 140;
+            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+            const smash = (this.framebuffer.cosineInterpolate(0, 15, smashTime) -
+                this.framebuffer.cosineInterpolate(15, 200, smashTime) +
+                0.4 * this.framebuffer.cosineInterpolate(200, 300, smashTime) -
+                0.4 * this.framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
+            let size = Math.round(1 * smash);
+            let size2 = Math.round(2 * smash);
+            this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)), 200 / 2 - 20 + size, this.micro.width * 2, this.micro.height * 2, this.micro);
+            this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.05) | 0) % (this.micro.width + 320)) + size2, 200 / 2 - 60, this.micro.width, this.micro.height, this.micro);
+            this.framebuffer.glitchScreen(time, this.noise);
+        }
+        //  this.framebuffer.noise(time, this.noise);
+        /*****/
+        /*
+
+        let scale =  (99-((time * 0.04) % 100))/99;
+        let width = (this.micro.width * scale * 2) | 0;
+        let height = (this.micro.height * scale * 2) | 0;
+        let rng = new RandomNumberGenerator();
+        rng.setSeed(22);
+        let pos = [];
+        for(let i=0; i < 100; i++) {
+            pos.push({x:rng.getFloat(), y: rng.getFloat()});
+        }
+
+        let xpos = 20+(320-40) * pos[((time*0.04/99)%100)|0].x;
+        let ypos = 20+(200-40) * pos[((time*0.04/99)%100)|0].y;
+        this.framebuffer.drawScaledTextureClipAdd(
+            Math.round(xpos - width / 2),
+            Math.round(ypos - height / 2),
+            width, height, this.micro, 1.0);
+            */
+        // this.framebuffer.drawRadialBlur();
+        // NEW EFFECTS:
+        // * https://www.youtube.com/watch?v=bg-MTl_nRiU
+        // * SPIKEBALL KYLE
+        // plane deformation with texture to LED
+        // 16 / 9 --> 320 x 180
         /*
         this.framebuffer.setCullFace(CullFace.BACK);
         //this.framebuffer.drawBlenderScene(time, this.texture4, this.particleTexture2);
@@ -770,9 +866,10 @@ class Canvas {
             this.createProceduralTexture4().then(texture => this.noise = texture),
             this.createTexture(__webpack_require__(40), true).then(texture => this.hoodlumLogo = texture),
             this.createTexture(__webpack_require__(41), false).then(texture => this.abstract = texture),
-            this.createTexture(__webpack_require__(42), false).then(texture => this.rave = texture)
+            this.createTexture(__webpack_require__(42), false).then(texture => this.rave = texture),
+            this.createTexture(__webpack_require__(43), false).then(texture => this.micro = texture)
         ]).then(() => {
-            this.myAudio = new Audio(__webpack_require__(43));
+            this.myAudio = new Audio(__webpack_require__(44));
             this.myAudio.loop = true;
             this.start = Date.now();
             this.myAudio.play();
@@ -956,6 +1053,7 @@ class Framebuffer {
         this.bunnyObj = this.createBunny();
         this.blenderObj = this.getBlenderScene();
         this.sphere = this.createSphere();
+        this.plane = this.createPlane();
         /*
         document.addEventListener("keydown", (e) => {
             console.log('key pressed');
@@ -1395,6 +1493,41 @@ class Framebuffer {
     raveMoview(elapsedTime, texture) {
         this.fastFramebufferCopyOffset(this.framebuffer, texture.texture, -(((elapsedTime / 200) | 0) % 11) * 200);
     }
+    drawPolarDistotion(elapsedTime, texture) {
+        let i = 0;
+        for (let y = 0; y < 200; y++) {
+            for (let x = 0; x < 320; x++) {
+                let xdist = (x - 320 / 2);
+                let ydist = (y - 200 / 2);
+                let dist = Math.sqrt(xdist * xdist + ydist * ydist) * 1.355;
+                let angle = Math.atan2(xdist, ydist) / (Math.PI * 2) * 256;
+                let color1 = texture.texture[(dist & 0xff) + (angle & 0xff) * 256];
+                this.framebuffer[i++] = color1;
+            }
+        }
+    }
+    drawPolarDistotion2(elapsedTime, texture) {
+        let i = 0;
+        let distScale = 1.355 * (0.4 + 0.6 * 0.5 * (1 + Math.sin(elapsedTime * 0.00017)));
+        for (let y = 0; y < 200; y++) {
+            for (let x = 0; x < 320; x++) {
+                let xdist = (x - 320 / 2);
+                let ydist = (y - 200 / 2);
+                let dist = Math.sqrt(xdist * xdist + ydist * ydist) * distScale;
+                let angle = Math.atan2(xdist, ydist) / (Math.PI * 2) * 256;
+                let color1 = texture.texture[(dist & 0xff) + (angle & 0xff) * 256];
+                this.framebuffer[i++] = color1;
+            }
+        }
+    }
+    noise(elapsedTime, texture) {
+        const glitchFactor = Math.sin(elapsedTime * 0.0003);
+        for (let x = 0; x < 16; x++) {
+            for (let y = 0; y < 10; y++) {
+                this.drawTextureRect(x * 20, y * 20, 20 * (Math.round(elapsedTime / 100 + x + y) % 12), 0, 20, 20, texture, 0.07);
+            }
+        }
+    }
     glitchScreen(elapsedTime, texture) {
         const glitchFactor = (Math.sin(elapsedTime * 0.0003) * 0.5 + 0.5);
         let rng = new RandomNumberGenerator_1.default();
@@ -1575,6 +1708,21 @@ class Framebuffer {
             index2 += -newWidth + 320;
         }
     }
+    drawRadialBlur() {
+        this.fastFramebufferCopy(this.tmpGlitch, this.framebuffer);
+        let texture = new Texture_1.default();
+        texture.texture = this.tmpGlitch;
+        texture.width = 320;
+        texture.height = 200;
+        let width = 320;
+        let height = 200;
+        for (let i = 0; i < 16; i++) {
+            width += 320 * 0.09;
+            height += 200 * 0.09;
+            this.drawScaledTextureClip(320 / 2 - width / 2, 200 / 2 - height / 2, width, height, texture, 0.19 * (15 - i) / 15);
+            this.fastFramebufferCopy(this.tmpGlitch, this.framebuffer);
+        }
+    }
     drawScaledTextureClip(xp, yp, width, height, texture, alphaBlend) {
         let xStep = texture.width / width;
         let yStep = texture.height / height;
@@ -1617,9 +1765,64 @@ class Framebuffer {
                 let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
                 let alpha = (texture.texture[textureIndex] >> 24 & 0xff) * alphaScale;
                 let inverseAlpha = 1 - alpha;
-                let r = (this.framebuffer[index2] >> 0 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 0 & 0xff) * alpha;
-                let g = (this.framebuffer[index2] >> 8 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 8 & 0xff) * alpha;
-                let b = (this.framebuffer[index2] >> 16 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 16 & 0xff) * alpha;
+                let framebufferPixel = this.framebuffer[index2];
+                let texturePixel = texture.texture[textureIndex];
+                let r = (framebufferPixel >> 0 & 0xff) * inverseAlpha + (texturePixel >> 0 & 0xff) * alpha;
+                let g = (framebufferPixel >> 8 & 0xff) * inverseAlpha + (texturePixel >> 8 & 0xff) * alpha;
+                let b = (framebufferPixel >> 16 & 0xff) * inverseAlpha + (texturePixel >> 16 & 0xff) * alpha;
+                this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
+                xx += xStep;
+                index2++;
+            }
+            yy += yStep;
+            xx = xTextureStart;
+            index2 += -newWidth + 320;
+        }
+    }
+    drawScaledTextureClipAdd(xp, yp, width, height, texture) {
+        let xStep = texture.width / width;
+        let yStep = texture.height / height;
+        let xx = 0;
+        let yy = 0;
+        let newHeight;
+        let newWidth;
+        let yStart;
+        let xStart;
+        if (yp + height < 0 ||
+            yp > 199 ||
+            xp + width < 0 ||
+            xp > 319) {
+            return;
+        }
+        if (yp < 0) {
+            yy = yStep * -yp;
+            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            yStart = 0;
+        }
+        else {
+            yStart = yp;
+            newHeight = height - Math.max(yp + height - 200, 0);
+        }
+        let xTextureStart;
+        if (xp < 0) {
+            xTextureStart = xx = xStep * -xp;
+            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            xStart = 0;
+        }
+        else {
+            xTextureStart = 0;
+            xStart = xp;
+            newWidth = width - Math.max(xp + width - 320, 0);
+        }
+        let index2 = (xStart) + (yStart) * 320;
+        for (let y = 0; y < newHeight; y++) {
+            for (let x = 0; x < newWidth; x++) {
+                let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
+                let framebufferPixel = this.framebuffer[index2];
+                let texturePixel = texture.texture[textureIndex];
+                let r = Math.min((framebufferPixel >> 0 & 0xff) + (texturePixel >> 0 & 0xff), 255);
+                let g = Math.min((framebufferPixel >> 8 & 0xff) + (texturePixel >> 8 & 0xff), 255);
+                let b = Math.min((framebufferPixel >> 16 & 0xff) + (texturePixel >> 16 & 0xff), 255);
                 this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
                 xx += xStep;
                 index2++;
@@ -2617,6 +2820,7 @@ class Framebuffer {
                 let finalDist = dist - dist2 + elapsedTime * 0.019;
                 let angle = (Math.atan2(xdist, ydist) / Math.PI + 1.0) * 128.5 + elapsedTime * 0.0069;
                 angle -= (Math.atan2(xdist2, ydist2) / Math.PI + 1.0) * 128.5 + elapsedTime * 0.0069;
+                // FIXME: scale by 256
                 let color1 = texture.texture[(finalDist & 0xff) + (angle & 0xff) * 255];
                 let cScale = Math.min(60 / (dist * 2), 1.0) * Math.min(60 / (dist2 * 2), 1.0);
                 let r = (color1 & 0xff) * cScale;
@@ -3579,6 +3783,50 @@ class Framebuffer {
             index
         };
     }
+    createPlane() {
+        let k = {
+            points: []
+        };
+        for (let y = 0; y < 60; y++) {
+            for (let x = 0; x < 100; x++) {
+                k.points.push(new math_1.Vector3f(0 + x, 0 + y, 0));
+                k.points.push(new math_1.Vector3f(0 + x, 1 + y, 0));
+                k.points.push(new math_1.Vector3f(1 + x, 0 + y, 0));
+                k.points.push(new math_1.Vector3f(1 + x, 0 + y, 0));
+                k.points.push(new math_1.Vector3f(0 + x, 1 + y, 0));
+                k.points.push(new math_1.Vector3f(1 + x, 1 + y, 0));
+            }
+        }
+        // optimize
+        let points = [];
+        let points2 = [];
+        let normals = [];
+        let normals2 = [];
+        let index = [];
+        k.points.forEach(i => {
+            let p = i;
+            let point = points.find(point => point.sub(p).length() < 0.001);
+            if (point) {
+                let idx = points.indexOf(point);
+                index.push(idx);
+            }
+            else {
+                index.push(points.push(p) - 1);
+            }
+        });
+        points.forEach(p => {
+            normals.push(new math_1.Vector3f(0, 0, 0));
+            normals2.push(new math_1.Vector3f(0, 0, 0));
+            points2.push(new math_1.Vector3f(0, 0, 0));
+        });
+        return {
+            points,
+            points2,
+            normals,
+            normals2,
+            index
+        };
+    }
     shadingSphereEnv(elapsedTime) {
         this.wBuffer.fill(100);
         let result = this.sphere;
@@ -3619,6 +3867,124 @@ class Framebuffer {
         let modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 3.25));
         modelViewMartrix = modelViewMartrix.multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(elapsedTime * 2.3));
         modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 1.0) * 46, Math.sin(elapsedTime * 1.2) * 20, -85)
+            .multiplyMatrix(modelViewMartrix);
+        /**
+         * Vertex Shader Stage
+         */
+        let points2 = result.points2;
+        let normals2 = result.normals2;
+        let normalMatrix = modelViewMartrix.computeNormalMatrix();
+        for (let n = 0; n < normals.length; n++) {
+            normalMatrix.multiplyArr(normals[n], normals2[n]);
+        }
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiply(points[p]);
+            points2[p].x = Math.round((320 * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
+            points2[p].y = Math.round((200 * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
+            points2[p].z = transformed.z;
+        }
+        /**
+         * Primitive Assembly and Rasterization Stage:
+         * 1. back-face culling
+         * 2. viewport transform
+         * 3. scan conversion (rasterization)
+         */
+        let vertex1 = new Vertex_1.Vertex();
+        vertex1.textureCoordinate = new Vertex_1.TextureCoordinate();
+        let vertex2 = new Vertex_1.Vertex();
+        vertex2.textureCoordinate = new Vertex_1.TextureCoordinate();
+        let vertex3 = new Vertex_1.Vertex();
+        vertex3.textureCoordinate = new Vertex_1.TextureCoordinate();
+        let vertexArray = new Array(vertex1, vertex2, vertex3);
+        for (let i = 0; i < index.length; i += 3) {
+            // Only render triangles with CCW-ordered vertices
+            // 
+            // Reference:
+            // David H. Eberly (2006).
+            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
+            // p. 69. Morgan Kaufmann Publishers, United States.
+            //
+            let v1 = points2[index[i]];
+            let n1 = normals2[index[i]];
+            let v2 = points2[index[i + 1]];
+            let n2 = normals2[index[i + 1]];
+            let v3 = points2[index[i + 2]];
+            let n3 = normals2[index[i + 2]];
+            if (this.isTriangleCCW(v1, v2, v3)) {
+                let color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
+                vertexArray[0].position = v1;
+                this.fakeSphere(n1, vertex1);
+                vertexArray[1].position = v2;
+                this.fakeSphere(n2, vertex2);
+                vertexArray[2].position = v3;
+                this.fakeSphere(n3, vertex3);
+                if (v1.x < Framebuffer.minWindow.x ||
+                    v2.x < Framebuffer.minWindow.x ||
+                    v3.x < Framebuffer.minWindow.x ||
+                    v1.x > Framebuffer.maxWindow.x ||
+                    v2.x > Framebuffer.maxWindow.x ||
+                    v3.x > Framebuffer.maxWindow.x ||
+                    v1.y < Framebuffer.minWindow.y ||
+                    v2.y < Framebuffer.minWindow.y ||
+                    v3.y < Framebuffer.minWindow.y ||
+                    v1.y > Framebuffer.maxWindow.y ||
+                    v2.y > Framebuffer.maxWindow.y ||
+                    v3.y > Framebuffer.maxWindow.y) {
+                    this.clipConvexPolygon2(vertexArray, color);
+                }
+                else {
+                    // this.drawTriangleDDA(v1, v2, v3, color);
+                    this.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], color);
+                }
+            }
+        }
+    }
+    shadingPlaneEnv(elapsedTime) {
+        this.wBuffer.fill(100);
+        let result = this.plane;
+        let scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
+        for (let i = 0; i < result.points.length; i++) {
+            let y = result.points[i].y - 30;
+            let x = result.points[i].x - 50;
+            let length = Math.sqrt(x * x + y * y);
+            result.points2[i].y = result.points[i].y;
+            result.points2[i].x = result.points[i].x;
+            result.points2[i].z = result.points[i].z + (Math.sin(result.points[i].y * 0.2 + elapsedTime * 2.83) * 5.3
+                + Math.sin(result.points[i].x * 0.5 + elapsedTime * 2.83) * 4.3) * scale2
+                + Math.sin(length * 0.4 - elapsedTime * 3.83) * 4.3;
+            result.normals[i].x = 0;
+            result.normals[i].y = 0;
+            result.normals[i].z = 0;
+        }
+        let points = result.points2;
+        let index = result.index;
+        let normals = result.normals;
+        let norm = new math_1.Vector3f(0, 0, 0);
+        let norm2 = new math_1.Vector3f(0, 0, 0);
+        let cross = new math_1.Vector3f(0, 0, 0);
+        for (let i = 0; i < index.length; i += 3) {
+            let v1 = points[index[i]];
+            let v2 = points[index[i + 1]];
+            let v3 = points[index[i + 2]];
+            norm.sub2(v2, v1);
+            norm2.sub2(v3, v1);
+            cross.cross2(norm, norm2);
+            let normal = cross;
+            normals[index[i]].add2(normals[index[i]], normal);
+            normals[index[i + 1]].add2(normals[index[i + 1]], normal);
+            normals[index[i + 2]].add2(normals[index[i + 2]], normal);
+        }
+        // FIXME: speed up
+        // - remove normalie from lighting
+        // - remove normalize after normal transformation!
+        // - precreate array for transformed vertices and normals
+        for (let i = 0; i < normals.length; i++) {
+            normals[i].normalize2();
+        }
+        let scale = 3.7;
+        let modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(Math.PI + Math.sin(elapsedTime * 2.75) * 0.25)
+            .multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(Math.PI / 5 + Math.sin(elapsedTime * 2.25) * 0.35).multiplyMatrix(math_1.Matrix4f.constructTranslationMatrix(-50, -25, 0))));
+        modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(0, 0, -205 + Math.sin(elapsedTime * 1.9) * 50)
             .multiplyMatrix(modelViewMartrix);
         /**
          * Vertex Shader Stage
@@ -4973,6 +5339,84 @@ class Framebuffer {
             }
         }
     }
+    drawVoxelLandscape3(texture, time) {
+        this.clearCol(255 << 24);
+        const MIN_DIST = 10;
+        const MAX_DIST = 100;
+        let camX = time * 0.006;
+        let camY = 0;
+        const focus = 28.7;
+        const center = 220;
+        const eye = 120;
+        for (let x = 0; x < 320; x++) {
+            let dirX = Math.cos(time * 0.0005 + x * 0.005) * 0.4;
+            let dirY = Math.sin(time * 0.0005 + x * 0.005) * 0.4;
+            dirX = Math.cos(time * 0.0001 + Math.PI * 2 / 320 * x) * 0.4;
+            dirY = Math.sin(time * 0.0001 + Math.PI * 2 / 320 * x) * 0.4;
+            let highestPoint = 0;
+            let rayX = camX + dirX * MIN_DIST;
+            let rayY = camY + dirY * MIN_DIST;
+            for (let dist = MIN_DIST; dist < MAX_DIST; dist++) {
+                let height = (texture.texture[(rayX & 0xff) + (rayY & 0xff) * 256] & 0xff) * 0.6;
+                let projHeight = Math.round((height - eye) * focus / dist + center) - 50;
+                let color = (Math.round(height) * 200 / 255 + 55) * Math.min(1.0, (1 - (dist - MIN_DIST) / (MAX_DIST - MIN_DIST)));
+                let packedRGB = 255 << 24 | (color * 0.7) << 16 | (color) << 8 | (color * 0.8);
+                if (projHeight > highestPoint) {
+                    let index = x + (199 - highestPoint) * 320;
+                    let max = Math.min(projHeight, 200);
+                    for (let i = highestPoint; i < max; i++) {
+                        this.framebuffer[index] = packedRGB;
+                        index -= 320;
+                    }
+                    if (max == 200) {
+                        break;
+                    }
+                    highestPoint = projHeight;
+                }
+                rayX += dirX;
+                rayY += dirY;
+            }
+        }
+    }
+    drawVoxelLandscape4(texture, time) {
+        this.clearCol(255 << 24);
+        const MIN_DIST = 14;
+        const MAX_DIST = 80;
+        let camX = time * 0.02;
+        let camY = 0;
+        const focus = 29.7;
+        const center = 90;
+        const eye = 10;
+        for (let x = 0; x < 320; x++) {
+            let dirX;
+            let dirY;
+            dirX = Math.cos(time * 0.0001 + Math.PI * 2 / 320 * x) * 1.99;
+            dirY = Math.sin(time * 0.0001 + Math.PI * 2 / 320 * x) * 1.99;
+            let highestPoint = 0;
+            let rayX = camX + dirX * MIN_DIST;
+            let rayY = camY + dirY * MIN_DIST;
+            for (let dist = MIN_DIST; dist < MAX_DIST; dist++) {
+                let height = (texture.texture[(rayX & 0xff) + (rayY & 0xff) * 256] & 0xff) * Math.sin(Math.abs((dist - MIN_DIST) * 0.5 / (MAX_DIST - MIN_DIST))) * 3.5;
+                let projHeight = Math.round((height - eye) * focus / dist + center) - 50;
+                let color = (Math.round(height) * 200 / 255 + 55) * Math.min(1.0, (1 - (dist - MIN_DIST) / (MAX_DIST - MIN_DIST)));
+                let packedRGB = 255 << 24 | (color * 0.7) << 16 | (color) << 8 | (color * 0.8);
+                if (projHeight > highestPoint) {
+                    let index = x + (199 - highestPoint) * 320;
+                    let max = Math.min(projHeight, 200);
+                    for (let i = highestPoint; i < max; i++) {
+                        this.framebuffer[index] = packedRGB;
+                        index -= 320;
+                    }
+                    if (max == 200) {
+                        break;
+                    }
+                    highestPoint = projHeight;
+                }
+                rayX += dirX;
+                rayY += dirY;
+            }
+        }
+    }
     getPixel(texture, x, y) {
         return texture.texture[(x & 0xff) + (y & 0xff) * 256];
     }
@@ -5851,6 +6295,12 @@ module.exports = __webpack_require__.p + "539826c16dd852792e84c205811ca9f8.png";
 
 /***/ }),
 /* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "2047b8a2f49ee5b609dc16ab0e62c014.png";
+
+/***/ }),
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "0e7cabddfc9af1214d72c4201b0da9d9.mp3";
