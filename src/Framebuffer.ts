@@ -1073,6 +1073,67 @@ export default class Framebuffer {
         }
     }
 
+    public drawScaledTextureClipAdd(xp: number, yp: number, width: number, height: number, texture: Texture): void {
+        let xStep = texture.width / width;
+        let yStep = texture.height / height;
+        let xx = 0;
+        let yy = 0;
+
+        let newHeight: number;
+        let newWidth: number
+        let yStart: number;
+        let xStart: number;
+
+        if (yp + height < 0 ||
+            yp > 199 ||
+            xp + width < 0 ||
+            xp > 319) {
+            return;
+        }
+
+        if (yp < 0) {
+            yy = yStep * -yp;
+            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            yStart = 0;
+        } else {
+            yStart = yp;
+            newHeight = height - Math.max(yp + height - 200, 0);
+        }
+
+        let xTextureStart: number;
+
+        if (xp < 0) {
+            xTextureStart = xx = xStep * -xp;
+            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            xStart = 0;
+        } else {
+            xTextureStart = 0;
+            xStart = xp;
+            newWidth = width - Math.max(xp + width - 320, 0);
+        }
+
+        let index2 = (xStart) + (yStart) * 320;
+        for (let y = 0; y < newHeight; y++) {
+            for (let x = 0; x < newWidth; x++) {
+                let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
+
+                let framebufferPixel = this.framebuffer[index2];
+                let texturePixel = texture.texture[textureIndex];
+
+                let r = Math.min((framebufferPixel >> 0 & 0xff) + (texturePixel >> 0 & 0xff),255);
+                let g = Math.min((framebufferPixel >> 8 & 0xff) + (texturePixel >> 8 & 0xff),255);
+                let b = Math.min((framebufferPixel >> 16 & 0xff) + (texturePixel >> 16 & 0xff),255);
+
+                this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
+                xx += xStep;
+                index2++;
+            }
+            yy += yStep;
+            xx = xTextureStart;
+            index2 += -newWidth + 320;
+        }
+    }
+
     public drawTexture(x: number, y: number, texture: Texture, alpha2: number) {
         const SCREEN_WIDTH = 320;
         const SCREEN_HEIGHT = 200;

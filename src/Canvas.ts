@@ -36,6 +36,7 @@ export class Canvas {
     private noise: Texture;
     private rave: Texture;
     private metal: Texture;
+    private micro: Texture;
     private abstract: Texture;
     private myAudio: HTMLAudioElement;
     private spheremap: Texture;
@@ -104,7 +105,7 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3;
-        time = time % 550000;
+        time = time % 570000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
 
         this.framebuffer.setCullFace(CullFace.FRONT);
@@ -284,14 +285,73 @@ export class Canvas {
                 Math.round(320 / 2 - width / 2),
                 Math.round(200 / 2 - height / 2),
                 width, height, this.hoodlumLogo, 1.0);
-        } else {
+        } else if (time < 550000) {
             this.framebuffer.raveMoview(time, this.rave);
             this.framebuffer.glitchScreen(time, this.noise);
             this.framebuffer.setCullFace(CullFace.BACK);
             this.framebuffer.setBob(this.spheremap);
             this.framebuffer.shadingPlaneEnv(time * 0.0002);
+        } else {
+            this.framebuffer.drawVoxelLandscape4(this.texture3, time);
+            let tempTexture = new Texture();
+            tempTexture.texture = new Uint32Array(256 * 256);
+            for (let y = 0; y < 256; y++) {
+                for (let x = 0; x < 256; x++) {
+                    let ypos = 199 - Math.round(200 / 256 * x);
+                    let xpos = Math.round(320 / 256 * y);
+                    tempTexture.texture[x + y * 256] = this.framebuffer.framebuffer[xpos + ypos * 320];
+                }
+            }
+            this.framebuffer.drawPolarDistotion2(time, tempTexture);
+
+            const ukBasslineBpm = 140;
+            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+            const smash = (this.framebuffer.cosineInterpolate(0, 15, smashTime) -
+                this.framebuffer.cosineInterpolate(15, 200, smashTime) +
+                0.4 * this.framebuffer.cosineInterpolate(200, 300, smashTime) -
+                0.4 * this.framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
+
+
+            let size = Math.round(1 * smash);
+            let size2 = Math.round(2 * smash);
+            this.framebuffer.drawScaledTextureClipAdd(
+                320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)),
+                200 / 2 - 20 + size,
+                this.micro.width * 2, this.micro.height * 2, this.micro);
+
+            this.framebuffer.drawScaledTextureClipAdd(
+                320 - (((time * 0.05) | 0) % (this.micro.width + 320)) + size2,
+                200 / 2 - 60,
+                this.micro.width, this.micro.height, this.micro);
+            this.framebuffer.glitchScreen(time, this.noise);
         }
 
+
+        //  this.framebuffer.noise(time, this.noise);
+        /*****/
+        /*
+
+        let scale =  (99-((time * 0.04) % 100))/99;
+        let width = (this.micro.width * scale * 2) | 0;
+        let height = (this.micro.height * scale * 2) | 0;
+        let rng = new RandomNumberGenerator();
+        rng.setSeed(22);
+        let pos = [];
+        for(let i=0; i < 100; i++) {
+            pos.push({x:rng.getFloat(), y: rng.getFloat()});
+        }
+
+        let xpos = 20+(320-40) * pos[((time*0.04/99)%100)|0].x;
+        let ypos = 20+(200-40) * pos[((time*0.04/99)%100)|0].y;
+        this.framebuffer.drawScaledTextureClipAdd(
+            Math.round(xpos - width / 2),
+            Math.round(ypos - height / 2),
+            width, height, this.micro, 1.0);
+            */
+
+
+        // this.framebuffer.drawRadialBlur();
 
         // NEW EFFECTS:
         // * https://www.youtube.com/watch?v=bg-MTl_nRiU
@@ -587,7 +647,8 @@ export class Canvas {
             this.createProceduralTexture4().then(texture => this.noise = texture),
             this.createTexture(require('./assets/hoodlumLogo.png'), true).then(texture => this.hoodlumLogo = texture),
             this.createTexture(require('./assets/abstract.png'), false).then(texture => this.abstract = texture),
-            this.createTexture(require('./assets/rave.png'), false).then(texture => this.rave = texture)
+            this.createTexture(require('./assets/rave.png'), false).then(texture => this.rave = texture),
+            this.createTexture(require('./assets/microstrange.png'), false).then(texture => this.micro = texture)
         ]).then(() => {
             this.myAudio = new Audio(require('./assets/3dGalax.mp3'));
             this.myAudio.loop = true;
