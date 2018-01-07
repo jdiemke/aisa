@@ -351,7 +351,7 @@ class Canvas {
         this.fpsCount++;
         let time = (Date.now() - this.start);
         time = time * 3;
-        time = time % 570000;
+        time = time % 590000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
         this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
         if (time < 5000) {
@@ -565,7 +565,7 @@ class Canvas {
             this.framebuffer.setBob(this.spheremap);
             this.framebuffer.shadingPlaneEnv(time * 0.0002);
         }
-        else {
+        else if (time < 570000) {
             this.framebuffer.drawVoxelLandscape4(this.texture3, time);
             let tempTexture = new Texture_1.default();
             tempTexture.texture = new Uint32Array(256 * 256);
@@ -590,7 +590,25 @@ class Canvas {
             this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.05) | 0) % (this.micro.width + 320)) + size2, 200 / 2 - 60, this.micro.width, this.micro.height, this.micro);
             this.framebuffer.glitchScreen(time, this.noise);
         }
-        //  this.framebuffer.noise(time, this.noise);
+        else {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.drawParticleTorus(time, this.particleTexture2, true);
+            let tmpGlitch = new Uint32Array(320 * 200);
+            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
+            let texture = new Texture_1.default();
+            texture.texture = tmpGlitch;
+            texture.width = 320;
+            texture.height = 200;
+            const ukBasslineBpm = 140;
+            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
+            let width = Math.round(320 + smash * 320 / 100);
+            let height = Math.round(200 + smash * 200 / 100);
+            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            this.framebuffer.noise(time, this.noise);
+        }
         /*****/
         /*
 
@@ -818,8 +836,8 @@ class Canvas {
                     c = c * c * c;
                     if (r > 1)
                         c = 0;
-                    c = Math.min(1, c * 1.5);
-                    texture.texture[x + y * 256] = 243 | 255 << 8 | 97 << 16 | (c * 255) << 24;
+                    c = Math.min(1, c * 2.9);
+                    texture.texture[x + y * 256] = 235 | 255 << 8 | 235 << 16 | (c * 255) << 24;
                 }
             }
             texture.width = 256;
@@ -867,9 +885,11 @@ class Canvas {
             this.createTexture(__webpack_require__(40), true).then(texture => this.hoodlumLogo = texture),
             this.createTexture(__webpack_require__(41), false).then(texture => this.abstract = texture),
             this.createTexture(__webpack_require__(42), false).then(texture => this.rave = texture),
-            this.createTexture(__webpack_require__(43), false).then(texture => this.micro = texture)
+            this.createTexture(__webpack_require__(43), false).then(texture => this.micro = texture),
+            this.createTexture(__webpack_require__(44), false).then(texture => this.blurred = texture),
+            this.createTexture(__webpack_require__(45), true).then(texture => this.hlm = texture)
         ]).then(() => {
-            this.myAudio = new Audio(__webpack_require__(44));
+            this.myAudio = new Audio(__webpack_require__(46));
             this.myAudio.loop = true;
             this.start = Date.now();
             this.myAudio.play();
@@ -2846,8 +2866,9 @@ class Framebuffer {
             }
         }
     }
-    drawParticleTorus(elapsedTime, texture) {
-        this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
+    drawParticleTorus(elapsedTime, texture, noClear = false) {
+        if (!noClear)
+            this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
         this.clearDepthBuffer();
         let points = new Array();
         const num = 300;
@@ -2871,7 +2892,7 @@ class Framebuffer {
             return a.z - b.z;
         });
         points2.forEach(element => {
-            let size = -(1.2 * 192 / (element.z));
+            let size = -(2.2 * 192 / (element.z));
             this.drawSoftParticle(Math.round(element.x) - Math.round(size / 2), Math.round(element.y) - Math.round(size / 2), Math.round(size), Math.round(size), texture, 1 / element.z, 1.0);
         });
     }
@@ -6301,6 +6322,18 @@ module.exports = __webpack_require__.p + "2047b8a2f49ee5b609dc16ab0e62c014.png";
 
 /***/ }),
 /* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "bbaba2795420534ca9f0184e07fb74f8.png";
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "680cc4a9d367653fc466577bbd376590.png";
+
+/***/ }),
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "0e7cabddfc9af1214d72c4201b0da9d9.mp3";
