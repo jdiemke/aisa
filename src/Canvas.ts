@@ -31,12 +31,14 @@ export class Canvas {
     private texture14: Texture;
     private texture15: Texture;
     private hoodlumLogo: Texture;
+    private blurred: Texture;
     private particleTexture: Texture;
     private particleTexture2: Texture;
     private noise: Texture;
     private rave: Texture;
     private metal: Texture;
     private micro: Texture;
+    private hlm: Texture;
     private abstract: Texture;
     private myAudio: HTMLAudioElement;
     private spheremap: Texture;
@@ -105,7 +107,7 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3;
-        time = time % 570000;
+        time = time % 590000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
 
         this.framebuffer.setCullFace(CullFace.FRONT);
@@ -291,7 +293,7 @@ export class Canvas {
             this.framebuffer.setCullFace(CullFace.BACK);
             this.framebuffer.setBob(this.spheremap);
             this.framebuffer.shadingPlaneEnv(time * 0.0002);
-        } else {
+        } else if (time < 570000) {
             this.framebuffer.drawVoxelLandscape4(this.texture3, time);
             let tempTexture = new Texture();
             tempTexture.texture = new Uint32Array(256 * 256);
@@ -325,10 +327,33 @@ export class Canvas {
                 200 / 2 - 60,
                 this.micro.width, this.micro.height, this.micro);
             this.framebuffer.glitchScreen(time, this.noise);
+        } else {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.drawParticleTorus(time, this.particleTexture2, true);
+
+            let tmpGlitch = new Uint32Array(320 * 200);
+            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
+
+            let texture = new Texture();
+            texture.texture = tmpGlitch;
+            texture.width = 320;
+            texture.height = 200;
+
+            const ukBasslineBpm = 140;
+            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
+            let width = Math.round(320 + smash * 320 / 100);
+            let height = Math.round(200 + smash * 200 / 100);
+
+            this.framebuffer.drawScaledTextureClip(
+                Math.round(320 / 2 - width / 2),
+                Math.round(200 / 2 - height / 2),
+                width, height, texture, 1.0);
+            this.framebuffer.noise(time, this.noise);
         }
 
-
-        //  this.framebuffer.noise(time, this.noise);
         /*****/
         /*
 
@@ -591,9 +616,9 @@ export class Canvas {
                     let c = 1 - r;
                     c = c * c * c;
                     if (r > 1) c = 0;
-                    c = Math.min(1, c * 1.5);
+                    c = Math.min(1, c * 2.9);
 
-                    texture.texture[x + y * 256] = 243 | 255 << 8 | 97 << 16 | (c * 255) << 24;
+                    texture.texture[x + y * 256] = 235 | 255 << 8 | 235 << 16 | (c * 255) << 24;
                 }
             }
 
@@ -648,7 +673,9 @@ export class Canvas {
             this.createTexture(require('./assets/hoodlumLogo.png'), true).then(texture => this.hoodlumLogo = texture),
             this.createTexture(require('./assets/abstract.png'), false).then(texture => this.abstract = texture),
             this.createTexture(require('./assets/rave.png'), false).then(texture => this.rave = texture),
-            this.createTexture(require('./assets/microstrange.png'), false).then(texture => this.micro = texture)
+            this.createTexture(require('./assets/microstrange.png'), false).then(texture => this.micro = texture),
+            this.createTexture(require('./assets/blurredBackground.png'), false).then(texture => this.blurred = texture),
+            this.createTexture(require('./assets/hlm.png'), true).then(texture => this.hlm = texture)
         ]).then(() => {
             this.myAudio = new Audio(require('./assets/3dGalax.mp3'));
             this.myAudio.loop = true;

@@ -2427,8 +2427,8 @@ export default class Framebuffer {
         }
     }
 
-    drawParticleTorus(elapsedTime: number, texture: Texture) {
-        this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
+    drawParticleTorus(elapsedTime: number, texture: Texture, noClear: boolean= false) {
+        if (!noClear) this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
         this.clearDepthBuffer();
 
         let points: Array<Vector3f> = new Array<Vector3f>();
@@ -2462,7 +2462,7 @@ export default class Framebuffer {
         });
 
         points2.forEach(element => {
-            let size = -(1.2 * 192 / (element.z));
+            let size = -(2.2 * 192 / (element.z));
             this.drawSoftParticle(
                 Math.round(element.x) - Math.round(size / 2),
                 Math.round(element.y) - Math.round(size / 2),
