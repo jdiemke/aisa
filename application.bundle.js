@@ -351,7 +351,7 @@ class Canvas {
         this.fpsCount++;
         let time = (Date.now() - this.start);
         time = time * 3;
-        time = time % 590000;
+        time = time % 630000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
         this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
         if (time < 5000) {
@@ -590,7 +590,7 @@ class Canvas {
             this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.05) | 0) % (this.micro.width + 320)) + size2, 200 / 2 - 60, this.micro.width, this.micro.height, this.micro);
             this.framebuffer.glitchScreen(time, this.noise);
         }
-        else {
+        else if (time < 590000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.drawParticleTorus(time, this.particleTexture2, true);
             let tmpGlitch = new Uint32Array(320 * 200);
@@ -606,6 +606,28 @@ class Canvas {
                 this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
             let width = Math.round(320 + smash * 320 / 100);
             let height = Math.round(200 + smash * 200 / 100);
+            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            this.framebuffer.noise(time, this.noise);
+        }
+        else {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+            this.framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
+            this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)), 200 / 2 - 20, this.micro.width * 2, this.micro.height * 2, this.micro);
+            this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.05) | 0) % (this.micro.width + 320)), 200 / 2 - 60, this.micro.width, this.micro.height, this.micro);
+            let tmpGlitch = new Uint32Array(320 * 200);
+            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
+            let texture = new Texture_1.default();
+            texture.texture = tmpGlitch;
+            texture.width = 320;
+            texture.height = 200;
+            const ukBasslineBpm = 140;
+            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
+            let width = Math.round(320 + smash * 320 / 50);
+            let height = Math.round(200 + smash * 200 / 50);
             this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
             this.framebuffer.noise(time, this.noise);
         }
@@ -3354,6 +3376,115 @@ class Framebuffer {
             return 1;
         mu2 = (mu - y1) / (y2 - y1);
         return (1 - Math.cos(mu2 * Math.PI)) / 2;
+    }
+    shadingTorusDamp(elapsedTime, sync) {
+        this.wBuffer.fill(100);
+        let points = [];
+        const STEPS = 80;
+        const STEPS2 = 8;
+        for (let i = 0; i < STEPS; i++) {
+            let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
+            let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
+            let tangent = frame2.sub(frame);
+            let up = frame.add(frame2).normalize();
+            let right = tangent.cross(up).normalize().mul(1.0);
+            up = right.cross(tangent).normalize().mul(1.0);
+            for (let r = 0; r < STEPS2; r++) {
+                let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
+                points.push(pos.mul(10));
+            }
+        }
+        let index = [];
+        for (let j = 0; j < STEPS; j++) {
+            for (let i = 0; i < STEPS2; i++) {
+                index.push(((STEPS2 * j) + (1 + i) % STEPS2) % points.length); // 2
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 1
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2) % points.length); //4
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 5
+            }
+        }
+        // compute normals
+        let normals = new Array();
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+            normals.push(normal);
+        }
+        for (let i = 0; i < 7; i++) {
+            let scale = 0.1 + 0.1 * i;
+            let modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 0.035 + 0.3 * (4 - i)));
+            modelViewMartrix = modelViewMartrix.multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(elapsedTime * 0.04 + 0.3 * (4 - i)));
+            /**
+             * Vertex Shader Stage
+             */
+            let points2 = new Array();
+            let normals2 = new Array();
+            for (let n = 0; n < normals.length; n++) {
+                normals2.push(modelViewMartrix.multiply(normals[n]));
+            }
+            let ukBasslineBpm = 130 / 2;
+            let ukBasslineClapMs = 60000 / ukBasslineBpm;
+            let smashTime = sync % ukBasslineClapMs;
+            let smash = (this.cosineInterpolate(0, 15, smashTime) - this.cosineInterpolate(15, 200, smashTime) +
+                0.4 * this.cosineInterpolate(200, 300, smashTime) - 0.4 * this.cosineInterpolate(300, 400, smashTime))
+                * 12;
+            modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(0, 0, -88).multiplyMatrix(modelViewMartrix);
+            for (let p = 0; p < points.length; p++) {
+                let transformed = modelViewMartrix.multiply(points[p]);
+                let x = transformed.x;
+                let y = transformed.y;
+                let z = transformed.z; // TODO: use translation matrix!
+                let xx = (320 * 0.5) + (x / (-z * 0.0078));
+                let yy = (200 * 0.5) - (y / (-z * 0.0078));
+                // commented out because it breaks the winding. inversion
+                // of y has to be done after back-face culling in the
+                // viewport transform
+                // yy =(200 * 0.5) - (y / (-z * 0.0078));
+                points2.push(new math_1.Vector3f(Math.round(xx), Math.round(yy), z));
+            }
+            /**
+             * Primitive Assembly and Rasterization Stage:
+             * 1. back-face culling
+             * 2. viewport transform
+             * 3. scan conversion (rasterization)
+             */
+            for (let i = 0; i < index.length; i += 3) {
+                // Only render triangles with CCW-ordered vertices
+                // 
+                // Reference:
+                // David H. Eberly (2006).
+                // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
+                // p. 69. Morgan Kaufmann Publishers, United States.
+                //
+                let v1 = points2[index[i]];
+                let v2 = points2[index[i + 1]];
+                let v3 = points2[index[i + 2]];
+                if (this.isTriangleCCW(v1, v2, v3)) {
+                    let normal = normals2[i / 3];
+                    let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new math_1.Vector3f(0.5, 0.5, 0.5).normalize())) * 100), 255) + 50;
+                    let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar + 100;
+                    if (v1.x < Framebuffer.minWindow.x ||
+                        v2.x < Framebuffer.minWindow.x ||
+                        v3.x < Framebuffer.minWindow.x ||
+                        v1.x > Framebuffer.maxWindow.x ||
+                        v2.x > Framebuffer.maxWindow.x ||
+                        v3.x > Framebuffer.maxWindow.x ||
+                        v1.y < Framebuffer.minWindow.y ||
+                        v2.y < Framebuffer.minWindow.y ||
+                        v3.y < Framebuffer.minWindow.y ||
+                        v1.y > Framebuffer.maxWindow.y ||
+                        v2.y > Framebuffer.maxWindow.y ||
+                        v3.y > Framebuffer.maxWindow.y) {
+                        this.clipConvexPolygon(new Array(v1, v2, v3), color, false);
+                    }
+                    else {
+                        this.drawTriangleDDA(v1, v2, v3, color);
+                        //this.drawTriangleDDA2(v1, v2, v3, new Vector3f(0, 0, 0), new Vector3f(0, 16, 0), new Vector3f(16, 16, 0), color);
+                    }
+                }
+            }
+        }
     }
     shadingTorus5(elapsedTime, sync) {
         this.wBuffer.fill(100);
