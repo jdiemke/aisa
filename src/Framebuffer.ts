@@ -1120,9 +1120,9 @@ export default class Framebuffer {
                 let framebufferPixel = this.framebuffer[index2];
                 let texturePixel = texture.texture[textureIndex];
 
-                let r = Math.min((framebufferPixel >> 0 & 0xff) + (texturePixel >> 0 & 0xff),255);
-                let g = Math.min((framebufferPixel >> 8 & 0xff) + (texturePixel >> 8 & 0xff),255);
-                let b = Math.min((framebufferPixel >> 16 & 0xff) + (texturePixel >> 16 & 0xff),255);
+                let r = Math.min((framebufferPixel >> 0 & 0xff) + (texturePixel >> 0 & 0xff), 255);
+                let g = Math.min((framebufferPixel >> 8 & 0xff) + (texturePixel >> 8 & 0xff), 255);
+                let b = Math.min((framebufferPixel >> 16 & 0xff) + (texturePixel >> 16 & 0xff), 255);
 
                 this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
                 xx += xStep;
@@ -2427,7 +2427,7 @@ export default class Framebuffer {
         }
     }
 
-    drawParticleTorus(elapsedTime: number, texture: Texture, noClear: boolean= false) {
+    drawParticleTorus(elapsedTime: number, texture: Texture, noClear: boolean = false) {
         if (!noClear) this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
         this.clearDepthBuffer();
 
@@ -3041,6 +3041,143 @@ export default class Framebuffer {
         return (1 - Math.cos(mu2 * Math.PI)) / 2;
     }
 
+    public shadingTorusDamp(elapsedTime: number, sync: number): void {
+
+        this.wBuffer.fill(100);
+
+        let points: Array<Vector3f> = [];
+
+        const STEPS = 80;
+        const STEPS2 = 8;
+        for (let i = 0; i < STEPS; i++) {
+            let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
+            let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
+
+            let tangent = frame2.sub(frame);
+            let up = frame.add(frame2).normalize()
+            let right = tangent.cross(up).normalize().mul(1.0);
+            up = right.cross(tangent).normalize().mul(1.0);
+
+            for (let r = 0; r < STEPS2; r++) {
+                let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
+                points.push(pos.mul(10));
+            }
+        }
+
+        let index: Array<number> = [];
+
+        for (let j = 0; j < STEPS; j++) {
+            for (let i = 0; i < STEPS2; i++) {
+                index.push(((STEPS2 * j) + (1 + i) % STEPS2) % points.length); // 2
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 1
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+
+                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2) % points.length); //4
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 5
+            }
+        }
+
+        // compute normals
+        let normals: Array<Vector3f> = new Array<Vector3f>();
+
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+            normals.push(normal);
+        }
+
+      
+
+        for (let i = 0; i < 7; i++) {
+            let scale = 0.1+0.1*i;
+
+            let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.035+0.3*(4-i)));
+            modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.04+0.3*(4-i)));
+
+            /**
+             * Vertex Shader Stage
+             */
+            let points2: Array<Vector3f> = new Array<Vector3f>();
+
+            let normals2: Array<Vector3f> = new Array<Vector3f>();
+            for (let n = 0; n < normals.length; n++) {
+                normals2.push(modelViewMartrix.multiply(normals[n]));
+            }
+
+            let ukBasslineBpm = 130 / 2;
+            let ukBasslineClapMs = 60000 / ukBasslineBpm;
+            let smashTime = sync % ukBasslineClapMs;
+            let smash = (this.cosineInterpolate(0, 15, smashTime) - this.cosineInterpolate(15, 200, smashTime) +
+                0.4 * this.cosineInterpolate(200, 300, smashTime) - 0.4 * this.cosineInterpolate(300, 400, smashTime)
+            )
+                * 12;
+            modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -88).multiplyMatrix(modelViewMartrix);
+
+            for (let p = 0; p < points.length; p++) {
+                let transformed = modelViewMartrix.multiply(points[p]);
+
+                let x = transformed.x;
+                let y = transformed.y;
+                let z = transformed.z; // TODO: use translation matrix!
+
+                let xx = (320 * 0.5) + (x / (-z * 0.0078));
+                let yy = (200 * 0.5) - (y / (-z * 0.0078));
+                // commented out because it breaks the winding. inversion
+                // of y has to be done after back-face culling in the
+                // viewport transform
+                // yy =(200 * 0.5) - (y / (-z * 0.0078));
+
+                points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
+            }
+
+            /**
+             * Primitive Assembly and Rasterization Stage:
+             * 1. back-face culling
+             * 2. viewport transform
+             * 3. scan conversion (rasterization)
+             */
+            for (let i = 0; i < index.length; i += 3) {
+
+                // Only render triangles with CCW-ordered vertices
+                // 
+                // Reference:
+                // David H. Eberly (2006).
+                // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
+                // p. 69. Morgan Kaufmann Publishers, United States.
+                //
+                let v1 = points2[index[i]];
+                let v2 = points2[index[i + 1]];
+                let v3 = points2[index[i + 2]];
+
+                if (this.isTriangleCCW(v1, v2, v3)) {
+
+                    let normal = normals2[i / 3];
+                    let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3f(0.5, 0.5, 0.5).normalize())) * 100), 255) + 50;
+                    let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar + 100;
+                    if (v1.x < Framebuffer.minWindow.x ||
+                        v2.x < Framebuffer.minWindow.x ||
+                        v3.x < Framebuffer.minWindow.x ||
+                        v1.x > Framebuffer.maxWindow.x ||
+                        v2.x > Framebuffer.maxWindow.x ||
+                        v3.x > Framebuffer.maxWindow.x ||
+                        v1.y < Framebuffer.minWindow.y ||
+                        v2.y < Framebuffer.minWindow.y ||
+                        v3.y < Framebuffer.minWindow.y ||
+                        v1.y > Framebuffer.maxWindow.y ||
+                        v2.y > Framebuffer.maxWindow.y ||
+                        v3.y > Framebuffer.maxWindow.y) {
+                        this.clipConvexPolygon(new Array<Vector3f>(v1, v2, v3), color, false);
+                    } else {
+                        this.drawTriangleDDA(v1, v2, v3, color);
+                        //this.drawTriangleDDA2(v1, v2, v3, new Vector3f(0, 0, 0), new Vector3f(0, 16, 0), new Vector3f(16, 16, 0), color);
+                    }
+                }
+            }
+        }
+    }
+
+
+
     public shadingTorus5(elapsedTime: number, sync: number): void {
 
         this.wBuffer.fill(100);
@@ -3587,13 +3724,13 @@ export default class Framebuffer {
         }
         for (let y = 0; y < 60; y++) {
             for (let x = 0; x < 100; x++) {
-                k.points.push(new Vector3f(0+x, 0+y, 0));
-                k.points.push(new Vector3f(0+x, 1+y, 0));
-                k.points.push(new Vector3f(1+x, 0+y, 0));
+                k.points.push(new Vector3f(0 + x, 0 + y, 0));
+                k.points.push(new Vector3f(0 + x, 1 + y, 0));
+                k.points.push(new Vector3f(1 + x, 0 + y, 0));
 
-                k.points.push(new Vector3f(1+x, 0+y, 0));
-                k.points.push(new Vector3f(0+x, 1+y, 0));
-                k.points.push(new Vector3f(1+x, 1+y, 0));
+                k.points.push(new Vector3f(1 + x, 0 + y, 0));
+                k.points.push(new Vector3f(0 + x, 1 + y, 0));
+                k.points.push(new Vector3f(1 + x, 1 + y, 0));
             }
         }
         // optimize
@@ -3781,17 +3918,17 @@ export default class Framebuffer {
 
         let result = this.plane;
 
-        let scale2 = (Math.sin(elapsedTime*1.8)+1)*0.5;
+        let scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
         for (let i = 0; i < result.points.length; i++) {
-            let y = result.points[i].y-30;
-            let x = result.points[i].x-50;
-            let length = Math.sqrt(x*x+y*y);
+            let y = result.points[i].y - 30;
+            let x = result.points[i].x - 50;
+            let length = Math.sqrt(x * x + y * y);
             result.points2[i].y = result.points[i].y;
             result.points2[i].x = result.points[i].x;
             result.points2[i].z = result.points[i].z + (
-             Math.sin(result.points[i].y * 0.2 + elapsedTime * 2.83) * 5.3
-             + Math.sin(result.points[i].x * 0.5 + elapsedTime * 2.83) * 4.3)*scale2
-             +Math.sin(length * 0.4 - elapsedTime * 3.83) * 4.3;
+                Math.sin(result.points[i].y * 0.2 + elapsedTime * 2.83) * 5.3
+                + Math.sin(result.points[i].x * 0.5 + elapsedTime * 2.83) * 4.3) * scale2
+                + Math.sin(length * 0.4 - elapsedTime * 3.83) * 4.3;
 
             result.normals[i].x = 0;
             result.normals[i].y = 0;
@@ -3829,12 +3966,12 @@ export default class Framebuffer {
 
         let scale = 3.7;
 
-        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(Math.PI+Math.sin(elapsedTime * 2.75)*0.25)
-        .multiplyMatrix(Matrix4f.constructXRotationMatrix(Math.PI/5+Math.sin(elapsedTime * 2.25)*0.35).multiplyMatrix( Matrix4f.constructTranslationMatrix(-50,-25
-            ,0))));
-       
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(0,0,
-             -205+Math.sin(elapsedTime*1.9)*50)
+        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(Math.PI + Math.sin(elapsedTime * 2.75) * 0.25)
+            .multiplyMatrix(Matrix4f.constructXRotationMatrix(Math.PI / 5 + Math.sin(elapsedTime * 2.25) * 0.35).multiplyMatrix(Matrix4f.constructTranslationMatrix(-50, -25
+                , 0))));
+
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0,
+            -205 + Math.sin(elapsedTime * 1.9) * 50)
             .multiplyMatrix(modelViewMartrix);
 
         /**
