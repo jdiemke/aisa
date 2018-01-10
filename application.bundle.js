@@ -351,7 +351,7 @@ class Canvas {
         this.fpsCount++;
         let time = (Date.now() - this.start);
         time = time * 3;
-        time = time % 630000;
+        time = time % 690000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
         this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
         if (time < 5000) {
@@ -609,12 +609,84 @@ class Canvas {
             this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
             this.framebuffer.noise(time, this.noise);
         }
-        else {
+        else if (time < 650000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
             this.framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
             this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)), 200 / 2 - 20, this.micro.width * 2, this.micro.height * 2, this.micro);
             this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.05) | 0) % (this.micro.width + 320)), 200 / 2 - 60, this.micro.width, this.micro.height, this.micro);
+            let tmpGlitch = new Uint32Array(320 * 200);
+            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
+            let texture = new Texture_1.default();
+            texture.texture = tmpGlitch;
+            texture.width = 320;
+            texture.height = 200;
+            const ukBasslineBpm = 140;
+            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
+            let width = Math.round(320 + smash * 320 / 50);
+            let height = Math.round(200 + smash * 200 / 50);
+            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            this.framebuffer.noise(time, this.noise);
+        }
+        else if (time < 670000) {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+            this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
+            let source = 0;
+            let dest = 319;
+            for (let y = 0; y < 200; y++) {
+                for (let x = 0; x < 160; x++) {
+                    this.framebuffer.framebuffer[dest--] = this.framebuffer.framebuffer[source++];
+                }
+                source += 160;
+                dest += 320 + 160;
+            }
+            this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)), 200 / 2 - 20, this.micro.width * 2, this.micro.height * 2, this.micro);
+            this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.05) | 0) % (this.micro.width + 320)), 200 / 2 - 60, this.micro.width, this.micro.height, this.micro);
+            let tmpGlitch = new Uint32Array(320 * 200);
+            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
+            let texture = new Texture_1.default();
+            texture.texture = tmpGlitch;
+            texture.width = 320;
+            texture.height = 200;
+            const ukBasslineBpm = 140;
+            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
+            let width = Math.round(320 + smash * 320 / 50);
+            let height = Math.round(200 + smash * 200 / 50);
+            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            this.framebuffer.noise(time, this.noise);
+        }
+        else {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+            this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.shadingSphereEnv(time * 0.0002);
+            this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)), 200 / 2 - 20, this.micro.width * 2, this.micro.height * 2, this.micro);
+            this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.05) | 0) % (this.micro.width + 320)), 200 / 2 - 60, this.micro.width, this.micro.height, this.micro);
+            let source = 0;
+            let dest = 319;
+            for (let y = 0; y < 100; y++) {
+                for (let x = 0; x < 160; x++) {
+                    this.framebuffer.framebuffer[dest--] = this.framebuffer.framebuffer[source++];
+                }
+                source += 160;
+                dest += 320 + 160;
+            }
+            source = 0;
+            dest = 199 * 320;
+            for (let y = 0; y < 100; y++) {
+                for (let x = 0; x < 320; x++) {
+                    this.framebuffer.framebuffer[dest++] = this.framebuffer.framebuffer[source++];
+                }
+                dest -= 320 * 2;
+            }
             let tmpGlitch = new Uint32Array(320 * 200);
             this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
             let texture = new Texture_1.default();
