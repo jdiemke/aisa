@@ -76,6 +76,8 @@ export class Canvas {
         this.boundRenderLoop = this.renderLoop.bind(this);
     }
 
+    private  accumulationBuffer = new Uint32Array(320 * 200);
+
     /**
      * http://www.hugi.scene.org/online/coding/hugi%20se%204%20-%20index%20sorted%20by%20topic.htm
      * http://www.flipcode.com/archives/The_Art_of_Demomaking-Issue_01_Prologue.shtml
@@ -500,6 +502,18 @@ export class Canvas {
             this.framebuffer.noise(time, this.noise);
         }
 
+        
+      
+        let texture = new Texture();
+        texture.texture = this.accumulationBuffer;
+        texture.width = 320;
+        texture.height = 200;
+
+        this.framebuffer.drawTexture(0,0, texture, Math.abs(Math.sin(time*0.0003))*0.9);
+        this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);      
+
+
+        // https://github.com/ninjadev/nin/blob/38e80381415934136c7bd97233a2792df2bffa8d/nin/dasBoot/shims.js
         /*****/
         /*
 
