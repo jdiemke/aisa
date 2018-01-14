@@ -1,5 +1,19 @@
 # AISA
-AISA is a Software 3D Engine written in TypeScript 2.6.2
+AISA is a Software 3D Engine written in TypeScript. The
+only prerequisite for AISA to run properly is a HTML5 compatible web browser and a fast CPU (as you can guess JavaScript is not as fast as native code still it is running with a decent frame rate on my mobile phone). No WebGL is required.
+AISA does all the computations needed to rasterize a 3D scene
+in pure JavaScript by rendering to an offscreen framebuffer.
+This framebuffer is then copied to the backing framebuffer of
+a HTML Canvas that is setup as a render target.
+### Why a Software 3D Engine in TypeScript / JavaScript?
+In fact it does not make sense to write your own 3D Engine
+in TypeScript since there are much better alternatvis like
+WebGL and OpenGL. This project has a pure educational purpose.
+My initial intention was to teach me some TypeScript and since
+I love computer graphics and always wanted to write my own 3D
+Engine from scratch I used this opportunity. Hence this
+project contains a lot of elementary algorithms from then
+field of computer graphics including clipping, triangle rasterization, geometric transformations and so forth.
 ### Demo
 https://jdiemke.github.io/AISA/
 ### How to get
@@ -25,6 +39,17 @@ Type the following command into your shell:
 ```
 And open `http://localhost:8080/webpack-dev-server/` in your favourite web browser.
 ### Features
+- Post Processing
+    - Noise
+    - Glitch
+    - Motion Blur
+    - Radial Blur
+    - Pixelization
+    - Glow
+- Sprites
+    - Transparency
+    - Linear Filtering
+    - Bilinear Filtering
 - Speed-Up Techniques
     - Backface Culling
     - View Frustum Culling
@@ -44,6 +69,7 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
     - Controllable First Person Camera
     - Key Frame Animated Camera
 ### Backlog
+- Web Audio API
 - Configurable Clipping Regions (Sprites / Geometry)
 - Procedural Textures
 - Render To Texture

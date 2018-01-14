@@ -39,6 +39,7 @@ export class Canvas {
     private metal: Texture;
     private micro: Texture;
     private hlm: Texture;
+    private cross: Texture;
     private abstract: Texture;
     private myAudio: HTMLAudioElement;
     private spheremap: Texture;
@@ -76,7 +77,7 @@ export class Canvas {
         this.boundRenderLoop = this.renderLoop.bind(this);
     }
 
-    private  accumulationBuffer = new Uint32Array(320 * 200);
+    private accumulationBuffer = new Uint32Array(320 * 200);
 
     /**
      * http://www.hugi.scene.org/online/coding/hugi%20se%204%20-%20index%20sorted%20by%20topic.htm
@@ -109,7 +110,7 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3;
-        time = time % 690000;
+        time = time % 720000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
 
         this.framebuffer.setCullFace(CullFace.FRONT);
@@ -235,7 +236,7 @@ export class Canvas {
                 this.framebuffer.cosineInterpolate(15, 200, smashTime) +
                 0.4 * this.framebuffer.cosineInterpolate(200, 300, smashTime) -
                 0.4 * this.framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
-            this.framebuffer.drawScaledTextureClip((320 / 2 - (this.hoodlumLogo.width + smash) / 2) | 0,
+            this.framebuffer.drawScaledTextureClipBi((320 / 2 - (this.hoodlumLogo.width + smash) / 2) | 0,
                 (200 / 2 - (this.hoodlumLogo.height - smash) / 2) | 0, this.hoodlumLogo.width + smash, (this.hoodlumLogo.height - smash) | 0, this.hoodlumLogo, 1.0);
         } else if (time < 400000) {
             // THE NEXT LINE IS THE BOTTLENECK NOT THE SPHERE!
@@ -285,7 +286,7 @@ export class Canvas {
             let width = (this.hoodlumLogo.width * scale * 10) | 0;
             let height = (this.hoodlumLogo.height * scale * 10) | 0;
 
-            this.framebuffer.drawScaledTextureClip(
+            this.framebuffer.drawScaledTextureClipBi(
                 Math.round(320 / 2 - width / 2),
                 Math.round(200 / 2 - height / 2),
                 width, height, this.hoodlumLogo, 1.0);
@@ -349,7 +350,7 @@ export class Canvas {
             let width = Math.round(320 + smash * 320 / 100);
             let height = Math.round(200 + smash * 200 / 100);
 
-            this.framebuffer.drawScaledTextureClip(
+            this.framebuffer.drawScaledTextureClipBi(
                 Math.round(320 / 2 - width / 2),
                 Math.round(200 / 2 - height / 2),
                 width, height, texture, 1.0);
@@ -386,7 +387,7 @@ export class Canvas {
             let width = Math.round(320 + smash * 320 / 50);
             let height = Math.round(200 + smash * 200 / 50);
 
-            this.framebuffer.drawScaledTextureClip(
+            this.framebuffer.drawScaledTextureClipBi(
                 Math.round(320 / 2 - width / 2),
                 Math.round(200 / 2 - height / 2),
                 width, height, texture, 1.0);
@@ -433,13 +434,23 @@ export class Canvas {
             let width = Math.round(320 + smash * 320 / 50);
             let height = Math.round(200 + smash * 200 / 50);
 
-            this.framebuffer.drawScaledTextureClip(
+            this.framebuffer.drawScaledTextureClipBi(
                 Math.round(320 / 2 - width / 2),
                 Math.round(200 / 2 - height / 2),
                 width, height, texture, 1.0);
 
+            for (let y = 0; y < 3; y++) {
+                for (let x = 0; x < 4; x++) {
+                    let xx = Math.round(320 / 4 * x + 320 / 4 * 0.5 - this.cross.width / 2);
+                    let yy = Math.round(200 / 3 * y + 200 / 3 * 0.5 - this.cross.height / 2);
+
+                    this.framebuffer.drawTexture(xx, yy, this.cross, 0.45);
+                }
+            }
+
+
             this.framebuffer.noise(time, this.noise);
-        } else {
+        } else if (time < 690000) {
 
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.setCullFace(CullFace.BACK);
@@ -447,7 +458,7 @@ export class Canvas {
 
             this.framebuffer.shadingSphereEnv(time * 0.0002);
 
-            
+
             this.framebuffer.drawScaledTextureClipAdd(
                 320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)),
                 200 / 2 - 20,
@@ -468,14 +479,14 @@ export class Canvas {
                 source += 160;
                 dest += 320 + 160;
             }
-    
+
             source = 0;
-            dest = 199*320;
+            dest = 199 * 320;
             for (let y: number = 0; y < 100; y++) {
                 for (let x: number = 0; x < 320; x++) {
                     this.framebuffer.framebuffer[dest++] = this.framebuffer.framebuffer[source++];
                 }
-                dest -= 320*2;
+                dest -= 320 * 2;
             }
 
             let tmpGlitch = new Uint32Array(320 * 200);
@@ -494,23 +505,181 @@ export class Canvas {
             let width = Math.round(320 + smash * 320 / 50);
             let height = Math.round(200 + smash * 200 / 50);
 
-            this.framebuffer.drawScaledTextureClip(
+            this.framebuffer.drawScaledTextureClipBi(
                 Math.round(320 / 2 - width / 2),
                 Math.round(200 / 2 - height / 2),
                 width, height, texture, 1.0);
 
+            for (let y = 0; y < 3; y++) {
+                for (let x = 0; x < 4; x++) {
+                    let xx = Math.round(320 / 4 * x + 320 / 4 * 0.5 - this.cross.width / 2);
+                    let yy = Math.round(200 / 3 * y + 200 / 3 * 0.5 - this.cross.height / 2);
+
+                    this.framebuffer.drawTexture(xx, yy, this.cross, 0.45);
+                }
+            }
+
+
+            this.framebuffer.noise(time, this.noise);
+        } else {
+            // Rave video & Wobblin Cylinder
+            this.framebuffer.raveMoview(time, this.rave);
+            this.framebuffer.setCullFace(CullFace.FRONT);
+            this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.shadingCylinderEnv(time * 0.0002);
+
+            // Crosses
+            for (let y = 0; y < 3; y++) {
+                for (let x = 0; x < 4; x++) {
+                    let xx = Math.round(320 / 4 * x + 320 / 4 * 0.5 - this.cross.width / 2);
+                    let yy = Math.round(200 / 3 * y + 200 / 3 * 0.5 - this.cross.height / 2);
+                    this.framebuffer.drawTexture(xx, yy, this.cross, 0.2);
+                }
+            }
+
+            // Motion Blur
+            let texture = new Texture(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture, 0.3 + 0.6 * (0.5 + 0.5 * Math.sin(time * 0.0003)));
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             this.framebuffer.noise(time, this.noise);
         }
 
-        
-      
-        let texture = new Texture();
-        texture.texture = this.accumulationBuffer;
-        texture.width = 320;
-        texture.height = 200;
+        // TODO:
+        // - Progress Bar for Loading
+        // - Web Audio API
+        // - blasphemy line sphere with particles and blur
+        // - fractal landscape fade in / out
+        // - particle emitter
+        // - plane deformation on rendererd scenes
+        // - alpha blend between different or same scene
+        // - fade to white
+        // - spike ball / particle and 3d mesh with normals
+        // - glow
+        // - kewlers cube torus
+        // - kewlsers recht billboard spikeball
+        // - kewslers rect billboard cylinder
+        // seminars:
+        // - https://www.youtube.com/playlist?list=PLwbFJIXXSsXvbpDxOaaBrxSBdLUW1hdax
+        // - https://www.youtube.com/watch?v=XZLqwXdXjqY
+        // - https://www.youtube.com/watch?v=nt-BpAYMeJs&list=PLNqQO7lFY6dmH5kMSWtuRP6ZhBiQdQIU1&index=5
+        // - https://www.youtube.com/watch?v=WgUkCRvti3Y&list=PLNqQO7lFY6dlPOg7cA1SczEU0Y7UW6iMW
+        // - https://www.youtube.com/watch?v=7wYq6O-g2U8&list=PLNqQO7lFY6dm_GROVFIZ6C6mUINMnlpyC
+        // - https://www.youtube.com/watch?v=hszyYAT5R1Q&list=PLNqQO7lFY6dm_GROVFIZ6C6mUINMnlpyC&index=5
+        // - https://www.youtube.com/watch?v=4Q5sgNCN2Jw&list=PL2EEF025A89BAA0FC
+        // - https://www.youtube.com/watch?v=TbcZyAO6K7c
+        // - https://www.youtube.com/watch?v=2p2JcHzRlJU
+        // - https://www.youtube.com/watch?v=QT2ftidLTn4
+        // - https://www.youtube.com/watch?v=Oo-jlpvhTcY
 
-        this.framebuffer.drawTexture(0,0, texture, Math.abs(Math.sin(time*0.0003))*0.9);
-        this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);      
+        /*
+              // SCALE
+              let texture = new Texture();
+              texture.texture = this.accumulationBuffer;
+              texture.width = 320;
+              texture.height = 200;
+      
+              let scale = 1 + (1+Math.sin(time*0.00006))*0.5*20;
+              let width = 320 *  scale;
+              let height = 200 * scale;
+      
+              // looks crappy with linear interpolation!
+              // probably  bilinear is required here
+         
+              
+                  this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+                  this.framebuffer.drawScaledTextureClipBi(
+                      Math.round(320/2-width/2),
+                      Math.round(200/2-height/2),
+                      width, height, texture, 1.0);
+                  */
+
+        /*
+            // RADIAL BLUR
+    let texture = new Texture();
+    texture.texture = this.accumulationBuffer;
+    texture.width = 320;
+    texture.height = 200;
+
+    let scale = 1.05;
+    let width = 320 *  scale;
+    let height = 200 * scale;
+
+    // looks crappy with linear interpolation!
+    // probably  bilinear is required here
+ 
+    
+        this.framebuffer.drawScaledTextureClipBi(
+            Math.round(320/2-width/2),
+            Math.round(200/2-height/2),
+            width, height, texture, 0.95);
+ 
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            */
+
+        /*
+                    // GLOW
+                let glowBuffer = new Uint32Array(16 * 2 * 10 * 2);
+                let glowBuffer2 = new Uint32Array(16 * 2 * 10 * 2);
+        
+                // todo filer onlyy brigh parts
+                // blur if too blocky
+                // clamp to border when filterting bilinear
+                // add and dont blend with alpha
+                for (let y = 0; y < 20; y++) {
+                    for (let x = 0; x < 32; x++) {
+                        let xx = Math.round(10 * x);
+                        let yy = Math.round(10 * y);
+                        let r = this.framebuffer.framebuffer[xx + yy * 320] & 0xff;
+                        let g = this.framebuffer.framebuffer[xx + yy * 320] >> 8 & 0xff;
+                        let b = this.framebuffer.framebuffer[xx + yy * 320] >> 16 & 0xff;
+                        let intensity = (r + g + b) / 3;
+                        let scale = this.framebuffer.cosineInterpolate(200,130, intensity);
+                        let color = r*scale | g*scale << 8 | b*scale << 16 | 255 << 24;
+                        if (intensity > 138) {
+                            glowBuffer[x + y * 32] = color ;
+                        } 
+                    }
+                }
+        
+                for (let y = 0; y < 20; y++) {
+                    for (let x = 0; x < 32; x++) {
+                        let col1 = glowBuffer[(x-1)%32 + y * 32];
+                        let col2 = glowBuffer[(x)%32 + y * 32];
+                        let col3 = glowBuffer[(x+1)%32 + y * 32];
+                        let r = (col1&0xff)*1/4 + (col2&0xff)*2/4 +(col3&0xff)*1/4;
+                        let g = (col1>>8&0xff)*1/4 + (col2>>8&0xff)*2/4 +(col3>>8&0xff)*1/4;
+                        let b = (col1>>16&0xff)*1/4 + (col2>>16&0xff)*2/4 +(col3>>16&0xff)*1/4;
+                        glowBuffer2[x + y * 32] = r | g <<8 | b<<16;
+                    }
+                }
+        
+                for (let y = 0; y < 20; y++) {
+                    for (let x = 0; x < 32; x++) {
+                        let col1 = glowBuffer2[(x) + (y-1)%20 * 32];
+                        let col2 = glowBuffer2[(x) + y%20 * 32];
+                        let col3 = glowBuffer2[(x) + (y+1)%20 * 32];
+                        let r = ((col1&0xff)*1/4 + (col2&0xff)*2/4 +(col3&0xff)*1/4);
+                        let g = ((col1>>8&0xff)*1/4 + (col2>>8&0xff)*2/4 +(col3>>8&0xff)*1/4);
+                        let b = ((col1>>16&0xff)*1/4 + (col2>>16&0xff)*2/4 +(col3>>16&0xff)*1/4);
+                        glowBuffer[x + y * 32] = r | g <<8 | b<<16;
+                    }
+                }
+        
+                let texture2 = new Texture();
+                texture2.texture = glowBuffer;
+                texture2.width = 32;
+                texture2.height = 20;
+        
+        
+                           this.framebuffer.drawScaledTextureClip(
+                               0,0,
+                                320,200, texture2, (Math.sin(time*0.003)+1)*0.5);
+              
+                
+                this.framebuffer.drawScaledTextureClipBiAdd(
+                    0, 0,
+                    320, 200, texture2, 1);
+        */
 
 
         // https://github.com/ninjadev/nin/blob/38e80381415934136c7bd97233a2792df2bffa8d/nin/dasBoot/shims.js
@@ -835,13 +1004,32 @@ export class Canvas {
             this.createTexture(require('./assets/rave.png'), false).then(texture => this.rave = texture),
             this.createTexture(require('./assets/microstrange.png'), false).then(texture => this.micro = texture),
             this.createTexture(require('./assets/blurredBackground.png'), false).then(texture => this.blurred = texture),
-            this.createTexture(require('./assets/hlm.png'), true).then(texture => this.hlm = texture)
+            this.createTexture(require('./assets/hlm.png'), true).then(texture => this.hlm = texture),
+            this.createTexture(require('./assets/cross.png'), true).then(texture => this.cross = texture),
         ]).then(() => {
-            this.myAudio = new Audio(require('./assets/3dGalax.mp3'));
-            this.myAudio.loop = true;
-            this.start = Date.now();
-            this.myAudio.play();
-            this.renderLoop(0);
+            // Web Audio API
+            // FIXME: put this into a Player Class
+            let audioContext = new AudioContext();
+            let request = new XMLHttpRequest();
+            request.open('GET', require('./assets/3dGalax.mp3'), true);
+            request.responseType = 'arraybuffer';
+            console.log('load music');
+            request.onload = () => {
+                console.log('loaded');
+                let undecodedAudio = request.response;
+                audioContext.decodeAudioData(undecodedAudio,
+                    (buffer) => {
+                        console.log(buffer);
+                        let sourceBuffer = audioContext.createBufferSource();
+                        sourceBuffer.buffer = buffer;
+                        sourceBuffer.connect(audioContext.destination);
+                        sourceBuffer.start(audioContext.currentTime);
+                        this.start = Date.now();
+                        this.renderLoop(0);
+                    });
+            };
+
+            request.send();
         });
     }
 
