@@ -357,7 +357,7 @@ class Canvas {
         this.fpsCount++;
         let time = (Date.now() - this.start);
         time = time * 3;
-        time = time % 720000;
+        time = time % 750000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
         this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
         if (time < 5000) {
@@ -723,7 +723,7 @@ class Canvas {
             }
             this.framebuffer.noise(time, this.noise);
         }
-        else {
+        else if (time < 720000) {
             // Rave video & Wobblin Cylinder
             this.framebuffer.raveMoview(time, this.rave);
             this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
@@ -743,6 +743,89 @@ class Canvas {
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             this.framebuffer.noise(time, this.noise);
         }
+        else {
+            let rng = new RandomNumberGenerator_1.default();
+            rng.setSeed(666);
+            let texture = new Texture_1.default(new Uint32Array(32 * 32), 32, 32);
+            // FIXME:
+            // - remove realtime glow and put it pre baked into the texture insteadt!
+            for (let k = 0; k < 100; k++) {
+                let x = Math.round(rng.getFloat() * 32);
+                let y = Math.round(rng.getFloat() * 32);
+                if (k < 50)
+                    texture.texture[x + y * 32] = 47 | 181 << 8 | 243 << 16;
+                else
+                    texture.texture[x + y * 32] = 252 | 130 << 8 | 195 << 16;
+            }
+            this.framebuffer.drawPlanedeformationTunnelAnim(time, texture);
+            // GLOW
+            let glowBuffer = new Uint32Array(16 * 2 * 10 * 2);
+            let glowBuffer2 = new Uint32Array(16 * 2 * 10 * 2);
+            // todo filer onlyy brigh parts
+            // blur if too blocky
+            // clamp to border when filterting bilinear
+            // add and dont blend with alpha
+            for (let y = 0; y < 20; y++) {
+                for (let x = 0; x < 32; x++) {
+                    let xx = Math.round(10 * x);
+                    let yy = Math.round(10 * y);
+                    let r = this.framebuffer.framebuffer[xx + yy * 320] & 0xff;
+                    let g = this.framebuffer.framebuffer[xx + yy * 320] >> 8 & 0xff;
+                    let b = this.framebuffer.framebuffer[xx + yy * 320] >> 16 & 0xff;
+                    let intensity = (r + g + b) / 3;
+                    let scale = this.framebuffer.cosineInterpolate(200, 130, intensity);
+                    let color = r * scale | g * scale << 8 | b * scale << 16 | 255 << 24;
+                    //  if (intensity > 138) {
+                    glowBuffer[x + y * 32] = this.framebuffer.framebuffer[xx + yy * 320]; //color ;
+                    // } 
+                }
+            }
+            for (let y = 0; y < 20; y++) {
+                for (let x = 0; x < 32; x++) {
+                    let col1 = glowBuffer[Math.max(x - 1, 0) + y * 32];
+                    let col2 = glowBuffer[(x) % 32 + y * 32];
+                    let col3 = glowBuffer[Math.min(x + 1, 31) + y * 32];
+                    let r = (col1 & 0xff) * 1 / 4 + (col2 & 0xff) * 2 / 4 + (col3 & 0xff) * 1 / 4;
+                    let g = (col1 >> 8 & 0xff) * 1 / 4 + (col2 >> 8 & 0xff) * 2 / 4 + (col3 >> 8 & 0xff) * 1 / 4;
+                    let b = (col1 >> 16 & 0xff) * 1 / 4 + (col2 >> 16 & 0xff) * 2 / 4 + (col3 >> 16 & 0xff) * 1 / 4;
+                    glowBuffer2[x + y * 32] = r | g << 8 | b << 16;
+                }
+            }
+            for (let y = 0; y < 20; y++) {
+                for (let x = 0; x < 32; x++) {
+                    let col1 = glowBuffer2[(x) + Math.max(y - 1, 0) * 32];
+                    let col2 = glowBuffer2[(x) + y % 20 * 32];
+                    let col3 = glowBuffer2[(x) + Math.min(y + 1, 19) * 32];
+                    let r = ((col1 & 0xff) * 1 / 4 + (col2 & 0xff) * 2 / 4 + (col3 & 0xff) * 1 / 4);
+                    let g = ((col1 >> 8 & 0xff) * 1 / 4 + (col2 >> 8 & 0xff) * 2 / 4 + (col3 >> 8 & 0xff) * 1 / 4);
+                    let b = ((col1 >> 16 & 0xff) * 1 / 4 + (col2 >> 16 & 0xff) * 2 / 4 + (col3 >> 16 & 0xff) * 1 / 4);
+                    glowBuffer[x + y * 32] = r | g << 8 | b << 16;
+                }
+            }
+            let texture2 = new Texture_1.default();
+            texture2.texture = glowBuffer;
+            texture2.width = 32;
+            texture2.height = 20;
+            this.framebuffer.drawScaledTextureClipBiAdd(0, 0, 320, 200, texture2, 0.75);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+            this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.reflectionBunny(time * 0.002);
+            // Motion Blur
+            let texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.8);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            this.framebuffer.noise(time, this.noise);
+        }
+        /*
+        this.framebuffer.drawPolarDistotion3(time, this.revision);
+        this.framebuffer.setCullFace(CullFace.FRONT);
+        this.framebuffer.shadingSphere(time * 0.004);
+        // Motion Blur
+        let texture = new Texture(this.accumulationBuffer, 320, 200);
+        //this.framebuffer.drawTexture(0, 0, texture, 0.75);
+        this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+        this.framebuffer.glitchScreen(time, this.noise);
+        */
         // TODO:
         // - Progress Bar for Loading
         // - Web Audio API
@@ -812,70 +895,7 @@ class Canvas {
  
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             */
-        /*
-                    // GLOW
-                let glowBuffer = new Uint32Array(16 * 2 * 10 * 2);
-                let glowBuffer2 = new Uint32Array(16 * 2 * 10 * 2);
-        
-                // todo filer onlyy brigh parts
-                // blur if too blocky
-                // clamp to border when filterting bilinear
-                // add and dont blend with alpha
-                for (let y = 0; y < 20; y++) {
-                    for (let x = 0; x < 32; x++) {
-                        let xx = Math.round(10 * x);
-                        let yy = Math.round(10 * y);
-                        let r = this.framebuffer.framebuffer[xx + yy * 320] & 0xff;
-                        let g = this.framebuffer.framebuffer[xx + yy * 320] >> 8 & 0xff;
-                        let b = this.framebuffer.framebuffer[xx + yy * 320] >> 16 & 0xff;
-                        let intensity = (r + g + b) / 3;
-                        let scale = this.framebuffer.cosineInterpolate(200,130, intensity);
-                        let color = r*scale | g*scale << 8 | b*scale << 16 | 255 << 24;
-                        if (intensity > 138) {
-                            glowBuffer[x + y * 32] = color ;
-                        }
-                    }
-                }
-        
-                for (let y = 0; y < 20; y++) {
-                    for (let x = 0; x < 32; x++) {
-                        let col1 = glowBuffer[(x-1)%32 + y * 32];
-                        let col2 = glowBuffer[(x)%32 + y * 32];
-                        let col3 = glowBuffer[(x+1)%32 + y * 32];
-                        let r = (col1&0xff)*1/4 + (col2&0xff)*2/4 +(col3&0xff)*1/4;
-                        let g = (col1>>8&0xff)*1/4 + (col2>>8&0xff)*2/4 +(col3>>8&0xff)*1/4;
-                        let b = (col1>>16&0xff)*1/4 + (col2>>16&0xff)*2/4 +(col3>>16&0xff)*1/4;
-                        glowBuffer2[x + y * 32] = r | g <<8 | b<<16;
-                    }
-                }
-        
-                for (let y = 0; y < 20; y++) {
-                    for (let x = 0; x < 32; x++) {
-                        let col1 = glowBuffer2[(x) + (y-1)%20 * 32];
-                        let col2 = glowBuffer2[(x) + y%20 * 32];
-                        let col3 = glowBuffer2[(x) + (y+1)%20 * 32];
-                        let r = ((col1&0xff)*1/4 + (col2&0xff)*2/4 +(col3&0xff)*1/4);
-                        let g = ((col1>>8&0xff)*1/4 + (col2>>8&0xff)*2/4 +(col3>>8&0xff)*1/4);
-                        let b = ((col1>>16&0xff)*1/4 + (col2>>16&0xff)*2/4 +(col3>>16&0xff)*1/4);
-                        glowBuffer[x + y * 32] = r | g <<8 | b<<16;
-                    }
-                }
-        
-                let texture2 = new Texture();
-                texture2.texture = glowBuffer;
-                texture2.width = 32;
-                texture2.height = 20;
-        
-        
-                           this.framebuffer.drawScaledTextureClip(
-                               0,0,
-                                320,200, texture2, (Math.sin(time*0.003)+1)*0.5);
-              
-                
-                this.framebuffer.drawScaledTextureClipBiAdd(
-                    0, 0,
-                    320, 200, texture2, 1);
-        */
+        //this.framebuffer.noise(time, this.noise);
         // https://github.com/ninjadev/nin/blob/38e80381415934136c7bd97233a2792df2bffa8d/nin/dasBoot/shims.js
         /*****/
         /*
@@ -1146,23 +1166,24 @@ class Canvas {
             this.createTexture(__webpack_require__(37), true).then(texture => this.texture12 = texture),
             this.createTexture(__webpack_require__(38), true).then(texture => this.texture13 = texture),
             this.createTexture(__webpack_require__(39), false).then(texture => this.texture14 = texture),
+            this.createTexture(__webpack_require__(40), false).then(texture => this.revision = texture),
             this.createProceduralTexture().then(texture => this.texture15 = texture),
             this.createProceduralTexture2().then(texture => this.particleTexture = texture),
             this.createProceduralTexture3().then(texture => this.particleTexture2 = texture),
             this.createProceduralTexture4().then(texture => this.noise = texture),
-            this.createTexture(__webpack_require__(40), true).then(texture => this.hoodlumLogo = texture),
-            this.createTexture(__webpack_require__(41), false).then(texture => this.abstract = texture),
-            this.createTexture(__webpack_require__(42), false).then(texture => this.rave = texture),
-            this.createTexture(__webpack_require__(43), false).then(texture => this.micro = texture),
-            this.createTexture(__webpack_require__(44), false).then(texture => this.blurred = texture),
-            this.createTexture(__webpack_require__(45), true).then(texture => this.hlm = texture),
-            this.createTexture(__webpack_require__(46), true).then(texture => this.cross = texture),
+            this.createTexture(__webpack_require__(41), true).then(texture => this.hoodlumLogo = texture),
+            this.createTexture(__webpack_require__(42), false).then(texture => this.abstract = texture),
+            this.createTexture(__webpack_require__(43), false).then(texture => this.rave = texture),
+            this.createTexture(__webpack_require__(44), false).then(texture => this.micro = texture),
+            this.createTexture(__webpack_require__(45), false).then(texture => this.blurred = texture),
+            this.createTexture(__webpack_require__(46), true).then(texture => this.hlm = texture),
+            this.createTexture(__webpack_require__(47), true).then(texture => this.cross = texture),
         ]).then(() => {
             // Web Audio API
             // FIXME: put this into a Player Class
             let audioContext = new AudioContext();
             let request = new XMLHttpRequest();
-            request.open('GET', __webpack_require__(47), true);
+            request.open('GET', __webpack_require__(48), true);
             request.responseType = 'arraybuffer';
             console.log('load music');
             request.onload = () => {
@@ -1821,6 +1842,20 @@ class Framebuffer {
                 let ydist = (y - 200 / 2);
                 let dist = Math.sqrt(xdist * xdist + ydist * ydist) * distScale;
                 let angle = Math.atan2(xdist, ydist) / (Math.PI * 2) * 256;
+                let color1 = texture.texture[(dist & 0xff) + (angle & 0xff) * 256];
+                this.framebuffer[i++] = color1;
+            }
+        }
+    }
+    drawPolarDistotion3(elapsedTime, texture) {
+        let i = 0;
+        let distScale = 1.355 * (0.4 + 0.6 * 0.5 * (1 + Math.sin(elapsedTime * 0.00017)));
+        for (let y = 0; y < 200; y++) {
+            for (let x = 0; x < 320; x++) {
+                let xdist = (x - 320 / 2);
+                let ydist = (y - 200 / 2);
+                let dist = Math.sqrt(xdist * xdist + ydist * ydist) * 0.8 - (elapsedTime * 0.017);
+                let angle = Math.atan2(xdist, ydist) / (Math.PI * 2) * 256 + (elapsedTime * 0.017);
                 let color1 = texture.texture[(dist & 0xff) + (angle & 0xff) * 256];
                 this.framebuffer[i++] = color1;
             }
@@ -3211,6 +3246,26 @@ class Framebuffer {
                 let g = (((color1 >> 8) & 0xff) * (inverseAlpha) + (((color2) >> 8) & 0xff) * (alpha)) | 0;
                 let b = (((color1 >> 16) & 0xff) * (inverseAlpha) + ((color2 >> 16) & 0xff) * (alpha)) | 0;
                 this.framebuffer[i++] = r | g << 8 | b << 16 | 255 << 24;
+            }
+        }
+    }
+    drawPlanedeformationTunnelAnim(elapsedTime, texture) {
+        let i = 0;
+        for (let y = 0; y < 200; y++) {
+            for (let x = 0; x < 320; x++) {
+                let xdist = (x - 320 / 2);
+                let ydist = (y - 200 / 2);
+                let dist = 256 * 0.2 / Math.max(1.0, Math.sqrt(xdist * xdist + ydist * ydist));
+                let dist2 = dist + elapsedTime * 0.002;
+                let angle = (Math.atan2(xdist, ydist) / Math.PI + 1.0) * 16 + elapsedTime * 0.00069;
+                let color1 = texture.texture[(dist2 & 0x1f) + (angle & 0x1f) * 32];
+                // darkening can be done with alpha blended texture
+                let scale = 1 - this.cosineInterpolate(1.0, 6.0, dist);
+                let r = ((color1 >> 0) & 0xff) * scale;
+                let g = ((color1 >> 8) & 0xff) * scale;
+                let b = ((color1 >> 16) & 0xff) * scale;
+                let final = r | g << 8 | b << 16;
+                this.framebuffer[i++] = final;
             }
         }
     }
@@ -6133,10 +6188,10 @@ class Framebuffer {
         return col;
     }
     getBilinearFilteredPixel2(texture, x, y) {
-        let x0 = (((x | 0) % texture.width) + texture.width) % texture.width;
-        let x1 = ((((x | 0) + 1) % texture.width) + texture.width) % texture.width;
-        let y0 = (((y | 0) % texture.height) + texture.height) % texture.height;
-        let y1 = ((((y | 0) + 1) % texture.height) + texture.height) % texture.height;
+        let x0 = Math.min(x | 0, texture.width - 1);
+        let x1 = Math.min((x | 0) + 1, texture.width - 1);
+        let y0 = Math.min(y | 0, texture.height - 1);
+        let y1 = Math.min((y | 0) + 1, texture.height - 1);
         let x0y0 = this.getPixel2(texture, x0, y0);
         let x1y0 = this.getPixel2(texture, x1, y0);
         let x0y1 = this.getPixel2(texture, x0, y1);
@@ -6996,46 +7051,52 @@ module.exports = __webpack_require__.p + "b456e9dc15d272b079029a5ca6468305.png";
 /* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "042200790f9c9b7eb4c1dcdc1bfa6778.png";
+module.exports = __webpack_require__.p + "f657ac4e01beddb5085242cb1c20ecb3.png";
 
 /***/ }),
 /* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "aecaf306ad634d628614dca09cfab828.png";
+module.exports = __webpack_require__.p + "042200790f9c9b7eb4c1dcdc1bfa6778.png";
 
 /***/ }),
 /* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "539826c16dd852792e84c205811ca9f8.png";
+module.exports = __webpack_require__.p + "aecaf306ad634d628614dca09cfab828.png";
 
 /***/ }),
 /* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "2047b8a2f49ee5b609dc16ab0e62c014.png";
+module.exports = __webpack_require__.p + "539826c16dd852792e84c205811ca9f8.png";
 
 /***/ }),
 /* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "bbaba2795420534ca9f0184e07fb74f8.png";
+module.exports = __webpack_require__.p + "2047b8a2f49ee5b609dc16ab0e62c014.png";
 
 /***/ }),
 /* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "680cc4a9d367653fc466577bbd376590.png";
+module.exports = __webpack_require__.p + "bbaba2795420534ca9f0184e07fb74f8.png";
 
 /***/ }),
 /* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "9f73952b51a9a6343babe0c489a2b980.png";
+module.exports = __webpack_require__.p + "680cc4a9d367653fc466577bbd376590.png";
 
 /***/ }),
 /* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "9f73952b51a9a6343babe0c489a2b980.png";
+
+/***/ }),
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "0e7cabddfc9af1214d72c4201b0da9d9.mp3";
