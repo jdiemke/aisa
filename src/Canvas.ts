@@ -30,6 +30,7 @@ export class Canvas {
     private texture13: Texture;
     private texture14: Texture;
     private texture15: Texture;
+    private revision: Texture;
     private hoodlumLogo: Texture;
     private blurred: Texture;
     private particleTexture: Texture;
@@ -110,7 +111,7 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3;
-        time = time % 720000;
+        time = time % 750000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
 
         this.framebuffer.setCullFace(CullFace.FRONT);
@@ -521,7 +522,7 @@ export class Canvas {
 
 
             this.framebuffer.noise(time, this.noise);
-        } else {
+        } else if (time < 720000) {
             // Rave video & Wobblin Cylinder
             this.framebuffer.raveMoview(time, this.rave);
             this.framebuffer.setCullFace(CullFace.FRONT);
@@ -542,7 +543,101 @@ export class Canvas {
             this.framebuffer.drawTexture(0, 0, texture, 0.3 + 0.6 * (0.5 + 0.5 * Math.sin(time * 0.0003)));
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             this.framebuffer.noise(time, this.noise);
+        } else {
+            let rng = new RandomNumberGenerator();
+            rng.setSeed(666);
+            let texture = new Texture(new Uint32Array(32 * 32), 32, 32);
+            // FIXME:
+            // - remove realtime glow and put it pre baked into the texture insteadt!
+            for (let k = 0; k < 100; k++) {
+                let x = Math.round(rng.getFloat() * 32);
+                let y = Math.round(rng.getFloat() * 32);
+                if (k < 50)
+                    texture.texture[x + y * 32] = 47 | 181 << 8 | 243 << 16;
+                else
+                    texture.texture[x + y * 32] = 252 | 130 << 8 | 195 << 16;
+            }
+
+            this.framebuffer.drawPlanedeformationTunnelAnim(time, texture);
+
+
+            // GLOW
+            let glowBuffer = new Uint32Array(16 * 2 * 10 * 2);
+            let glowBuffer2 = new Uint32Array(16 * 2 * 10 * 2);
+
+            // todo filer onlyy brigh parts
+            // blur if too blocky
+            // clamp to border when filterting bilinear
+            // add and dont blend with alpha
+            for (let y = 0; y < 20; y++) {
+                for (let x = 0; x < 32; x++) {
+                    let xx = Math.round(10 * x);
+                    let yy = Math.round(10 * y);
+                    let r = this.framebuffer.framebuffer[xx + yy * 320] & 0xff;
+                    let g = this.framebuffer.framebuffer[xx + yy * 320] >> 8 & 0xff;
+                    let b = this.framebuffer.framebuffer[xx + yy * 320] >> 16 & 0xff;
+                    let intensity = (r + g + b) / 3;
+                    let scale = this.framebuffer.cosineInterpolate(200, 130, intensity);
+                    let color = r * scale | g * scale << 8 | b * scale << 16 | 255 << 24;
+                    //  if (intensity > 138) {
+                    glowBuffer[x + y * 32] = this.framebuffer.framebuffer[xx + yy * 320];//color ;
+                    // } 
+                }
+            }
+
+            for (let y = 0; y < 20; y++) {
+                for (let x = 0; x < 32; x++) {
+                    let col1 = glowBuffer[Math.max(x - 1, 0) + y * 32];
+                    let col2 = glowBuffer[(x) % 32 + y * 32];
+                    let col3 = glowBuffer[Math.min(x + 1, 31) + y * 32];
+                    let r = (col1 & 0xff) * 1 / 4 + (col2 & 0xff) * 2 / 4 + (col3 & 0xff) * 1 / 4;
+                    let g = (col1 >> 8 & 0xff) * 1 / 4 + (col2 >> 8 & 0xff) * 2 / 4 + (col3 >> 8 & 0xff) * 1 / 4;
+                    let b = (col1 >> 16 & 0xff) * 1 / 4 + (col2 >> 16 & 0xff) * 2 / 4 + (col3 >> 16 & 0xff) * 1 / 4;
+                    glowBuffer2[x + y * 32] = r | g << 8 | b << 16;
+                }
+            }
+
+            for (let y = 0; y < 20; y++) {
+                for (let x = 0; x < 32; x++) {
+                    let col1 = glowBuffer2[(x) + Math.max(y - 1, 0) * 32];
+                    let col2 = glowBuffer2[(x) + y % 20 * 32];
+                    let col3 = glowBuffer2[(x) + Math.min(y + 1, 19) * 32];
+                    let r = ((col1 & 0xff) * 1 / 4 + (col2 & 0xff) * 2 / 4 + (col3 & 0xff) * 1 / 4);
+                    let g = ((col1 >> 8 & 0xff) * 1 / 4 + (col2 >> 8 & 0xff) * 2 / 4 + (col3 >> 8 & 0xff) * 1 / 4);
+                    let b = ((col1 >> 16 & 0xff) * 1 / 4 + (col2 >> 16 & 0xff) * 2 / 4 + (col3 >> 16 & 0xff) * 1 / 4);
+                    glowBuffer[x + y * 32] = r | g << 8 | b << 16;
+                }
+            }
+
+            let texture2 = new Texture();
+            texture2.texture = glowBuffer;
+            texture2.width = 32;
+            texture2.height = 20;
+
+
+            this.framebuffer.drawScaledTextureClipBiAdd(
+                0, 0,
+                320, 200, texture2, 0.75);
+
+            this.framebuffer.setCullFace(CullFace.BACK);
+            this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.reflectionBunny(time * 0.002);
+            // Motion Blur
+            let texture3 = new Texture(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.8);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            this.framebuffer.noise(time, this.noise);
         }
+        /*
+        this.framebuffer.drawPolarDistotion3(time, this.revision);
+        this.framebuffer.setCullFace(CullFace.FRONT);
+        this.framebuffer.shadingSphere(time * 0.004);
+        // Motion Blur
+        let texture = new Texture(this.accumulationBuffer, 320, 200);
+        //this.framebuffer.drawTexture(0, 0, texture, 0.75);
+        this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+        this.framebuffer.glitchScreen(time, this.noise);
+        */
 
         // TODO:
         // - Progress Bar for Loading
@@ -616,71 +711,8 @@ export class Canvas {
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             */
 
-        /*
-                    // GLOW
-                let glowBuffer = new Uint32Array(16 * 2 * 10 * 2);
-                let glowBuffer2 = new Uint32Array(16 * 2 * 10 * 2);
-        
-                // todo filer onlyy brigh parts
-                // blur if too blocky
-                // clamp to border when filterting bilinear
-                // add and dont blend with alpha
-                for (let y = 0; y < 20; y++) {
-                    for (let x = 0; x < 32; x++) {
-                        let xx = Math.round(10 * x);
-                        let yy = Math.round(10 * y);
-                        let r = this.framebuffer.framebuffer[xx + yy * 320] & 0xff;
-                        let g = this.framebuffer.framebuffer[xx + yy * 320] >> 8 & 0xff;
-                        let b = this.framebuffer.framebuffer[xx + yy * 320] >> 16 & 0xff;
-                        let intensity = (r + g + b) / 3;
-                        let scale = this.framebuffer.cosineInterpolate(200,130, intensity);
-                        let color = r*scale | g*scale << 8 | b*scale << 16 | 255 << 24;
-                        if (intensity > 138) {
-                            glowBuffer[x + y * 32] = color ;
-                        } 
-                    }
-                }
-        
-                for (let y = 0; y < 20; y++) {
-                    for (let x = 0; x < 32; x++) {
-                        let col1 = glowBuffer[(x-1)%32 + y * 32];
-                        let col2 = glowBuffer[(x)%32 + y * 32];
-                        let col3 = glowBuffer[(x+1)%32 + y * 32];
-                        let r = (col1&0xff)*1/4 + (col2&0xff)*2/4 +(col3&0xff)*1/4;
-                        let g = (col1>>8&0xff)*1/4 + (col2>>8&0xff)*2/4 +(col3>>8&0xff)*1/4;
-                        let b = (col1>>16&0xff)*1/4 + (col2>>16&0xff)*2/4 +(col3>>16&0xff)*1/4;
-                        glowBuffer2[x + y * 32] = r | g <<8 | b<<16;
-                    }
-                }
-        
-                for (let y = 0; y < 20; y++) {
-                    for (let x = 0; x < 32; x++) {
-                        let col1 = glowBuffer2[(x) + (y-1)%20 * 32];
-                        let col2 = glowBuffer2[(x) + y%20 * 32];
-                        let col3 = glowBuffer2[(x) + (y+1)%20 * 32];
-                        let r = ((col1&0xff)*1/4 + (col2&0xff)*2/4 +(col3&0xff)*1/4);
-                        let g = ((col1>>8&0xff)*1/4 + (col2>>8&0xff)*2/4 +(col3>>8&0xff)*1/4);
-                        let b = ((col1>>16&0xff)*1/4 + (col2>>16&0xff)*2/4 +(col3>>16&0xff)*1/4);
-                        glowBuffer[x + y * 32] = r | g <<8 | b<<16;
-                    }
-                }
-        
-                let texture2 = new Texture();
-                texture2.texture = glowBuffer;
-                texture2.width = 32;
-                texture2.height = 20;
-        
-        
-                           this.framebuffer.drawScaledTextureClip(
-                               0,0,
-                                320,200, texture2, (Math.sin(time*0.003)+1)*0.5);
-              
-                
-                this.framebuffer.drawScaledTextureClipBiAdd(
-                    0, 0,
-                    320, 200, texture2, 1);
-        */
 
+        //this.framebuffer.noise(time, this.noise);
 
         // https://github.com/ninjadev/nin/blob/38e80381415934136c7bd97233a2792df2bffa8d/nin/dasBoot/shims.js
         /*****/
@@ -995,6 +1027,7 @@ export class Canvas {
             this.createTexture(require('./assets/sky.png'), true).then(texture => this.texture12 = texture),
             this.createTexture(require('./assets/bokeh.png'), true).then(texture => this.texture13 = texture),
             this.createTexture(require('./assets/led.png'), false).then(texture => this.texture14 = texture),
+            this.createTexture(require('./assets/revision.png'), false).then(texture => this.revision = texture),
             this.createProceduralTexture().then(texture => this.texture15 = texture),
             this.createProceduralTexture2().then(texture => this.particleTexture = texture),
             this.createProceduralTexture3().then(texture => this.particleTexture2 = texture),

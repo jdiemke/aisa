@@ -763,6 +763,23 @@ export default class Framebuffer {
         }
     }
 
+    public drawPolarDistotion3(elapsedTime: number, texture: Texture): void {
+        let i = 0;
+        let distScale = 1.355 * (0.4 + 0.6 * 0.5 * (1 + Math.sin(elapsedTime * 0.00017)));
+        for (let y = 0; y < 200; y++) {
+            for (let x = 0; x < 320; x++) {
+                let xdist = (x - 320 / 2);
+                let ydist = (y - 200 / 2);
+                let dist = Math.sqrt(xdist * xdist + ydist * ydist)*0.8-(elapsedTime * 0.017);
+                let angle = Math.atan2(xdist, ydist) / (Math.PI * 2) * 256+(elapsedTime * 0.017);
+
+                let color1 = texture.texture[(dist & 0xff) + (angle & 0xff) * 256];
+
+                this.framebuffer[i++] = color1;
+            }
+        }
+    }
+
     public noise(elapsedTime: number, texture: Texture): void {
         const glitchFactor = Math.sin(elapsedTime * 0.0003);
 
@@ -2506,6 +2523,31 @@ export default class Framebuffer {
             }
         }
     }
+
+
+    drawPlanedeformationTunnelAnim(elapsedTime: number, texture: Texture) {
+        
+                let i = 0;
+                for (let y = 0; y < 200; y++) {
+                    for (let x = 0; x < 320; x++) {
+                        let xdist = (x - 320 / 2);
+                        let ydist = (y - 200 / 2);
+                        let dist = 256 * 0.2 / Math.max(1.0, Math.sqrt(xdist * xdist + ydist * ydist));
+                        let dist2 = dist +elapsedTime * 0.002;                   
+                        let angle = (Math.atan2(xdist, ydist) / Math.PI + 1.0) * 16 + elapsedTime * 0.00069;
+    
+                        let color1 = texture.texture[(dist2 & 0x1f) + (angle & 0x1f) * 32];
+                        // darkening can be done with alpha blended texture
+                        let scale = 1-this.cosineInterpolate(1.0, 6.0, dist);
+                        let r = ((color1 >> 0) & 0xff)*scale;
+                        let g = ((color1 >> 8) & 0xff)*scale;
+                        let b = ((color1 >> 16) & 0xff)*scale;
+                        let final = r | g <<8 | b<<16;
+                       
+                        this.framebuffer[i++] = final;
+                    }
+                }
+            }
 
     /**
      * This code is pretty slow. About 12 fps with 6 x slowdown int chrome!
@@ -6163,10 +6205,10 @@ export default class Framebuffer {
 
     getBilinearFilteredPixel2(texture: Texture, x: number, y: number) {
 
-        let x0 = (((x | 0) % texture.width) + texture.width) % texture.width;
-        let x1 = ((((x| 0) + 1 ) % texture.width) + texture.width) % texture.width;
-        let y0 = (((y | 0) % texture.height) + texture.height) % texture.height;
-        let y1 = ((((y| 0 ) + 1) % texture.height) + texture.height) % texture.height;
+        let x0 = Math.min(x | 0,texture.width-1);
+        let x1 = Math.min((x| 0) + 1,texture.width-1);
+        let y0 = Math.min(y | 0,  texture.height-1);
+        let y1 =  Math.min((y| 0 ) + 1,texture.height-1);
 
         let x0y0 = this.getPixel2(texture, x0, y0);
         let x1y0 = this.getPixel2(texture, x1, y0);
