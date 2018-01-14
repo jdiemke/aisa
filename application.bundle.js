@@ -244,6 +244,11 @@ exports.BasicCamera = BasicCamera;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 class Texture {
+    constructor(texture, width, height) {
+        this.texture = texture;
+        this.width = width;
+        this.height = height;
+    }
 }
 exports.default = Texture;
 
@@ -304,6 +309,7 @@ class Canvas {
         this.fpsStartTime = Date.now();
         this.fpsCount = 0;
         this.fps = 0;
+        this.accumulationBuffer = new Uint32Array(320 * 200);
         this.canvas = document.createElement('canvas');
         this.canvas.width = width;
         this.canvas.height = height;
@@ -351,7 +357,7 @@ class Canvas {
         this.fpsCount++;
         let time = (Date.now() - this.start);
         time = time * 3;
-        time = time % 690000;
+        time = time % 720000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
         this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
         if (time < 5000) {
@@ -503,7 +509,7 @@ class Canvas {
                 this.framebuffer.cosineInterpolate(15, 200, smashTime) +
                 0.4 * this.framebuffer.cosineInterpolate(200, 300, smashTime) -
                 0.4 * this.framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
-            this.framebuffer.drawScaledTextureClip((320 / 2 - (this.hoodlumLogo.width + smash) / 2) | 0, (200 / 2 - (this.hoodlumLogo.height - smash) / 2) | 0, this.hoodlumLogo.width + smash, (this.hoodlumLogo.height - smash) | 0, this.hoodlumLogo, 1.0);
+            this.framebuffer.drawScaledTextureClipBi((320 / 2 - (this.hoodlumLogo.width + smash) / 2) | 0, (200 / 2 - (this.hoodlumLogo.height - smash) / 2) | 0, this.hoodlumLogo.width + smash, (this.hoodlumLogo.height - smash) | 0, this.hoodlumLogo, 1.0);
         }
         else if (time < 400000) {
             // THE NEXT LINE IS THE BOTTLENECK NOT THE SPHERE!
@@ -556,7 +562,7 @@ class Canvas {
             let scale = 1 / (99 - ((time * 0.02) % 100));
             let width = (this.hoodlumLogo.width * scale * 10) | 0;
             let height = (this.hoodlumLogo.height * scale * 10) | 0;
-            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, this.hoodlumLogo, 1.0);
+            this.framebuffer.drawScaledTextureClipBi(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, this.hoodlumLogo, 1.0);
         }
         else if (time < 550000) {
             this.framebuffer.raveMoview(time, this.rave);
@@ -606,7 +612,7 @@ class Canvas {
                 this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
             let width = Math.round(320 + smash * 320 / 100);
             let height = Math.round(200 + smash * 200 / 100);
-            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            this.framebuffer.drawScaledTextureClipBi(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
             this.framebuffer.noise(time, this.noise);
         }
         else if (time < 650000) {
@@ -628,7 +634,7 @@ class Canvas {
                 this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
             let width = Math.round(320 + smash * 320 / 50);
             let height = Math.round(200 + smash * 200 / 50);
-            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            this.framebuffer.drawScaledTextureClipBi(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
             this.framebuffer.noise(time, this.noise);
         }
         else if (time < 670000) {
@@ -660,10 +666,17 @@ class Canvas {
                 this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
             let width = Math.round(320 + smash * 320 / 50);
             let height = Math.round(200 + smash * 200 / 50);
-            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            this.framebuffer.drawScaledTextureClipBi(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            for (let y = 0; y < 3; y++) {
+                for (let x = 0; x < 4; x++) {
+                    let xx = Math.round(320 / 4 * x + 320 / 4 * 0.5 - this.cross.width / 2);
+                    let yy = Math.round(200 / 3 * y + 200 / 3 * 0.5 - this.cross.height / 2);
+                    this.framebuffer.drawTexture(xx, yy, this.cross, 0.45);
+                }
+            }
             this.framebuffer.noise(time, this.noise);
         }
-        else {
+        else if (time < 690000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
             this.framebuffer.setBob(this.spheremap);
@@ -700,9 +713,170 @@ class Canvas {
                 this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
             let width = Math.round(320 + smash * 320 / 50);
             let height = Math.round(200 + smash * 200 / 50);
-            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            this.framebuffer.drawScaledTextureClipBi(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            for (let y = 0; y < 3; y++) {
+                for (let x = 0; x < 4; x++) {
+                    let xx = Math.round(320 / 4 * x + 320 / 4 * 0.5 - this.cross.width / 2);
+                    let yy = Math.round(200 / 3 * y + 200 / 3 * 0.5 - this.cross.height / 2);
+                    this.framebuffer.drawTexture(xx, yy, this.cross, 0.45);
+                }
+            }
             this.framebuffer.noise(time, this.noise);
         }
+        else {
+            // Rave video & Wobblin Cylinder
+            this.framebuffer.raveMoview(time, this.rave);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
+            this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.shadingCylinderEnv(time * 0.0002);
+            // Crosses
+            for (let y = 0; y < 3; y++) {
+                for (let x = 0; x < 4; x++) {
+                    let xx = Math.round(320 / 4 * x + 320 / 4 * 0.5 - this.cross.width / 2);
+                    let yy = Math.round(200 / 3 * y + 200 / 3 * 0.5 - this.cross.height / 2);
+                    this.framebuffer.drawTexture(xx, yy, this.cross, 0.2);
+                }
+            }
+            // Motion Blur
+            let texture = new Texture_1.default(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture, 0.3 + 0.6 * (0.5 + 0.5 * Math.sin(time * 0.0003)));
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            this.framebuffer.noise(time, this.noise);
+        }
+        // TODO:
+        // - Progress Bar for Loading
+        // - Web Audio API
+        // - blasphemy line sphere with particles and blur
+        // - fractal landscape fade in / out
+        // - particle emitter
+        // - plane deformation on rendererd scenes
+        // - alpha blend between different or same scene
+        // - fade to white
+        // - spike ball / particle and 3d mesh with normals
+        // - glow
+        // - kewlers cube torus
+        // - kewlsers recht billboard spikeball
+        // - kewslers rect billboard cylinder
+        // seminars:
+        // - https://www.youtube.com/playlist?list=PLwbFJIXXSsXvbpDxOaaBrxSBdLUW1hdax
+        // - https://www.youtube.com/watch?v=XZLqwXdXjqY
+        // - https://www.youtube.com/watch?v=nt-BpAYMeJs&list=PLNqQO7lFY6dmH5kMSWtuRP6ZhBiQdQIU1&index=5
+        // - https://www.youtube.com/watch?v=WgUkCRvti3Y&list=PLNqQO7lFY6dlPOg7cA1SczEU0Y7UW6iMW
+        // - https://www.youtube.com/watch?v=7wYq6O-g2U8&list=PLNqQO7lFY6dm_GROVFIZ6C6mUINMnlpyC
+        // - https://www.youtube.com/watch?v=hszyYAT5R1Q&list=PLNqQO7lFY6dm_GROVFIZ6C6mUINMnlpyC&index=5
+        // - https://www.youtube.com/watch?v=4Q5sgNCN2Jw&list=PL2EEF025A89BAA0FC
+        // - https://www.youtube.com/watch?v=TbcZyAO6K7c
+        // - https://www.youtube.com/watch?v=2p2JcHzRlJU
+        // - https://www.youtube.com/watch?v=QT2ftidLTn4
+        // - https://www.youtube.com/watch?v=Oo-jlpvhTcY
+        /*
+              // SCALE
+              let texture = new Texture();
+              texture.texture = this.accumulationBuffer;
+              texture.width = 320;
+              texture.height = 200;
+      
+              let scale = 1 + (1+Math.sin(time*0.00006))*0.5*20;
+              let width = 320 *  scale;
+              let height = 200 * scale;
+      
+              // looks crappy with linear interpolation!
+              // probably  bilinear is required here
+         
+              
+                  this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+                  this.framebuffer.drawScaledTextureClipBi(
+                      Math.round(320/2-width/2),
+                      Math.round(200/2-height/2),
+                      width, height, texture, 1.0);
+                  */
+        /*
+            // RADIAL BLUR
+    let texture = new Texture();
+    texture.texture = this.accumulationBuffer;
+    texture.width = 320;
+    texture.height = 200;
+
+    let scale = 1.05;
+    let width = 320 *  scale;
+    let height = 200 * scale;
+
+    // looks crappy with linear interpolation!
+    // probably  bilinear is required here
+ 
+    
+        this.framebuffer.drawScaledTextureClipBi(
+            Math.round(320/2-width/2),
+            Math.round(200/2-height/2),
+            width, height, texture, 0.95);
+ 
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            */
+        /*
+                    // GLOW
+                let glowBuffer = new Uint32Array(16 * 2 * 10 * 2);
+                let glowBuffer2 = new Uint32Array(16 * 2 * 10 * 2);
+        
+                // todo filer onlyy brigh parts
+                // blur if too blocky
+                // clamp to border when filterting bilinear
+                // add and dont blend with alpha
+                for (let y = 0; y < 20; y++) {
+                    for (let x = 0; x < 32; x++) {
+                        let xx = Math.round(10 * x);
+                        let yy = Math.round(10 * y);
+                        let r = this.framebuffer.framebuffer[xx + yy * 320] & 0xff;
+                        let g = this.framebuffer.framebuffer[xx + yy * 320] >> 8 & 0xff;
+                        let b = this.framebuffer.framebuffer[xx + yy * 320] >> 16 & 0xff;
+                        let intensity = (r + g + b) / 3;
+                        let scale = this.framebuffer.cosineInterpolate(200,130, intensity);
+                        let color = r*scale | g*scale << 8 | b*scale << 16 | 255 << 24;
+                        if (intensity > 138) {
+                            glowBuffer[x + y * 32] = color ;
+                        }
+                    }
+                }
+        
+                for (let y = 0; y < 20; y++) {
+                    for (let x = 0; x < 32; x++) {
+                        let col1 = glowBuffer[(x-1)%32 + y * 32];
+                        let col2 = glowBuffer[(x)%32 + y * 32];
+                        let col3 = glowBuffer[(x+1)%32 + y * 32];
+                        let r = (col1&0xff)*1/4 + (col2&0xff)*2/4 +(col3&0xff)*1/4;
+                        let g = (col1>>8&0xff)*1/4 + (col2>>8&0xff)*2/4 +(col3>>8&0xff)*1/4;
+                        let b = (col1>>16&0xff)*1/4 + (col2>>16&0xff)*2/4 +(col3>>16&0xff)*1/4;
+                        glowBuffer2[x + y * 32] = r | g <<8 | b<<16;
+                    }
+                }
+        
+                for (let y = 0; y < 20; y++) {
+                    for (let x = 0; x < 32; x++) {
+                        let col1 = glowBuffer2[(x) + (y-1)%20 * 32];
+                        let col2 = glowBuffer2[(x) + y%20 * 32];
+                        let col3 = glowBuffer2[(x) + (y+1)%20 * 32];
+                        let r = ((col1&0xff)*1/4 + (col2&0xff)*2/4 +(col3&0xff)*1/4);
+                        let g = ((col1>>8&0xff)*1/4 + (col2>>8&0xff)*2/4 +(col3>>8&0xff)*1/4);
+                        let b = ((col1>>16&0xff)*1/4 + (col2>>16&0xff)*2/4 +(col3>>16&0xff)*1/4);
+                        glowBuffer[x + y * 32] = r | g <<8 | b<<16;
+                    }
+                }
+        
+                let texture2 = new Texture();
+                texture2.texture = glowBuffer;
+                texture2.width = 32;
+                texture2.height = 20;
+        
+        
+                           this.framebuffer.drawScaledTextureClip(
+                               0,0,
+                                320,200, texture2, (Math.sin(time*0.003)+1)*0.5);
+              
+                
+                this.framebuffer.drawScaledTextureClipBiAdd(
+                    0, 0,
+                    320, 200, texture2, 1);
+        */
+        // https://github.com/ninjadev/nin/blob/38e80381415934136c7bd97233a2792df2bffa8d/nin/dasBoot/shims.js
         /*****/
         /*
 
@@ -981,13 +1155,30 @@ class Canvas {
             this.createTexture(__webpack_require__(42), false).then(texture => this.rave = texture),
             this.createTexture(__webpack_require__(43), false).then(texture => this.micro = texture),
             this.createTexture(__webpack_require__(44), false).then(texture => this.blurred = texture),
-            this.createTexture(__webpack_require__(45), true).then(texture => this.hlm = texture)
+            this.createTexture(__webpack_require__(45), true).then(texture => this.hlm = texture),
+            this.createTexture(__webpack_require__(46), true).then(texture => this.cross = texture),
         ]).then(() => {
-            this.myAudio = new Audio(__webpack_require__(46));
-            this.myAudio.loop = true;
-            this.start = Date.now();
-            this.myAudio.play();
-            this.renderLoop(0);
+            // Web Audio API
+            // FIXME: put this into a Player Class
+            let audioContext = new AudioContext();
+            let request = new XMLHttpRequest();
+            request.open('GET', __webpack_require__(47), true);
+            request.responseType = 'arraybuffer';
+            console.log('load music');
+            request.onload = () => {
+                console.log('loaded');
+                let undecodedAudio = request.response;
+                audioContext.decodeAudioData(undecodedAudio, (buffer) => {
+                    console.log(buffer);
+                    let sourceBuffer = audioContext.createBufferSource();
+                    sourceBuffer.buffer = buffer;
+                    sourceBuffer.connect(audioContext.destination);
+                    sourceBuffer.start(audioContext.currentTime);
+                    this.start = Date.now();
+                    this.renderLoop(0);
+                });
+            };
+            request.send();
         });
     }
     display() {
@@ -1168,6 +1359,7 @@ class Framebuffer {
         this.blenderObj = this.getBlenderScene();
         this.sphere = this.createSphere();
         this.plane = this.createPlane();
+        this.cylinder = this.createCylinder();
         /*
         document.addEventListener("keydown", (e) => {
             console.log('key pressed');
@@ -1884,6 +2076,117 @@ class Framebuffer {
                 let r = (framebufferPixel >> 0 & 0xff) * inverseAlpha + (texturePixel >> 0 & 0xff) * alpha;
                 let g = (framebufferPixel >> 8 & 0xff) * inverseAlpha + (texturePixel >> 8 & 0xff) * alpha;
                 let b = (framebufferPixel >> 16 & 0xff) * inverseAlpha + (texturePixel >> 16 & 0xff) * alpha;
+                this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
+                xx += xStep;
+                index2++;
+            }
+            yy += yStep;
+            xx = xTextureStart;
+            index2 += -newWidth + 320;
+        }
+    }
+    drawScaledTextureClipBi(xp, yp, width, height, texture, alphaBlend) {
+        let xStep = texture.width / width;
+        let yStep = texture.height / height;
+        let xx = 0;
+        let yy = 0;
+        let newHeight;
+        let newWidth;
+        let yStart;
+        let xStart;
+        if (yp + height < 0 ||
+            yp > 199 ||
+            xp + width < 0 ||
+            xp > 319) {
+            return;
+        }
+        if (yp < 0) {
+            yy = yStep * -yp;
+            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            yStart = 0;
+        }
+        else {
+            yStart = yp;
+            newHeight = height - Math.max(yp + height - 200, 0);
+        }
+        let xTextureStart;
+        if (xp < 0) {
+            xTextureStart = xx = xStep * -xp;
+            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            xStart = 0;
+        }
+        else {
+            xTextureStart = 0;
+            xStart = xp;
+            newWidth = width - Math.max(xp + width - 320, 0);
+        }
+        const alphaScale = 1 / 255 * alphaBlend;
+        let index2 = (xStart) + (yStart) * 320;
+        for (let y = 0; y < newHeight; y++) {
+            for (let x = 0; x < newWidth; x++) {
+                //let textureIndex = //Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
+                let color = this.getBilinearFilteredPixel2(texture, xx, yy);
+                let alpha = 255 * alphaScale;
+                let inverseAlpha = 1 - alpha;
+                let framebufferPixel = this.framebuffer[index2];
+                let texturePixel = color;
+                let r = (framebufferPixel >> 0 & 0xff) * inverseAlpha + (texturePixel >> 0 & 0xff) * alpha;
+                let g = (framebufferPixel >> 8 & 0xff) * inverseAlpha + (texturePixel >> 8 & 0xff) * alpha;
+                let b = (framebufferPixel >> 16 & 0xff) * inverseAlpha + (texturePixel >> 16 & 0xff) * alpha;
+                this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
+                xx += xStep;
+                index2++;
+            }
+            yy += yStep;
+            xx = xTextureStart;
+            index2 += -newWidth + 320;
+        }
+    }
+    drawScaledTextureClipBiAdd(xp, yp, width, height, texture, alphaBlend) {
+        let xStep = texture.width / width;
+        let yStep = texture.height / height;
+        let xx = 0;
+        let yy = 0;
+        let newHeight;
+        let newWidth;
+        let yStart;
+        let xStart;
+        if (yp + height < 0 ||
+            yp > 199 ||
+            xp + width < 0 ||
+            xp > 319) {
+            return;
+        }
+        if (yp < 0) {
+            yy = yStep * -yp;
+            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            yStart = 0;
+        }
+        else {
+            yStart = yp;
+            newHeight = height - Math.max(yp + height - 200, 0);
+        }
+        let xTextureStart;
+        if (xp < 0) {
+            xTextureStart = xx = xStep * -xp;
+            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            xStart = 0;
+        }
+        else {
+            xTextureStart = 0;
+            xStart = xp;
+            newWidth = width - Math.max(xp + width - 320, 0);
+        }
+        let index2 = (xStart) + (yStart) * 320;
+        for (let y = 0; y < newHeight; y++) {
+            for (let x = 0; x < newWidth; x++) {
+                //let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
+                let color = this.getBilinearFilteredPixel2(texture, xx, yy);
+                let framebufferPixel = this.framebuffer[index2];
+                let texturePixel = color;
+                let r = Math.min((framebufferPixel >> 0 & 0xff) + (texturePixel >> 0 & 0xff) * alphaBlend, 255);
+                let g = Math.min((framebufferPixel >> 8 & 0xff) + (texturePixel >> 8 & 0xff) * alphaBlend, 255);
+                let b = Math.min((framebufferPixel >> 16 & 0xff) + (texturePixel >> 16 & 0xff) * alphaBlend, 255);
                 this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
                 xx += xStep;
                 index2++;
@@ -4051,6 +4354,56 @@ class Framebuffer {
             index
         };
     }
+    createCylinder() {
+        let k = {
+            points: []
+        };
+        const LOOPX = 50;
+        const LOOPY = 110;
+        for (let y = 0; y < LOOPY; y++) {
+            for (let x = 0; x < LOOPX; x++) {
+                let xx = Math.sin(2 * Math.PI / LOOPX * x) * 30;
+                let xx2 = Math.sin(2 * Math.PI / LOOPX * (x + 1)) * 30;
+                let yy = Math.cos(2 * Math.PI / LOOPX * x) * 30;
+                let yy2 = Math.cos(2 * Math.PI / LOOPX * (x + 1)) * 30;
+                k.points.push(new math_1.Vector3f(xx, 0 + y, yy));
+                k.points.push(new math_1.Vector3f(xx, 1 + y, yy));
+                k.points.push(new math_1.Vector3f(xx2, 0 + y, yy2));
+                k.points.push(new math_1.Vector3f(xx2, 0 + y, yy2));
+                k.points.push(new math_1.Vector3f(xx, 1 + y, yy));
+                k.points.push(new math_1.Vector3f(xx2, 1 + y, yy2));
+            }
+        }
+        // optimize
+        let points = [];
+        let points2 = [];
+        let normals = [];
+        let normals2 = [];
+        let index = [];
+        k.points.forEach(i => {
+            let p = i;
+            let point = points.find(point => point.sub(p).length() < 0.001);
+            if (point) {
+                let idx = points.indexOf(point);
+                index.push(idx);
+            }
+            else {
+                index.push(points.push(p) - 1);
+            }
+        });
+        points.forEach(p => {
+            normals.push(new math_1.Vector3f(0, 0, 0));
+            normals2.push(new math_1.Vector3f(0, 0, 0));
+            points2.push(new math_1.Vector3f(0, 0, 0));
+        });
+        return {
+            points,
+            points2,
+            normals,
+            normals2,
+            index
+        };
+    }
     shadingSphereEnv(elapsedTime) {
         this.wBuffer.fill(100);
         let result = this.sphere;
@@ -4209,6 +4562,124 @@ class Framebuffer {
         let modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(Math.PI + Math.sin(elapsedTime * 2.75) * 0.25)
             .multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(Math.PI / 5 + Math.sin(elapsedTime * 2.25) * 0.35).multiplyMatrix(math_1.Matrix4f.constructTranslationMatrix(-50, -25, 0))));
         modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(0, 0, -205 + Math.sin(elapsedTime * 1.9) * 50)
+            .multiplyMatrix(modelViewMartrix);
+        /**
+         * Vertex Shader Stage
+         */
+        let points2 = result.points2;
+        let normals2 = result.normals2;
+        let normalMatrix = modelViewMartrix.computeNormalMatrix();
+        for (let n = 0; n < normals.length; n++) {
+            normalMatrix.multiplyArr(normals[n], normals2[n]);
+        }
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiply(points[p]);
+            points2[p].x = Math.round((320 * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
+            points2[p].y = Math.round((200 * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
+            points2[p].z = transformed.z;
+        }
+        /**
+         * Primitive Assembly and Rasterization Stage:
+         * 1. back-face culling
+         * 2. viewport transform
+         * 3. scan conversion (rasterization)
+         */
+        let vertex1 = new Vertex_1.Vertex();
+        vertex1.textureCoordinate = new Vertex_1.TextureCoordinate();
+        let vertex2 = new Vertex_1.Vertex();
+        vertex2.textureCoordinate = new Vertex_1.TextureCoordinate();
+        let vertex3 = new Vertex_1.Vertex();
+        vertex3.textureCoordinate = new Vertex_1.TextureCoordinate();
+        let vertexArray = new Array(vertex1, vertex2, vertex3);
+        for (let i = 0; i < index.length; i += 3) {
+            // Only render triangles with CCW-ordered vertices
+            // 
+            // Reference:
+            // David H. Eberly (2006).
+            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
+            // p. 69. Morgan Kaufmann Publishers, United States.
+            //
+            let v1 = points2[index[i]];
+            let n1 = normals2[index[i]];
+            let v2 = points2[index[i + 1]];
+            let n2 = normals2[index[i + 1]];
+            let v3 = points2[index[i + 2]];
+            let n3 = normals2[index[i + 2]];
+            if (this.isTriangleCCW(v1, v2, v3)) {
+                let color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
+                vertexArray[0].position = v1;
+                this.fakeSphere(n1, vertex1);
+                vertexArray[1].position = v2;
+                this.fakeSphere(n2, vertex2);
+                vertexArray[2].position = v3;
+                this.fakeSphere(n3, vertex3);
+                if (v1.x < Framebuffer.minWindow.x ||
+                    v2.x < Framebuffer.minWindow.x ||
+                    v3.x < Framebuffer.minWindow.x ||
+                    v1.x > Framebuffer.maxWindow.x ||
+                    v2.x > Framebuffer.maxWindow.x ||
+                    v3.x > Framebuffer.maxWindow.x ||
+                    v1.y < Framebuffer.minWindow.y ||
+                    v2.y < Framebuffer.minWindow.y ||
+                    v3.y < Framebuffer.minWindow.y ||
+                    v1.y > Framebuffer.maxWindow.y ||
+                    v2.y > Framebuffer.maxWindow.y ||
+                    v3.y > Framebuffer.maxWindow.y) {
+                    this.clipConvexPolygon2(vertexArray, color);
+                }
+                else {
+                    // this.drawTriangleDDA(v1, v2, v3, color);
+                    this.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], color);
+                }
+            }
+        }
+    }
+    shadingCylinderEnv(elapsedTime) {
+        this.wBuffer.fill(100);
+        let result = this.cylinder;
+        let scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
+        for (let i = 0; i < result.points.length; i++) {
+            let y = result.points[i].y - 30;
+            let x = result.points[i].x - 50;
+            let length = Math.sqrt(x * x + y * y);
+            result.points2[i].y = result.points[i].y;
+            result.points2[i].x = result.points[i].x * (1 + 0.2 * Math.sin(result.points[i].y * 0.01 + elapsedTime * 1.83)) + Math.sin(result.points[i].y * 0.1 + elapsedTime * 3.83) * 8.3
+                + Math.sin(result.points[i].y * 0.55 + elapsedTime * 2.83) * 2;
+            result.points2[i].z = result.points[i].z * (1 + 0.2 * Math.sin(result.points[i].y * 0.01 + elapsedTime * 1.83)) + Math.cos(result.points[i].y * 0.1 + elapsedTime * 3.83) * 8.3
+                + Math.cos(result.points[i].y + result.points[i].x * 0.55 + elapsedTime * 2.83) * 2;
+            result.normals[i].x = 0;
+            result.normals[i].y = 0;
+            result.normals[i].z = 0;
+        }
+        let points = result.points2;
+        let index = result.index;
+        let normals = result.normals;
+        let norm = new math_1.Vector3f(0, 0, 0);
+        let norm2 = new math_1.Vector3f(0, 0, 0);
+        let cross = new math_1.Vector3f(0, 0, 0);
+        for (let i = 0; i < index.length; i += 3) {
+            let v1 = points[index[i]];
+            let v2 = points[index[i + 1]];
+            let v3 = points[index[i + 2]];
+            norm.sub2(v2, v1);
+            norm2.sub2(v3, v1);
+            cross.cross2(norm, norm2);
+            let normal = cross;
+            normals[index[i]].add2(normals[index[i]], normal);
+            normals[index[i + 1]].add2(normals[index[i + 1]], normal);
+            normals[index[i + 2]].add2(normals[index[i + 2]], normal);
+        }
+        // FIXME: speed up
+        // - remove normalie from lighting
+        // - remove normalize after normal transformation!
+        // - precreate array for transformed vertices and normals
+        for (let i = 0; i < normals.length; i++) {
+            normals[i].normalize2();
+        }
+        let scale = 3.7;
+        let modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(0)
+            .multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(0).multiplyMatrix(math_1.Matrix4f.constructTranslationMatrix(0, 0, 0))));
+        modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(-80, -210, -290)
             .multiplyMatrix(modelViewMartrix);
         /**
          * Vertex Shader Stage
@@ -5644,6 +6115,9 @@ class Framebuffer {
     getPixel(texture, x, y) {
         return texture.texture[(x & 0xff) + (y & 0xff) * 256];
     }
+    getPixel2(texture, x, y) {
+        return texture.texture[x + y * texture.width];
+    }
     getBilinearFilteredPixel(texture, x, y) {
         let x0 = (((x | 0) % 256) + 256) % 256;
         let x1 = ((((x + 1) | 0) % 256) + 256) % 256;
@@ -5653,6 +6127,25 @@ class Framebuffer {
         let x1y0 = this.getPixel(texture, x1, y0) & 0xff;
         let x0y1 = this.getPixel(texture, x0, y1) & 0xff;
         let x1y1 = this.getPixel(texture, x1, y1) & 0xff;
+        let col1 = x0y0 * (1 - (x - Math.floor(x))) + (x1y0 * ((x - Math.floor(x))));
+        let col2 = x0y1 * (1 - (x - Math.floor(x))) + (x1y1 * ((x - Math.floor(x))));
+        let col = col1 * (1 - (y - Math.floor(y))) + (col2 * ((y - Math.floor(y))));
+        return col;
+    }
+    getBilinearFilteredPixel2(texture, x, y) {
+        let x0 = (((x | 0) % texture.width) + texture.width) % texture.width;
+        let x1 = ((((x | 0) + 1) % texture.width) + texture.width) % texture.width;
+        let y0 = (((y | 0) % texture.height) + texture.height) % texture.height;
+        let y1 = ((((y | 0) + 1) % texture.height) + texture.height) % texture.height;
+        let x0y0 = this.getPixel2(texture, x0, y0);
+        let x1y0 = this.getPixel2(texture, x1, y0);
+        let x0y1 = this.getPixel2(texture, x0, y1);
+        let x1y1 = this.getPixel2(texture, x1, y1);
+        return this.interpolateComp(x, y, x0y0 & 0xff, x1y0 & 0xff, x0y1 & 0xff, x1y1 & 0xff) |
+            this.interpolateComp(x, y, x0y0 >> 8 & 0xff, x1y0 >> 8 & 0xff, x0y1 >> 8 & 0xff, x1y1 >> 8 & 0xff) << 8 |
+            this.interpolateComp(x, y, x0y0 >> 16 & 0xff, x1y0 >> 16 & 0xff, x0y1 >> 16 & 0xff, x1y1 >> 16 & 0xff) << 16;
+    }
+    interpolateComp(x, y, x0y0, x1y0, x0y1, x1y1) {
         let col1 = x0y0 * (1 - (x - Math.floor(x))) + (x1y0 * ((x - Math.floor(x))));
         let col2 = x0y1 * (1 - (x - Math.floor(x))) + (x1y1 * ((x - Math.floor(x))));
         let col = col1 * (1 - (y - Math.floor(y))) + (col2 * ((y - Math.floor(y))));
@@ -6537,6 +7030,12 @@ module.exports = __webpack_require__.p + "680cc4a9d367653fc466577bbd376590.png";
 
 /***/ }),
 /* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "9f73952b51a9a6343babe0c489a2b980.png";
+
+/***/ }),
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "0e7cabddfc9af1214d72c4201b0da9d9.mp3";
