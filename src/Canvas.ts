@@ -17,7 +17,7 @@ export class Canvas {
 
     private texture: Texture;
     private texture2: Texture;
-    private texture3: Texture;
+    private heightmap: Texture;
     private texture4: Texture;
     private texture5: Texture;
     private texture6: Texture;
@@ -40,6 +40,9 @@ export class Canvas {
     private metal: Texture;
     private micro: Texture;
     private hlm: Texture;
+       private meth: Texture;
+    private displacementMap: Texture;
+    
     private cross: Texture;
     private abstract: Texture;
     private myAudio: HTMLAudioElement;
@@ -111,7 +114,8 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3;
-        time = time % 750000;
+        time = time % (780000-550000);
+        time += 550000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
 
         this.framebuffer.setCullFace(CullFace.FRONT);
@@ -136,7 +140,7 @@ export class Canvas {
             this.framebuffer.drawRotoZoomer(this.texture);
             this.framebuffer.wireFrameSphereClipping(time * 0.01);
         } else if (time < 45000) {
-            this.framebuffer.drawVoxelLandscape2(this.texture3, time);
+            this.framebuffer.drawVoxelLandscape2(this.heightmap, time);
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
         } else if (time < 50000) {
             this.framebuffer.drawOldSchoolPlasma(time);
@@ -229,7 +233,7 @@ export class Canvas {
             this.framebuffer.drawParticleTorus(time, this.particleTexture);
             this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
         } else if (time < 380000) {
-            this.framebuffer.drawPlanedeformationTunnel(time, this.texture3, this.metal);
+            this.framebuffer.drawPlanedeformationTunnel(time, this.heightmap, this.metal);
             const ukBasslineBpm = 140;
             const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
             const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
@@ -255,7 +259,7 @@ export class Canvas {
             this.framebuffer.glitchScreen(time, this.noise);
             this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
         } else if (time < 450000) {
-            this.framebuffer.drawVoxelLandscape3(this.texture3, time);
+            this.framebuffer.drawVoxelLandscape3(this.heightmap, time);
             let tempTexture = new Texture();
             tempTexture.texture = new Uint32Array(256 * 256);
             for (let y = 0; y < 256; y++) {
@@ -267,7 +271,7 @@ export class Canvas {
             }
             this.framebuffer.drawPolarDistotion(time, tempTexture);
         } else if (time < 490000) {
-            this.framebuffer.drawVoxelLandscape4(this.texture3, time);
+            this.framebuffer.drawVoxelLandscape4(this.heightmap, time);
             let tempTexture = new Texture();
             tempTexture.texture = new Uint32Array(256 * 256);
             for (let y = 0; y < 256; y++) {
@@ -298,7 +302,7 @@ export class Canvas {
             this.framebuffer.setBob(this.spheremap);
             this.framebuffer.shadingPlaneEnv(time * 0.0002);
         } else if (time < 570000) {
-            this.framebuffer.drawVoxelLandscape4(this.texture3, time);
+            this.framebuffer.drawVoxelLandscape4(this.heightmap, time);
             let tempTexture = new Texture();
             tempTexture.texture = new Uint32Array(256 * 256);
             for (let y = 0; y < 256; y++) {
@@ -543,7 +547,7 @@ export class Canvas {
             this.framebuffer.drawTexture(0, 0, texture, 0.3 + 0.6 * (0.5 + 0.5 * Math.sin(time * 0.0003)));
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             this.framebuffer.noise(time, this.noise);
-        } else {
+        } else if (time < 750000) {
             let rng = new RandomNumberGenerator();
             rng.setSeed(666);
             let texture = new Texture(new Uint32Array(32 * 32), 32, 32);
@@ -627,7 +631,44 @@ export class Canvas {
             this.framebuffer.drawTexture(0, 0, texture3, 0.8);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             this.framebuffer.noise(time, this.noise);
-        }
+        } else {
+
+
+        this.framebuffer.raveMoview(time, this.rave);
+        this.framebuffer.setCullFace(CullFace.FRONT);
+        this.framebuffer.setBob(this.spheremap);
+        this.framebuffer.shadingCylinderEnvDisp(time * 0.0002);
+   this.framebuffer.drawTexture((320/2-256/2)|0, (200/2-122/2)|0, this.meth, Math.max(0,Math.sin(time*0.0002)));
+          // Motion Blur
+            let texture3 = new Texture(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.8);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+         
+
+            let tmpGlitch = new Uint32Array(320 * 200);
+            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
+
+            let texture = new Texture();
+            texture.texture = tmpGlitch;
+            texture.width = 320;
+            texture.height = 200;
+
+            const ukBasslineBpm = 140;
+            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
+            let width = Math.round(320 + smash * 320 / 100);
+            let height = Math.round(200 + smash * 200 / 100);
+
+            this.framebuffer.drawScaledTextureClipBi(
+                Math.round(320 / 2 - width / 2),
+                Math.round(200 / 2 - height / 2),
+                width, height, texture, 1.0);
+            
+            this.framebuffer.noise(time, this.noise);
+}
+        //this.framebuffer.drawTexture(0, 0, this.displacementMap, 0.8);
         /*
         this.framebuffer.drawPolarDistotion3(time, this.revision);
         this.framebuffer.setCullFace(CullFace.FRONT);
@@ -989,6 +1030,36 @@ export class Canvas {
         });
     }
 
+    public createProceduralDisplacementMap(): Promise<Texture> {
+        return new Promise((resolve) => {
+            const texture = new Texture();
+            texture.texture = new Uint32Array(256 * 256);
+
+            let rng = new RandomNumberGenerator();
+            rng.setSeed(100);
+
+            texture.texture.fill(128 | 255 << 24);
+
+            for (let y = 0; y < 256; y++) {
+                for (let x = 0; x < 256; x++) {
+                    let dx = 127 - x
+                    let dy = 127 - y
+                    let r = Math.sqrt(dx * dx + dy * dy) / 127;
+                    let c = 1 - r;
+                    c = c * c * c;
+                    if (r > 1) c = 0;
+                    c = Math.min(1, c * 2.9);
+
+                    texture.texture[x + y * 256] = (texture.texture[x + y * 256] & 0xffffff00) | texture.texture[x + y * 256] &0xff + (c*255);
+                }
+            }
+
+            texture.width = 256;
+            texture.height = 256;
+            resolve(texture);
+        });
+    }
+
 
     public createProceduralTexture4(): Promise<Texture> {
         return new Promise((resolve) => {
@@ -1015,7 +1086,7 @@ export class Canvas {
             this.createTexture(require('./assets/metall.png'), false).then(texture => this.metal = texture),
             this.createTexture(require('./assets/logo.png'), false).then(texture => this.texture = texture),
             this.createTexture(require('./assets/razor1911.png'), true).then(texture => this.texture2 = texture),
-            this.createTexture(require('./assets/heightmap.png'), false).then(texture => this.texture3 = texture),
+            this.createTexture(require('./assets/heightmap.png'), false).then(texture => this.heightmap = texture),
             this.createTexture(require('./assets/font.png'), true).then(texture => this.texture4 = texture),
             this.createTexture(require('./assets/atlantis.png'), false).then(texture => this.texture5 = texture),
             this.createTexture(require('./assets/lens.png'), true).then(texture => this.texture6 = texture),
@@ -1028,10 +1099,12 @@ export class Canvas {
             this.createTexture(require('./assets/bokeh.png'), true).then(texture => this.texture13 = texture),
             this.createTexture(require('./assets/led.png'), false).then(texture => this.texture14 = texture),
             this.createTexture(require('./assets/revision.png'), false).then(texture => this.revision = texture),
+            this.createTexture(require('./assets/meth.png'), true).then(texture => this.meth = texture),
             this.createProceduralTexture().then(texture => this.texture15 = texture),
             this.createProceduralTexture2().then(texture => this.particleTexture = texture),
             this.createProceduralTexture3().then(texture => this.particleTexture2 = texture),
             this.createProceduralTexture4().then(texture => this.noise = texture),
+            this.createProceduralDisplacementMap().then(texture => this.displacementMap = texture),
             this.createTexture(require('./assets/hoodlumLogo.png'), true).then(texture => this.hoodlumLogo = texture),
             this.createTexture(require('./assets/abstract.png'), false).then(texture => this.abstract = texture),
             this.createTexture(require('./assets/rave.png'), false).then(texture => this.rave = texture),
@@ -1042,6 +1115,7 @@ export class Canvas {
         ]).then(() => {
             // Web Audio API
             // FIXME: put this into a Player Class
+            this.framebuffer.precompute(this.heightmap);
             let audioContext = new AudioContext();
             let request = new XMLHttpRequest();
             request.open('GET', require('./assets/3dGalax.mp3'), true);
