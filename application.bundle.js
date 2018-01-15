@@ -602,18 +602,15 @@ class Canvas {
             this.framebuffer.drawParticleTorus(time, this.particleTexture2, true);
             let tmpGlitch = new Uint32Array(320 * 200);
             this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
-            let texture = new Texture_1.default();
-            texture.texture = tmpGlitch;
-            texture.width = 320;
-            texture.height = 200;
+            let texture = new Texture_1.default(tmpGlitch, 320, 200);
             const ukBasslineBpm = 140;
             const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
             const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
             const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
                 this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
-            let width = Math.round(320 + smash * 320 / 100);
-            let height = Math.round(200 + smash * 200 / 100);
-            this.framebuffer.drawScaledTextureClipBi(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            let width = 320 + smash * 320 / 100;
+            let height = 200 + smash * 200 / 100;
+            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
             this.framebuffer.noise(time, this.noise);
         }
         else if (time < 650000) {
@@ -635,7 +632,8 @@ class Canvas {
                 this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
             let width = Math.round(320 + smash * 320 / 50);
             let height = Math.round(200 + smash * 200 / 50);
-            this.framebuffer.drawScaledTextureClipBi(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            // slow
+            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
             this.framebuffer.noise(time, this.noise);
         }
         else if (time < 670000) {
@@ -667,7 +665,7 @@ class Canvas {
                 this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
             let width = Math.round(320 + smash * 320 / 50);
             let height = Math.round(200 + smash * 200 / 50);
-            this.framebuffer.drawScaledTextureClipBi(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
             for (let y = 0; y < 3; y++) {
                 for (let x = 0; x < 4; x++) {
                     let xx = Math.round(320 / 4 * x + 320 / 4 * 0.5 - this.cross.width / 2);
@@ -714,7 +712,7 @@ class Canvas {
                 this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
             let width = Math.round(320 + smash * 320 / 50);
             let height = Math.round(200 + smash * 200 / 50);
-            this.framebuffer.drawScaledTextureClipBi(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
             for (let y = 0; y < 3; y++) {
                 for (let x = 0; x < 4; x++) {
                     let xx = Math.round(320 / 4 * x + 320 / 4 * 0.5 - this.cross.width / 2);
@@ -840,9 +838,14 @@ class Canvas {
                 this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
             let width = Math.round(320 + smash * 320 / 100);
             let height = Math.round(200 + smash * 200 / 100);
-            this.framebuffer.drawScaledTextureClipBi(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
             this.framebuffer.noise(time, this.noise);
         }
+        // TS SoftSynth Project
+        // https://davidwalsh.name/web-audio-api
+        // https://codepen.io/gregh/post/recreating-legendary-8-bit-games-music-with-web-audio-api
+        // https://developer.mozilla.org/en-US/docs/Games/Techniques/Audio_for_Web_Games
+        // https://www.html5rocks.com/en/tutorials/webaudio/intro/
         //this.framebuffer.drawTexture(0, 0, this.displacementMap, 0.8);
         /*
         this.framebuffer.drawPolarDistotion3(time, this.revision);
@@ -1576,9 +1579,11 @@ class Framebuffer {
             for (let w = 0; w < width; w++) {
                 let alpha = ((texture.texture[texIndex] >> 24) & 0xff) / 255 * alpha2;
                 let inverseAlpha = 1 - alpha;
-                let r = (((this.framebuffer[frIndex] >> 0) & 0xff) * (inverseAlpha) + ((texture.texture[texIndex] >> 0) & 0xff) * (alpha)) | 0;
-                let g = (((this.framebuffer[frIndex] >> 8) & 0xff) * (inverseAlpha) + ((texture.texture[texIndex] >> 8) & 0xff) * (alpha)) | 0;
-                let b = (((this.framebuffer[frIndex] >> 16) & 0xff) * (inverseAlpha) + ((texture.texture[texIndex] >> 16) & 0xff) * (alpha)) | 0;
+                let fbPixel = this.framebuffer[frIndex];
+                let txPixel = texture.texture[texIndex];
+                let r = (fbPixel >> 0 & 0xff) * inverseAlpha + (txPixel >> 0 & 0xff) * alpha;
+                let g = (fbPixel >> 8 & 0xff) * inverseAlpha + (txPixel >> 8 & 0xff) * alpha;
+                let b = (fbPixel >> 16 & 0xff) * inverseAlpha + (txPixel >> 16 & 0xff) * alpha;
                 this.framebuffer[frIndex] = r | (g << 8) | (b << 16) | (255 << 24);
                 texIndex++;
                 frIndex++;
@@ -1921,7 +1926,6 @@ class Framebuffer {
         }
     }
     noise(elapsedTime, texture) {
-        const glitchFactor = Math.sin(elapsedTime * 0.0003);
         for (let x = 0; x < 16; x++) {
             for (let y = 0; y < 10; y++) {
                 this.drawTextureRect(x * 20, y * 20, 20 * (Math.round(elapsedTime / 100 + x + y) % 12), 0, 20, 20, texture, 0.07);
@@ -2041,6 +2045,64 @@ class Framebuffer {
                     this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
                 }
                 xx += yStep;
+                index2++;
+            }
+            yy += yStep;
+            xx = xTextureStart;
+            index2 += -newWidth + 320;
+        }
+    }
+    drawParticle(xp, yp, width, height, texture, z, alphaBlend) {
+        let xStep = texture.width / width;
+        let yStep = texture.height / height;
+        let xx = 0;
+        let yy = 0;
+        let newHeight;
+        let newWidth;
+        let yStart;
+        let xStart;
+        if (yp + height < 0 ||
+            yp > 199 ||
+            xp + width < 0 ||
+            xp > 319) {
+            return;
+        }
+        if (yp < 0) {
+            yy = yStep * -yp;
+            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            yStart = 0;
+        }
+        else {
+            yStart = yp;
+            newHeight = height - Math.max(yp + height - 200, 0);
+        }
+        let xTextureStart;
+        if (xp < 0) {
+            xTextureStart = xx = xStep * -xp;
+            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            xStart = 0;
+        }
+        else {
+            xTextureStart = 0;
+            xStart = xp;
+            newWidth = width - Math.max(xp + width - 320, 0);
+        }
+        const alphaScale = 1 / 255 * alphaBlend;
+        let index2 = (xStart) + (yStart) * 320;
+        for (let y = 0; y < newHeight; y++) {
+            for (let x = 0; x < newWidth; x++) {
+                if (this.wBuffer[index2] > z) {
+                    let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
+                    let alpha = (texture.texture[textureIndex] >> 24 & 0xff) * alphaScale;
+                    let inverseAlpha = 1 - alpha;
+                    let framebufferPixel = this.framebuffer[index2];
+                    let texturePixel = texture.texture[textureIndex];
+                    let r = (framebufferPixel >> 0 & 0xff) * inverseAlpha + (texturePixel >> 0 & 0xff) * alpha;
+                    let g = (framebufferPixel >> 8 & 0xff) * inverseAlpha + (texturePixel >> 8 & 0xff) * alpha;
+                    let b = (framebufferPixel >> 16 & 0xff) * inverseAlpha + (texturePixel >> 16 & 0xff) * alpha;
+                    this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
+                }
+                xx += xStep;
                 index2++;
             }
             yy += yStep;
@@ -3404,7 +3466,7 @@ class Framebuffer {
         });
         points2.forEach(element => {
             let size = -(2.2 * 192 / (element.z));
-            this.drawSoftParticle(Math.round(element.x) - Math.round(size / 2), Math.round(element.y) - Math.round(size / 2), Math.round(size), Math.round(size), texture, 1 / element.z, 1.0);
+            this.drawParticle(Math.round(element.x) - Math.round(size / 2), Math.round(element.y) - Math.round(size / 2), Math.round(size), Math.round(size), texture, 1 / element.z, 1.0);
         });
     }
     /**
