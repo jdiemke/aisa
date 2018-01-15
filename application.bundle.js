@@ -357,7 +357,8 @@ class Canvas {
         this.fpsCount++;
         let time = (Date.now() - this.start);
         time = time * 3;
-        time = time % 750000;
+        time = time % (780000 - 550000);
+        time += 550000;
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
         this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
         if (time < 5000) {
@@ -386,7 +387,7 @@ class Canvas {
             this.framebuffer.wireFrameSphereClipping(time * 0.01);
         }
         else if (time < 45000) {
-            this.framebuffer.drawVoxelLandscape2(this.texture3, time);
+            this.framebuffer.drawVoxelLandscape2(this.heightmap, time);
             this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
         }
         else if (time < 50000) {
@@ -501,7 +502,7 @@ class Canvas {
             this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
         }
         else if (time < 380000) {
-            this.framebuffer.drawPlanedeformationTunnel(time, this.texture3, this.metal);
+            this.framebuffer.drawPlanedeformationTunnel(time, this.heightmap, this.metal);
             const ukBasslineBpm = 140;
             const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
             const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
@@ -530,7 +531,7 @@ class Canvas {
             this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
         }
         else if (time < 450000) {
-            this.framebuffer.drawVoxelLandscape3(this.texture3, time);
+            this.framebuffer.drawVoxelLandscape3(this.heightmap, time);
             let tempTexture = new Texture_1.default();
             tempTexture.texture = new Uint32Array(256 * 256);
             for (let y = 0; y < 256; y++) {
@@ -543,7 +544,7 @@ class Canvas {
             this.framebuffer.drawPolarDistotion(time, tempTexture);
         }
         else if (time < 490000) {
-            this.framebuffer.drawVoxelLandscape4(this.texture3, time);
+            this.framebuffer.drawVoxelLandscape4(this.heightmap, time);
             let tempTexture = new Texture_1.default();
             tempTexture.texture = new Uint32Array(256 * 256);
             for (let y = 0; y < 256; y++) {
@@ -572,7 +573,7 @@ class Canvas {
             this.framebuffer.shadingPlaneEnv(time * 0.0002);
         }
         else if (time < 570000) {
-            this.framebuffer.drawVoxelLandscape4(this.texture3, time);
+            this.framebuffer.drawVoxelLandscape4(this.heightmap, time);
             let tempTexture = new Texture_1.default();
             tempTexture.texture = new Uint32Array(256 * 256);
             for (let y = 0; y < 256; y++) {
@@ -743,7 +744,7 @@ class Canvas {
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             this.framebuffer.noise(time, this.noise);
         }
-        else {
+        else if (time < 750000) {
             let rng = new RandomNumberGenerator_1.default();
             rng.setSeed(666);
             let texture = new Texture_1.default(new Uint32Array(32 * 32), 32, 32);
@@ -816,6 +817,33 @@ class Canvas {
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             this.framebuffer.noise(time, this.noise);
         }
+        else {
+            this.framebuffer.raveMoview(time, this.rave);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
+            this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.shadingCylinderEnvDisp(time * 0.0002);
+            this.framebuffer.drawTexture((320 / 2 - 256 / 2) | 0, (200 / 2 - 122 / 2) | 0, this.meth, Math.max(0, Math.sin(time * 0.0002)));
+            // Motion Blur
+            let texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.8);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            let tmpGlitch = new Uint32Array(320 * 200);
+            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
+            let texture = new Texture_1.default();
+            texture.texture = tmpGlitch;
+            texture.width = 320;
+            texture.height = 200;
+            const ukBasslineBpm = 140;
+            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
+            let width = Math.round(320 + smash * 320 / 100);
+            let height = Math.round(200 + smash * 200 / 100);
+            this.framebuffer.drawScaledTextureClipBi(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            this.framebuffer.noise(time, this.noise);
+        }
+        //this.framebuffer.drawTexture(0, 0, this.displacementMap, 0.8);
         /*
         this.framebuffer.drawPolarDistotion3(time, this.revision);
         this.framebuffer.setCullFace(CullFace.FRONT);
@@ -1133,6 +1161,31 @@ class Canvas {
             resolve(texture);
         });
     }
+    createProceduralDisplacementMap() {
+        return new Promise((resolve) => {
+            const texture = new Texture_1.default();
+            texture.texture = new Uint32Array(256 * 256);
+            let rng = new RandomNumberGenerator_1.default();
+            rng.setSeed(100);
+            texture.texture.fill(128 | 255 << 24);
+            for (let y = 0; y < 256; y++) {
+                for (let x = 0; x < 256; x++) {
+                    let dx = 127 - x;
+                    let dy = 127 - y;
+                    let r = Math.sqrt(dx * dx + dy * dy) / 127;
+                    let c = 1 - r;
+                    c = c * c * c;
+                    if (r > 1)
+                        c = 0;
+                    c = Math.min(1, c * 2.9);
+                    texture.texture[x + y * 256] = (texture.texture[x + y * 256] & 0xffffff00) | texture.texture[x + y * 256] & 0xff + (c * 255);
+                }
+            }
+            texture.width = 256;
+            texture.height = 256;
+            resolve(texture);
+        });
+    }
     createProceduralTexture4() {
         return new Promise((resolve) => {
             const texture = new Texture_1.default();
@@ -1154,7 +1207,7 @@ class Canvas {
             this.createTexture(__webpack_require__(25), false).then(texture => this.metal = texture),
             this.createTexture(__webpack_require__(26), false).then(texture => this.texture = texture),
             this.createTexture(__webpack_require__(27), true).then(texture => this.texture2 = texture),
-            this.createTexture(__webpack_require__(28), false).then(texture => this.texture3 = texture),
+            this.createTexture(__webpack_require__(28), false).then(texture => this.heightmap = texture),
             this.createTexture(__webpack_require__(29), true).then(texture => this.texture4 = texture),
             this.createTexture(__webpack_require__(30), false).then(texture => this.texture5 = texture),
             this.createTexture(__webpack_require__(31), true).then(texture => this.texture6 = texture),
@@ -1167,23 +1220,26 @@ class Canvas {
             this.createTexture(__webpack_require__(38), true).then(texture => this.texture13 = texture),
             this.createTexture(__webpack_require__(39), false).then(texture => this.texture14 = texture),
             this.createTexture(__webpack_require__(40), false).then(texture => this.revision = texture),
+            this.createTexture(__webpack_require__(41), true).then(texture => this.meth = texture),
             this.createProceduralTexture().then(texture => this.texture15 = texture),
             this.createProceduralTexture2().then(texture => this.particleTexture = texture),
             this.createProceduralTexture3().then(texture => this.particleTexture2 = texture),
             this.createProceduralTexture4().then(texture => this.noise = texture),
-            this.createTexture(__webpack_require__(41), true).then(texture => this.hoodlumLogo = texture),
-            this.createTexture(__webpack_require__(42), false).then(texture => this.abstract = texture),
-            this.createTexture(__webpack_require__(43), false).then(texture => this.rave = texture),
-            this.createTexture(__webpack_require__(44), false).then(texture => this.micro = texture),
-            this.createTexture(__webpack_require__(45), false).then(texture => this.blurred = texture),
-            this.createTexture(__webpack_require__(46), true).then(texture => this.hlm = texture),
-            this.createTexture(__webpack_require__(47), true).then(texture => this.cross = texture),
+            this.createProceduralDisplacementMap().then(texture => this.displacementMap = texture),
+            this.createTexture(__webpack_require__(42), true).then(texture => this.hoodlumLogo = texture),
+            this.createTexture(__webpack_require__(43), false).then(texture => this.abstract = texture),
+            this.createTexture(__webpack_require__(44), false).then(texture => this.rave = texture),
+            this.createTexture(__webpack_require__(45), false).then(texture => this.micro = texture),
+            this.createTexture(__webpack_require__(46), false).then(texture => this.blurred = texture),
+            this.createTexture(__webpack_require__(47), true).then(texture => this.hlm = texture),
+            this.createTexture(__webpack_require__(48), true).then(texture => this.cross = texture),
         ]).then(() => {
             // Web Audio API
             // FIXME: put this into a Player Class
+            this.framebuffer.precompute(this.heightmap);
             let audioContext = new AudioContext();
             let request = new XMLHttpRequest();
-            request.open('GET', __webpack_require__(48), true);
+            request.open('GET', __webpack_require__(49), true);
             request.responseType = 'arraybuffer';
             console.log('load music');
             request.onload = () => {
@@ -1375,12 +1431,21 @@ class Framebuffer {
         this.unsignedIntArray = new Uint8ClampedArray(arrayBuffer);
         this.framebuffer = new Uint32Array(arrayBuffer);
         this.camera = new camera_1.ControllableCamera();
+    }
+    setCullFace(face) {
+        this.cullMode = face;
+    }
+    setBob(texture) {
+        this.bob = texture;
+    }
+    precompute(texture) {
         this.obj = this.createObject();
         this.bunnyObj = this.createBunny();
         this.blenderObj = this.getBlenderScene();
         this.sphere = this.createSphere();
         this.plane = this.createPlane();
         this.cylinder = this.createCylinder();
+        this.cylinder2 = this.createCylinder2(texture);
         /*
         document.addEventListener("keydown", (e) => {
             console.log('key pressed');
@@ -1389,12 +1454,6 @@ class Framebuffer {
             if (e.which == 37) this.camera.turnLeft(0.05, 1.0);
             if (e.which == 39) this.camera.turnRight(0.05, 1.0);
         });*/
-    }
-    setCullFace(face) {
-        this.cullMode = face;
-    }
-    setBob(texture) {
-        this.bob = texture;
     }
     getImageData() {
         this.imageData.data.set(this.unsignedIntArray);
@@ -4459,6 +4518,65 @@ class Framebuffer {
             index
         };
     }
+    createCylinder2(texture) {
+        let k = {
+            points: []
+        };
+        const LOOPX = 50;
+        const LOOPY = 110;
+        for (let y = 0; y < LOOPY; y++) {
+            for (let x = 0; x < LOOPX; x++) {
+                let xpos = (x / LOOPX * 256) & 0xff;
+                let xpos2 = ((x + 1) / LOOPX * 256) & 0xff;
+                let ypos = (y * 0.9 / LOOPY * 256) & 0xff;
+                let ypos2 = ((y + 1) * 0.9 / LOOPY * 256) & 0xff;
+                let disp_x0y0 = 1 + 0.9 * ((texture.texture[xpos + ypos * 256] & 0xff) / 255);
+                let disp_x1y0 = 1 + 0.9 * ((texture.texture[xpos2 + ypos * 256] & 0xff) / 255);
+                let disp_x0y1 = 1 + 0.9 * ((texture.texture[xpos + ypos2 * 256] & 0xff) / 255);
+                let disp_x1y1 = 1 + 0.9 * ((texture.texture[xpos2 + ypos2 * 256] & 0xff) / 255);
+                let x0 = Math.sin(2 * Math.PI / LOOPX * x) * 30;
+                let z0 = Math.cos(2 * Math.PI / LOOPX * x) * 30;
+                let x1 = Math.sin(2 * Math.PI / LOOPX * (x + 1)) * 30;
+                let z1 = Math.cos(2 * Math.PI / LOOPX * (x + 1)) * 30;
+                let scale = 1;
+                k.points.push(new math_1.Vector3f(x0 * disp_x0y0, 0 + y, z0 * disp_x0y0));
+                k.points.push(new math_1.Vector3f(x0 * disp_x0y1, 1 + y, z0 * disp_x0y1));
+                k.points.push(new math_1.Vector3f(x1 * disp_x1y0, 0 + y, z1 * disp_x1y0));
+                k.points.push(new math_1.Vector3f(x1 * disp_x1y0, 0 + y, z1 * disp_x1y0));
+                k.points.push(new math_1.Vector3f(x0 * disp_x0y1, 1 + y, z0 * disp_x0y1));
+                k.points.push(new math_1.Vector3f(x1 * disp_x1y1, 1 + y, z1 * disp_x1y1));
+            }
+        }
+        // optimize
+        let points = [];
+        let points2 = [];
+        let normals = [];
+        let normals2 = [];
+        let index = [];
+        k.points.forEach(i => {
+            let p = i;
+            let point = points.find(point => point.sub(p).length() < 0.001);
+            if (point) {
+                let idx = points.indexOf(point);
+                index.push(idx);
+            }
+            else {
+                index.push(points.push(p) - 1);
+            }
+        });
+        points.forEach(p => {
+            normals.push(new math_1.Vector3f(0, 0, 0));
+            normals2.push(new math_1.Vector3f(0, 0, 0));
+            points2.push(new math_1.Vector3f(0, 0, 0));
+        });
+        return {
+            points,
+            points2,
+            normals,
+            normals2,
+            index
+        };
+    }
     shadingSphereEnv(elapsedTime) {
         this.wBuffer.fill(100);
         let result = this.sphere;
@@ -4734,6 +4852,123 @@ class Framebuffer {
         let scale = 3.7;
         let modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(0)
             .multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(0).multiplyMatrix(math_1.Matrix4f.constructTranslationMatrix(0, 0, 0))));
+        modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(-80, -210, -290)
+            .multiplyMatrix(modelViewMartrix);
+        /**
+         * Vertex Shader Stage
+         */
+        let points2 = result.points2;
+        let normals2 = result.normals2;
+        let normalMatrix = modelViewMartrix.computeNormalMatrix();
+        for (let n = 0; n < normals.length; n++) {
+            normalMatrix.multiplyArr(normals[n], normals2[n]);
+        }
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiply(points[p]);
+            points2[p].x = Math.round((320 * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
+            points2[p].y = Math.round((200 * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
+            points2[p].z = transformed.z;
+        }
+        /**
+         * Primitive Assembly and Rasterization Stage:
+         * 1. back-face culling
+         * 2. viewport transform
+         * 3. scan conversion (rasterization)
+         */
+        let vertex1 = new Vertex_1.Vertex();
+        vertex1.textureCoordinate = new Vertex_1.TextureCoordinate();
+        let vertex2 = new Vertex_1.Vertex();
+        vertex2.textureCoordinate = new Vertex_1.TextureCoordinate();
+        let vertex3 = new Vertex_1.Vertex();
+        vertex3.textureCoordinate = new Vertex_1.TextureCoordinate();
+        let vertexArray = new Array(vertex1, vertex2, vertex3);
+        for (let i = 0; i < index.length; i += 3) {
+            // Only render triangles with CCW-ordered vertices
+            // 
+            // Reference:
+            // David H. Eberly (2006).
+            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
+            // p. 69. Morgan Kaufmann Publishers, United States.
+            //
+            let v1 = points2[index[i]];
+            let n1 = normals2[index[i]];
+            let v2 = points2[index[i + 1]];
+            let n2 = normals2[index[i + 1]];
+            let v3 = points2[index[i + 2]];
+            let n3 = normals2[index[i + 2]];
+            if (this.isTriangleCCW(v1, v2, v3)) {
+                let color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
+                vertexArray[0].position = v1;
+                this.fakeSphere(n1, vertex1);
+                vertexArray[1].position = v2;
+                this.fakeSphere(n2, vertex2);
+                vertexArray[2].position = v3;
+                this.fakeSphere(n3, vertex3);
+                if (v1.x < Framebuffer.minWindow.x ||
+                    v2.x < Framebuffer.minWindow.x ||
+                    v3.x < Framebuffer.minWindow.x ||
+                    v1.x > Framebuffer.maxWindow.x ||
+                    v2.x > Framebuffer.maxWindow.x ||
+                    v3.x > Framebuffer.maxWindow.x ||
+                    v1.y < Framebuffer.minWindow.y ||
+                    v2.y < Framebuffer.minWindow.y ||
+                    v3.y < Framebuffer.minWindow.y ||
+                    v1.y > Framebuffer.maxWindow.y ||
+                    v2.y > Framebuffer.maxWindow.y ||
+                    v3.y > Framebuffer.maxWindow.y) {
+                    this.clipConvexPolygon2(vertexArray, color);
+                }
+                else {
+                    // this.drawTriangleDDA(v1, v2, v3, color);
+                    this.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], color);
+                }
+            }
+        }
+    }
+    shadingCylinderEnvDisp(elapsedTime) {
+        this.wBuffer.fill(100);
+        let result = this.cylinder2;
+        let scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
+        for (let i = 0; i < result.points.length; i++) {
+            let y = result.points[i].z;
+            let x = result.points[i].x;
+            let length = Math.sqrt(x * x + y * y);
+            let rot = Math.sin(result.points[i].y * 0.039 + (10 - length) * 0.02 + elapsedTime * 0.6) * 4;
+            result.points2[i].y = result.points[i].y;
+            result.points2[i].x = result.points[i].x * Math.cos(rot) - result.points[i].z * Math.sin(rot);
+            result.points2[i].z = result.points[i].x * Math.sin(rot) + result.points[i].z * Math.cos(rot);
+            result.normals[i].x = 0;
+            result.normals[i].y = 0;
+            result.normals[i].z = 0;
+        }
+        let points = result.points2;
+        let index = result.index;
+        let normals = result.normals;
+        let norm = new math_1.Vector3f(0, 0, 0);
+        let norm2 = new math_1.Vector3f(0, 0, 0);
+        let cross = new math_1.Vector3f(0, 0, 0);
+        for (let i = 0; i < index.length; i += 3) {
+            let v1 = points[index[i]];
+            let v2 = points[index[i + 1]];
+            let v3 = points[index[i + 2]];
+            norm.sub2(v2, v1);
+            norm2.sub2(v3, v1);
+            cross.cross2(norm, norm2);
+            let normal = cross;
+            normals[index[i]].add2(normals[index[i]], normal);
+            normals[index[i + 1]].add2(normals[index[i + 1]], normal);
+            normals[index[i + 2]].add2(normals[index[i + 2]], normal);
+        }
+        // FIXME: speed up
+        // - remove normalie from lighting
+        // - remove normalize after normal transformation!
+        // - precreate array for transformed vertices and normals
+        for (let i = 0; i < normals.length; i++) {
+            normals[i].normalize2();
+        }
+        let scale = 3.7;
+        let modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(0)
+            .multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(0.2 * Math.sin(elapsedTime * 1.2)).multiplyMatrix(math_1.Matrix4f.constructTranslationMatrix(0, 0, 0))));
         modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(-80, -210, -290)
             .multiplyMatrix(modelViewMartrix);
         /**
@@ -7057,46 +7292,52 @@ module.exports = __webpack_require__.p + "f657ac4e01beddb5085242cb1c20ecb3.png";
 /* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "042200790f9c9b7eb4c1dcdc1bfa6778.png";
+module.exports = __webpack_require__.p + "6a04a9d0a0989ac43da2da2261c14c98.png";
 
 /***/ }),
 /* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "aecaf306ad634d628614dca09cfab828.png";
+module.exports = __webpack_require__.p + "042200790f9c9b7eb4c1dcdc1bfa6778.png";
 
 /***/ }),
 /* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "539826c16dd852792e84c205811ca9f8.png";
+module.exports = __webpack_require__.p + "aecaf306ad634d628614dca09cfab828.png";
 
 /***/ }),
 /* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "2047b8a2f49ee5b609dc16ab0e62c014.png";
+module.exports = __webpack_require__.p + "539826c16dd852792e84c205811ca9f8.png";
 
 /***/ }),
 /* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "bbaba2795420534ca9f0184e07fb74f8.png";
+module.exports = __webpack_require__.p + "2047b8a2f49ee5b609dc16ab0e62c014.png";
 
 /***/ }),
 /* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "680cc4a9d367653fc466577bbd376590.png";
+module.exports = __webpack_require__.p + "bbaba2795420534ca9f0184e07fb74f8.png";
 
 /***/ }),
 /* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "9f73952b51a9a6343babe0c489a2b980.png";
+module.exports = __webpack_require__.p + "680cc4a9d367653fc466577bbd376590.png";
 
 /***/ }),
 /* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "9f73952b51a9a6343babe0c489a2b980.png";
+
+/***/ }),
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "0e7cabddfc9af1214d72c4201b0da9d9.mp3";
