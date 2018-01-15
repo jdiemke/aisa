@@ -1236,13 +1236,14 @@ class Canvas {
             this.createTexture(__webpack_require__(46), false).then(texture => this.blurred = texture),
             this.createTexture(__webpack_require__(47), true).then(texture => this.hlm = texture),
             this.createTexture(__webpack_require__(48), true).then(texture => this.cross = texture),
+            this.createTexture(__webpack_require__(49), false).then(texture => this.envmap = texture),
         ]).then(() => {
             // Web Audio API
             // FIXME: put this into a Player Class
             this.framebuffer.precompute(this.heightmap);
             let audioContext = new AudioContext();
             let request = new XMLHttpRequest();
-            request.open('GET', __webpack_require__(49), true);
+            request.open('GET', __webpack_require__(50), true);
             request.responseType = 'arraybuffer';
             console.log('load music');
             request.onload = () => {
@@ -4555,6 +4556,7 @@ class Framebuffer {
         let points2 = [];
         let normals = [];
         let normals2 = [];
+        let texture = [];
         let index = [];
         k.points.forEach(i => {
             let p = i;
@@ -4571,13 +4573,15 @@ class Framebuffer {
             normals.push(new math_1.Vector3f(0, 0, 0));
             normals2.push(new math_1.Vector3f(0, 0, 0));
             points2.push(new math_1.Vector3f(0, 0, 0));
+            texture.push(new Vertex_1.TextureCoordinate());
         });
         return {
             points,
             points2,
             normals,
             normals2,
-            index
+            index,
+            texture
         };
     }
     createCylinder2(texture) {
@@ -4872,15 +4876,15 @@ class Framebuffer {
     shadingCylinderEnv(elapsedTime) {
         this.wBuffer.fill(100);
         let result = this.cylinder;
-        let scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
         for (let i = 0; i < result.points.length; i++) {
             let y = result.points[i].y - 30;
             let x = result.points[i].x - 50;
             let length = Math.sqrt(x * x + y * y);
+            let myScale = (1 + 0.2 * Math.sin(result.points[i].y * 0.01 + elapsedTime * 1.83));
             result.points2[i].y = result.points[i].y;
-            result.points2[i].x = result.points[i].x * (1 + 0.2 * Math.sin(result.points[i].y * 0.01 + elapsedTime * 1.83)) + Math.sin(result.points[i].y * 0.1 + elapsedTime * 3.83) * 8.3
+            result.points2[i].x = result.points[i].x * myScale + Math.sin(result.points[i].y * 0.1 + elapsedTime * 3.83) * 8.3
                 + Math.sin(result.points[i].y * 0.55 + elapsedTime * 2.83) * 2;
-            result.points2[i].z = result.points[i].z * (1 + 0.2 * Math.sin(result.points[i].y * 0.01 + elapsedTime * 1.83)) + Math.cos(result.points[i].y * 0.1 + elapsedTime * 3.83) * 8.3
+            result.points2[i].z = result.points[i].z * myScale + Math.cos(result.points[i].y * 0.1 + elapsedTime * 3.83) * 8.3
                 + Math.cos(result.points[i].y + result.points[i].x * 0.55 + elapsedTime * 2.83) * 2;
             result.normals[i].x = 0;
             result.normals[i].y = 0;
@@ -4904,10 +4908,7 @@ class Framebuffer {
             normals[index[i + 1]].add2(normals[index[i + 1]], normal);
             normals[index[i + 2]].add2(normals[index[i + 2]], normal);
         }
-        // FIXME: speed up
-        // - remove normalie from lighting
-        // - remove normalize after normal transformation!
-        // - precreate array for transformed vertices and normals
+        let textureCoords = result.texture;
         for (let i = 0; i < normals.length; i++) {
             normals[i].normalize2();
         }
@@ -4924,6 +4925,7 @@ class Framebuffer {
         let normalMatrix = modelViewMartrix.computeNormalMatrix();
         for (let n = 0; n < normals.length; n++) {
             normalMatrix.multiplyArr(normals[n], normals2[n]);
+            this.fakeSphere2(normals2[n], textureCoords[n]);
         }
         for (let p = 0; p < points.length; p++) {
             let transformed = modelViewMartrix.multiply(points[p]);
@@ -4953,19 +4955,19 @@ class Framebuffer {
             // p. 69. Morgan Kaufmann Publishers, United States.
             //
             let v1 = points2[index[i]];
-            let n1 = normals2[index[i]];
+            let t1 = textureCoords[index[i]];
             let v2 = points2[index[i + 1]];
-            let n2 = normals2[index[i + 1]];
+            let t2 = textureCoords[index[i + 1]];
             let v3 = points2[index[i + 2]];
-            let n3 = normals2[index[i + 2]];
+            let t3 = textureCoords[index[i + 2]];
             if (this.isTriangleCCW(v1, v2, v3)) {
                 let color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
                 vertexArray[0].position = v1;
-                this.fakeSphere(n1, vertex1);
+                vertexArray[0].textureCoordinate = t1;
                 vertexArray[1].position = v2;
-                this.fakeSphere(n2, vertex2);
+                vertexArray[1].textureCoordinate = t2;
                 vertexArray[2].position = v3;
-                this.fakeSphere(n3, vertex3);
+                vertexArray[2].textureCoordinate = t3;
                 if (v1.x < Framebuffer.minWindow.x ||
                     v2.x < Framebuffer.minWindow.x ||
                     v3.x < Framebuffer.minWindow.x ||
@@ -7400,6 +7402,12 @@ module.exports = __webpack_require__.p + "9f73952b51a9a6343babe0c489a2b980.png";
 
 /***/ }),
 /* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "fa5e6c40cb378f6ee6cab4e16ef0934b.png";
+
+/***/ }),
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "0e7cabddfc9af1214d72c4201b0da9d9.mp3";
