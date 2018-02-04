@@ -357,474 +357,564 @@ class Canvas {
         this.fpsCount++;
         let time = (Date.now() - this.start);
         time = time * 3;
-        time = time % (780000 - 550000);
-        time += 550000;
+        time = time % (500000);
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
         this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
-        if (time < 5000) {
-            this.framebuffer.drawTitanEffect();
-            this.framebuffer.shadingTorus(time * 0.02);
-            this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
-        }
-        else if (time < 15000) {
-            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
-            this.framebuffer.draw(this.texture, time);
-        }
-        else if (time < 25000) {
-            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
-            this.framebuffer.drawLens(this.texture5, this.texture6, time);
-        }
-        else if (time < 30000) {
-            this.framebuffer.drawRotoZoomer(this.texture);
-            this.framebuffer.shadingDemo(time * 0.02);
-        }
-        else if (time < 35000) {
-            this.framebuffer.drawRotoZoomer(this.texture);
-            this.framebuffer.shadingSphere(time * 0.01);
-        }
-        else if (time < 40000) {
-            this.framebuffer.drawRotoZoomer(this.texture);
-            this.framebuffer.wireFrameSphereClipping(time * 0.01);
-        }
-        else if (time < 45000) {
-            this.framebuffer.drawVoxelLandscape2(this.heightmap, time);
-            this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
-        }
-        else if (time < 50000) {
-            this.framebuffer.drawOldSchoolPlasma(time);
-        }
-        else if (time < 55000) {
-            // https://www.youtube.com/watch?v=ccYLb7cLB1I&t=773s
-            this.framebuffer.drawMetaballs();
-        }
-        else if (time < 60000) {
-            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
-            this.framebuffer.shadingTorus2(time * 0.02);
-        }
-        else if (time < 70000) {
-            this.framebuffer.floodFill(this.texture5, time - 60000);
-        }
-        else if (time < 80000) {
-            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
-            this.framebuffer.drawBobs(this.texture7, time);
-        }
-        else if (time < 95000) {
-            this.framebuffer.blockFace(this.texture5, time, 80000);
-        }
-        else if (time < 140000) {
-            this.framebuffer.scrollingBackground(this.texture8, time - 95000);
-        }
-        else if (time < 160000) {
-            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture9.texture);
-            this.framebuffer.cinematicScroller(this.texture4, time - 140000);
-        }
-        else if (time < 185000) {
-            this.framebuffer.shadingSphereClip((time - 170000) * 0.003);
-            this.framebuffer.cinematicScroller(this.texture4, time - 160000);
-        }
-        else if (time < 200000) {
-            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture12.texture);
-            this.framebuffer.shadingTorus(time * 0.02);
-            this.framebuffer.drawLensFlare(time - 185000, [
-                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                { tex: this.texture13, scale: 1.6, alpha: 0.25 }
-            ]);
-        }
-        else if (time < 210000) {
-            this.framebuffer.blur();
-            this.framebuffer.shadingTorus3(time * 0.015);
-            this.framebuffer.drawTexture(32, 70, this.texture2, 1.0);
-        }
-        else if (time < 215000) {
-            this.framebuffer.led(time, this.texture14);
-            this.framebuffer.drawTexture(32, 64, this.texture2, 1.0);
-        }
-        else if (time < 230000) {
-            this.framebuffer.setBob(this.metal);
-            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
-            this.framebuffer.shadingTorus4(time * 0.002);
-            this.framebuffer.drawLensFlare(time - 185000, [
-                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                { tex: this.texture13, scale: 1.6, alpha: 0.25 }
-            ]);
-            this.framebuffer.cinematicScroller(this.texture4, time);
-        }
-        else if (time < 240000) {
-            this.framebuffer.setBob(this.spheremap);
-            this.framebuffer.clear();
-            this.framebuffer.shadingTorusENvironment(time * 0.006);
-            this.framebuffer.drawLensFlare(time - 185000, [
-                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                { tex: this.texture13, scale: 1.6, alpha: 0.25 }
-            ]);
-        }
-        else if (time < 250000) {
-            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
-            this.framebuffer.reproduceRazorScene(time * 0.003);
-            this.framebuffer.drawLensFlare(time - 185000, [
-                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                { tex: this.texture13, scale: 1.6, alpha: 0.25 }
-            ]);
-        }
-        else if (time < 260000) {
-            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
-            this.framebuffer.setBob(this.spheremap);
-            this.framebuffer.led(time, this.texture14);
-            this.framebuffer.reflectionBunny(time * 0.002);
-        }
-        else if (time < 270000) {
-            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
-            this.framebuffer.drawBlenderScene(time - 260000, this.texture4);
-        }
-        else if (time < 280000) {
-            this.framebuffer.drawStarField(time * 0.9);
-            this.framebuffer.setBob(this.spheremap);
-            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
-            this.framebuffer.reflectionBunny(time * 0.002);
-            this.framebuffer.scene7(time * 0.2, this.texture7);
-        }
-        else if (time < 290000) {
-            this.framebuffer.drawPlaneDeformation(time, this.metal);
-            this.framebuffer.drawTexture(32, 69, this.texture2, 1.0);
-        }
-        else if (time < 330000) {
-            this.framebuffer.drawLedTunnel(time, this.texture14);
-            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
-            this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
-            this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
-        }
-        else if (time < 360000) {
-            this.framebuffer.drawParticleTorus(time, this.particleTexture);
-            this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
-        }
-        else if (time < 380000) {
-            this.framebuffer.drawPlanedeformationTunnel(time, this.heightmap, this.metal);
-            const ukBasslineBpm = 140;
-            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
-            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
-            const smash = (this.framebuffer.cosineInterpolate(0, 15, smashTime) -
-                this.framebuffer.cosineInterpolate(15, 200, smashTime) +
-                0.4 * this.framebuffer.cosineInterpolate(200, 300, smashTime) -
-                0.4 * this.framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
-            this.framebuffer.drawScaledTextureClipBi((320 / 2 - (this.hoodlumLogo.width + smash) / 2) | 0, (200 / 2 - (this.hoodlumLogo.height - smash) / 2) | 0, this.hoodlumLogo.width + smash, (this.hoodlumLogo.height - smash) | 0, this.hoodlumLogo, 1.0);
-        }
-        else if (time < 400000) {
-            // THE NEXT LINE IS THE BOTTLENECK NOT THE SPHERE!
-            this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
-            this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
-        }
-        else if (time < 420000) {
-            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
-            this.framebuffer.setBob(this.spheremap);
-            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
-            this.framebuffer.shadingSphereEnv(time * 0.0002);
-        }
-        else if (time < 440000) {
-            this.framebuffer.raveMoview(time, this.rave);
-            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
-            this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
-            this.framebuffer.glitchScreen(time, this.noise);
-            this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
-        }
-        else if (time < 450000) {
-            this.framebuffer.drawVoxelLandscape3(this.heightmap, time);
-            let tempTexture = new Texture_1.default();
-            tempTexture.texture = new Uint32Array(256 * 256);
-            for (let y = 0; y < 256; y++) {
-                for (let x = 0; x < 256; x++) {
-                    let ypos = Math.round(200 / 256 * x);
-                    let xpos = Math.round(320 / 256 * y);
-                    tempTexture.texture[x + y * 256] = this.framebuffer.framebuffer[xpos + ypos * 320];
+        /*
+                if (time < 5000) {
+                    this.framebuffer.drawTitanEffect();
+                    this.framebuffer.shadingTorus(time * 0.02);
+                    this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
+                } else if (time < 15000) {
+                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
+                    this.framebuffer.draw(this.texture, time);
+                } else if (time < 25000) {
+                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
+                    this.framebuffer.drawLens(this.texture5, this.texture6, time);
+                } else if (time < 30000) {
+                    this.framebuffer.drawRotoZoomer(this.texture);
+                    this.framebuffer.shadingDemo(time * 0.02);
+                } else if (time < 35000) {
+                    this.framebuffer.drawRotoZoomer(this.texture);
+                    this.framebuffer.shadingSphere(time * 0.01);
+                } else if (time < 40000) {
+                    this.framebuffer.drawRotoZoomer(this.texture);
+                    this.framebuffer.wireFrameSphereClipping(time * 0.01);
+                } else if (time < 45000) {
+                    this.framebuffer.drawVoxelLandscape2(this.heightmap, time);
+                    this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
+                } else if (time < 50000) {
+                    this.framebuffer.drawOldSchoolPlasma(time);
+                } else if (time < 55000) {
+                    // https://www.youtube.com/watch?v=ccYLb7cLB1I&t=773s
+                    this.framebuffer.drawMetaballs();
+                } else if (time < 60000) {
+                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
+                    this.framebuffer.shadingTorus2(time * 0.02);
+                } else if (time < 70000) {
+                    this.framebuffer.floodFill(this.texture5, time - 60000);
+                } else if (time < 80000) {
+                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
+                    this.framebuffer.drawBobs(this.texture7, time);
+                } else if (time < 95000) {
+                    this.framebuffer.blockFace(this.texture5, time, 80000);
+                } else if (time < 140000) {
+                    this.framebuffer.scrollingBackground(this.texture8, time - 95000);
+                } else if (time < 160000) {
+                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture9.texture);
+                    this.framebuffer.cinematicScroller(this.texture4, time - 140000);
+                } else if (time < 185000) {
+                    this.framebuffer.shadingSphereClip((time - 170000) * 0.003);
+                    this.framebuffer.cinematicScroller(this.texture4, time - 160000);
+                } else if (time < 200000) {
+                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture12.texture);
+                    this.framebuffer.shadingTorus(time * 0.02);
+                    this.framebuffer.drawLensFlare(time - 185000, [
+                        { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                        { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                        { tex: this.texture13, scale: 1.6, alpha: 0.25 }
+                    ]);
+                } else if (time < 210000) {
+                    this.framebuffer.blur();
+                    this.framebuffer.shadingTorus3(time * 0.015);
+                    this.framebuffer.drawTexture(32, 70, this.texture2, 1.0);
+                } else if (time < 215000) {
+                    this.framebuffer.led(time, this.texture14);
+                    this.framebuffer.drawTexture(32, 64, this.texture2, 1.0);
+                } else if (time < 230000) {
+                    this.framebuffer.setBob(this.metal);
+                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
+                    this.framebuffer.shadingTorus4(time * 0.002);
+                    this.framebuffer.drawLensFlare(time - 185000, [
+                        { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                        { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                        { tex: this.texture13, scale: 1.6, alpha: 0.25 }
+                    ]);
+                    this.framebuffer.cinematicScroller(this.texture4, time);
+                } else if (time < 240000) {
+                    this.framebuffer.setBob(this.spheremap);
+                    this.framebuffer.clear();
+                    this.framebuffer.shadingTorusENvironment(time * 0.006);
+                    this.framebuffer.drawLensFlare(time - 185000, [
+                        { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                        { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                        { tex: this.texture13, scale: 1.6, alpha: 0.25 }
+                    ]);
+                } else if (time < 250000) {
+                    this.framebuffer.setCullFace(CullFace.BACK);
+                    this.framebuffer.reproduceRazorScene(time * 0.003);
+                    this.framebuffer.drawLensFlare(time - 185000, [
+                        { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                        { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                        { tex: this.texture13, scale: 1.6, alpha: 0.25 }
+                    ]);
+                } else if (time < 260000) {
+                    this.framebuffer.setCullFace(CullFace.BACK);
+                    this.framebuffer.setBob(this.spheremap);
+                    this.framebuffer.led(time, this.texture14);
+                    this.framebuffer.reflectionBunny(time * 0.002);
+                } else if (time < 270000) {
+                    this.framebuffer.setCullFace(CullFace.BACK);
+                    this.framebuffer.drawBlenderScene(time - 260000, this.texture4);
+                } else if (time < 280000) {
+                    this.framebuffer.drawStarField(time * 0.9);
+                    this.framebuffer.setBob(this.spheremap);
+                    this.framebuffer.setCullFace(CullFace.BACK);
+                    this.framebuffer.reflectionBunny(time * 0.002);
+                    this.framebuffer.scene7(time * 0.2, this.texture7);
+                } else if (time < 290000) {
+                    this.framebuffer.drawPlaneDeformation(time, this.metal);
+                    this.framebuffer.drawTexture(32, 69, this.texture2, 1.0);
+                } else if (time < 330000) {
+                    this.framebuffer.drawLedTunnel(time, this.texture14);
+                    this.framebuffer.setCullFace(CullFace.BACK);
+                    this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
+                    this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
+                } else if (time < 360000) {
+                    this.framebuffer.drawParticleTorus(time, this.particleTexture);
+                    this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
+                } else if (time < 380000) {
+                    this.framebuffer.drawPlanedeformationTunnel(time, this.heightmap, this.metal);
+                    const ukBasslineBpm = 140;
+                    const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+                    const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+                    const smash = (this.framebuffer.cosineInterpolate(0, 15, smashTime) -
+                        this.framebuffer.cosineInterpolate(15, 200, smashTime) +
+                        0.4 * this.framebuffer.cosineInterpolate(200, 300, smashTime) -
+                        0.4 * this.framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
+                    this.framebuffer.drawScaledTextureClipBi((320 / 2 - (this.hoodlumLogo.width + smash) / 2) | 0,
+                        (200 / 2 - (this.hoodlumLogo.height - smash) / 2) | 0, this.hoodlumLogo.width + smash, (this.hoodlumLogo.height - smash) | 0, this.hoodlumLogo, 1.0);
+                } else if (time < 400000) {
+                    // THE NEXT LINE IS THE BOTTLENECK NOT THE SPHERE!
+                    this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
+                    this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
+                } else if (time < 420000) {
+                    this.framebuffer.setCullFace(CullFace.BACK);
+                    this.framebuffer.setBob(this.spheremap);
+                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
+                    this.framebuffer.shadingSphereEnv(time * 0.0002);
+                } else if (time < 440000) {
+                    this.framebuffer.raveMoview(time, this.rave);
+                    this.framebuffer.setCullFace(CullFace.BACK);
+                    this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
+                    this.framebuffer.glitchScreen(time, this.noise);
+                    this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
+                } else if (time < 450000) {
+                    this.framebuffer.drawVoxelLandscape3(this.heightmap, time);
+                    let tempTexture = new Texture();
+                    tempTexture.texture = new Uint32Array(256 * 256);
+                    for (let y = 0; y < 256; y++) {
+                        for (let x = 0; x < 256; x++) {
+                            let ypos = Math.round(200 / 256 * x);
+                            let xpos = Math.round(320 / 256 * y);
+                            tempTexture.texture[x + y * 256] = this.framebuffer.framebuffer[xpos + ypos * 320];
+                        }
+                    }
+                    this.framebuffer.drawPolarDistotion(time, tempTexture);
+                } else if (time < 490000) {
+                    this.framebuffer.drawVoxelLandscape4(this.heightmap, time);
+                    let tempTexture = new Texture();
+                    tempTexture.texture = new Uint32Array(256 * 256);
+                    for (let y = 0; y < 256; y++) {
+                        for (let x = 0; x < 256; x++) {
+                            let ypos = 199 - Math.round(200 / 256 * x);
+                            let xpos = Math.round(320 / 256 * y);
+                            tempTexture.texture[x + y * 256] = this.framebuffer.framebuffer[xpos + ypos * 320];
+                        }
+                    }
+                    this.framebuffer.drawPolarDistotion2(time, tempTexture);
+                    this.framebuffer.noise(time, this.noise);
+                } else if (time < 520000) {
+                    this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
+                    this.framebuffer.noise(time, this.noise);
+        
+                    let scale = 1 / (99 - ((time * 0.02) % 100));
+                    let width = (this.hoodlumLogo.width * scale * 10) | 0;
+                    let height = (this.hoodlumLogo.height * scale * 10) | 0;
+        
+                    this.framebuffer.drawScaledTextureClipBi(
+                        Math.round(320 / 2 - width / 2),
+                        Math.round(200 / 2 - height / 2),
+                        width, height, this.hoodlumLogo, 1.0);
+                } else if (time < 550000) {
+                    this.framebuffer.raveMoview(time, this.rave);
+                    this.framebuffer.glitchScreen(time, this.noise);
+                    this.framebuffer.setCullFace(CullFace.BACK);
+                    this.framebuffer.setBob(this.spheremap);
+                    this.framebuffer.shadingPlaneEnv(time * 0.0002);
+                } else if (time < 570000) {
+                    this.framebuffer.drawVoxelLandscape4(this.heightmap, time);
+                    let tempTexture = new Texture();
+                    tempTexture.texture = new Uint32Array(256 * 256);
+                    for (let y = 0; y < 256; y++) {
+                        for (let x = 0; x < 256; x++) {
+                            let ypos = 199 - Math.round(200 / 256 * x);
+                            let xpos = Math.round(320 / 256 * y);
+                            tempTexture.texture[x + y * 256] = this.framebuffer.framebuffer[xpos + ypos * 320];
+                        }
+                    }
+                    this.framebuffer.drawPolarDistotion2(time, tempTexture);
+        
+                    const ukBasslineBpm = 140;
+                    const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+                    const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+                    const smash = (this.framebuffer.cosineInterpolate(0, 15, smashTime) -
+                        this.framebuffer.cosineInterpolate(15, 200, smashTime) +
+                        0.4 * this.framebuffer.cosineInterpolate(200, 300, smashTime) -
+                        0.4 * this.framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
+        
+        
+                    let size = Math.round(1 * smash);
+                    let size2 = Math.round(2 * smash);
+                    this.framebuffer.drawScaledTextureClipAdd(
+                        320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)),
+                        200 / 2 - 20 + size,
+                        this.micro.width * 2, this.micro.height * 2, this.micro);
+        
+                    this.framebuffer.drawScaledTextureClipAdd(
+                        320 - (((time * 0.05) | 0) % (this.micro.width + 320)) + size2,
+                        200 / 2 - 60,
+                        this.micro.width, this.micro.height, this.micro);
+                    this.framebuffer.glitchScreen(time, this.noise);
+                } else if (time < 590000) {
+                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+                    this.framebuffer.drawParticleTorus(time, this.particleTexture2, true);
+        
+                    let tmpGlitch = new Uint32Array(320 * 200);
+                    this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
+        
+                    let texture = new Texture(tmpGlitch, 320, 200);
+        
+                    const ukBasslineBpm = 140;
+                    const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+                    const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+                    const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+                        this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
+                    let width = 320 + smash * 320 / 100;
+                    let height = 200 + smash * 200 / 100;
+        
+                    this.framebuffer.drawScaledTextureClip(
+                        Math.round(320 / 2 - width / 2),
+                        Math.round(200 / 2 - height / 2),
+                        width, height, texture, 1.0);
+        
+                    this.framebuffer.noise(time, this.noise);
+                } else if (time < 650000) {
+                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+        
+                    this.framebuffer.setCullFace(CullFace.BACK);
+                    this.framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
+        
+                    this.framebuffer.drawScaledTextureClipAdd(
+                        320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)),
+                        200 / 2 - 20,
+                        this.micro.width * 2, this.micro.height * 2, this.micro);
+        
+                    this.framebuffer.drawScaledTextureClipAdd(
+                        320 - (((time * 0.05) | 0) % (this.micro.width + 320)),
+                        200 / 2 - 60,
+                        this.micro.width, this.micro.height, this.micro);
+        
+                    let tmpGlitch = new Uint32Array(320 * 200);
+                    this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
+        
+                    let texture = new Texture();
+                    texture.texture = tmpGlitch;
+                    texture.width = 320;
+                    texture.height = 200;
+        
+                    const ukBasslineBpm = 140;
+                    const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+                    const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+                    const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+                        this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
+                    let width = Math.round(320 + smash * 320 / 50);
+                    let height = Math.round(200 + smash * 200 / 50);
+        
+                    // slow
+                    this.framebuffer.drawScaledTextureClip(
+                        Math.round(320 / 2 - width / 2),
+                        Math.round(200 / 2 - height / 2),
+                        width, height, texture, 1.0);
+        
+                    this.framebuffer.noise(time, this.noise);
+                } else if (time < 670000) {
+                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+                    this.framebuffer.setCullFace(CullFace.BACK);
+                    this.framebuffer.setBob(this.spheremap);
+                    this.framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
+        
+                    let source: number = 0;
+                    let dest: number = 319;
+                    for (let y: number = 0; y < 200; y++) {
+                        for (let x: number = 0; x < 160; x++) {
+                            this.framebuffer.framebuffer[dest--] = this.framebuffer.framebuffer[source++];
+                        }
+                        source += 160;
+                        dest += 320 + 160;
+                    }
+                    this.framebuffer.drawScaledTextureClipAdd(
+                        320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)),
+                        200 / 2 - 20,
+                        this.micro.width * 2, this.micro.height * 2, this.micro);
+        
+                    this.framebuffer.drawScaledTextureClipAdd(
+                        320 - (((time * 0.05) | 0) % (this.micro.width + 320)),
+                        200 / 2 - 60,
+                        this.micro.width, this.micro.height, this.micro);
+        
+                    let tmpGlitch = new Uint32Array(320 * 200);
+                    this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
+        
+                    let texture = new Texture();
+                    texture.texture = tmpGlitch;
+                    texture.width = 320;
+                    texture.height = 200;
+        
+                    const ukBasslineBpm = 140;
+                    const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+                    const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+                    const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+                        this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
+                    let width = Math.round(320 + smash * 320 / 50);
+                    let height = Math.round(200 + smash * 200 / 50);
+        
+                    this.framebuffer.drawScaledTextureClip(
+                        Math.round(320 / 2 - width / 2),
+                        Math.round(200 / 2 - height / 2),
+                        width, height, texture, 1.0);
+        
+                    for (let y = 0; y < 3; y++) {
+                        for (let x = 0; x < 4; x++) {
+                            let xx = Math.round(320 / 4 * x + 320 / 4 * 0.5 - this.cross.width / 2);
+                            let yy = Math.round(200 / 3 * y + 200 / 3 * 0.5 - this.cross.height / 2);
+        
+                            this.framebuffer.drawTexture(xx, yy, this.cross, 0.45);
+                        }
+                    }
+        
+                    this.framebuffer.noise(time, this.noise);
+                } else if (time < 690000) {
+        
+                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+                    this.framebuffer.setCullFace(CullFace.BACK);
+                    this.framebuffer.setBob(this.spheremap);
+        
+                    this.framebuffer.shadingSphereEnv(time * 0.0002);
+        
+        
+                    this.framebuffer.drawScaledTextureClipAdd(
+                        320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)),
+                        200 / 2 - 20,
+                        this.micro.width * 2, this.micro.height * 2, this.micro);
+        
+                    this.framebuffer.drawScaledTextureClipAdd(
+                        320 - (((time * 0.05) | 0) % (this.micro.width + 320)),
+                        200 / 2 - 60,
+                        this.micro.width, this.micro.height, this.micro);
+        
+        
+                    let source: number = 0;
+                    let dest: number = 319;
+                    for (let y: number = 0; y < 100; y++) {
+                        for (let x: number = 0; x < 160; x++) {
+                            this.framebuffer.framebuffer[dest--] = this.framebuffer.framebuffer[source++];
+                        }
+                        source += 160;
+                        dest += 320 + 160;
+                    }
+        
+                    source = 0;
+                    dest = 199 * 320;
+                    for (let y: number = 0; y < 100; y++) {
+                        for (let x: number = 0; x < 320; x++) {
+                            this.framebuffer.framebuffer[dest++] = this.framebuffer.framebuffer[source++];
+                        }
+                        dest -= 320 * 2;
+                    }
+        
+                    let tmpGlitch = new Uint32Array(320 * 200);
+                    this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
+        
+                    let texture = new Texture();
+                    texture.texture = tmpGlitch;
+                    texture.width = 320;
+                    texture.height = 200;
+        
+                    const ukBasslineBpm = 140;
+                    const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+                    const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+                    const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+                        this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
+                    let width = Math.round(320 + smash * 320 / 50);
+                    let height = Math.round(200 + smash * 200 / 50);
+        
+                    this.framebuffer.drawScaledTextureClip(
+                        Math.round(320 / 2 - width / 2),
+                        Math.round(200 / 2 - height / 2),
+                        width, height, texture, 1.0);
+        
+                    for (let y = 0; y < 3; y++) {
+                        for (let x = 0; x < 4; x++) {
+                            let xx = Math.round(320 / 4 * x + 320 / 4 * 0.5 - this.cross.width / 2);
+                            let yy = Math.round(200 / 3 * y + 200 / 3 * 0.5 - this.cross.height / 2);
+        
+                            this.framebuffer.drawTexture(xx, yy, this.cross, 0.45);
+                        }
+                    }
+        
+                    this.framebuffer.noise(time, this.noise);
+                } else if (time < 720000) {
+                    // Rave video & Wobblin Cylinder
+                    this.framebuffer.raveMoview(time, this.rave);
+                    this.framebuffer.setCullFace(CullFace.FRONT);
+                    this.framebuffer.setBob(this.spheremap);
+                    this.framebuffer.shadingCylinderEnv(time * 0.0002);
+        
+                    // Crosses
+                    for (let y = 0; y < 3; y++) {
+                        for (let x = 0; x < 4; x++) {
+                            let xx = Math.round(320 / 4 * x + 320 / 4 * 0.5 - this.cross.width / 2);
+                            let yy = Math.round(200 / 3 * y + 200 / 3 * 0.5 - this.cross.height / 2);
+                            this.framebuffer.drawTexture(xx, yy, this.cross, 0.2);
+                        }
+                    }
+        
+                    // Motion Blur
+                    let texture = new Texture(this.accumulationBuffer, 320, 200);
+                    this.framebuffer.drawTexture(0, 0, texture, 0.3 + 0.6 * (0.5 + 0.5 * Math.sin(time * 0.0003)));
+                    this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+                    this.framebuffer.noise(time, this.noise);
+                } else if (time < 750000) {
+                    let rng = new RandomNumberGenerator();
+                    rng.setSeed(666);
+                    let texture = new Texture(new Uint32Array(32 * 32), 32, 32);
+                    // FIXME:
+                    // - remove realtime glow and put it pre baked into the texture insteadt!
+                    for (let k = 0; k < 100; k++) {
+                        let x = Math.round(rng.getFloat() * 32);
+                        let y = Math.round(rng.getFloat() * 32);
+                        if (k < 50)
+                            texture.texture[x + y * 32] = 47 | 181 << 8 | 243 << 16;
+                        else
+                            texture.texture[x + y * 32] = 252 | 130 << 8 | 195 << 16;
+                    }
+        
+                    this.framebuffer.drawPlanedeformationTunnelAnim(time, texture);
+        
+        
+                    // GLOW
+                    let glowBuffer = new Uint32Array(16 * 2 * 10 * 2);
+                    let glowBuffer2 = new Uint32Array(16 * 2 * 10 * 2);
+        
+                    // todo filer onlyy brigh parts
+                    // blur if too blocky
+                    // clamp to border when filterting bilinear
+                    // add and dont blend with alpha
+                    for (let y = 0; y < 20; y++) {
+                        for (let x = 0; x < 32; x++) {
+                            let xx = Math.round(10 * x);
+                            let yy = Math.round(10 * y);
+                            let r = this.framebuffer.framebuffer[xx + yy * 320] & 0xff;
+                            let g = this.framebuffer.framebuffer[xx + yy * 320] >> 8 & 0xff;
+                            let b = this.framebuffer.framebuffer[xx + yy * 320] >> 16 & 0xff;
+                            let intensity = (r + g + b) / 3;
+                            let scale = this.framebuffer.cosineInterpolate(200, 130, intensity);
+                            let color = r * scale | g * scale << 8 | b * scale << 16 | 255 << 24;
+                            //  if (intensity > 138) {
+                            glowBuffer[x + y * 32] = this.framebuffer.framebuffer[xx + yy * 320];//color ;
+                            // }
+                        }
+                    }
+        
+                    for (let y = 0; y < 20; y++) {
+                        for (let x = 0; x < 32; x++) {
+                            let col1 = glowBuffer[Math.max(x - 1, 0) + y * 32];
+                            let col2 = glowBuffer[(x) % 32 + y * 32];
+                            let col3 = glowBuffer[Math.min(x + 1, 31) + y * 32];
+                            let r = (col1 & 0xff) * 1 / 4 + (col2 & 0xff) * 2 / 4 + (col3 & 0xff) * 1 / 4;
+                            let g = (col1 >> 8 & 0xff) * 1 / 4 + (col2 >> 8 & 0xff) * 2 / 4 + (col3 >> 8 & 0xff) * 1 / 4;
+                            let b = (col1 >> 16 & 0xff) * 1 / 4 + (col2 >> 16 & 0xff) * 2 / 4 + (col3 >> 16 & 0xff) * 1 / 4;
+                            glowBuffer2[x + y * 32] = r | g << 8 | b << 16;
+                        }
+                    }
+        
+                    for (let y = 0; y < 20; y++) {
+                        for (let x = 0; x < 32; x++) {
+                            let col1 = glowBuffer2[(x) + Math.max(y - 1, 0) * 32];
+                            let col2 = glowBuffer2[(x) + y % 20 * 32];
+                            let col3 = glowBuffer2[(x) + Math.min(y + 1, 19) * 32];
+                            let r = ((col1 & 0xff) * 1 / 4 + (col2 & 0xff) * 2 / 4 + (col3 & 0xff) * 1 / 4);
+                            let g = ((col1 >> 8 & 0xff) * 1 / 4 + (col2 >> 8 & 0xff) * 2 / 4 + (col3 >> 8 & 0xff) * 1 / 4);
+                            let b = ((col1 >> 16 & 0xff) * 1 / 4 + (col2 >> 16 & 0xff) * 2 / 4 + (col3 >> 16 & 0xff) * 1 / 4);
+                            glowBuffer[x + y * 32] = r | g << 8 | b << 16;
+                        }
+                    }
+        
+                    let texture2 = new Texture();
+                    texture2.texture = glowBuffer;
+                    texture2.width = 32;
+                    texture2.height = 20;
+        
+        
+                    this.framebuffer.drawScaledTextureClipBiAdd(
+                        0, 0,
+                        320, 200, texture2, 0.75);
+        
+                    this.framebuffer.setCullFace(CullFace.BACK);
+                    this.framebuffer.setBob(this.spheremap);
+                    this.framebuffer.reflectionBunny(time * 0.002);
+                    // Motion Blur
+                    let texture3 = new Texture(this.accumulationBuffer, 320, 200);
+                    this.framebuffer.drawTexture(0, 0, texture3, 0.8);
+                    this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+                    this.framebuffer.noise(time, this.noise);
+                } else {
+                    this.framebuffer.raveMoview(time, this.rave);
+                    this.framebuffer.setCullFace(CullFace.FRONT);
+                    this.framebuffer.setBob(this.spheremap);
+                    this.framebuffer.shadingCylinderEnvDisp(time * 0.0002);
+                    this.framebuffer.drawTexture((320 / 2 - 256 / 2) | 0, (200 / 2 - 122 / 2) | 0, this.meth, Math.max(0, Math.sin(time * 0.0002)));
+                    // Motion Blur
+                    let texture3 = new Texture(this.accumulationBuffer, 320, 200);
+                    this.framebuffer.drawTexture(0, 0, texture3, 0.8);
+                    this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+        
+        
+                    let tmpGlitch = new Uint32Array(320 * 200);
+                    this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
+        
+                    let texture = new Texture();
+                    texture.texture = tmpGlitch;
+                    texture.width = 320;
+                    texture.height = 200;
+        
+                    const ukBasslineBpm = 140;
+                    const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+                    const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+                    const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+                        this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
+                    let width = Math.round(320 + smash * 320 / 100);
+                    let height = Math.round(200 + smash * 200 / 100);
+        
+                    this.framebuffer.drawScaledTextureClip(
+                        Math.round(320 / 2 - width / 2),
+                        Math.round(200 / 2 - height / 2),
+                        width, height, texture, 1.0);
+        
+                    this.framebuffer.noise(time, this.noise);
                 }
-            }
-            this.framebuffer.drawPolarDistotion(time, tempTexture);
-        }
-        else if (time < 490000) {
-            this.framebuffer.drawVoxelLandscape4(this.heightmap, time);
-            let tempTexture = new Texture_1.default();
-            tempTexture.texture = new Uint32Array(256 * 256);
-            for (let y = 0; y < 256; y++) {
-                for (let x = 0; x < 256; x++) {
-                    let ypos = 199 - Math.round(200 / 256 * x);
-                    let xpos = Math.round(320 / 256 * y);
-                    tempTexture.texture[x + y * 256] = this.framebuffer.framebuffer[xpos + ypos * 320];
-                }
-            }
-            this.framebuffer.drawPolarDistotion2(time, tempTexture);
-            this.framebuffer.noise(time, this.noise);
-        }
-        else if (time < 520000) {
-            this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
-            this.framebuffer.noise(time, this.noise);
-            let scale = 1 / (99 - ((time * 0.02) % 100));
-            let width = (this.hoodlumLogo.width * scale * 10) | 0;
-            let height = (this.hoodlumLogo.height * scale * 10) | 0;
-            this.framebuffer.drawScaledTextureClipBi(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, this.hoodlumLogo, 1.0);
-        }
-        else if (time < 550000) {
-            this.framebuffer.raveMoview(time, this.rave);
-            this.framebuffer.glitchScreen(time, this.noise);
-            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
-            this.framebuffer.setBob(this.spheremap);
-            this.framebuffer.shadingPlaneEnv(time * 0.0002);
-        }
-        else if (time < 570000) {
-            this.framebuffer.drawVoxelLandscape4(this.heightmap, time);
-            let tempTexture = new Texture_1.default();
-            tempTexture.texture = new Uint32Array(256 * 256);
-            for (let y = 0; y < 256; y++) {
-                for (let x = 0; x < 256; x++) {
-                    let ypos = 199 - Math.round(200 / 256 * x);
-                    let xpos = Math.round(320 / 256 * y);
-                    tempTexture.texture[x + y * 256] = this.framebuffer.framebuffer[xpos + ypos * 320];
-                }
-            }
-            this.framebuffer.drawPolarDistotion2(time, tempTexture);
-            const ukBasslineBpm = 140;
-            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
-            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
-            const smash = (this.framebuffer.cosineInterpolate(0, 15, smashTime) -
-                this.framebuffer.cosineInterpolate(15, 200, smashTime) +
-                0.4 * this.framebuffer.cosineInterpolate(200, 300, smashTime) -
-                0.4 * this.framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
-            let size = Math.round(1 * smash);
-            let size2 = Math.round(2 * smash);
-            this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)), 200 / 2 - 20 + size, this.micro.width * 2, this.micro.height * 2, this.micro);
-            this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.05) | 0) % (this.micro.width + 320)) + size2, 200 / 2 - 60, this.micro.width, this.micro.height, this.micro);
-            this.framebuffer.glitchScreen(time, this.noise);
-        }
-        else if (time < 590000) {
+        */
+        // testumgebung
+        //this.framebuffer.raveMoview(time, this.rave);
+        // music: https://youtu.be/XNUaoQeTu9U
+        if (time < 50000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-            this.framebuffer.drawParticleTorus(time, this.particleTexture2, true);
-            let tmpGlitch = new Uint32Array(320 * 200);
-            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
-            let texture = new Texture_1.default(tmpGlitch, 320, 200);
-            const ukBasslineBpm = 140;
-            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
-            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
-            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
-                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
-            let width = 320 + smash * 320 / 100;
-            let height = 200 + smash * 200 / 100;
-            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
-            this.framebuffer.noise(time, this.noise);
-        }
-        else if (time < 650000) {
-            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
-            this.framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
-            this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)), 200 / 2 - 20, this.micro.width * 2, this.micro.height * 2, this.micro);
-            this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.05) | 0) % (this.micro.width + 320)), 200 / 2 - 60, this.micro.width, this.micro.height, this.micro);
-            let tmpGlitch = new Uint32Array(320 * 200);
-            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
-            let texture = new Texture_1.default();
-            texture.texture = tmpGlitch;
-            texture.width = 320;
-            texture.height = 200;
-            const ukBasslineBpm = 140;
-            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
-            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
-            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
-                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
-            let width = Math.round(320 + smash * 320 / 50);
-            let height = Math.round(200 + smash * 200 / 50);
-            // slow
-            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
-            this.framebuffer.noise(time, this.noise);
-        }
-        else if (time < 670000) {
-            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
             this.framebuffer.setBob(this.spheremap);
-            this.framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
-            let source = 0;
-            let dest = 319;
-            for (let y = 0; y < 200; y++) {
-                for (let x = 0; x < 160; x++) {
-                    this.framebuffer.framebuffer[dest--] = this.framebuffer.framebuffer[source++];
-                }
-                source += 160;
-                dest += 320 + 160;
-            }
-            this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)), 200 / 2 - 20, this.micro.width * 2, this.micro.height * 2, this.micro);
-            this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.05) | 0) % (this.micro.width + 320)), 200 / 2 - 60, this.micro.width, this.micro.height, this.micro);
-            let tmpGlitch = new Uint32Array(320 * 200);
-            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
-            let texture = new Texture_1.default();
-            texture.texture = tmpGlitch;
-            texture.width = 320;
-            texture.height = 200;
-            const ukBasslineBpm = 140;
-            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
-            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
-            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
-                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
-            let width = Math.round(320 + smash * 320 / 50);
-            let height = Math.round(200 + smash * 200 / 50);
-            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
-            for (let y = 0; y < 3; y++) {
-                for (let x = 0; x < 4; x++) {
-                    let xx = Math.round(320 / 4 * x + 320 / 4 * 0.5 - this.cross.width / 2);
-                    let yy = Math.round(200 / 3 * y + 200 / 3 * 0.5 - this.cross.height / 2);
-                    this.framebuffer.drawTexture(xx, yy, this.cross, 0.45);
-                }
-            }
-            this.framebuffer.noise(time, this.noise);
-        }
-        else if (time < 690000) {
-            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
-            this.framebuffer.setBob(this.spheremap);
-            this.framebuffer.shadingSphereEnv(time * 0.0002);
-            this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)), 200 / 2 - 20, this.micro.width * 2, this.micro.height * 2, this.micro);
-            this.framebuffer.drawScaledTextureClipAdd(320 - (((time * 0.05) | 0) % (this.micro.width + 320)), 200 / 2 - 60, this.micro.width, this.micro.height, this.micro);
-            let source = 0;
-            let dest = 319;
-            for (let y = 0; y < 100; y++) {
-                for (let x = 0; x < 160; x++) {
-                    this.framebuffer.framebuffer[dest--] = this.framebuffer.framebuffer[source++];
-                }
-                source += 160;
-                dest += 320 + 160;
-            }
-            source = 0;
-            dest = 199 * 320;
-            for (let y = 0; y < 100; y++) {
-                for (let x = 0; x < 320; x++) {
-                    this.framebuffer.framebuffer[dest++] = this.framebuffer.framebuffer[source++];
-                }
-                dest -= 320 * 2;
-            }
-            let tmpGlitch = new Uint32Array(320 * 200);
-            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
-            let texture = new Texture_1.default();
-            texture.texture = tmpGlitch;
-            texture.width = 320;
-            texture.height = 200;
-            const ukBasslineBpm = 140;
-            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
-            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
-            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
-                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
-            let width = Math.round(320 + smash * 320 / 50);
-            let height = Math.round(200 + smash * 200 / 50);
-            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
-            for (let y = 0; y < 3; y++) {
-                for (let x = 0; x < 4; x++) {
-                    let xx = Math.round(320 / 4 * x + 320 / 4 * 0.5 - this.cross.width / 2);
-                    let yy = Math.round(200 / 3 * y + 200 / 3 * 0.5 - this.cross.height / 2);
-                    this.framebuffer.drawTexture(xx, yy, this.cross, 0.45);
-                }
-            }
-            this.framebuffer.noise(time, this.noise);
-        }
-        else if (time < 720000) {
-            // Rave video & Wobblin Cylinder
-            this.framebuffer.raveMoview(time, this.rave);
-            this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
-            this.framebuffer.setBob(this.spheremap);
-            this.framebuffer.shadingCylinderEnv(time * 0.0002);
-            // Crosses
-            for (let y = 0; y < 3; y++) {
-                for (let x = 0; x < 4; x++) {
-                    let xx = Math.round(320 / 4 * x + 320 / 4 * 0.5 - this.cross.width / 2);
-                    let yy = Math.round(200 / 3 * y + 200 / 3 * 0.5 - this.cross.height / 2);
-                    this.framebuffer.drawTexture(xx, yy, this.cross, 0.2);
-                }
-            }
+            //this.framebuffer.setBob(this.envmap);
+            this.framebuffer.shadingSphereEnvDisp(time * 0.0002);
             // Motion Blur
-            let texture = new Texture_1.default(this.accumulationBuffer, 320, 200);
-            this.framebuffer.drawTexture(0, 0, texture, 0.3 + 0.6 * (0.5 + 0.5 * Math.sin(time * 0.0003)));
-            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-            this.framebuffer.noise(time, this.noise);
-        }
-        else if (time < 750000) {
-            let rng = new RandomNumberGenerator_1.default();
-            rng.setSeed(666);
-            let texture = new Texture_1.default(new Uint32Array(32 * 32), 32, 32);
-            // FIXME:
-            // - remove realtime glow and put it pre baked into the texture insteadt!
-            for (let k = 0; k < 100; k++) {
-                let x = Math.round(rng.getFloat() * 32);
-                let y = Math.round(rng.getFloat() * 32);
-                if (k < 50)
-                    texture.texture[x + y * 32] = 47 | 181 << 8 | 243 << 16;
-                else
-                    texture.texture[x + y * 32] = 252 | 130 << 8 | 195 << 16;
-            }
-            this.framebuffer.drawPlanedeformationTunnelAnim(time, texture);
-            // GLOW
-            let glowBuffer = new Uint32Array(16 * 2 * 10 * 2);
-            let glowBuffer2 = new Uint32Array(16 * 2 * 10 * 2);
-            // todo filer onlyy brigh parts
-            // blur if too blocky
-            // clamp to border when filterting bilinear
-            // add and dont blend with alpha
-            for (let y = 0; y < 20; y++) {
-                for (let x = 0; x < 32; x++) {
-                    let xx = Math.round(10 * x);
-                    let yy = Math.round(10 * y);
-                    let r = this.framebuffer.framebuffer[xx + yy * 320] & 0xff;
-                    let g = this.framebuffer.framebuffer[xx + yy * 320] >> 8 & 0xff;
-                    let b = this.framebuffer.framebuffer[xx + yy * 320] >> 16 & 0xff;
-                    let intensity = (r + g + b) / 3;
-                    let scale = this.framebuffer.cosineInterpolate(200, 130, intensity);
-                    let color = r * scale | g * scale << 8 | b * scale << 16 | 255 << 24;
-                    //  if (intensity > 138) {
-                    glowBuffer[x + y * 32] = this.framebuffer.framebuffer[xx + yy * 320]; //color ;
-                    // } 
-                }
-            }
-            for (let y = 0; y < 20; y++) {
-                for (let x = 0; x < 32; x++) {
-                    let col1 = glowBuffer[Math.max(x - 1, 0) + y * 32];
-                    let col2 = glowBuffer[(x) % 32 + y * 32];
-                    let col3 = glowBuffer[Math.min(x + 1, 31) + y * 32];
-                    let r = (col1 & 0xff) * 1 / 4 + (col2 & 0xff) * 2 / 4 + (col3 & 0xff) * 1 / 4;
-                    let g = (col1 >> 8 & 0xff) * 1 / 4 + (col2 >> 8 & 0xff) * 2 / 4 + (col3 >> 8 & 0xff) * 1 / 4;
-                    let b = (col1 >> 16 & 0xff) * 1 / 4 + (col2 >> 16 & 0xff) * 2 / 4 + (col3 >> 16 & 0xff) * 1 / 4;
-                    glowBuffer2[x + y * 32] = r | g << 8 | b << 16;
-                }
-            }
-            for (let y = 0; y < 20; y++) {
-                for (let x = 0; x < 32; x++) {
-                    let col1 = glowBuffer2[(x) + Math.max(y - 1, 0) * 32];
-                    let col2 = glowBuffer2[(x) + y % 20 * 32];
-                    let col3 = glowBuffer2[(x) + Math.min(y + 1, 19) * 32];
-                    let r = ((col1 & 0xff) * 1 / 4 + (col2 & 0xff) * 2 / 4 + (col3 & 0xff) * 1 / 4);
-                    let g = ((col1 >> 8 & 0xff) * 1 / 4 + (col2 >> 8 & 0xff) * 2 / 4 + (col3 >> 8 & 0xff) * 1 / 4);
-                    let b = ((col1 >> 16 & 0xff) * 1 / 4 + (col2 >> 16 & 0xff) * 2 / 4 + (col3 >> 16 & 0xff) * 1 / 4);
-                    glowBuffer[x + y * 32] = r | g << 8 | b << 16;
-                }
-            }
-            let texture2 = new Texture_1.default();
-            texture2.texture = glowBuffer;
-            texture2.width = 32;
-            texture2.height = 20;
-            this.framebuffer.drawScaledTextureClipBiAdd(0, 0, 320, 200, texture2, 0.75);
-            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
-            this.framebuffer.setBob(this.spheremap);
-            this.framebuffer.reflectionBunny(time * 0.002);
-            // Motion Blur
-            let texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
-            this.framebuffer.drawTexture(0, 0, texture3, 0.8);
-            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-            this.framebuffer.noise(time, this.noise);
-        }
-        else {
-            this.framebuffer.raveMoview(time, this.rave);
-            this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
-            this.framebuffer.setBob(this.spheremap);
-            this.framebuffer.shadingCylinderEnvDisp(time * 0.0002);
-            this.framebuffer.drawTexture((320 / 2 - 256 / 2) | 0, (200 / 2 - 122 / 2) | 0, this.meth, Math.max(0, Math.sin(time * 0.0002)));
-            // Motion Blur
-            let texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
-            this.framebuffer.drawTexture(0, 0, texture3, 0.8);
-            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             let tmpGlitch = new Uint32Array(320 * 200);
             this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
             let texture = new Texture_1.default();
@@ -839,9 +929,179 @@ class Canvas {
             let width = Math.round(320 + smash * 320 / 100);
             let height = Math.round(200 + smash * 200 / 100);
             this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            let texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.85);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             this.framebuffer.noise(time, this.noise);
         }
+        else if (time < 100000) {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+            // this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.setBob(this.envmap);
+            this.framebuffer.shadingSphereEnvDisp2((time - 50000) * 0.0002);
+            // Motion Blur
+            let tmpGlitch = new Uint32Array(320 * 200);
+            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
+            let texture = new Texture_1.default();
+            texture.texture = tmpGlitch;
+            texture.width = 320;
+            texture.height = 200;
+            const ukBasslineBpm = 140;
+            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
+            let width = Math.round(320 + smash * 320 / 100);
+            let height = Math.round(200 + smash * 200 / 100);
+            this.framebuffer.drawScaledTextureClipBi(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            let texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.85);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            this.framebuffer.noise(time, this.noise);
+        }
+        else if (time < 150000) {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.drawParticleTorus(time, this.particleTexture2, true);
+            let tmpGlitch = new Uint32Array(320 * 200);
+            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
+            let texture = new Texture_1.default();
+            texture.texture = tmpGlitch;
+            texture.width = 320;
+            texture.height = 200;
+            const ukBasslineBpm = 140;
+            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
+            let width = Math.round(320 + smash * 320 / 100);
+            let height = Math.round(200 + smash * 200 / 100);
+            this.framebuffer.drawScaledTextureClipBi(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            let texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.85);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            this.framebuffer.noise(time, this.noise);
+        }
+        else if (time < 200000) {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+            this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
+            let tmpGlitch = new Uint32Array(320 * 200);
+            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
+            let texture = new Texture_1.default();
+            texture.texture = tmpGlitch;
+            texture.width = 320;
+            texture.height = 200;
+            const ukBasslineBpm = 140;
+            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
+            let width = Math.round(320 + smash * 320 / 100);
+            let height = Math.round(200 + smash * 200 / 100);
+            this.framebuffer.drawScaledTextureClipBi(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            let texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.85);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            this.framebuffer.noise(time, this.noise);
+        }
+        else if (time < 250000) {
+            this.framebuffer.raveMoview(time, this.rave);
+            this.framebuffer.glitchScreen(time, this.noise, false);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+            this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.shadingPlaneEnv(time * 0.0002);
+            let texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.85);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            this.framebuffer.noise(time, this.noise);
+        }
+        else if (time < 300000) {
+            this.framebuffer.drawVoxelLandscape4(this.heightmap, time);
+            let tempTexture = new Texture_1.default();
+            tempTexture.texture = new Uint32Array(256 * 256);
+            for (let y = 0; y < 256; y++) {
+                for (let x = 0; x < 256; x++) {
+                    let ypos = 199 - Math.round(200 / 256 * x);
+                    let xpos = Math.round(320 / 256 * y);
+                    tempTexture.texture[x + y * 256] = this.framebuffer.framebuffer[xpos + ypos * 320];
+                }
+            }
+            this.framebuffer.drawPolarDistotion2(time, tempTexture);
+            let texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.65);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            this.framebuffer.noise(time, this.noise);
+        }
+        else if (time < 350000) {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
+            this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.shadingCylinderEnvDisp(time * 0.0002);
+            let texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.85);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            this.framebuffer.noise(time, this.noise);
+        }
+        else if (time < 400000) {
+            this.framebuffer.raveMoview(time, this.rave);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+            this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
+            this.framebuffer.glitchScreen(time, this.noise);
+        }
+        else if (time < 450000) {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.drawParticleWaves(time, this.particleTexture2, true);
+            let texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.85);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            this.framebuffer.noise(time, this.noise);
+        }
+        else {
+            this.framebuffer.drawMetaballs();
+            this.framebuffer.noise(time, this.noise, 0.1);
+        }
+        //this.framebuffer.glitchScreen(time, this.noise);
+        this.framebuffer.drawTexture(0, 0, this.mask, 1.0);
+        /**
+         * TODO:
+         * - Stripe landscape: http://farm3.static.flickr.com/2653/5710494901_2ca6ddbfb2_b.jpg
+         *   maybe with sync to bass and fft
+         * - Blender modells (Flat, textured, GI baked)
+         * - particle tunnel
+         * - particle waves
+         * - dof
+         */
+        // this.framebuffer.drawRadialBlur();
+        //this.framebuffer.noise(time, this.noise);
+        // this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
+        /*
+        let bufferLength = this.analyzer.frequencyBinCount;
+        let dataArray = new Uint8Array(bufferLength);
+        this.analyzer.getByteFrequencyData(dataArray);
+
+        let pos1 = new Vector3f(0,0,0);
+        let pos2 = new Vector3f(0,0,0);
+        const STEPS = 100;
+        for (let i = 0; i < STEPS; i++) {
+            
+            let x = Math.sin(Math.PI * 2 / STEPS * i+time*0.0003);
+            let y = Math.cos(Math.PI * 2 / STEPS * i+time*0.0003);
+            pos1.x = x*60 +320/2;
+            pos1.y = y*60 + 200/2;
+            pos2.y=  y*(60+dataArray[Math.floor(bufferLength/ STEPS * (i))]/255*40)+200/2;
+            pos2.x = x*(60+dataArray[Math.floor(bufferLength/ STEPS * (i))]/255*40)+ 320/2;
+            this.framebuffer.drawLineDDANoZ(pos1, pos2, 255);
+        }
+        */
         // TS SoftSynth Project
+        // http://natureofcode.com/book/
+        // https://noisehack.com/generate-noise-web-audio-api/
+        // https://noisehack.com/custom-audio-effects-javascript-web-audio-api/
+        // https://noisehack.com/how-to-build-supersaw-synth-web-audio-api/
+        // https://noisehack.com/build-music-visualizer-web-audio-api/
+        // https://noisehack.com/how-to-build-monotron-synth-web-audio-api/
         // https://davidwalsh.name/web-audio-api
         // https://codepen.io/gregh/post/recreating-legendary-8-bit-games-music-with-web-audio-api
         // https://developer.mozilla.org/en-US/docs/Games/Techniques/Audio_for_Web_Games
@@ -979,11 +1239,8 @@ class Canvas {
          * - http://www.flipcode.com/archives/The_Art_of_Demomaking-Issue_07_Bump_Mapping.shtml
          * - http://sol.gfxile.net/interpolation/index.html
          * - http://adrianboeing.blogspot.de/2011/06/deform-textured-interference-effect-in.html
-         * - Tunnel with to textures multiplied
          * - particle ball pulsating (https://www.youtube.com/watch?v=NPZEkhtXhgE)
-         * - wobbling metall ball (sphere mapping)
          * - metaballs
-         * - textured wobbling cylinder
          * - particle stream
          * - scene with baked lighting & wobbling ball & camera animation
          * - DOF flares
@@ -993,7 +1250,6 @@ class Canvas {
         //  this.framebuffer.cinematicScroller(this.texture4, time);
         //  this.framebuffer.drawTextureScaledLame(0,0, 16,16, this.texture7);
         // http://doc.babylonjs.com/tutorials/discover_basic_elements
-        this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
         // implement modells with baked shaods and lighting :)
         // http://iquilezles.org/www/index.htm
         // http://iquilezles.org/www/articles/normals/normals.htm
@@ -1237,13 +1493,18 @@ class Canvas {
             this.createTexture(__webpack_require__(47), true).then(texture => this.hlm = texture),
             this.createTexture(__webpack_require__(48), true).then(texture => this.cross = texture),
             this.createTexture(__webpack_require__(49), false).then(texture => this.envmap = texture),
+            this.createTexture(__webpack_require__(50), false).then(texture => this.heightmapSphere = texture),
+            this.createTexture(__webpack_require__(51), true).then(texture => this.mask = texture),
         ]).then(() => {
             // Web Audio API
             // FIXME: put this into a Player Class
-            this.framebuffer.precompute(this.heightmap);
+            this.framebuffer.precompute(this.heightmap, this.heightmapSphere);
             let audioContext = new AudioContext();
+            this.analyzer = audioContext.createAnalyser();
+            this.analyzer.fftSize = 256;
+            this.analyzer.smoothingTimeConstant = 0.8;
             let request = new XMLHttpRequest();
-            request.open('GET', __webpack_require__(50), true);
+            request.open('GET', __webpack_require__(52), true);
             request.responseType = 'arraybuffer';
             console.log('load music');
             request.onload = () => {
@@ -1253,7 +1514,10 @@ class Canvas {
                     console.log(buffer);
                     let sourceBuffer = audioContext.createBufferSource();
                     sourceBuffer.buffer = buffer;
-                    sourceBuffer.connect(audioContext.destination);
+                    // sourceBuffer.connect(audioContext.destination);
+                    sourceBuffer.connect(this.analyzer);
+                    sourceBuffer.loop = true;
+                    this.analyzer.connect(audioContext.destination);
                     sourceBuffer.start(audioContext.currentTime);
                     this.start = Date.now();
                     this.renderLoop(0);
@@ -1442,7 +1706,7 @@ class Framebuffer {
     setBob(texture) {
         this.bob = texture;
     }
-    precompute(texture) {
+    precompute(texture, texture2) {
         this.obj = this.createObject();
         this.bunnyObj = this.createBunny();
         this.blenderObj = this.getBlenderScene();
@@ -1450,6 +1714,8 @@ class Framebuffer {
         this.plane = this.createPlane();
         this.cylinder = this.createCylinder();
         this.cylinder2 = this.createCylinder2(texture);
+        this.sphereDisp = this.createSphereDistplaced(texture);
+        this.sphereDisp2 = this.createSphereDistplaced(texture2);
         /*
         document.addEventListener("keydown", (e) => {
             console.log('key pressed');
@@ -1926,14 +2192,14 @@ class Framebuffer {
             }
         }
     }
-    noise(elapsedTime, texture) {
+    noise(elapsedTime, texture, scale = 0.07) {
         for (let x = 0; x < 16; x++) {
             for (let y = 0; y < 10; y++) {
-                this.drawTextureRect(x * 20, y * 20, 20 * (Math.round(elapsedTime / 100 + x + y) % 12), 0, 20, 20, texture, 0.07);
+                this.drawTextureRect(x * 20, y * 20, 20 * (Math.round(elapsedTime / 100 + x + y) % 12), 0, 20, 20, texture, scale);
             }
         }
     }
-    glitchScreen(elapsedTime, texture) {
+    glitchScreen(elapsedTime, texture, noise = true) {
         const glitchFactor = (Math.sin(elapsedTime * 0.0003) * 0.5 + 0.5);
         let rng = new RandomNumberGenerator_1.default();
         rng.setSeed((elapsedTime / 250) | 0);
@@ -1949,9 +2215,11 @@ class Framebuffer {
                 this.drawTextureRect(20 * (16 - x), 20 * ((16 * rng.getFloat()) | 0), 20 * x, 20 * y, 20, 20, texture2, 0.1 + 0.35 * glitchFactor);
             }
         }
-        for (let x = 0; x < 16; x++) {
-            for (let y = 0; y < 10; y++) {
-                this.drawTextureRect(x * 20, y * 20, 20 * (Math.round(elapsedTime / 100 + x + y) % 12), 0, 20, 20, texture, 0.1 + 0.3 * glitchFactor);
+        if (noise) {
+            for (let x = 0; x < 16; x++) {
+                for (let y = 0; y < 10; y++) {
+                    this.drawTextureRect(x * 20, y * 20, 20 * (Math.round(elapsedTime / 100 + x + y) % 12), 0, 20, 20, texture, 0.1 + 0.3 * glitchFactor);
+                }
             }
         }
         this.fastFramebufferCopy(this.tmpGlitch, this.framebuffer);
@@ -3432,13 +3700,42 @@ class Framebuffer {
                 let distance = Math.pow(Math.pow((x - 40 / 2.0) * (x - 40 / 2.0),power) + Math.pow((y - 25 / 2.0) * (y - 25 / 2.0),power),1/(2*power));
                 let waveSum: number =  (Math.sin(distance+elapsedTime*0.005)+1)*0.5*(1-Math.min(distance*0.03, 1.0));
                 */
-                let waveSum = (Math.sin(distance + elapsedTime * 0.005) + 1) * 0.5 * (1 - Math.min(distance * 0.03, 1.0));
+                let waveSum = (Math.sin(distance + elapsedTime * 0.005) + 1) * 0.5 * (1 - Math.min(distance * 0.003, 1.0));
                 // FIXME: put this into a reusable method to remove
                 // code duplications? ie. LedBuffer class wit arrayy and draw method :)
                 let intensity = ((waveSum * 15) | 0) % 16;
                 this.drawTextureRectNoAlpha(x * 8, y * 8, 0, 8 * intensity, 8, 8, texture);
             }
         }
+    }
+    drawParticleWaves(elapsedTime, texture, noClear = false) {
+        if (!noClear)
+            this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
+        this.clearDepthBuffer();
+        let points = new Array();
+        const num = 50;
+        const scale = 2;
+        for (let i = 0; i < num; i++) {
+            for (let j = 0; j < num; j++) {
+                let x = (j - num / 2) * scale;
+                let y = 4 * (Math.sin(j * 0.09 * 2 + elapsedTime * 0.0008) + Math.cos(i * 0.08 * 2 + elapsedTime * 0.0009));
+                let z = (i - num / 2) * scale;
+                points.push(new math_1.Vector3f(x, y, z));
+            }
+        }
+        let modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(0, -0.0, -49).multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(Math.PI * 0.1).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 0.00006)));
+        let points2 = new Array(points.length);
+        points.forEach(element => {
+            let transformed = this.project(modelViewMartrix.multiply(element));
+            points2.push(transformed);
+        });
+        points2.sort(function (a, b) {
+            return a.z - b.z;
+        });
+        points2.forEach(element => {
+            let size = -(1.3 * 192 / (element.z));
+            this.drawParticle(Math.round(element.x - size / 2), Math.round(element.y - size / 2), Math.round(size), Math.round(size), texture, 1 / element.z, this.interpolate(-60, -25, element.z));
+        });
     }
     drawParticleTorus(elapsedTime, texture, noClear = false) {
         if (!noClear)
@@ -4014,8 +4311,8 @@ class Framebuffer {
                 let v3 = points2[index[i + 2]];
                 if (this.isTriangleCCW(v1, v2, v3)) {
                     let normal = normals2[i / 3];
-                    let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new math_1.Vector3f(0.5, 0.5, 0.5).normalize())) * 100), 255) + 50;
-                    let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar + 100;
+                    let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new math_1.Vector3f(0.5, 0.5, 0.5).normalize()))) + 0.2, 1.0);
+                    let color = 255 << 24 | (scalar * 136) << 16 | (scalar * 215) << 8 | (scalar * 244);
                     if (v1.x < Framebuffer.minWindow.x ||
                         v2.x < Framebuffer.minWindow.x ||
                         v3.x < Framebuffer.minWindow.x ||
@@ -4456,7 +4753,7 @@ class Framebuffer {
             3, 5, 4,
             4, 5, 1
         ];
-        let k = this.divideSphere(pointsA, indexA, 3);
+        let k = this.divideSphere(pointsA, indexA, 4);
         // optimize
         let points = [];
         let points2 = [];
@@ -4583,6 +4880,22 @@ class Framebuffer {
             index,
             texture
         };
+    }
+    createSphereDistplaced(texture) {
+        let sphere = this.createSphere();
+        let newPoints = new Array();
+        sphere.points.forEach((point) => {
+            let x = point.x;
+            let y = point.y;
+            let z = point.z;
+            const radius = 1.0;
+            let u = Math.floor((0.5 + Math.atan2(z, x) / (2 * Math.PI)) * 255);
+            let v = Math.floor((0.5 - Math.asin(y) / Math.PI) * 255);
+            let disp = 1 + 1.4 * ((texture.texture[u + v * 256] & 0xff) / 255);
+            newPoints.push(point.mul(disp));
+        });
+        sphere.points = newPoints;
+        return sphere;
     }
     createCylinder2(texture) {
         let k = {
@@ -5034,6 +5347,241 @@ class Framebuffer {
         let modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(0)
             .multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(0.2 * Math.sin(elapsedTime * 1.2)).multiplyMatrix(math_1.Matrix4f.constructTranslationMatrix(0, 0, 0))));
         modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(-80, -210, -290)
+            .multiplyMatrix(modelViewMartrix);
+        /**
+         * Vertex Shader Stage
+         */
+        let points2 = result.points2;
+        let normals2 = result.normals2;
+        let normalMatrix = modelViewMartrix.computeNormalMatrix();
+        for (let n = 0; n < normals.length; n++) {
+            normalMatrix.multiplyArr(normals[n], normals2[n]);
+        }
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiply(points[p]);
+            points2[p].x = Math.round((320 * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
+            points2[p].y = Math.round((200 * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
+            points2[p].z = transformed.z;
+        }
+        /**
+         * Primitive Assembly and Rasterization Stage:
+         * 1. back-face culling
+         * 2. viewport transform
+         * 3. scan conversion (rasterization)
+         */
+        let vertex1 = new Vertex_1.Vertex();
+        vertex1.textureCoordinate = new Vertex_1.TextureCoordinate();
+        let vertex2 = new Vertex_1.Vertex();
+        vertex2.textureCoordinate = new Vertex_1.TextureCoordinate();
+        let vertex3 = new Vertex_1.Vertex();
+        vertex3.textureCoordinate = new Vertex_1.TextureCoordinate();
+        let vertexArray = new Array(vertex1, vertex2, vertex3);
+        for (let i = 0; i < index.length; i += 3) {
+            // Only render triangles with CCW-ordered vertices
+            // 
+            // Reference:
+            // David H. Eberly (2006).
+            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
+            // p. 69. Morgan Kaufmann Publishers, United States.
+            //
+            let v1 = points2[index[i]];
+            let n1 = normals2[index[i]];
+            let v2 = points2[index[i + 1]];
+            let n2 = normals2[index[i + 1]];
+            let v3 = points2[index[i + 2]];
+            let n3 = normals2[index[i + 2]];
+            if (this.isTriangleCCW(v1, v2, v3)) {
+                let color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
+                vertexArray[0].position = v1;
+                this.fakeSphere(n1, vertex1);
+                vertexArray[1].position = v2;
+                this.fakeSphere(n2, vertex2);
+                vertexArray[2].position = v3;
+                this.fakeSphere(n3, vertex3);
+                if (v1.x < Framebuffer.minWindow.x ||
+                    v2.x < Framebuffer.minWindow.x ||
+                    v3.x < Framebuffer.minWindow.x ||
+                    v1.x > Framebuffer.maxWindow.x ||
+                    v2.x > Framebuffer.maxWindow.x ||
+                    v3.x > Framebuffer.maxWindow.x ||
+                    v1.y < Framebuffer.minWindow.y ||
+                    v2.y < Framebuffer.minWindow.y ||
+                    v3.y < Framebuffer.minWindow.y ||
+                    v1.y > Framebuffer.maxWindow.y ||
+                    v2.y > Framebuffer.maxWindow.y ||
+                    v3.y > Framebuffer.maxWindow.y) {
+                    this.clipConvexPolygon2(vertexArray, color);
+                }
+                else {
+                    // this.drawTriangleDDA(v1, v2, v3, color);
+                    this.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], color);
+                }
+            }
+        }
+    }
+    shadingSphereEnvDisp(elapsedTime) {
+        this.wBuffer.fill(100);
+        let result = this.sphereDisp;
+        let scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
+        for (let i = 0; i < result.points.length; i++) {
+            let y = result.points[i].z;
+            let x = result.points[i].x;
+            let length = Math.sqrt(x * x + y * y);
+            let rot = Math.sin(result.points[i].y * 0.539 + (10 - length) * 0.05 + elapsedTime * 0.9) * 4.5;
+            result.points2[i].y = result.points[i].y;
+            result.points2[i].x = result.points[i].x * Math.cos(rot) - result.points[i].z * Math.sin(rot);
+            result.points2[i].z = result.points[i].x * Math.sin(rot) + result.points[i].z * Math.cos(rot);
+            result.normals[i].x = 0;
+            result.normals[i].y = 0;
+            result.normals[i].z = 0;
+        }
+        let points = result.points2;
+        let index = result.index;
+        let normals = result.normals;
+        let norm = new math_1.Vector3f(0, 0, 0);
+        let norm2 = new math_1.Vector3f(0, 0, 0);
+        let cross = new math_1.Vector3f(0, 0, 0);
+        for (let i = 0; i < index.length; i += 3) {
+            let v1 = points[index[i]];
+            let v2 = points[index[i + 1]];
+            let v3 = points[index[i + 2]];
+            norm.sub2(v2, v1);
+            norm2.sub2(v3, v1);
+            cross.cross2(norm, norm2);
+            let normal = cross;
+            normals[index[i]].add2(normals[index[i]], normal);
+            normals[index[i + 1]].add2(normals[index[i + 1]], normal);
+            normals[index[i + 2]].add2(normals[index[i + 2]], normal);
+        }
+        // FIXME: speed up
+        // - remove normalie from lighting
+        // - remove normalize after normal transformation!
+        // - precreate array for transformed vertices and normals
+        for (let i = 0; i < normals.length; i++) {
+            normals[i].normalize2();
+        }
+        let scale = 3.7;
+        let modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 0.35)
+            .multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(elapsedTime * 0.3).multiplyMatrix(math_1.Matrix4f.constructTranslationMatrix(0, 0, 0))));
+        modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(-0, -0, -10)
+            .multiplyMatrix(modelViewMartrix);
+        /**
+         * Vertex Shader Stage
+         */
+        let points2 = result.points2;
+        let normals2 = result.normals2;
+        let normalMatrix = modelViewMartrix.computeNormalMatrix();
+        for (let n = 0; n < normals.length; n++) {
+            normalMatrix.multiplyArr(normals[n], normals2[n]);
+        }
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiply(points[p]);
+            points2[p].x = Math.round((320 * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
+            points2[p].y = Math.round((200 * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
+            points2[p].z = transformed.z;
+        }
+        /**
+         * Primitive Assembly and Rasterization Stage:
+         * 1. back-face culling
+         * 2. viewport transform
+         * 3. scan conversion (rasterization)
+         */
+        let vertex1 = new Vertex_1.Vertex();
+        vertex1.textureCoordinate = new Vertex_1.TextureCoordinate();
+        let vertex2 = new Vertex_1.Vertex();
+        vertex2.textureCoordinate = new Vertex_1.TextureCoordinate();
+        let vertex3 = new Vertex_1.Vertex();
+        vertex3.textureCoordinate = new Vertex_1.TextureCoordinate();
+        let vertexArray = new Array(vertex1, vertex2, vertex3);
+        for (let i = 0; i < index.length; i += 3) {
+            // Only render triangles with CCW-ordered vertices
+            // 
+            // Reference:
+            // David H. Eberly (2006).
+            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
+            // p. 69. Morgan Kaufmann Publishers, United States.
+            //
+            let v1 = points2[index[i]];
+            let n1 = normals2[index[i]];
+            let v2 = points2[index[i + 1]];
+            let n2 = normals2[index[i + 1]];
+            let v3 = points2[index[i + 2]];
+            let n3 = normals2[index[i + 2]];
+            if (this.isTriangleCCW(v1, v2, v3)) {
+                let color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
+                vertexArray[0].position = v1;
+                this.fakeSphere(n1, vertex1);
+                vertexArray[1].position = v2;
+                this.fakeSphere(n2, vertex2);
+                vertexArray[2].position = v3;
+                this.fakeSphere(n3, vertex3);
+                if (v1.x < Framebuffer.minWindow.x ||
+                    v2.x < Framebuffer.minWindow.x ||
+                    v3.x < Framebuffer.minWindow.x ||
+                    v1.x > Framebuffer.maxWindow.x ||
+                    v2.x > Framebuffer.maxWindow.x ||
+                    v3.x > Framebuffer.maxWindow.x ||
+                    v1.y < Framebuffer.minWindow.y ||
+                    v2.y < Framebuffer.minWindow.y ||
+                    v3.y < Framebuffer.minWindow.y ||
+                    v1.y > Framebuffer.maxWindow.y ||
+                    v2.y > Framebuffer.maxWindow.y ||
+                    v3.y > Framebuffer.maxWindow.y) {
+                    this.clipConvexPolygon2(vertexArray, color);
+                }
+                else {
+                    // this.drawTriangleDDA(v1, v2, v3, color);
+                    this.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], color);
+                }
+            }
+        }
+    }
+    shadingSphereEnvDisp2(elapsedTime) {
+        this.wBuffer.fill(100);
+        let result = this.sphereDisp2;
+        let scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
+        for (let i = 0; i < result.points.length; i++) {
+            let y = result.points[i].z;
+            let x = result.points[i].x;
+            let length = Math.sqrt(x * x + y * y);
+            let rot = Math.sin(result.points[i].y * 0.539 + (10 - length) * 0.05 + elapsedTime * 0.9) * 4.5;
+            rot *= Math.sin(elapsedTime * 0.25) * 0.5 + 0.5;
+            result.points2[i].y = result.points[i].y;
+            result.points2[i].x = result.points[i].x * Math.cos(rot) - result.points[i].z * Math.sin(rot);
+            result.points2[i].z = result.points[i].x * Math.sin(rot) + result.points[i].z * Math.cos(rot);
+            result.normals[i].x = 0;
+            result.normals[i].y = 0;
+            result.normals[i].z = 0;
+        }
+        let points = result.points2;
+        let index = result.index;
+        let normals = result.normals;
+        let norm = new math_1.Vector3f(0, 0, 0);
+        let norm2 = new math_1.Vector3f(0, 0, 0);
+        let cross = new math_1.Vector3f(0, 0, 0);
+        for (let i = 0; i < index.length; i += 3) {
+            let v1 = points[index[i]];
+            let v2 = points[index[i + 1]];
+            let v3 = points[index[i + 2]];
+            norm.sub2(v2, v1);
+            norm2.sub2(v3, v1);
+            cross.cross2(norm, norm2);
+            let normal = cross;
+            normals[index[i]].add2(normals[index[i]], normal);
+            normals[index[i + 1]].add2(normals[index[i + 1]], normal);
+            normals[index[i + 2]].add2(normals[index[i + 2]], normal);
+        }
+        // FIXME: speed up
+        // - remove normalie from lighting
+        // - remove normalize after normal transformation!
+        // - precreate array for transformed vertices and normals
+        for (let i = 0; i < normals.length; i++) {
+            normals[i].normalize2();
+        }
+        let scale = 3.7;
+        let modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 0.35)
+            .multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(elapsedTime * 0.3).multiplyMatrix(math_1.Matrix4f.constructTranslationMatrix(0, 0, 0))));
+        modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(-0, -0, -10 - (Math.sin(elapsedTime * 0.3) * 0.5 + 0.5) * 6)
             .multiplyMatrix(modelViewMartrix);
         /**
          * Vertex Shader Stage
@@ -6521,23 +7069,42 @@ class Framebuffer {
     }
     drawMetaballs() {
         let balls = [
-            new math_1.Vector3f(Math.sin(Date.now() * 0.002) * 100 + 150, Math.cos(Date.now() * 0.003) * 100 + 100, 0),
-            new math_1.Vector3f(Math.sin(Date.now() * 0.001) * 100 + 150, Math.cos(Date.now() * 0.002) * 100 + 100, 0)
+            new math_1.Vector3f(Math.sin(Date.now() * 0.002) * 100 + 150, Math.cos(Date.now() * 0.0035) * 70 + 100, 0),
+            new math_1.Vector3f(Math.sin(Date.now() * 0.0015) * 100 + 150, Math.cos(Date.now() * 0.002) * 70 + 100, 0),
+            new math_1.Vector3f(Math.sin(Date.now() * 0.003) * 100 + 150, Math.cos(Date.now() * 0.0045) * 70 + 100, 0)
         ];
         let index = 0;
         for (let y = 0; y < 200; y++) {
             for (let x = 0; x < 320; x++) {
                 let intensity = 0;
-                for (let b = 0; b < 2; b++) {
+                for (let b = 0; b < 3; b++) {
                     let xx = (balls[b].x - x);
                     let yy = (balls[b].y - y);
                     let length = Math.sqrt(xx * xx + yy * yy);
-                    intensity += 8000 / length;
+                    intensity += 5500 / length;
                 }
-                this.framebuffer[index++] = 255 << 24 | Math.min(intensity, 255);
-                ;
+                this.framebuffer[index++] = 255 << 24 | this.mapColor(intensity);
             }
         }
+    }
+    interpolateColor(start, end, value, color1, color2) {
+        let scale = this.interpolate(start, end, value);
+        let red = (color1 >> 0 & 0xff) * (1 - scale) + scale * (color2 >> 0 & 0xff);
+        let green = (color1 >> 8 & 0xff) * (1 - scale) + scale * (color2 >> 8 & 0xff);
+        let blue = (color1 >> 16 & 0xff) * (1 - scale) + scale * (color2 >> 16 & 0xff);
+        return red | green << 8 | blue << 16;
+    }
+    mapColor(intensity) {
+        if (intensity >= 235) {
+            return 255;
+        }
+        else if (intensity >= 230) {
+            return this.interpolateColor(230, 235, intensity, 255 << 8 | 255, 255);
+        }
+        else if (intensity >= 100) {
+            return this.interpolateColor(100, 230, intensity, 255 << 8, 255 << 8 | 255);
+        }
+        return 255 << 8;
     }
     draw(texture, time) {
         // this.clearCol(80 << 16 | 80 << 8 | 99 << 0 | 255 << 24)
@@ -7408,6 +7975,18 @@ module.exports = __webpack_require__.p + "fa5e6c40cb378f6ee6cab4e16ef0934b.png";
 
 /***/ }),
 /* 50 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "b01bbcd1860ad00f64ab16cc21569634.png";
+
+/***/ }),
+/* 51 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "04259b8d38e7b73dae45b2c29ceeb4d3.png";
+
+/***/ }),
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "0e7cabddfc9af1214d72c4201b0da9d9.mp3";
