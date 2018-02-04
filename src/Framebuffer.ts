@@ -218,7 +218,9 @@ export default class Framebuffer {
     private plane: any;
     private cylinder: any;
     private cylinder2: any;
-    
+    private sphereDisp: any;
+    private sphereDisp2: any;
+
 
     public setCullFace(face: CullFace): void {
         this.cullMode = face;
@@ -241,7 +243,7 @@ export default class Framebuffer {
         this.camera = new ControllableCamera();
     }
 
-    public precompute(texture: Texture): void {
+    public precompute(texture: Texture, texture2: Texture): void {
 
         this.obj = this.createObject();
         this.bunnyObj = this.createBunny();
@@ -251,6 +253,8 @@ export default class Framebuffer {
         this.plane = this.createPlane();
         this.cylinder = this.createCylinder();
         this.cylinder2 = this.createCylinder2(texture);
+        this.sphereDisp = this.createSphereDistplaced(texture);
+        this.sphereDisp2 = this.createSphereDistplaced(texture2);
 
 
         /*
@@ -410,9 +414,12 @@ export default class Framebuffer {
                 let alpha = ((texture.texture[texIndex] >> 24) & 0xff) / 255 * alpha2;
                 let inverseAlpha = 1 - alpha;
 
-                let r = (((this.framebuffer[frIndex] >> 0) & 0xff) * (inverseAlpha) + ((texture.texture[texIndex] >> 0) & 0xff) * (alpha)) | 0;
-                let g = (((this.framebuffer[frIndex] >> 8) & 0xff) * (inverseAlpha) + ((texture.texture[texIndex] >> 8) & 0xff) * (alpha)) | 0;
-                let b = (((this.framebuffer[frIndex] >> 16) & 0xff) * (inverseAlpha) + ((texture.texture[texIndex] >> 16) & 0xff) * (alpha)) | 0;
+                let fbPixel = this.framebuffer[frIndex];
+                let txPixel = texture.texture[texIndex];
+
+                let r = (fbPixel >> 0 & 0xff) * inverseAlpha + (txPixel >> 0 & 0xff) * alpha;
+                let g = (fbPixel >> 8 & 0xff) * inverseAlpha + (txPixel >> 8 & 0xff) * alpha;
+                let b = (fbPixel >> 16 & 0xff) * inverseAlpha + (txPixel >> 16 & 0xff) * alpha;
 
                 this.framebuffer[frIndex] = r | (g << 8) | (b << 16) | (255 << 24);
                 texIndex++;
@@ -785,17 +792,15 @@ export default class Framebuffer {
         }
     }
 
-    public noise(elapsedTime: number, texture: Texture): void {
-        const glitchFactor = Math.sin(elapsedTime * 0.0003);
-
+    public noise(elapsedTime: number, texture: Texture, scale: number = 0.07): void {
         for (let x = 0; x < 16; x++) {
             for (let y = 0; y < 10; y++) {
-                this.drawTextureRect(x * 20, y * 20, 20 * (Math.round(elapsedTime / 100 + x + y) % 12), 0, 20, 20, texture, 0.07);
+                this.drawTextureRect(x * 20, y * 20, 20 * (Math.round(elapsedTime / 100 + x + y) % 12), 0, 20, 20, texture, scale);
             }
         }
     }
 
-    public glitchScreen(elapsedTime: number, texture: Texture): void {
+    public glitchScreen(elapsedTime: number, texture: Texture, noise: boolean = true): void {
 
         const glitchFactor = (Math.sin(elapsedTime * 0.0003) * 0.5 + 0.5);
         let rng = new RandomNumberGenerator();
@@ -814,9 +819,11 @@ export default class Framebuffer {
             }
         }
 
-        for (let x = 0; x < 16; x++) {
-            for (let y = 0; y < 10; y++) {
-                this.drawTextureRect(x * 20, y * 20, 20 * (Math.round(elapsedTime / 100 + x + y) % 12), 0, 20, 20, texture, 0.1 + 0.3 * glitchFactor);
+        if (noise) {
+            for (let x = 0; x < 16; x++) {
+                for (let y = 0; y < 10; y++) {
+                    this.drawTextureRect(x * 20, y * 20, 20 * (Math.round(elapsedTime / 100 + x + y) % 12), 0, 20, 20, texture, 0.1 + 0.3 * glitchFactor);
+                }
             }
         }
 
@@ -936,6 +943,74 @@ export default class Framebuffer {
                     this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
                 }
                 xx += yStep;
+                index2++;
+            }
+            yy += yStep;
+            xx = xTextureStart;
+            index2 += -newWidth + 320;
+        }
+    }
+
+
+    public drawParticle(xp: number, yp: number, width: number, height: number, texture: Texture, z: number, alphaBlend: number): void {
+        let xStep = texture.width / width;
+        let yStep = texture.height / height;
+        let xx = 0;
+        let yy = 0;
+
+        let newHeight: number;
+        let newWidth: number
+        let yStart: number;
+        let xStart: number;
+
+        if (yp + height < 0 ||
+            yp > 199 ||
+            xp + width < 0 ||
+            xp > 319) {
+            return;
+        }
+
+        if (yp < 0) {
+            yy = yStep * -yp;
+            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            yStart = 0;
+        } else {
+            yStart = yp;
+            newHeight = height - Math.max(yp + height - 200, 0);
+        }
+
+        let xTextureStart: number;
+
+        if (xp < 0) {
+            xTextureStart = xx = xStep * -xp;
+            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            xStart = 0;
+        } else {
+            xTextureStart = 0;
+            xStart = xp;
+            newWidth = width - Math.max(xp + width - 320, 0);
+        }
+
+        const alphaScale = 1 / 255 * alphaBlend;
+        let index2 = (xStart) + (yStart) * 320;
+        for (let y = 0; y < newHeight; y++) {
+            for (let x = 0; x < newWidth; x++) {
+                if (this.wBuffer[index2] > z) {
+
+                    let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
+
+                    let alpha = (texture.texture[textureIndex] >> 24 & 0xff) * alphaScale;
+                    let inverseAlpha = 1 - alpha;
+                    let framebufferPixel = this.framebuffer[index2];
+                    let texturePixel = texture.texture[textureIndex];
+
+                    let r = (framebufferPixel >> 0 & 0xff) * inverseAlpha + (texturePixel >> 0 & 0xff) * alpha;
+                    let g = (framebufferPixel >> 8 & 0xff) * inverseAlpha + (texturePixel >> 8 & 0xff) * alpha;
+                    let b = (framebufferPixel >> 16 & 0xff) * inverseAlpha + (texturePixel >> 16 & 0xff) * alpha;
+
+                    this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
+                }
+                xx += xStep;
                 index2++;
             }
             yy += yStep;
@@ -2599,7 +2674,7 @@ export default class Framebuffer {
                 let distance = Math.pow(Math.pow((x - 40 / 2.0) * (x - 40 / 2.0),power) + Math.pow((y - 25 / 2.0) * (y - 25 / 2.0),power),1/(2*power));
                 let waveSum: number =  (Math.sin(distance+elapsedTime*0.005)+1)*0.5*(1-Math.min(distance*0.03, 1.0));
                 */
-                let waveSum: number = (Math.sin(distance + elapsedTime * 0.005) + 1) * 0.5 * (1 - Math.min(distance * 0.03, 1.0));
+                let waveSum: number = (Math.sin(distance + elapsedTime * 0.005) + 1) * 0.5 * (1 - Math.min(distance * 0.003, 1.0));
                 // FIXME: put this into a reusable method to remove
                 // code duplications? ie. LedBuffer class wit arrayy and draw method :)
                 let intensity = ((waveSum * 15) | 0) % 16;
@@ -2607,6 +2682,55 @@ export default class Framebuffer {
             }
         }
     }
+
+
+    drawParticleWaves(elapsedTime: number, texture: Texture, noClear: boolean = false) {
+        if (!noClear) this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
+        this.clearDepthBuffer();
+
+        let points: Array<Vector3f> = new Array<Vector3f>();
+        const num = 50;
+        const scale= 2;
+        for (let i = 0; i < num; i++) {
+            for (let j = 0; j < num; j++) {
+
+                let x = (j-num/2)*scale;
+                let y = 4*(Math.sin(j*0.09*2+elapsedTime*0.0008)+Math.cos(i*0.08*2+elapsedTime*0.0009));
+                let z = (i-num/2)*scale;
+
+                points.push(new Vector3f(x, y, z));
+            }
+        }
+
+
+        let modelViewMartrix = Matrix4f.constructTranslationMatrix(0, -0.0, -49).multiplyMatrix(
+            
+                Matrix4f.constructXRotationMatrix(Math.PI*0.1).multiplyMatrix(
+            Matrix4f.constructYRotationMatrix(elapsedTime*0.00006))
+        );
+
+        let points2: Array<Vector3f> = new Array<Vector3f>(points.length);
+        points.forEach(element => {
+
+
+            let transformed = this.project(modelViewMartrix.multiply(element));
+
+            points2.push(transformed);
+        });
+
+        points2.sort(function (a, b) {
+            return a.z - b.z;
+        });
+
+        points2.forEach(element => {
+            let size = -(1.3 * 192 / (element.z));
+            this.drawParticle(
+                Math.round(element.x - size / 2),
+                Math.round(element.y - size / 2),
+                Math.round(size), Math.round(size), texture, 1 / element.z, this.interpolate(-60, -25,element.z));
+        });
+    }
+
 
     drawParticleTorus(elapsedTime: number, texture: Texture, noClear: boolean = false) {
         if (!noClear) this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
@@ -2644,7 +2768,7 @@ export default class Framebuffer {
 
         points2.forEach(element => {
             let size = -(2.2 * 192 / (element.z));
-            this.drawSoftParticle(
+            this.drawParticle(
                 Math.round(element.x) - Math.round(size / 2),
                 Math.round(element.y) - Math.round(size / 2),
                 Math.round(size), Math.round(size), texture, 1 / element.z, 1.0);
@@ -3333,8 +3457,8 @@ export default class Framebuffer {
                 if (this.isTriangleCCW(v1, v2, v3)) {
 
                     let normal = normals2[i / 3];
-                    let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3f(0.5, 0.5, 0.5).normalize())) * 100), 255) + 50;
-                    let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar + 100;
+                    let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3f(0.5, 0.5, 0.5).normalize()))) + 0.2, 1.0);
+                    let color = 255 << 24 | (scalar * 136) << 16 | (scalar * 215) << 8 | (scalar * 244);
                     if (v1.x < Framebuffer.minWindow.x ||
                         v2.x < Framebuffer.minWindow.x ||
                         v3.x < Framebuffer.minWindow.x ||
@@ -3858,7 +3982,7 @@ export default class Framebuffer {
             4, 5, 1
         ];
 
-        let k = this.divideSphere(pointsA, indexA, 3);
+        let k = this.divideSphere(pointsA, indexA, 4);
 
         // optimize
         let points: Array<Vector3f> = [];
@@ -3980,6 +4104,7 @@ export default class Framebuffer {
         let points2: Array<Vector3f> = [];
         let normals: Array<Vector3f> = [];
         let normals2: Array<Vector3f> = [];
+        let texture: Array<TextureCoordinate> = [];
 
         let index: Array<number> = [];
 
@@ -4000,6 +4125,7 @@ export default class Framebuffer {
             normals.push(new Vector3f(0, 0, 0));
             normals2.push(new Vector3f(0, 0, 0));
             points2.push(new Vector3f(0, 0, 0));
+            texture.push(new TextureCoordinate());
         })
 
         return {
@@ -4007,12 +4133,36 @@ export default class Framebuffer {
             points2,
             normals,
             normals2,
-            index
+            index,
+            texture
         }
     }
 
 
-    public createCylinder2(texture:Texture) {
+    public createSphereDistplaced(texture: Texture) {
+        let sphere: {
+            points: Array<Vector3f>,
+            points2: Array<Vector3f>,
+            normals: Array<Vector3f>,
+            normals2: Array<Vector3f>,
+            index: Array<number>
+        } = this.createSphere();
+        let newPoints: Array<Vector3f> = new Array<Vector3f>();
+        sphere.points.forEach((point) => {
+            let x = point.x;
+            let y = point.y;
+            let z = point.z;
+            const radius = 1.0;
+            let u = Math.floor((0.5 + Math.atan2(z, x) / (2 * Math.PI)) * 255);
+            let v = Math.floor((0.5 - Math.asin(y) / Math.PI) * 255);
+            let disp = 1 + 1.4 * ((texture.texture[u + v * 256] & 0xff) / 255);
+            newPoints.push(point.mul(disp));
+        });
+        sphere.points = newPoints;
+        return sphere;
+    }
+
+    public createCylinder2(texture: Texture) {
         let k = {
             points: []
         }
@@ -4021,30 +4171,30 @@ export default class Framebuffer {
         const LOOPY = 110;
         for (let y = 0; y < LOOPY; y++) {
             for (let x = 0; x < LOOPX; x++) {
-                let xpos = (x/LOOPX*256) &0xff;
-                let xpos2 = ((x+1)/LOOPX*256) &0xff;
-                let ypos = (y*0.9/LOOPY*256) &0xff;
-                let ypos2 = ((y+1)*0.9/LOOPY*256) &0xff;
-                
-                let disp_x0y0 = 1+0.9*((texture.texture[xpos+ypos*256]&0xff)/255);
-                let disp_x1y0 = 1+0.9*((texture.texture[xpos2+ypos*256]&0xff)/255);
-                let disp_x0y1 = 1+0.9*((texture.texture[xpos+ypos2*256]&0xff)/255);
-                let disp_x1y1 = 1+0.9*((texture.texture[xpos2+ypos2*256]&0xff)/255);
-                
+                let xpos = (x / LOOPX * 256) & 0xff;
+                let xpos2 = ((x + 1) / LOOPX * 256) & 0xff;
+                let ypos = (y * 0.9 / LOOPY * 256) & 0xff;
+                let ypos2 = ((y + 1) * 0.9 / LOOPY * 256) & 0xff;
+
+                let disp_x0y0 = 1 + 0.9 * ((texture.texture[xpos + ypos * 256] & 0xff) / 255);
+                let disp_x1y0 = 1 + 0.9 * ((texture.texture[xpos2 + ypos * 256] & 0xff) / 255);
+                let disp_x0y1 = 1 + 0.9 * ((texture.texture[xpos + ypos2 * 256] & 0xff) / 255);
+                let disp_x1y1 = 1 + 0.9 * ((texture.texture[xpos2 + ypos2 * 256] & 0xff) / 255);
+
                 let x0 = Math.sin(2 * Math.PI / LOOPX * x) * 30;
                 let z0 = Math.cos(2 * Math.PI / LOOPX * x) * 30;
-                
+
                 let x1 = Math.sin(2 * Math.PI / LOOPX * (x + 1)) * 30;
                 let z1 = Math.cos(2 * Math.PI / LOOPX * (x + 1)) * 30;
 
                 let scale = 1;
-                k.points.push(new Vector3f(x0*disp_x0y0, 0 + y, z0*disp_x0y0));
-                k.points.push(new Vector3f(x0*disp_x0y1, 1 + y, z0*disp_x0y1));
-                k.points.push(new Vector3f(x1*disp_x1y0, 0 + y, z1*disp_x1y0));
+                k.points.push(new Vector3f(x0 * disp_x0y0, 0 + y, z0 * disp_x0y0));
+                k.points.push(new Vector3f(x0 * disp_x0y1, 1 + y, z0 * disp_x0y1));
+                k.points.push(new Vector3f(x1 * disp_x1y0, 0 + y, z1 * disp_x1y0));
 
-                k.points.push(new Vector3f(x1*disp_x1y0, 0 + y, z1*disp_x1y0));
-                k.points.push(new Vector3f(x0*disp_x0y1, 1 + y, z0*disp_x0y1));
-                k.points.push(new Vector3f(x1*disp_x1y1, 1 + y, z1*disp_x1y1));
+                k.points.push(new Vector3f(x1 * disp_x1y0, 0 + y, z1 * disp_x1y0));
+                k.points.push(new Vector3f(x0 * disp_x0y1, 1 + y, z0 * disp_x0y1));
+                k.points.push(new Vector3f(x1 * disp_x1y1, 1 + y, z1 * disp_x1y1));
             }
         }
         // optimize
@@ -4379,21 +4529,166 @@ export default class Framebuffer {
 
 
     public shadingCylinderEnv(elapsedTime: number): void {
-
         this.wBuffer.fill(100);
-
         let result = this.cylinder;
 
-        let scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
         for (let i = 0; i < result.points.length; i++) {
             let y = result.points[i].y - 30;
             let x = result.points[i].x - 50;
             let length = Math.sqrt(x * x + y * y);
+            let myScale = (1 + 0.2 * Math.sin(result.points[i].y * 0.01 + elapsedTime * 1.83));
             result.points2[i].y = result.points[i].y;
-            result.points2[i].x = result.points[i].x * (1 + 0.2 * Math.sin(result.points[i].y * 0.01 + elapsedTime * 1.83)) + Math.sin(result.points[i].y * 0.1 + elapsedTime * 3.83) * 8.3
+            result.points2[i].x = result.points[i].x * myScale + Math.sin(result.points[i].y * 0.1 + elapsedTime * 3.83) * 8.3
                 + Math.sin(result.points[i].y * 0.55 + elapsedTime * 2.83) * 2;
-            result.points2[i].z = result.points[i].z * (1 + 0.2 * Math.sin(result.points[i].y * 0.01 + elapsedTime * 1.83)) + Math.cos(result.points[i].y * 0.1 + elapsedTime * 3.83) * 8.3
+            result.points2[i].z = result.points[i].z * myScale + Math.cos(result.points[i].y * 0.1 + elapsedTime * 3.83) * 8.3
                 + Math.cos(result.points[i].y + result.points[i].x * 0.55 + elapsedTime * 2.83) * 2;
+
+            result.normals[i].x = 0;
+            result.normals[i].y = 0;
+            result.normals[i].z = 0;
+        }
+
+        let points = result.points2;
+        let index = result.index;
+        let normals = result.normals;
+
+        let norm: Vector3f = new Vector3f(0, 0, 0);
+        let norm2: Vector3f = new Vector3f(0, 0, 0);
+        let cross: Vector3f = new Vector3f(0, 0, 0);
+        for (let i = 0; i < index.length; i += 3) {
+            let v1: Vector3f = points[index[i]];
+            let v2: Vector3f = points[index[i + 1]];
+            let v3: Vector3f = points[index[i + 2]];
+            norm.sub2(v2, v1);
+            norm2.sub2(v3, v1);
+            cross.cross2(norm, norm2);
+            let normal = cross;
+            normals[index[i]].add2(normals[index[i]], normal);
+            normals[index[i + 1]].add2(normals[index[i + 1]], normal);
+            normals[index[i + 2]].add2(normals[index[i + 2]], normal);
+        }
+
+        let textureCoords: Array<TextureCoordinate> = result.texture;
+
+        for (let i = 0; i < normals.length; i++) {
+            normals[i].normalize2();
+        }
+
+        let scale = 3.7;
+
+        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(0)
+            .multiplyMatrix(Matrix4f.constructXRotationMatrix(0).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0
+                , 0))));
+
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(-80, -210,
+            -290)
+            .multiplyMatrix(modelViewMartrix);
+
+        /**
+         * Vertex Shader Stage
+         */
+        let points2: Array<Vector3f> = result.points2;
+        let normals2: Array<Vector3f> = result.normals2;
+
+
+        let normalMatrix = modelViewMartrix.computeNormalMatrix();
+
+        for (let n = 0; n < normals.length; n++) {
+            normalMatrix.multiplyArr(normals[n], normals2[n]);
+            this.fakeSphere2(normals2[n], textureCoords[n]);
+        }
+
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiply(points[p]);
+
+            points2[p].x = Math.round((320 * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
+            points2[p].y = Math.round((200 * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
+            points2[p].z = transformed.z;
+        }
+
+        /**
+         * Primitive Assembly and Rasterization Stage:
+         * 1. back-face culling
+         * 2. viewport transform
+         * 3. scan conversion (rasterization)
+         */
+
+        let vertex1 = new Vertex();
+        vertex1.textureCoordinate = new TextureCoordinate();
+        let vertex2 = new Vertex();
+        vertex2.textureCoordinate = new TextureCoordinate();
+        let vertex3 = new Vertex();
+        vertex3.textureCoordinate = new TextureCoordinate();
+        let vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
+        for (let i = 0; i < index.length; i += 3) {
+
+            // Only render triangles with CCW-ordered vertices
+            // 
+            // Reference:
+            // David H. Eberly (2006).
+            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
+            // p. 69. Morgan Kaufmann Publishers, United States.
+            //
+            let v1 = points2[index[i]];
+            let t1 = textureCoords[index[i]];
+
+            let v2 = points2[index[i + 1]];
+            let t2 = textureCoords[index[i + 1]];
+
+            let v3 = points2[index[i + 2]];
+            let t3 = textureCoords[index[i + 2]];
+
+            if (this.isTriangleCCW(v1, v2, v3)) {
+
+                let color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
+
+                vertexArray[0].position = v1;
+                vertexArray[0].textureCoordinate = t1;
+
+                vertexArray[1].position = v2;
+                vertexArray[1].textureCoordinate = t2;
+
+                vertexArray[2].position = v3;
+                vertexArray[2].textureCoordinate = t3;
+
+                if (v1.x < Framebuffer.minWindow.x ||
+                    v2.x < Framebuffer.minWindow.x ||
+                    v3.x < Framebuffer.minWindow.x ||
+                    v1.x > Framebuffer.maxWindow.x ||
+                    v2.x > Framebuffer.maxWindow.x ||
+                    v3.x > Framebuffer.maxWindow.x ||
+                    v1.y < Framebuffer.minWindow.y ||
+                    v2.y < Framebuffer.minWindow.y ||
+                    v3.y < Framebuffer.minWindow.y ||
+                    v1.y > Framebuffer.maxWindow.y ||
+                    v2.y > Framebuffer.maxWindow.y ||
+                    v3.y > Framebuffer.maxWindow.y) {
+
+
+                    this.clipConvexPolygon2(vertexArray, color);
+                } else {
+                    // this.drawTriangleDDA(v1, v2, v3, color);
+                    this.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], color);
+                }
+            }
+        }
+    }
+
+    public shadingCylinderEnvDisp(elapsedTime: number): void {
+
+        this.wBuffer.fill(100);
+
+        let result = this.cylinder2;
+
+        let scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
+        for (let i = 0; i < result.points.length; i++) {
+            let y = result.points[i].z;
+            let x = result.points[i].x;
+            let length = Math.sqrt(x * x + y * y);
+            let rot = Math.sin(result.points[i].y * 0.039 + (10 - length) * 0.02 + elapsedTime * 0.6) * 4;
+            result.points2[i].y = result.points[i].y;
+            result.points2[i].x = result.points[i].x * Math.cos(rot) - result.points[i].z * Math.sin(rot);
+            result.points2[i].z = result.points[i].x * Math.sin(rot) + result.points[i].z * Math.cos(rot);
 
             result.normals[i].x = 0;
             result.normals[i].y = 0;
@@ -4432,7 +4727,7 @@ export default class Framebuffer {
         let scale = 3.7;
 
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(0)
-            .multiplyMatrix(Matrix4f.constructXRotationMatrix(0).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0
+            .multiplyMatrix(Matrix4f.constructXRotationMatrix(0.2 * Math.sin(elapsedTime * 1.2)).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0
                 , 0))));
 
         modelViewMartrix = Matrix4f.constructTranslationMatrix(-80, -210,
@@ -4527,21 +4822,22 @@ export default class Framebuffer {
         }
     }
 
-    public shadingCylinderEnvDisp(elapsedTime: number): void {
+
+    public shadingSphereEnvDisp(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
 
-        let result = this.cylinder2;
+        let result = this.sphereDisp;
 
         let scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
         for (let i = 0; i < result.points.length; i++) {
             let y = result.points[i].z;
             let x = result.points[i].x;
             let length = Math.sqrt(x * x + y * y);
-            let rot = Math.sin(result.points[i].y*0.039+(10-length)*0.02+elapsedTime*0.6)*4;
+            let rot = Math.sin(result.points[i].y * 0.539 + (10 - length) * 0.05 + elapsedTime * 0.9) * 4.5;
             result.points2[i].y = result.points[i].y;
-            result.points2[i].x = result.points[i].x * Math.cos(rot) - result.points[i].z*Math.sin(rot);
-            result.points2[i].z = result.points[i].x * Math.sin(rot) + result.points[i].z*Math.cos(rot);
+            result.points2[i].x = result.points[i].x * Math.cos(rot) - result.points[i].z * Math.sin(rot);
+            result.points2[i].z = result.points[i].x * Math.sin(rot) + result.points[i].z * Math.cos(rot);
 
             result.normals[i].x = 0;
             result.normals[i].y = 0;
@@ -4579,12 +4875,163 @@ export default class Framebuffer {
 
         let scale = 3.7;
 
-        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(0)
-            .multiplyMatrix(Matrix4f.constructXRotationMatrix(0.2*Math.sin(elapsedTime*1.2)).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0
+        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.35)
+            .multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0
                 , 0))));
 
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(-80, -210,
-            -290)
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(-0, -0,
+            -10)
+            .multiplyMatrix(modelViewMartrix);
+
+        /**
+         * Vertex Shader Stage
+         */
+        let points2: Array<Vector3f> = result.points2;
+        let normals2: Array<Vector3f> = result.normals2;
+
+        let normalMatrix = modelViewMartrix.computeNormalMatrix();
+
+        for (let n = 0; n < normals.length; n++) {
+            normalMatrix.multiplyArr(normals[n], normals2[n]);
+        }
+
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiply(points[p]);
+
+            points2[p].x = Math.round((320 * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
+            points2[p].y = Math.round((200 * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
+            points2[p].z = transformed.z;
+        }
+
+        /**
+         * Primitive Assembly and Rasterization Stage:
+         * 1. back-face culling
+         * 2. viewport transform
+         * 3. scan conversion (rasterization)
+         */
+
+        let vertex1 = new Vertex();
+        vertex1.textureCoordinate = new TextureCoordinate();
+        let vertex2 = new Vertex();
+        vertex2.textureCoordinate = new TextureCoordinate();
+        let vertex3 = new Vertex();
+        vertex3.textureCoordinate = new TextureCoordinate();
+        let vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
+        for (let i = 0; i < index.length; i += 3) {
+
+            // Only render triangles with CCW-ordered vertices
+            // 
+            // Reference:
+            // David H. Eberly (2006).
+            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
+            // p. 69. Morgan Kaufmann Publishers, United States.
+            //
+            let v1 = points2[index[i]];
+            let n1 = normals2[index[i]];
+
+            let v2 = points2[index[i + 1]];
+            let n2 = normals2[index[i + 1]];
+
+            let v3 = points2[index[i + 2]];
+            let n3 = normals2[index[i + 2]];
+
+            if (this.isTriangleCCW(v1, v2, v3)) {
+
+                let color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
+
+                vertexArray[0].position = v1;
+                this.fakeSphere(n1, vertex1);
+
+                vertexArray[1].position = v2;
+                this.fakeSphere(n2, vertex2);
+
+                vertexArray[2].position = v3;
+                this.fakeSphere(n3, vertex3);
+
+                if (v1.x < Framebuffer.minWindow.x ||
+                    v2.x < Framebuffer.minWindow.x ||
+                    v3.x < Framebuffer.minWindow.x ||
+                    v1.x > Framebuffer.maxWindow.x ||
+                    v2.x > Framebuffer.maxWindow.x ||
+                    v3.x > Framebuffer.maxWindow.x ||
+                    v1.y < Framebuffer.minWindow.y ||
+                    v2.y < Framebuffer.minWindow.y ||
+                    v3.y < Framebuffer.minWindow.y ||
+                    v1.y > Framebuffer.maxWindow.y ||
+                    v2.y > Framebuffer.maxWindow.y ||
+                    v3.y > Framebuffer.maxWindow.y) {
+
+
+                    this.clipConvexPolygon2(vertexArray, color);
+                } else {
+                    // this.drawTriangleDDA(v1, v2, v3, color);
+                    this.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], color);
+                }
+            }
+        }
+    }
+
+
+
+    public shadingSphereEnvDisp2(elapsedTime: number): void {
+
+        this.wBuffer.fill(100);
+
+        let result = this.sphereDisp2;
+
+        let scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
+        for (let i = 0; i < result.points.length; i++) {
+            let y = result.points[i].z;
+            let x = result.points[i].x;
+            let length = Math.sqrt(x * x + y * y);
+            let rot = Math.sin(result.points[i].y * 0.539 + (10 - length) * 0.05 + elapsedTime * 0.9) * 4.5;
+            rot *= Math.sin(elapsedTime * 0.25) * 0.5 + 0.5;
+            result.points2[i].y = result.points[i].y;
+            result.points2[i].x = result.points[i].x * Math.cos(rot) - result.points[i].z * Math.sin(rot);
+            result.points2[i].z = result.points[i].x * Math.sin(rot) + result.points[i].z * Math.cos(rot);
+
+            result.normals[i].x = 0;
+            result.normals[i].y = 0;
+            result.normals[i].z = 0;
+        }
+
+        let points = result.points2;
+        let index = result.index;
+        let normals = result.normals;
+
+        let norm: Vector3f = new Vector3f(0, 0, 0);
+        let norm2: Vector3f = new Vector3f(0, 0, 0);
+        let cross: Vector3f = new Vector3f(0, 0, 0);
+        for (let i = 0; i < index.length; i += 3) {
+            let v1: Vector3f = points[index[i]];
+            let v2: Vector3f = points[index[i + 1]];
+            let v3: Vector3f = points[index[i + 2]];
+            norm.sub2(v2, v1);
+            norm2.sub2(v3, v1);
+            cross.cross2(norm, norm2);
+            let normal = cross;
+            normals[index[i]].add2(normals[index[i]], normal);
+            normals[index[i + 1]].add2(normals[index[i + 1]], normal);
+            normals[index[i + 2]].add2(normals[index[i + 2]], normal);
+        }
+
+        // FIXME: speed up
+        // - remove normalie from lighting
+        // - remove normalize after normal transformation!
+        // - precreate array for transformed vertices and normals
+
+        for (let i = 0; i < normals.length; i++) {
+            normals[i].normalize2();
+        }
+
+        let scale = 3.7;
+
+        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.35)
+            .multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0
+                , 0))));
+
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(-0, -0,
+            -10 - (Math.sin(elapsedTime * 0.3) * 0.5 + 0.5) * 6)
             .multiplyMatrix(modelViewMartrix);
 
         /**
@@ -6481,9 +6928,11 @@ export default class Framebuffer {
     drawMetaballs() {
         let balls: Array<Vector3f> = [
             new Vector3f(Math.sin(Date.now() * 0.002) * 100 + 150,
-                Math.cos(Date.now() * 0.003) * 100 + 100, 0),
-            new Vector3f(Math.sin(Date.now() * 0.001) * 100 + 150,
-                Math.cos(Date.now() * 0.002) * 100 + 100, 0)
+                Math.cos(Date.now() * 0.0035) * 70 + 100, 0),
+            new Vector3f(Math.sin(Date.now() * 0.0015) * 100 + 150,
+                Math.cos(Date.now() * 0.002) * 70 + 100, 0),
+            new Vector3f(Math.sin(Date.now() * 0.003) * 100 + 150,
+                Math.cos(Date.now() * 0.0045) * 70 + 100, 0)
         ]
 
         let index = 0;
@@ -6491,15 +6940,33 @@ export default class Framebuffer {
         for (let y = 0; y < 200; y++) {
             for (let x = 0; x < 320; x++) {
                 let intensity = 0;
-                for (let b = 0; b < 2; b++) {
+                for (let b = 0; b < 3; b++) {
                     let xx = (balls[b].x - x);
                     let yy = (balls[b].y - y);
                     let length = Math.sqrt(xx * xx + yy * yy);
-                    intensity += 8000 / length;
+                    intensity += 5500 / length;
                 }
-                this.framebuffer[index++] = 255 << 24 | Math.min(intensity, 255);;
+                this.framebuffer[index++] = 255 << 24 | this.mapColor(intensity);
             }
         }
+    }
+
+    private interpolateColor(start: number, end: number, value: number, color1: number, color2: number): number {
+        let scale = this.interpolate(start, end, value);
+        let red = (color1>>0&0xff)*(1-scale) + scale*(color2>>0&0xff);
+        let green = (color1>>8&0xff)*(1-scale) + scale*(color2>>8&0xff);
+        let blue = (color1>>16&0xff)*(1-scale) + scale*(color2>>16&0xff);
+        return red | green << 8 | blue <<16;
+    }
+    private mapColor(intensity: number): number {
+       if ( intensity>= 235) {
+           return 255;
+       }else if ( intensity>= 230) {
+        return this.interpolateColor(230, 235, intensity, 255<<8| 255, 255);
+       } else if ( intensity>= 100) {
+        return this.interpolateColor(100, 230, intensity, 255<<8, 255<<8| 255);
+       }
+       return  255<<8;
     }
 
     draw(texture: Texture, time: number) {
