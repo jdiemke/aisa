@@ -16,6 +16,7 @@
 
 import { Vector3f } from './Vector3f';
 import { Vector4f } from './Vector4f';
+import { Matrix3f } from './Matrix3';
 
 export class Matrix4f {
 
@@ -143,10 +144,11 @@ export class Matrix4f {
         return inverseRotation;
     }
 
-    static constructShadowMatrix(): Matrix4f {
+    static constructShadowMatrix(modelView: Matrix4f): Matrix4f {
         let planePoint: Vector3f = new Vector3f(0, -1.5, 0);
         let planeNormal: Vector3f = new Vector3f(0, 1, 0);
-        let lightPosition: Vector3f = new Vector3f(17, 13, 17);
+        let lightPosition: Vector3f =new Vector3f(0, 11, 0);
+        //modelView.multiplyArr(new Vector3f(20, 8, 20),lightPosition);
 
         let d = -planePoint.dot(planeNormal);
         let NdotL = planeNormal.x * lightPosition.x +
@@ -176,6 +178,7 @@ export class Matrix4f {
         shadowMatrix.m44 = NdotL;
 
         return shadowMatrix;
+        
     }
 
     static constructTranslationMatrix(tx: number, ty: number, tz: number): Matrix4f {
@@ -352,6 +355,16 @@ export class Matrix4f {
         result.x = this.m11 * vector.x + this.m12 * vector.y + this.m13 * vector.z + this.m14 * vector.w;
         result.y = this.m21 * vector.x + this.m22 * vector.y + this.m23 * vector.z + this.m24 * vector.w;
         result.z = this.m31 * vector.x + this.m32 * vector.y + this.m33 * vector.z + this.m34 * vector.w;
+    }
+
+    public multiplyHomArr2(vector: Vector4f, result: Vector4f): void {
+        result.x = this.m11 * vector.x + this.m12 * vector.y + this.m13 * vector.z + this.m14 * vector.w;
+        result.y = this.m21 * vector.x + this.m22 * vector.y + this.m23 * vector.z + this.m24 * vector.w;
+        result.z = this.m31 * vector.x + this.m32 * vector.y + this.m33 * vector.z + this.m34 * vector.w;
+        result.w = this.m41 * vector.x + this.m42 * vector.y + this.m43 * vector.z + this.m44 * vector.w;
+        result.x /= result.w;
+        result.y /= result.w;
+        result.z /= result.w;
     }
 
     public multiplyArr(vector: Vector3f, result: Vector3f): void {

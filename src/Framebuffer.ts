@@ -2387,13 +2387,14 @@ export default class Framebuffer {
         // camerea:
         // http://graphicsrunner.blogspot.de/search/label/Water
         this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
-        this.clearH(42 | 46 << 8 | 58 << 16 | 255 << 24, 100);
+       // this.clearH(42 | 46 << 8 | 58 << 16 | 255 << 24, 100);
         this.clearDepthBuffer();
         // one line is missing due to polygon clipping in viewport!
         let modelViewMartrix: Matrix4f;
 
-        let camera = Matrix4f.constructTranslationMatrix(0, 0, -6.4).multiplyMatrix(
-            Matrix4f.constructYRotationMatrix(elapsedTime * 0.2));
+        let camera = Matrix4f.constructTranslationMatrix(0, 0, -6.4-5*(Math.sin(elapsedTime*0.06)*0.5+0.5)).multiplyMatrix(
+            Matrix4f.constructXRotationMatrix((Math.sin(elapsedTime*0.08)*0.5+0.5)*0.5).multiplyMatrix(
+            Matrix4f.constructYRotationMatrix(elapsedTime * 0.1)));
 
         let scale = 2.0;
         modelViewMartrix = Matrix4f.constructYRotationMatrix(elapsedTime * 0.2).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));
@@ -2451,45 +2452,23 @@ export default class Framebuffer {
         
                 this.drawObject(this.getPlaneMesh(), modelViewMartrix, 64,48,40);
         */
+        
+        // SHADOWS
+
         scale = 2.0;
         modelViewMartrix = Matrix4f.constructYRotationMatrix(elapsedTime * 0.2).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));
         modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 1.0, 0).multiplyMatrix(modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(-elapsedTime * 0.2)));
         modelViewMartrix = camera.multiplyMatrix(
-            Matrix4f.constructShadowMatrix().multiplyMatrix(modelViewMartrix));
+            Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
+
 
         this.drawObject(this.getDodecahedronMesh(), modelViewMartrix, 48, 32, 24, true);
-
-
-        scale = 12.0;
-        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(60, yDisplacement + 6.0, 0).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
-
-        this.drawObject(this.getTrapezoidMesh(), modelViewMartrix, 48, 32, 24, true);
-
-        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(-60, yDisplacement + 6.0, 0).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
-
-        this.drawObject(this.getTrapezoidMesh(), modelViewMartrix, 48, 32, 24, true);
-
-        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, yDisplacement + 6.0, 60).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
-
-        this.drawObject(this.getTrapezoidMesh(), modelViewMartrix, 48, 32, 24, true);
-
-        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, yDisplacement + 6.0, -60).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
-
-        this.drawObject(this.getTrapezoidMesh(), modelViewMartrix, 48, 32, 24, true);
 
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
         modelViewMartrix = Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(
-            Matrix4f.constructShadowMatrix().multiplyMatrix(modelViewMartrix));
+            Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
 
 
         this.drawObject(this.getPyramidMesh(), modelViewMartrix, 48, 32, 24, true);
@@ -2499,7 +2478,7 @@ export default class Framebuffer {
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
         modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(
-            Matrix4f.constructShadowMatrix().multiplyMatrix(modelViewMartrix))
+            Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix))
 
 
         this.drawObject(this.getCubeMesh(), modelViewMartrix, 48, 32, 24, true);
@@ -2508,7 +2487,7 @@ export default class Framebuffer {
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale * 0.5, scale * 2, scale * 0.5);
         modelViewMartrix = Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 1, distance).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(
-            Matrix4f.constructShadowMatrix().multiplyMatrix(modelViewMartrix))
+            Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix))
 
 
         this.drawObject(this.getCubeMesh(), modelViewMartrix, 48, 32, 24, true);
@@ -2517,11 +2496,10 @@ export default class Framebuffer {
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
         modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 1.0, distance).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(
-            Matrix4f.constructShadowMatrix().multiplyMatrix(modelViewMartrix))
+            Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix))
 
 
         this.drawObject(this.getIcosahedronMesh(), modelViewMartrix, 48, 32, 24, true);
-
     }
 
     private getBlenderScene(): any {
@@ -3096,7 +3074,7 @@ export default class Framebuffer {
         }
 
         for (let i = 0; i < obj.points.length; i++) {
-            modelViewMartrix.multiplyHomArr(obj.points[i], obj.points2[i]);
+            modelViewMartrix.multiplyHomArr2(obj.points[i], obj.points2[i]);
         }
 
         let lightDirection = new Vector4f(0.5, 0.5, 0.3, 0.0).normalize();

@@ -119,7 +119,7 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3;
-        time = time % (500000);
+        time = time % (600000);
 
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
 
@@ -888,10 +888,22 @@ export class Canvas {
 
             this.framebuffer.noise(time, this.noise);
 
-        } else {
-
+        } else if (time < 500000) {
             this.framebuffer.drawMetaballs();
             this.framebuffer.noise(time, this.noise, 0.1);
+        } else if (time < 550000) {
+            this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
+            this.framebuffer.noise(time, this.noise);
+        } else {
+            // shadows are defect :(
+            this.framebuffer.setCullFace(CullFace.BACK);
+            this.framebuffer.reproduceRazorScene(time * 0.003);
+            /*this.framebuffer.drawLensFlare(time - 185000, [
+                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                { tex: this.texture13, scale: 1.6, alpha: 0.25 }
+            ]);*/
+            this.framebuffer.noise(time, this.noise);
         }
 
         //this.framebuffer.glitchScreen(time, this.noise);
