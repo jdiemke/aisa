@@ -27,7 +27,6 @@ export class Canvas {
     private texture6: Texture;
     private texture7: Texture;
     private texture8: Texture;
-    private greets: Texture;
     private texture9: Texture;
     private texture10: Texture;
     private texture11: Texture;
@@ -877,7 +876,7 @@ export class Canvas {
             this.framebuffer.setCullFace(CullFace.BACK);
             this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
             this.framebuffer.glitchScreen(time, this.noise);
-        } else if(time < 450000) {
+        } else if (time < 450000) {
 
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.drawParticleWaves(time, this.particleTexture2, true);
@@ -1392,7 +1391,6 @@ export class Canvas {
             this.createTexture(require('./assets/hlm.png'), true).then(texture => this.hlm = texture),
             this.createTexture(require('./assets/cross.png'), true).then(texture => this.cross = texture),
             this.createTexture(require('./assets/envmap.png'), false).then(texture => this.envmap = texture),
-            this.createTexture(require('./assets/octo.png'), true).then(texture => this.greets = texture),
             this.createTexture(require('./assets/heightmapSphere.png'), false).then(texture => this.heightmapSphere = texture),
             this.createTexture(require('./assets/mask.png'), true).then(texture => this.mask = texture),
         ]).then(() => {
