@@ -357,7 +357,7 @@ class Canvas {
         this.fpsCount++;
         let time = (Date.now() - this.start);
         time = time * 3;
-        time = time % (500000);
+        time = time % (650000);
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
         this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
         /*
@@ -1058,19 +1058,44 @@ class Canvas {
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             this.framebuffer.noise(time, this.noise);
         }
-        else {
+        else if (time < 500000) {
             this.framebuffer.drawMetaballs();
             this.framebuffer.noise(time, this.noise, 0.1);
         }
-        //this.framebuffer.glitchScreen(time, this.noise);
+        else if (time < 550000) {
+            this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
+            this.framebuffer.noise(time, this.noise);
+        }
+        else if (time < 600000) {
+            // shadows are defect :(
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+            this.framebuffer.reproduceRazorScene(time * 0.003);
+            /*this.framebuffer.drawLensFlare(time - 185000, [
+                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                { tex: this.texture13, scale: 1.6, alpha: 0.25 }
+            ]);*/
+            this.framebuffer.noise(time, this.noise);
+        }
+        else {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            // TODO: twist streams
+            this.framebuffer.drawParticleStreams(time, this.particleTexture2, true);
+            let texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.55);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            this.framebuffer.noise(time, this.noise);
+            //this.framebuffer.glitchScreen(time, this.noise);
+        }
         this.framebuffer.drawTexture(0, 0, this.mask, 1.0);
         /**
          * TODO:
          * - Stripe landscape: http://farm3.static.flickr.com/2653/5710494901_2ca6ddbfb2_b.jpg
          *   maybe with sync to bass and fft
          * - Blender modells (Flat, textured, GI baked)
+         * - pq torus tunnel with camera flying along frenet frame plus particles
          * - particle tunnel
-         * - particle waves
+         * - ribbons on curves
          * - dof
          */
         // this.framebuffer.drawRadialBlur();
@@ -3483,11 +3508,11 @@ class Framebuffer {
         // camerea:
         // http://graphicsrunner.blogspot.de/search/label/Water
         this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
-        this.clearH(42 | 46 << 8 | 58 << 16 | 255 << 24, 100);
+        // this.clearH(42 | 46 << 8 | 58 << 16 | 255 << 24, 100);
         this.clearDepthBuffer();
         // one line is missing due to polygon clipping in viewport!
         let modelViewMartrix;
-        let camera = math_1.Matrix4f.constructTranslationMatrix(0, 0, -6.4).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 0.2));
+        let camera = math_1.Matrix4f.constructTranslationMatrix(0, 0, -6.4 - 5 * (Math.sin(elapsedTime * 0.06) * 0.5 + 0.5)).multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix((Math.sin(elapsedTime * 0.08) * 0.5 + 0.5) * 0.5).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 0.1)));
         let scale = 2.0;
         modelViewMartrix = math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 0.2).multiplyMatrix(math_1.Matrix4f.constructScaleMatrix(scale, scale, scale));
         modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(0, 1.0, 0).multiplyMatrix(modelViewMartrix.multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(-elapsedTime * 0.2)));
@@ -3530,47 +3555,31 @@ class Framebuffer {
         
                 this.drawObject(this.getPlaneMesh(), modelViewMartrix, 64,48,40);
         */
+        // SHADOWS
         scale = 2.0;
         modelViewMartrix = math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 0.2).multiplyMatrix(math_1.Matrix4f.constructScaleMatrix(scale, scale, scale));
         modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(0, 1.0, 0).multiplyMatrix(modelViewMartrix.multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(-elapsedTime * 0.2)));
-        modelViewMartrix = camera.multiplyMatrix(math_1.Matrix4f.constructShadowMatrix().multiplyMatrix(modelViewMartrix));
+        modelViewMartrix = camera.multiplyMatrix(math_1.Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
         this.drawObject(this.getDodecahedronMesh(), modelViewMartrix, 48, 32, 24, true);
-        scale = 12.0;
-        modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(60, yDisplacement + 6.0, 0).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
-        this.drawObject(this.getTrapezoidMesh(), modelViewMartrix, 48, 32, 24, true);
-        modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(-60, yDisplacement + 6.0, 0).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
-        this.drawObject(this.getTrapezoidMesh(), modelViewMartrix, 48, 32, 24, true);
-        modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(0, yDisplacement + 6.0, 60).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
-        this.drawObject(this.getTrapezoidMesh(), modelViewMartrix, 48, 32, 24, true);
-        modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(0, yDisplacement + 6.0, -60).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
-        this.drawObject(this.getTrapezoidMesh(), modelViewMartrix, 48, 32, 24, true);
         scale = 1.0;
         modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale);
         modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(math_1.Matrix4f.constructShadowMatrix().multiplyMatrix(modelViewMartrix));
+        modelViewMartrix = camera.multiplyMatrix(math_1.Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
         this.drawObject(this.getPyramidMesh(), modelViewMartrix, 48, 32, 24, true);
         scale = 1.0;
         modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale);
         modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(math_1.Matrix4f.constructShadowMatrix().multiplyMatrix(modelViewMartrix));
+        modelViewMartrix = camera.multiplyMatrix(math_1.Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
         this.drawObject(this.getCubeMesh(), modelViewMartrix, 48, 32, 24, true);
         scale = 1.0;
         modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale * 0.5, scale * 2, scale * 0.5);
         modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 1, distance).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(math_1.Matrix4f.constructShadowMatrix().multiplyMatrix(modelViewMartrix));
+        modelViewMartrix = camera.multiplyMatrix(math_1.Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
         this.drawObject(this.getCubeMesh(), modelViewMartrix, 48, 32, 24, true);
         scale = 1.0;
         modelViewMartrix = math_1.Matrix4f.constructScaleMatrix(scale, scale, scale);
         modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(distance, yDisplacement + 1.0, distance).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(math_1.Matrix4f.constructShadowMatrix().multiplyMatrix(modelViewMartrix));
+        modelViewMartrix = camera.multiplyMatrix(math_1.Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
         this.drawObject(this.getIcosahedronMesh(), modelViewMartrix, 48, 32, 24, true);
     }
     getBlenderScene() {
@@ -3736,6 +3745,44 @@ class Framebuffer {
             let size = -(1.3 * 192 / (element.z));
             this.drawParticle(Math.round(element.x - size / 2), Math.round(element.y - size / 2), Math.round(size), Math.round(size), texture, 1 / element.z, this.interpolate(-60, -25, element.z));
         });
+    }
+    drawParticleStreams(elapsedTime, texture, noClear = false) {
+        if (!noClear)
+            this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
+        this.clearDepthBuffer();
+        let points = new Array();
+        const num = 50;
+        const num2 = 10;
+        const scale = 2;
+        let rng = new RandomNumberGenerator_1.default();
+        rng.setSeed(33);
+        for (let i = 0; i < num; i++) {
+            let radius = 2.8; // + Math.sin(Math.PI * 2 * i * 5 / num - elapsedTime * 0.001);
+            let radius2 = 2.9 + 3 * Math.sin(Math.PI * 2 * i / num - elapsedTime * 0.002);
+            let dispx = 0; //4.8 + Math.sin(Math.PI * 2 * i * 5 / num - elapsedTime * 0.001);
+            let dispy = 0; //4.8 + Math.cos(Math.PI * 2 * i * 5 / num - elapsedTime * 0.001);
+            for (let j = 0; j < num2; j++) {
+                let x = ((i - num / 2) * scale - elapsedTime * 0.03) % 100 + 50;
+                let y = Math.cos(Math.PI * 2 / num2 * j + i * 0.02 + elapsedTime * 0.0005) * radius /*+ rng.getFloat() * radius*/ + dispx + 8 + radius2;
+                let z = Math.sin(Math.PI * 2 / num2 * j + i * 0.02 + elapsedTime * 0.0005) * radius /* + rng.getFloat() * radius*/ + dispy;
+                points.push(math_1.Matrix3f.constructXRotationMatrix(Math.PI * 2 * i / num - Math.sin(elapsedTime * 0.0001 + Math.PI * 2 * i / num)).multiply(new math_1.Vector3f(x, y, z)));
+            }
+        }
+        for (let i = 0; i < 3; i++) {
+            let modelViewMartrix = math_1.Matrix4f.constructTranslationMatrix(0, -0.0, -49).multiplyMatrix(math_1.Matrix4f.constructZRotationMatrix(Math.PI * 0.17).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 0.0003).multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(Math.PI * 2 / 3 * i + elapsedTime * 0.0006))));
+            let points2 = new Array(points.length);
+            points.forEach(element => {
+                let transformed = this.project(modelViewMartrix.multiply(element));
+                points2.push(transformed);
+            });
+            points2.sort(function (a, b) {
+                return a.z - b.z;
+            });
+            points2.forEach(element => {
+                let size = -(2.0 * 192 / (element.z));
+                this.drawParticle(Math.round(element.x - size / 2), Math.round(element.y - size / 2), Math.round(size), Math.round(size), texture, 1 / element.z, this.interpolate(-90, -55, element.z));
+            });
+        }
     }
     drawParticleTorus(elapsedTime, texture, noClear = false) {
         if (!noClear)
@@ -4021,7 +4068,7 @@ class Framebuffer {
             normalMatrix.multiplyHomArr(obj.normals[i], obj.normals2[i]);
         }
         for (let i = 0; i < obj.points.length; i++) {
-            modelViewMartrix.multiplyHomArr(obj.points[i], obj.points2[i]);
+            modelViewMartrix.multiplyHomArr2(obj.points[i], obj.points2[i]);
         }
         let lightDirection = new math_1.Vector4f(0.5, 0.5, 0.3, 0.0).normalize();
         for (let i = 0; i < obj.index.length; i += 3) {
@@ -7415,10 +7462,11 @@ class Matrix4f {
         inverseRotation.m33 = this.m33 * scale;
         return inverseRotation;
     }
-    static constructShadowMatrix() {
+    static constructShadowMatrix(modelView) {
         let planePoint = new Vector3f_1.Vector3f(0, -1.5, 0);
         let planeNormal = new Vector3f_1.Vector3f(0, 1, 0);
-        let lightPosition = new Vector3f_1.Vector3f(17, 13, 17);
+        let lightPosition = new Vector3f_1.Vector3f(0, 11, 0);
+        //modelView.multiplyArr(new Vector3f(20, 8, 20),lightPosition);
         let d = -planePoint.dot(planeNormal);
         let NdotL = planeNormal.x * lightPosition.x +
             planeNormal.y * lightPosition.y +
@@ -7572,6 +7620,15 @@ class Matrix4f {
         result.x = this.m11 * vector.x + this.m12 * vector.y + this.m13 * vector.z + this.m14 * vector.w;
         result.y = this.m21 * vector.x + this.m22 * vector.y + this.m23 * vector.z + this.m24 * vector.w;
         result.z = this.m31 * vector.x + this.m32 * vector.y + this.m33 * vector.z + this.m34 * vector.w;
+    }
+    multiplyHomArr2(vector, result) {
+        result.x = this.m11 * vector.x + this.m12 * vector.y + this.m13 * vector.z + this.m14 * vector.w;
+        result.y = this.m21 * vector.x + this.m22 * vector.y + this.m23 * vector.z + this.m24 * vector.w;
+        result.z = this.m31 * vector.x + this.m32 * vector.y + this.m33 * vector.z + this.m34 * vector.w;
+        result.w = this.m41 * vector.x + this.m42 * vector.y + this.m43 * vector.z + this.m44 * vector.w;
+        result.x /= result.w;
+        result.y /= result.w;
+        result.z /= result.w;
     }
     multiplyArr(vector, result) {
         result.x = this.m11 * vector.x + this.m12 * vector.y + this.m13 * vector.z + this.m14;
