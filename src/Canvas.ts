@@ -1398,6 +1398,47 @@ export class Canvas {
     }
 
     public init(): void {
+        let fullscreen = false;
+        let toggleFullscreen = function() {
+            if (!fullscreen) {
+                fullscreen = true;
+                if ('requestFullscreen' in this) {
+                    this['requestFullscreen']();
+                } else if ('webkitRequestFullScreen' in this) {
+                    this['webkitRequestFullScreen']();
+                } else if ('mozRequestFullScreen' in this) {
+                    this['mozRequestFullScreen']();
+                } else if ('msRequestFullscreen' in this) {
+                    this['msRequestFullscreen']();
+                } else {
+                    fullscreen = false;
+                }
+            } else {
+                fullscreen = false;
+                if ('exitFullscreen' in document) {
+                    document['exitFullscreen']();
+                } else if ('mozCancelFullScreen' in document) {
+                    document['mozCancelFullScreen']();
+                } else if ('webkitExitFullscreen' in document) {
+                    document['webkitExitFullscreen']();
+                } else if ('msExitFullScreen' in document) {
+                    document['msExitFullScreen']();
+                } else {
+                    fullscreen = true;
+                }
+            }
+        };
+        let lastClick = 0;
+        // click supported on mobile and desktop. dblclick only supported on browser
+        // so emulate dblclick
+        this.canvas.addEventListener('click', function(evt) {
+            evt.preventDefault();
+            let currentClick = Date.now();
+            if (currentClick - lastClick < 200) {
+                toggleFullscreen.bind(this)();
+            }
+            lastClick = currentClick;
+        });
         Promise.all([
             this.createTexture(require('./assets/spheremap.png'), false).then(texture => this.spheremap = texture),
             this.createTexture(require('./assets/metall.png'), false).then(texture => this.metal = texture),
