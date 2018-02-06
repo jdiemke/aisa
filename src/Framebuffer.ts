@@ -952,6 +952,7 @@ export default class Framebuffer {
     }
 
 
+
     public drawParticle(xp: number, yp: number, width: number, height: number, texture: Texture, z: number, alphaBlend: number): void {
         let xStep = texture.width / width;
         let yStep = texture.height / height;
@@ -1010,6 +1011,73 @@ export default class Framebuffer {
 
                     this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
                 }
+                xx += xStep;
+                index2++;
+            }
+            yy += yStep;
+            xx = xTextureStart;
+            index2 += -newWidth + 320;
+        }
+    }
+
+
+    public drawParticleNoDepth(xp: number, yp: number, width: number, height: number, texture: Texture, z: number, alphaBlend: number): void {
+        let xStep = texture.width / width;
+        let yStep = texture.height / height;
+        let xx = 0;
+        let yy = 0;
+
+        let newHeight: number;
+        let newWidth: number
+        let yStart: number;
+        let xStart: number;
+
+        if (yp + height < 0 ||
+            yp > 199 ||
+            xp + width < 0 ||
+            xp > 319) {
+            return;
+        }
+
+        if (yp < 0) {
+            yy = yStep * -yp;
+            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            yStart = 0;
+        } else {
+            yStart = yp;
+            newHeight = height - Math.max(yp + height - 200, 0);
+        }
+
+        let xTextureStart: number;
+
+        if (xp < 0) {
+            xTextureStart = xx = xStep * -xp;
+            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            xStart = 0;
+        } else {
+            xTextureStart = 0;
+            xStart = xp;
+            newWidth = width - Math.max(xp + width - 320, 0);
+        }
+
+        const alphaScale = 1 / 255 * alphaBlend;
+        let index2 = (xStart) + (yStart) * 320;
+        for (let y = 0; y < newHeight; y++) {
+            for (let x = 0; x < newWidth; x++) {
+
+                let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
+
+                let alpha = (texture.texture[textureIndex] >> 24 & 0xff) * alphaScale;
+                let inverseAlpha = 1 - alpha;
+                let framebufferPixel = this.framebuffer[index2];
+                let texturePixel = texture.texture[textureIndex];
+
+                let r = (framebufferPixel >> 0 & 0xff) * inverseAlpha + (texturePixel >> 0 & 0xff) * alpha;
+                let g = (framebufferPixel >> 8 & 0xff) * inverseAlpha + (texturePixel >> 8 & 0xff) * alpha;
+                let b = (framebufferPixel >> 16 & 0xff) * inverseAlpha + (texturePixel >> 16 & 0xff) * alpha;
+
+                this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
+
                 xx += xStep;
                 index2++;
             }
@@ -2387,14 +2455,14 @@ export default class Framebuffer {
         // camerea:
         // http://graphicsrunner.blogspot.de/search/label/Water
         this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
-       // this.clearH(42 | 46 << 8 | 58 << 16 | 255 << 24, 100);
+        // this.clearH(42 | 46 << 8 | 58 << 16 | 255 << 24, 100);
         this.clearDepthBuffer();
         // one line is missing due to polygon clipping in viewport!
         let modelViewMartrix: Matrix4f;
 
-        let camera = Matrix4f.constructTranslationMatrix(0, 0, -6.4-5*(Math.sin(elapsedTime*0.06)*0.5+0.5)).multiplyMatrix(
-            Matrix4f.constructXRotationMatrix((Math.sin(elapsedTime*0.08)*0.5+0.5)*0.5).multiplyMatrix(
-            Matrix4f.constructYRotationMatrix(elapsedTime * 0.1)));
+        let camera = Matrix4f.constructTranslationMatrix(0, 0, -6.4 - 5 * (Math.sin(elapsedTime * 0.06) * 0.5 + 0.5)).multiplyMatrix(
+            Matrix4f.constructXRotationMatrix((Math.sin(elapsedTime * 0.08) * 0.5 + 0.5) * 0.5).multiplyMatrix(
+                Matrix4f.constructYRotationMatrix(elapsedTime * 0.1)));
 
         let scale = 2.0;
         modelViewMartrix = Matrix4f.constructYRotationMatrix(elapsedTime * 0.2).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));
@@ -2452,7 +2520,7 @@ export default class Framebuffer {
         
                 this.drawObject(this.getPlaneMesh(), modelViewMartrix, 64,48,40);
         */
-        
+
         // SHADOWS
 
         scale = 2.0;
@@ -2471,7 +2539,7 @@ export default class Framebuffer {
             Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
 
 
-        this.drawObject(this.getPyramidMesh(), modelViewMartrix, 48, 32, 24, true);
+        this.drawObject(this.getPyramidMesh(), modelViewMartrix, 48, 32, 24, true, true);
 
 
         scale = 1.0;
@@ -2668,13 +2736,13 @@ export default class Framebuffer {
 
         let points: Array<Vector3f> = new Array<Vector3f>();
         const num = 50;
-        const scale= 2;
+        const scale = 2;
         for (let i = 0; i < num; i++) {
             for (let j = 0; j < num; j++) {
 
-                let x = (j-num/2)*scale;
-                let y = 4*(Math.sin(j*0.09*2+elapsedTime*0.0008)+Math.cos(i*0.08*2+elapsedTime*0.0009));
-                let z = (i-num/2)*scale;
+                let x = (j - num / 2) * scale;
+                let y = 4 * (Math.sin(j * 0.09 * 2 + elapsedTime * 0.0008) + Math.cos(i * 0.08 * 2 + elapsedTime * 0.0009));
+                let z = (i - num / 2) * scale;
 
                 points.push(new Vector3f(x, y, z));
             }
@@ -2682,9 +2750,9 @@ export default class Framebuffer {
 
 
         let modelViewMartrix = Matrix4f.constructTranslationMatrix(0, -0.0, -49).multiplyMatrix(
-            
-                Matrix4f.constructXRotationMatrix(Math.PI*0.1).multiplyMatrix(
-            Matrix4f.constructYRotationMatrix(elapsedTime*0.00006))
+
+            Matrix4f.constructXRotationMatrix(Math.PI * 0.1).multiplyMatrix(
+                Matrix4f.constructYRotationMatrix(elapsedTime * 0.00006))
         );
 
         let points2: Array<Vector3f> = new Array<Vector3f>(points.length);
@@ -2705,8 +2773,63 @@ export default class Framebuffer {
             this.drawParticle(
                 Math.round(element.x - size / 2),
                 Math.round(element.y - size / 2),
-                Math.round(size), Math.round(size), texture, 1 / element.z, this.interpolate(-60, -25,element.z));
+                Math.round(size), Math.round(size), texture, 1 / element.z, this.interpolate(-60, -25, element.z));
         });
+    }
+
+
+    drawParticleStreams(elapsedTime: number, texture: Texture, noClear: boolean = false) {
+
+        let points: Array<Vector3f> = new Array<Vector3f>();
+        const num = 50;
+        const num2 = 10;
+        const scale = 2.1;
+
+        for (let i = 0; i < num; i++) {
+            let radius = 2.8;
+            let radius2 = 2.9 + 3 * Math.sin(Math.PI * 2 * i / num - elapsedTime * 0.002);
+
+            for (let j = 0; j < num2; j++) {
+
+                let x = ((i - num / 2) * scale - elapsedTime * 0.008) % (num * scale) + (num * scale * 0.5);
+                let y = Math.cos(Math.PI * 2 / num2 * j + i * 0.02 + elapsedTime * 0.0005) * radius + 8 + radius2;
+                let z = Math.sin(Math.PI * 2 / num2 * j + i * 0.02 + elapsedTime * 0.0005) * radius;
+
+                points.push(Matrix3f.constructXRotationMatrix(Math.PI * 2 * i / num - Math.sin(elapsedTime * 0.0003 + Math.PI * 2 * i / num)).multiply(new Vector3f(x, y, z)));
+            }
+        }
+
+        for (let i = 0; i < 3; i++) {
+            let modelViewMartrix = Matrix4f.constructTranslationMatrix(0, -0.0, -49).multiplyMatrix(
+
+                Matrix4f.constructZRotationMatrix(Math.PI * 0.17).multiplyMatrix(
+                    Matrix4f.constructYRotationMatrix(elapsedTime * 0.00015).multiplyMatrix(
+                        Matrix4f.constructXRotationMatrix(Math.PI * 2 / 3 * i + elapsedTime * 0.0006)))
+            );
+
+            let points2: Array<Vector3f> = new Array<Vector3f>(points.length);
+            points.forEach(element => {
+
+
+                let transformed = this.project(modelViewMartrix.multiply(element));
+
+                points2.push(transformed);
+            });
+
+            points2.sort(function (a, b) {
+                return a.z - b.z;
+            });
+
+            points2.forEach(element => {
+                //let size = -(2.0 * 192 / (element.z));
+                let size = -(1.3 * 192 / (element.z));
+                if (element.z < -4)
+                    this.drawParticleNoDepth(
+                        Math.round(element.x - size / 2),
+                        Math.round(element.y - size / 2),
+                        Math.round(size), Math.round(size), texture, 1 / element.z, this.interpolate(-90, -55, element.z));
+            });
+        }
     }
 
 
@@ -3065,7 +3188,7 @@ export default class Framebuffer {
         }
     }
 
-    private drawObject(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false) {
+    private drawObject(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, oldLDir: boolean=true) {
 
         let normalMatrix = modelViewMartrix.computeNormalMatrix();
 
@@ -3077,8 +3200,8 @@ export default class Framebuffer {
             modelViewMartrix.multiplyHomArr2(obj.points[i], obj.points2[i]);
         }
 
-        let lightDirection = new Vector4f(0.5, 0.5, 0.3, 0.0).normalize();
-
+        let lightDirection = oldLDir ? new Vector4f(0.5, 0.5, 0.3, 0.0).normalize() : new Vector4f(0.1, 0.1, -0.5, 0.0).normalize();
+        
         for (let i = 0; i < obj.index.length; i += 3) {
             let v1 = obj.points2[obj.index[i]];
             let v2 = obj.points2[obj.index[i + 1]];
@@ -3183,6 +3306,14 @@ export default class Framebuffer {
         return new Vector3f(r * Math.cos(p * alpha),
             r * Math.cos(q * alpha),
             r * Math.sin(p * alpha));
+    }
+
+    private torusFunction3(alpha: number): Vector4f {
+        let p = 2, q = 3;
+        let r = 0.5 * (2 + Math.sin(q * alpha));
+        return new Vector4f(r * Math.cos(p * alpha),
+            r * Math.cos(q * alpha),
+            r * Math.sin(p * alpha)).mul(70);
     }
 
 
@@ -3591,6 +3722,148 @@ export default class Framebuffer {
                 }
             }
         }
+    }
+
+
+    public torusTunnel(elapsedTime: number, sync: number, texture: Texture): void {
+
+        this.wBuffer.fill(100);
+
+        let points: Array<Vector4f> = [];
+
+        const STEPS = 80;
+        const STEPS2 = 8;
+        for (let i = 0; i < STEPS; i++) {
+            let frame = this.torusFunction3(i * 2 * Math.PI / STEPS);
+            let frame2 = this.torusFunction3(i * 2 * Math.PI / STEPS + 0.1);
+
+            let tangent = frame2.sub(frame);
+            let up = frame.add(frame2).normalize()
+            let right = tangent.cross(up).normalize().mul(26.4);
+            up = right.cross(tangent).normalize().mul(26.4);
+
+            for (let r = 0; r < STEPS2; r++) {
+                let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
+                points.push(pos.mul(1));
+            }
+        }
+
+        let index: Array<number> = [];
+
+        for (let j = 0; j < STEPS; j++) {
+            for (let i = 0; i < STEPS2; i++) {
+                index.push(((STEPS2 * j) + (1 + i) % STEPS2) % points.length); // 2
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 1
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+
+                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2) % points.length); //4
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 5
+            }
+        }
+
+        // compute normals
+        let normals: Array<Vector4f> = new Array<Vector4f>();
+
+        for (let i = 0; i < index.length; i += 3) {
+            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+            normals.push(normal.normalize());
+        }
+
+        let scale = 1.0;
+
+        let frame = this.torusFunction3(elapsedTime * 0.02);
+        let frame2 = this.torusFunction3(elapsedTime * 0.02 + 0.01);
+
+        let tangent = frame2.sub(frame).normalize();
+        let up = frame.add(frame2).normalize()
+        let right = tangent.cross(up).normalize();
+        up = right.cross(tangent).normalize();
+
+        let translation = Matrix4f.constructIdentityMatrix();
+        // translation vector
+        translation.m14 = -frame.x;
+        translation.m24 = -frame.y;
+        translation.m34 = -frame.z;
+
+        let rotation = Matrix4f.constructIdentityMatrix();
+        // x vector
+        rotation.m11 = right.x;
+        rotation.m21 = right.y;
+        rotation.m31 = right.z;
+
+        // y vector
+        rotation.m12 = up.x;
+        rotation.m22 = up.y;
+        rotation.m32 = up.z;
+
+        // z vector
+        rotation.m13 = -tangent.x;
+        rotation.m23 = -tangent.y;
+        rotation.m33 = -tangent.z;
+
+        let finalMatrix = rotation.transpose().multiplyMatrix(translation);
+
+
+
+        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.035));
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -10).multiplyMatrix(modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.04)));
+        modelViewMartrix = Matrix4f.constructZRotationMatrix(elapsedTime*0.01).multiplyMatrix(finalMatrix);
+
+        let model: any = {
+            points: points,
+            normals: normals,
+            index: index,
+            points2: points.map(() => new Vector4f(0, 0, 0, 0)),
+            normals2: normals.map(() => new Vector4f(0, 0, 0, 0))
+        };
+        // model = this.getDodecahedronMesh();
+
+        this.drawObject(model, modelViewMartrix, 221, 96, 48, false, false);
+
+
+        let ppoints = new Array<Vector3f>();
+        const num = 40;
+        const STEPS22 = 8*2;
+        for (let j = 0; j < num; j++) {
+            let frame = this.torusFunction3(j * 2 * Math.PI / num);
+            let frame2 = this.torusFunction3(j * 2 * Math.PI / num + 0.1);
+
+            let tangent = frame2.sub(frame);
+            let up = frame.add(frame2).normalize()
+            let right = tangent.cross(up).normalize().mul(10.4);
+            up = right.cross(tangent).normalize().mul(10.4);
+
+            for (let r = 0; r < STEPS22; r++) {
+                let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS22)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS22))).add(frame);
+                ppoints.push(new Vector3f(pos.x, pos.y, pos.z));
+            }
+          
+        }
+
+        let ppoints2: Array<Vector3f> = new Array<Vector3f>(ppoints.length);
+        ppoints.forEach(element => {
+
+
+            let transformed = this.project(modelViewMartrix.multiply(element));
+
+            ppoints2.push(transformed);
+        });
+
+        ppoints2.sort(function (a, b) {
+            return a.z - b.z;
+        });
+
+        ppoints2.forEach(element => {
+            //let size = -(2.0 * 192 / (element.z));
+            let size = -(2.3 * 192 / (element.z));
+            if (element.z < -4)
+                this.drawParticle(
+                    Math.round(element.x - size / 2),
+                    Math.round(element.y - size / 2),
+                    Math.round(size), Math.round(size), texture, 1 / element.z,  this.interpolate(-90, -55, element.z));
+        });
+
     }
 
 
@@ -6931,20 +7204,20 @@ export default class Framebuffer {
 
     private interpolateColor(start: number, end: number, value: number, color1: number, color2: number): number {
         let scale = this.interpolate(start, end, value);
-        let red = (color1>>0&0xff)*(1-scale) + scale*(color2>>0&0xff);
-        let green = (color1>>8&0xff)*(1-scale) + scale*(color2>>8&0xff);
-        let blue = (color1>>16&0xff)*(1-scale) + scale*(color2>>16&0xff);
-        return red | green << 8 | blue <<16;
+        let red = (color1 >> 0 & 0xff) * (1 - scale) + scale * (color2 >> 0 & 0xff);
+        let green = (color1 >> 8 & 0xff) * (1 - scale) + scale * (color2 >> 8 & 0xff);
+        let blue = (color1 >> 16 & 0xff) * (1 - scale) + scale * (color2 >> 16 & 0xff);
+        return red | green << 8 | blue << 16;
     }
     private mapColor(intensity: number): number {
-       if ( intensity>= 235) {
-           return 255;
-       }else if ( intensity>= 230) {
-        return this.interpolateColor(230, 235, intensity, 255<<8| 255, 255);
-       } else if ( intensity>= 100) {
-        return this.interpolateColor(100, 230, intensity, 255<<8, 255<<8| 255);
-       }
-       return  255<<8;
+        if (intensity >= 235) {
+            return 255;
+        } else if (intensity >= 230) {
+            return this.interpolateColor(230, 235, intensity, 255 << 8 | 255, 255);
+        } else if (intensity >= 100) {
+            return this.interpolateColor(100, 230, intensity, 255 << 8, 255 << 8 | 255);
+        }
+        return 255 << 8;
     }
 
     draw(texture: Texture, time: number) {

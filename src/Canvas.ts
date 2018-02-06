@@ -119,7 +119,7 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3;
-        time = time % (600000);
+        time = time % (700000);
 
         //time = (this.myAudio.currentTime * 1000) % 290000 ;
 
@@ -675,7 +675,6 @@ export class Canvas {
 
         // music: https://youtu.be/XNUaoQeTu9U
 
-
         if (time < 50000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.setCullFace(CullFace.BACK);
@@ -894,7 +893,7 @@ export class Canvas {
         } else if (time < 550000) {
             this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
             this.framebuffer.noise(time, this.noise);
-        } else {
+        } else if (time < 600000) {
             // shadows are defect :(
             this.framebuffer.setCullFace(CullFace.BACK);
             this.framebuffer.reproduceRazorScene(time * 0.003);
@@ -903,10 +902,37 @@ export class Canvas {
                 { tex: this.texture11, scale: 2.3, alpha: 0.5 },
                 { tex: this.texture13, scale: 1.6, alpha: 0.25 }
             ]);*/
+
+            let texture3 = new Texture(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.75);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+
+
+            this.framebuffer.noise(time, this.noise);
+        } else if (time < 650000) {
+
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            // TODO: twist streams
+            this.framebuffer.drawParticleStreams(time, this.particleTexture2, true);
+            let texture3 = new Texture(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.55);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            this.framebuffer.noise(time, this.noise);
+            //this.framebuffer.glitchScreen(time, this.noise);
+        } else {
+
+
+
+            this.framebuffer.setCullFace(CullFace.FRONT);
+            this.framebuffer.torusTunnel(time * 0.007, (Date.now() - this.start), this.particleTexture);
+
+
+            let texture3 = new Texture(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.75);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+
             this.framebuffer.noise(time, this.noise);
         }
-
-        //this.framebuffer.glitchScreen(time, this.noise);
         this.framebuffer.drawTexture(0, 0, this.mask, 1.0);
 
         /**
@@ -914,8 +940,9 @@ export class Canvas {
          * - Stripe landscape: http://farm3.static.flickr.com/2653/5710494901_2ca6ddbfb2_b.jpg
          *   maybe with sync to bass and fft
          * - Blender modells (Flat, textured, GI baked)
+         * - pq torus tunnel with camera flying along frenet frame plus particles
          * - particle tunnel
-         * - particle waves
+         * - ribbons on curves
          * - dof
          */
 
