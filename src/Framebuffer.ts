@@ -697,6 +697,8 @@ export default class Framebuffer {
 
     // 6 times faster than the slow method that clips and does alpha blending
     public fastFramebufferCopy(src: Uint32Array, dest: Uint32Array, offset = 0) {
+        src.set(dest);
+        /*
         let i = 320 * 200 / 32 + 1;
         let k = 320 * 200;
         while (--i) {
@@ -720,6 +722,7 @@ export default class Framebuffer {
             src[--k] = dest[k]; src[--k] = dest[k];
             src[--k] = dest[k]; src[--k] = dest[k];
         }
+        */
     }
 
     public drawBobs(texture: Texture, time: number) {
