@@ -2,21 +2,19 @@ import { CullFace } from './CullFace';
 import Framebuffer from './Framebuffer';
 import { Vector4f } from './math/index';
 import { Sphere } from './math/Sphere';
+import { Vector3f } from './math/Vector3f';
 import RandomNumberGenerator from './RandomNumberGenerator';
 import Texture from './Texture';
-import { Vector3f } from './math/Vector3f';
 
 declare function require(resource: string): string;
 
 export class Canvas {
 
+    public framebuffer: Framebuffer;
+
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
-    public framebuffer: Framebuffer;
-    start: number;
-
-    private analyzer: AnalyserNode;
-
+    private start: number;
     private texture: Texture;
     private mask: Texture;
     private texture2: Texture;
@@ -29,6 +27,7 @@ export class Canvas {
     private texture8: Texture;
     private texture9: Texture;
     private texture10: Texture;
+    private dirt: Texture;
     private texture11: Texture;
     private texture12: Texture;
     private texture13: Texture;
@@ -47,16 +46,17 @@ export class Canvas {
     private hlm: Texture;
     private meth: Texture;
     private displacementMap: Texture;
-
     private cross: Texture;
     private abstract: Texture;
     private myAudio: HTMLAudioElement;
     private spheremap: Texture;
     private boundRenderLoop: (time: number) => void;
 
-    private fpsStartTime = Date.now();
-    private fpsCount = 0;
+    private fpsStartTime: number = Date.now();
+    private fpsCount: number = 0;
     private fps: number = 0;
+
+    private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
 
     constructor(width: number, height: number) {
         this.canvas = document.createElement('canvas');
@@ -86,27 +86,24 @@ export class Canvas {
         this.boundRenderLoop = this.renderLoop.bind(this);
     }
 
-    private accumulationBuffer = new Uint32Array(320 * 200);
-
     /**
      * http://www.hugi.scene.org/online/coding/hugi%20se%204%20-%20index%20sorted%20by%20topic.htm
      * http://www.flipcode.com/archives/The_Art_of_Demomaking-Issue_01_Prologue.shtml
      * http://insolitdust.sourceforge.net/code.html
-     * 
+     *
      * http://www.wab.com/screen.php?screen=20
      * http://www.helixsoft.nl/articles/circle/sincos.htm
      * https://gamedev.stackexchange.com/questions/24957/doing-an-snes-mode-7-affine-transform-effect-in-pygame
      * https://www.coranac.com/tonc/text/mode7ex.htm
-     * 
+     *
      * http://codeincomplete.com/posts/javascript-racer-v1-straight/
      * http://www.extentofthejam.com/pseudo/
-     * 
+     *
      * http://hugi.scene.org/online/hugi24/coding%20graphics%20bonz%20sines%20and%20cosines%20for%20fun%20and%20profit.htm
-     * 
+     *
      * @memberof Canvas
      */
     public render(): void {
-
 
         const currentTime: number = Date.now();
 
@@ -118,10 +115,8 @@ export class Canvas {
         this.fpsCount++;
 
         let time: number = (Date.now() - this.start);
-        time = time * 3;
+        time = time * 3 + 550000;
         time = time % (700000);
-
-        //time = (this.myAudio.currentTime * 1000) % 290000 ;
 
         this.framebuffer.setCullFace(CullFace.FRONT);
         /*
@@ -670,48 +665,39 @@ export class Canvas {
                 }
         */
 
-        // testumgebung
-        //this.framebuffer.raveMoview(time, this.rave);
-
         // music: https://youtu.be/XNUaoQeTu9U
-
+        
+        /*
         if (time < 50000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.setCullFace(CullFace.BACK);
             this.framebuffer.setBob(this.spheremap);
-            //this.framebuffer.setBob(this.envmap);
             this.framebuffer.shadingSphereEnvDisp(time * 0.0002);
 
-
             // Motion Blur
-
-            let tmpGlitch = new Uint32Array(320 * 200);
+            const tmpGlitch: Uint32Array = new Uint32Array(320 * 200);
             this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
 
-            let texture = new Texture();
+            const texture: Texture = new Texture();
             texture.texture = tmpGlitch;
             texture.width = 320;
             texture.height = 200;
 
-            const ukBasslineBpm = 140;
-            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
-            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
-            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+            const ukBasslineBpm: number = 140;
+            const ukBasslineClapMs: number = 60000 / ukBasslineBpm * 2;
+            const smashTime: number = (Date.now() - this.start) % ukBasslineClapMs;
+            const smash: number = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
                 this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
-            let width = Math.round(320 + smash * 320 / 100);
-            let height = Math.round(200 + smash * 200 / 100);
+            const width: number = Math.round(320 + smash * 320 / 100);
+            const height: number = Math.round(200 + smash * 200 / 100);
 
             this.framebuffer.drawScaledTextureClip(
                 Math.round(320 / 2 - width / 2),
                 Math.round(200 / 2 - height / 2),
                 width, height, texture, 1.0);
 
-
-
-            let texture3 = new Texture(this.accumulationBuffer, 320, 200);
+            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.85);
-
-
 
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
 
@@ -723,37 +709,29 @@ export class Canvas {
             this.framebuffer.setBob(this.envmap);
             this.framebuffer.shadingSphereEnvDisp2((time - 50000) * 0.0002);
 
-
-
-
-
-
             // Motion Blur
-
-            let tmpGlitch = new Uint32Array(320 * 200);
+            const tmpGlitch: Uint32Array = new Uint32Array(320 * 200);
             this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
 
-            let texture = new Texture();
+            const texture: Texture = new Texture();
             texture.texture = tmpGlitch;
             texture.width = 320;
             texture.height = 200;
 
-            const ukBasslineBpm = 140;
-            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
-            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
-            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+            const ukBasslineBpm: number = 140;
+            const ukBasslineClapMs: number = 60000 / ukBasslineBpm * 2;
+            const smashTime: number = (Date.now() - this.start) % ukBasslineClapMs;
+            const smash: number = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
                 this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
-            let width = Math.round(320 + smash * 320 / 100);
-            let height = Math.round(200 + smash * 200 / 100);
+            const width: number = Math.round(320 + smash * 320 / 100);
+            const height: number = Math.round(200 + smash * 200 / 100);
 
             this.framebuffer.drawScaledTextureClipBi(
                 Math.round(320 / 2 - width / 2),
                 Math.round(200 / 2 - height / 2),
                 width, height, texture, 1.0);
 
-
-
-            let texture3 = new Texture(this.accumulationBuffer, 320, 200);
+            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.85);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
 
@@ -762,30 +740,28 @@ export class Canvas {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.drawParticleTorus(time, this.particleTexture2, true);
 
-            let tmpGlitch = new Uint32Array(320 * 200);
+            const tmpGlitch: Uint32Array = new Uint32Array(320 * 200);
             this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
 
-            let texture = new Texture();
+            const texture: Texture = new Texture();
             texture.texture = tmpGlitch;
             texture.width = 320;
             texture.height = 200;
 
-            const ukBasslineBpm = 140;
-            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
-            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
-            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+            const ukBasslineBpm: number = 140;
+            const ukBasslineClapMs: number = 60000 / ukBasslineBpm * 2;
+            const smashTime: number = (Date.now() - this.start) % ukBasslineClapMs;
+            const smash: number = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
                 this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
-            let width = Math.round(320 + smash * 320 / 100);
-            let height = Math.round(200 + smash * 200 / 100);
+            const width: number = Math.round(320 + smash * 320 / 100);
+            const height: number = Math.round(200 + smash * 200 / 100);
 
             this.framebuffer.drawScaledTextureClipBi(
                 Math.round(320 / 2 - width / 2),
                 Math.round(200 / 2 - height / 2),
                 width, height, texture, 1.0);
 
-
-
-            let texture3 = new Texture(this.accumulationBuffer, 320, 200);
+            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.85);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
 
@@ -796,11 +772,10 @@ export class Canvas {
             this.framebuffer.setBob(this.spheremap);
             this.framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
 
-            let tmpGlitch = new Uint32Array(320 * 200);
+            const tmpGlitch: Uint32Array = new Uint32Array(320 * 200);
             this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
 
-
-            let texture = new Texture();
+            const texture: Texture = new Texture();
             texture.texture = tmpGlitch;
             texture.width = 320;
             texture.height = 200;
@@ -810,17 +785,15 @@ export class Canvas {
             const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
             const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
                 this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
-            let width = Math.round(320 + smash * 320 / 100);
-            let height = Math.round(200 + smash * 200 / 100);
+            const width = Math.round(320 + smash * 320 / 100);
+            const height = Math.round(200 + smash * 200 / 100);
 
             this.framebuffer.drawScaledTextureClipBi(
                 Math.round(320 / 2 - width / 2),
                 Math.round(200 / 2 - height / 2),
                 width, height, texture, 1.0);
 
-
-
-            let texture3 = new Texture(this.accumulationBuffer, 320, 200);
+            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.85);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
 
@@ -832,40 +805,37 @@ export class Canvas {
             this.framebuffer.setBob(this.spheremap);
             this.framebuffer.shadingPlaneEnv(time * 0.0002);
 
-            let texture3 = new Texture(this.accumulationBuffer, 320, 200);
+            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.85);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
 
             this.framebuffer.noise(time, this.noise);
         } else if (time < 300000) {
             this.framebuffer.drawVoxelLandscape4(this.heightmap, time);
-            let tempTexture = new Texture();
+            const tempTexture: Texture = new Texture();
             tempTexture.texture = new Uint32Array(256 * 256);
-            for (let y = 0; y < 256; y++) {
-                for (let x = 0; x < 256; x++) {
-                    let ypos = 199 - Math.round(200 / 256 * x);
-                    let xpos = Math.round(320 / 256 * y);
+            for (let y: number = 0; y < 256; y++) {
+                for (let x: number = 0; x < 256; x++) {
+                    const ypos: number = 199 - Math.round(200 / 256 * x);
+                    const xpos: number = Math.round(320 / 256 * y);
                     tempTexture.texture[x + y * 256] = this.framebuffer.framebuffer[xpos + ypos * 320];
                 }
             }
 
             this.framebuffer.drawPolarDistotion2(time, tempTexture);
 
-
-            let texture3 = new Texture(this.accumulationBuffer, 320, 200);
+            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.65);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
 
             this.framebuffer.noise(time, this.noise);
-
         } else if (time < 350000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.setCullFace(CullFace.FRONT);
             this.framebuffer.setBob(this.spheremap);
             this.framebuffer.shadingCylinderEnvDisp(time * 0.0002);
 
-
-            let texture3 = new Texture(this.accumulationBuffer, 320, 200);
+            const texture3 = new Texture(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.85);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
 
@@ -880,8 +850,7 @@ export class Canvas {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.drawParticleWaves(time, this.particleTexture2, true);
 
-
-            let texture3 = new Texture(this.accumulationBuffer, 320, 200);
+            const texture3 = new Texture(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.85);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
 
@@ -896,51 +865,74 @@ export class Canvas {
         } else if (time < 600000) {
             // shadows are defect :(
             this.framebuffer.setCullFace(CullFace.BACK);
-            this.framebuffer.reproduceRazorScene(time * 0.003);
-            /*this.framebuffer.drawLensFlare(time - 185000, [
+            this.framebuffer.reproduceRazorScene(time * 0.003, [
                 { tex: this.texture10, scale: 0.0, alpha: 1.0 },
                 { tex: this.texture11, scale: 2.3, alpha: 0.5 },
                 { tex: this.texture13, scale: 1.6, alpha: 0.25 }
-            ]);*/
+            ]);
 
-            let texture3 = new Texture(this.accumulationBuffer, 320, 200);
+            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.75);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-
 
             this.framebuffer.noise(time, this.noise);
         } else if (time < 650000) {
 
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-            // TODO: twist streams
             this.framebuffer.drawParticleStreams(time, this.particleTexture2, true);
-            let texture3 = new Texture(this.accumulationBuffer, 320, 200);
+            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.55);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             this.framebuffer.noise(time, this.noise);
-            //this.framebuffer.glitchScreen(time, this.noise);
         } else {
-
-
-
             this.framebuffer.setCullFace(CullFace.FRONT);
             this.framebuffer.torusTunnel(time * 0.007, (Date.now() - this.start), this.particleTexture);
 
-
-            let texture3 = new Texture(this.accumulationBuffer, 320, 200);
+            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.75);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
 
             this.framebuffer.noise(time, this.noise);
         }
-        this.framebuffer.drawTexture(0, 0, this.mask, 1.0);
+        */
+        // shadows are defect :(
+        this.framebuffer.setCullFace(CullFace.BACK);
+        this.framebuffer.reproduceRazorScene(time * 0.0018, [
+            { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+            { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+            { tex: this.texture13, scale: 1.6, alpha: 0.25 },
+            { tex: this.texture13, scale: 0.7, alpha: 0.22 },
+            { tex: this.texture13, scale: -0.4, alpha: 0.22 },
+        ], this.dirt);
+
+        const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+        this.framebuffer.drawTexture(0, 0, texture3, 0.75);
+        this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+        // this.framebuffer.cinematicScroller(this.texture4, time*0.3);
+        this.framebuffer.noise(time, this.noise,0.04);
+       // this.framebuffer.glitchScreen(time, this.noise);
+       // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+        // this.framebuffer.drawWormhole(time, this.particleTexture2, true);
+
+        /**
+         * TODO:
+         * - lens flare in razor scene
+         * - transition effects with alpha layer
+         * - wormhole particle tunnel
+         * - rubiks cube animation :-)
+         * - cube with animated texture
+         * - Oldskool amiga screen with disk loading and decrunching
+         * - screen exploding intro cubes
+         * - Split red green and blue channels and displace them in x direction
+         */
+
+         this.framebuffer.drawTexture(0, 0, this.mask, 1.0);
 
         /**
          * TODO:
          * - Stripe landscape: http://farm3.static.flickr.com/2653/5710494901_2ca6ddbfb2_b.jpg
          *   maybe with sync to bass and fft
          * - Blender modells (Flat, textured, GI baked)
-         * - pq torus tunnel with camera flying along frenet frame plus particles
          * - particle tunnel
          * - ribbons on curves
          * - dof
@@ -1143,7 +1135,6 @@ export class Canvas {
          * - https://www.youtube.com/watch?v=ghX1-EUx-fQ&index=7&list=PLPnuj18PSHazbti_tw1zoQ23fqx8-ZZP7 (min 15)
          */
 
-
         //  this.framebuffer.cinematicScroller(this.texture4, time);
         //  this.framebuffer.drawTextureScaledLame(0,0, 16,16, this.texture7);
         // http://doc.babylonjs.com/tutorials/discover_basic_elements
@@ -1158,9 +1149,6 @@ export class Canvas {
         // http://www.gamers.org/dEngine/quake/papers/ddjzsort.html
         // http://fabiensanglard.net/quakeSource/quakeSourceRendition.php
 
-        /**
-         * FIXME: winding problem due to projection method and culling!
-         */
         //  this.framebuffer.shadingSphereClip((time ) * 0.003);
         // this.framebuffer.cinematicScroller(this.texture4, time );
         //   this.framebuffer.drawText(8, 192 - 18, 'TRIANGLE NEAR PLANE CLIPPING', this.texture4);
@@ -1169,7 +1157,6 @@ export class Canvas {
         // - textured cube / dynamic textures
         // - skybox
         // - specular highlights
-        // - environment mapping (metal)
         // - 3d bobs (with shadows)
         // - plane deformation effect
         // - sine scroller (color bar texture)
@@ -1209,7 +1196,6 @@ export class Canvas {
         //    this.framebuffer.cinematicScroller(this.texture4, time );
         // todo: radial blur -> pouet.net
 
-        // this.framebuffer.reproduceRazorScene(2);
         // http://www.cubic.org/docs/camera.htm
         // http://www.cubic.org/docs/3dclip.htm
         // http://www.cubic.org/docs/backcull.htm
@@ -1220,8 +1206,6 @@ export class Canvas {
         // this.framebuffer.enableBackfaceCulling();
         // this.framebuffer.setCullFace(FRONT);
 
-
-
         // TODO: text
         // 3d line clipping for fly by :)
         // different transitions:
@@ -1230,7 +1214,6 @@ export class Canvas {
         // wobble logo
         // ball 3d with precalculated sizes lookup
         // starfield 2d /3d
-        // tv noise
         // wormhole
         // glitch logo
     }
@@ -1318,7 +1301,6 @@ export class Canvas {
         });
     }
 
-
     public createProceduralTexture3(): Promise<Texture> {
         return new Promise((resolve) => {
             const texture = new Texture();
@@ -1377,7 +1359,6 @@ export class Canvas {
         });
     }
 
-
     public createProceduralTexture4(): Promise<Texture> {
         return new Promise((resolve) => {
             const texture = new Texture();
@@ -1399,7 +1380,7 @@ export class Canvas {
 
     public init(): void {
         let fullscreen = false;
-        let toggleFullscreen = function() {
+        let toggleFullscreen = function () {
             if (!fullscreen) {
                 fullscreen = true;
                 if ('requestFullscreen' in this) {
@@ -1431,7 +1412,7 @@ export class Canvas {
         let lastClick = 0;
         // click supported on mobile and desktop. dblclick only supported on browser
         // so emulate dblclick
-        this.canvas.addEventListener('click', function(evt) {
+        this.canvas.addEventListener('click', function (evt) {
             evt.preventDefault();
             let currentClick = Date.now();
             if (currentClick - lastClick < 200) {
@@ -1473,32 +1454,24 @@ export class Canvas {
             this.createTexture(require('./assets/envmap.png'), false).then(texture => this.envmap = texture),
             this.createTexture(require('./assets/heightmapSphere.png'), false).then(texture => this.heightmapSphere = texture),
             this.createTexture(require('./assets/mask.png'), true).then(texture => this.mask = texture),
+            this.createTexture(require('./assets/dirt.png'), true).then(texture => this.dirt = texture),
         ]).then(() => {
             // Web Audio API
             // FIXME: put this into a Player Class
             this.framebuffer.precompute(this.heightmap, this.heightmapSphere);
 
             let audioContext = new AudioContext();
-            this.analyzer = audioContext.createAnalyser();
-            this.analyzer.fftSize = 256;
-            this.analyzer.smoothingTimeConstant = 0.8;
-
             let request = new XMLHttpRequest();
             request.open('GET', require('./assets/3dGalax.mp3'), true);
             request.responseType = 'arraybuffer';
-            console.log('load music');
             request.onload = () => {
-                console.log('loaded');
                 let undecodedAudio = request.response;
                 audioContext.decodeAudioData(undecodedAudio,
                     (buffer) => {
-                        console.log(buffer);
-                        let sourceBuffer = audioContext.createBufferSource();
+                        const sourceBuffer = audioContext.createBufferSource();
                         sourceBuffer.buffer = buffer;
-                        // sourceBuffer.connect(audioContext.destination);
-                        sourceBuffer.connect(this.analyzer);
+                        sourceBuffer.connect(audioContext.destination);
                         sourceBuffer.loop = true;
-                        this.analyzer.connect(audioContext.destination);
                         sourceBuffer.start(audioContext.currentTime);
                         this.start = Date.now();
                         this.renderLoop(0);
@@ -1509,10 +1482,6 @@ export class Canvas {
         });
     }
 
-    public display(): void {
-
-    }
-
     public renderLoop(time: number): void {
         this.render();
         this.flipBackbuffer();
@@ -1520,8 +1489,6 @@ export class Canvas {
     }
 
     public flipBackbuffer(): void {
-        //this.backbufferContext.putImageData(this.framebuffer.getImageData(), 0, 0);
-        //this.context.drawImage(this.backbufferCanvas, 0, 0, 320, 200, 0, 0, 320 * 2, 200 * 2);
         this.context.putImageData(this.framebuffer.getImageData(), 0, 0);
     }
 

@@ -430,6 +430,33 @@ export default class Framebuffer {
         }
     }
 
+
+
+    public drawTextureRectAdd(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Texture, alpha2: number): void {
+        let texIndex = xt + yt * texture.width;
+        let frIndex = xs + ys * 320;
+
+        for (let h = 0; h < height; h++) {
+            for (let w = 0; w < width; w++) {
+                let alpha = ((texture.texture[texIndex] >> 24) & 0xff) / 255 * alpha2;
+                let inverseAlpha = 1 - alpha;
+
+                let fbPixel = this.framebuffer[frIndex];
+                let txPixel = texture.texture[texIndex];
+
+                let r = Math.min(255, (fbPixel >> 0 & 0xff)  + (txPixel >> 0 & 0xff) * alpha);
+                let g = Math.min(255, (fbPixel >> 8 & 0xff)  + (txPixel >> 8 & 0xff) * alpha);
+                let b = Math.min(255, (fbPixel >> 16 & 0xff)  + (txPixel >> 16 & 0xff) * alpha);
+
+                this.framebuffer[frIndex] = r | (g << 8) | (b << 16) | (255 << 24);
+                texIndex++;
+                frIndex++;
+            }
+            texIndex += texture.width - width;
+            frIndex += 320 - width;
+        }
+    }
+
     public drawLens(texture: Texture, tex: Texture, time: number) {
 
         const radius = 47;
@@ -2454,13 +2481,12 @@ export default class Framebuffer {
         }
     }
 
-    public reproduceRazorScene(elapsedTime: number): void {
+    public reproduceRazorScene(elapsedTime: number, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
         // camerea:
         // http://graphicsrunner.blogspot.de/search/label/Water
         this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
-        // this.clearH(42 | 46 << 8 | 58 << 16 | 255 << 24, 100);
         this.clearDepthBuffer();
-        // one line is missing due to polygon clipping in viewport!
+
         let modelViewMartrix: Matrix4f;
 
         let camera = Matrix4f.constructTranslationMatrix(0, 0, -6.4 - 5 * (Math.sin(elapsedTime * 0.06) * 0.5 + 0.5)).multiplyMatrix(
@@ -2484,7 +2510,6 @@ export default class Framebuffer {
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
         modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 1.0, distance).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
-
 
         model = this.getIcosahedronMesh();
         this.drawObject(model, modelViewMartrix, 239, 187, 115);
@@ -2510,28 +2535,18 @@ export default class Framebuffer {
         modelViewMartrix = Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
 
-
         model = this.getPyramidMesh();
         this.drawObject(model, modelViewMartrix, 125, 128, 146);
 
-        /*
-                scale = 10.0;
-                modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
-                modelViewMartrix = Matrix4f.constructTranslationMatrix(0, yDisplacement,0).multiplyMatrix(modelViewMartrix);
-                modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
-        
-        
-                this.drawObject(this.getPlaneMesh(), modelViewMartrix, 64,48,40);
-        */
-
-        // SHADOWS
+        /**
+         * SHADOWS
+         */
 
         scale = 2.0;
         modelViewMartrix = Matrix4f.constructYRotationMatrix(elapsedTime * 0.2).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));
         modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 1.0, 0).multiplyMatrix(modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(-elapsedTime * 0.2)));
         modelViewMartrix = camera.multiplyMatrix(
             Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
-
 
         this.drawObject(this.getDodecahedronMesh(), modelViewMartrix, 48, 32, 24, true);
 
@@ -2541,16 +2556,13 @@ export default class Framebuffer {
         modelViewMartrix = camera.multiplyMatrix(
             Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
 
-
         this.drawObject(this.getPyramidMesh(), modelViewMartrix, 48, 32, 24, true, true);
-
 
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
         modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(
             Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix))
-
 
         this.drawObject(this.getCubeMesh(), modelViewMartrix, 48, 32, 24, true);
 
@@ -2560,17 +2572,20 @@ export default class Framebuffer {
         modelViewMartrix = camera.multiplyMatrix(
             Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix))
 
-
         this.drawObject(this.getCubeMesh(), modelViewMartrix, 48, 32, 24, true);
 
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
         modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 1.0, distance).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(
-            Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix))
+            Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
 
 
         this.drawObject(this.getIcosahedronMesh(), modelViewMartrix, 48, 32, 24, true);
+
+        let lensflareScreenSpace = this.project(camera.multiply(new Vector3f(12.0, 4.0, 0)));
+
+        this.drawLensFlare(lensflareScreenSpace, elapsedTime * 100, texture, dirt);
     }
 
     private getBlenderScene(): any {
@@ -2781,7 +2796,7 @@ export default class Framebuffer {
     }
 
 
-    drawParticleStreams(elapsedTime: number, texture: Texture, noClear: boolean = false) {
+    public drawParticleStreams(elapsedTime: number, texture: Texture, noClear: boolean = false) {
 
         let points: Array<Vector3f> = new Array<Vector3f>();
         const num = 50;
@@ -2835,6 +2850,58 @@ export default class Framebuffer {
         }
     }
 
+
+    public drawWormhole(elapsedTime: number, texture: Texture, noClear: boolean = false) {
+
+        let points: Array<Vector3f> = new Array<Vector3f>();
+        const num = 50;
+        const num2 = 10;
+        const scale = 2.1;
+
+        for (let i = 0; i < num; i++) {
+            let radius = 5.8;
+        
+            for (let j = 0; j < num2; j++) {
+
+                let x = ((i - num / 2) * scale - elapsedTime * 0.008) % (num * scale) + (num * scale * 0.5);
+                let y = Math.cos(Math.PI * 2 / num2*j) * radius+Math.cos(Math.PI * 2 / num*i)*10;
+                let z = Math.sin(Math.PI * 2 / num2*j) * radius+Math.sin(Math.PI * 2 / num*i)*10;
+
+                points.push(new Vector3f(x, y, z));
+            }
+        }
+
+
+        let modelViewMartrix = Matrix4f.constructTranslationMatrix(
+            Math.sin(-Math.PI*0.5+Math.PI * 2 / num *(elapsedTime * 0.004 * scale ))*10,
+            Math.cos(-Math.PI*0.5+Math.PI * 2 / num* (elapsedTime * 0.004 * scale ))*10
+            , -49).multiplyMatrix(
+
+            Matrix4f.constructYRotationMatrix(Math.PI * 0.5));
+
+        let points2: Array<Vector3f> = new Array<Vector3f>(points.length);
+        points.forEach(element => {
+
+
+            let transformed = this.project(modelViewMartrix.multiply(element));
+
+            points2.push(transformed);
+        });
+
+        points2.sort(function (a, b) {
+            return a.z - b.z;
+        });
+
+        points2.forEach(element => {
+            //let size = -(2.0 * 192 / (element.z));
+            let size = -(1.3 * 192 / (element.z));
+            if (element.z < -4)
+                this.drawParticleNoDepth(
+                    Math.round(element.x - size / 2),
+                    Math.round(element.y - size / 2),
+                    Math.round(size), Math.round(size), texture, 1 / element.z, this.interpolate(-90, -55, element.z));
+        });
+    }
 
     drawParticleTorus(elapsedTime: number, texture: Texture, noClear: boolean = false) {
         if (!noClear) this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
@@ -3191,7 +3258,7 @@ export default class Framebuffer {
         }
     }
 
-    private drawObject(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, oldLDir: boolean=true) {
+    private drawObject(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, oldLDir: boolean = true) {
 
         let normalMatrix = modelViewMartrix.computeNormalMatrix();
 
@@ -3204,7 +3271,7 @@ export default class Framebuffer {
         }
 
         let lightDirection = oldLDir ? new Vector4f(0.5, 0.5, 0.3, 0.0).normalize() : new Vector4f(0.1, 0.1, -0.5, 0.0).normalize();
-        
+
         for (let i = 0; i < obj.index.length; i += 3) {
             let v1 = obj.points2[obj.index[i]];
             let v2 = obj.points2[obj.index[i + 1]];
@@ -3811,7 +3878,7 @@ export default class Framebuffer {
 
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.035));
         modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -10).multiplyMatrix(modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.04)));
-        modelViewMartrix = Matrix4f.constructZRotationMatrix(elapsedTime*0.01).multiplyMatrix(finalMatrix);
+        modelViewMartrix = Matrix4f.constructZRotationMatrix(elapsedTime * 0.01).multiplyMatrix(finalMatrix);
 
         let model: any = {
             points: points,
@@ -3827,7 +3894,7 @@ export default class Framebuffer {
 
         let ppoints = new Array<Vector3f>();
         const num = 40;
-        const STEPS22 = 8*2;
+        const STEPS22 = 8 * 2;
         for (let j = 0; j < num; j++) {
             let frame = this.torusFunction3(j * 2 * Math.PI / num);
             let frame2 = this.torusFunction3(j * 2 * Math.PI / num + 0.1);
@@ -3841,7 +3908,7 @@ export default class Framebuffer {
                 let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS22)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS22))).add(frame);
                 ppoints.push(new Vector3f(pos.x, pos.y, pos.z));
             }
-          
+
         }
 
         let ppoints2: Array<Vector3f> = new Array<Vector3f>(ppoints.length);
@@ -3864,7 +3931,7 @@ export default class Framebuffer {
                 this.drawParticle(
                     Math.round(element.x - size / 2),
                     Math.round(element.y - size / 2),
-                    Math.round(size), Math.round(size), texture, 1 / element.z,  this.interpolate(-90, -55, element.z));
+                    Math.round(size), Math.round(size), texture, 1 / element.z, this.interpolate(-90, -55, element.z));
         });
 
     }
@@ -5699,11 +5766,13 @@ export default class Framebuffer {
     lensFlareStart = 0;
     lensFlareEnd = 0;
 
-    public drawLensFlare(elapsedTime: number, texture: { tex: Texture, scale: number, alpha: number }[]): void {
-        let pos = new Vector3f(Math.round(320 / 2 + Math.sin(elapsedTime * 0.00035) * 110),
-            Math.round(200 / 2 + Math.cos(elapsedTime * 0.0003) * 80), 0);
+    public drawLensFlare(screenPos: Vector3f, elapsedTime: number, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
+        let pos = screenPos;
 
-        if (this.wBuffer[pos.x + (pos.y * 320)] == 100) {
+        if (pos.z < 0 &&
+            pos.x > 0 && pos.x < 320 &&
+            pos.y > 0 && pos.y < 200 &&
+            this.wBuffer[pos.x + (pos.y * 320)] > (-1 / 100)) {
             if (!this.lensFlareVisible) {
                 this.lensFlareVisible = true;
                 this.lensFlareStart = elapsedTime;
@@ -5721,11 +5790,12 @@ export default class Framebuffer {
         }
         let dir = new Vector3f(320 / 2, 200 / 2, 0).sub(pos);
 
-
         for (let i = 0; i < texture.length; i++) {
             let temp = pos.add(dir.mul(texture[i].scale));
             this.drawTexture(Math.round(temp.x) - texture[i].tex.width / 2, Math.round(temp.y) - texture[i].tex.height / 2, texture[i].tex, texture[i].alpha * scale);
         }
+
+        this.drawTextureRectAdd(0,0,0,0,320,200, dirt, 0.03+0.15*scale);
     }
 
     // TODO: create interesting pattern!
