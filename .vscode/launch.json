@@ -2,6 +2,14 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Launch Chrome against localhost, with sourcemaps",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:8080",
+            "sourceMaps": true,
+            "webRoot": "${workspaceRoot}"
+        },
+        {
             "name": "Launch Chromium against localhost, with sourcemaps",
             "type": "chrome",
             "request": "launch",
