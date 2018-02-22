@@ -1,6 +1,6 @@
 var HtmlWebpackPlugin = require('html-webpack-plugin');
-var BabiliPlugin = require('babili-webpack-plugin');
 var path = require('path');
+const MinifyPlugin = require('babel-minify-webpack-plugin');
 
 module.exports = {
     entry: {
@@ -36,6 +36,6 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: './src/index.html'
         }),
-        // new BabiliPlugin()
+        new MinifyPlugin()
     ]
 }
