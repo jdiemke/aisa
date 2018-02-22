@@ -32,10 +32,14 @@ module.exports = {
             }
         ]
     },
+    devtool: "source-map",
     plugins: [
         new HtmlWebpackPlugin({
             template: './src/index.html'
         }),
-        new MinifyPlugin()
+        /**
+         * Removed minification due to sourcemap generation problems
+         */
+        // new MinifyPlugin()
     ]
 }
