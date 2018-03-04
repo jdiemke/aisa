@@ -116,7 +116,7 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3 + 550000;
-        time = time % (700000);
+        time = time % (750000);
 
         this.framebuffer.setCullFace(CullFace.FRONT);
         /*
@@ -666,8 +666,7 @@ export class Canvas {
         */
 
         // music: https://youtu.be/XNUaoQeTu9U
-        
-        /*
+
         if (time < 50000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.setCullFace(CullFace.BACK);
@@ -863,19 +862,19 @@ export class Canvas {
             this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
             this.framebuffer.noise(time, this.noise);
         } else if (time < 600000) {
-            // shadows are defect :(
             this.framebuffer.setCullFace(CullFace.BACK);
-            this.framebuffer.reproduceRazorScene(time * 0.003, [
+            this.framebuffer.reproduceRazorScene(time * 0.0018, [
                 { tex: this.texture10, scale: 0.0, alpha: 1.0 },
                 { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                { tex: this.texture13, scale: 1.6, alpha: 0.25 }
-            ]);
+                { tex: this.texture13, scale: 1.6, alpha: 0.25 },
+                { tex: this.texture13, scale: 0.7, alpha: 0.22 },
+                { tex: this.texture13, scale: -0.4, alpha: 0.22 },
+            ], this.dirt);
 
             const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.75);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-
-            this.framebuffer.noise(time, this.noise);
+            this.framebuffer.noise(time, this.noise, 0.04);
         } else if (time < 650000) {
 
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
@@ -884,7 +883,7 @@ export class Canvas {
             this.framebuffer.drawTexture(0, 0, texture3, 0.55);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             this.framebuffer.noise(time, this.noise);
-        } else {
+        } else if (time < 700000) {
             this.framebuffer.setCullFace(CullFace.FRONT);
             this.framebuffer.torusTunnel(time * 0.007, (Date.now() - this.start), this.particleTexture);
 
@@ -893,25 +892,29 @@ export class Canvas {
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
 
             this.framebuffer.noise(time, this.noise);
-        }
-        */
-        // shadows are defect :(
-        this.framebuffer.setCullFace(CullFace.BACK);
-        this.framebuffer.reproduceRazorScene(time * 0.0018, [
-            { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-            { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-            { tex: this.texture13, scale: 1.6, alpha: 0.25 },
-            { tex: this.texture13, scale: 0.7, alpha: 0.22 },
-            { tex: this.texture13, scale: -0.4, alpha: 0.22 },
-        ], this.dirt);
+        } else {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.setCullFace(CullFace.BACK);
+            this.framebuffer.drawBlenderScene2(time, this.texture4,
+                [
+                    { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                    { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                    { tex: this.texture13, scale: 1.6, alpha: 0.25 },
+                    { tex: this.texture13, scale: 0.7, alpha: 0.22 },
+                    { tex: this.texture13, scale: -0.4, alpha: 0.22 },
+                ], this.dirt);
+            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.75);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
 
-        const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-        this.framebuffer.drawTexture(0, 0, texture3, 0.75);
-        this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-        // this.framebuffer.cinematicScroller(this.texture4, time*0.3);
-        this.framebuffer.noise(time, this.noise,0.04);
-       // this.framebuffer.glitchScreen(time, this.noise);
-       // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.noise(time, this.noise);
+        }
+
+        // this.framebuffer.drawTexture(0, 0, this.mask, 1.0);
+
+
+        // this.framebuffer.glitchScreen(time, this.noise);
+        // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
         // this.framebuffer.drawWormhole(time, this.particleTexture2, true);
 
         /**
@@ -926,7 +929,6 @@ export class Canvas {
          * - Split red green and blue channels and displace them in x direction
          */
 
-         this.framebuffer.drawTexture(0, 0, this.mask, 1.0);
 
         /**
          * TODO:
@@ -1462,7 +1464,7 @@ export class Canvas {
 
             let audioContext = new AudioContext();
             let request = new XMLHttpRequest();
-            request.open('GET', require('./assets/3dGalax.mp3'), true);
+            request.open('GET', require('./assets/Triace - 4KlaBumm.mp3'), true);
             request.responseType = 'arraybuffer';
             request.onload = () => {
                 let undecodedAudio = request.response;

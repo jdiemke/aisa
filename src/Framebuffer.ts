@@ -40,6 +40,10 @@ declare function require(string): string;
 let json = require('./assets/f16.json');
 let bunnyJson = <any>require('./assets/bunny.json');
 let worldJson = <any>require('./assets/world2.json');
+//let torusJson = <any>require('./assets/torus.json');
+
+let torusJson = <any>require('./assets/stravaganza.json');
+//let torusJson = <any>require('./assets/platonian2.json');
 
 // TODO:
 // - use polymorphism in order to have different intersection methods
@@ -213,6 +217,7 @@ export default class Framebuffer {
     private obj: any;
     private bunnyObj: any;
     private blenderObj: any;
+    private blenderObj2: any;
     private bob: Texture;
     private sphere: any;
     private plane: any;
@@ -247,7 +252,8 @@ export default class Framebuffer {
 
         this.obj = this.createObject();
         this.bunnyObj = this.createBunny();
-        this.blenderObj = this.getBlenderScene();
+        this.blenderObj = this.getBlenderScene(worldJson);
+        this.blenderObj2 = this.getBlenderScene(torusJson, false);
         this.sphere = this.createSphere();
 
         this.plane = this.createPlane();
@@ -444,9 +450,9 @@ export default class Framebuffer {
                 let fbPixel = this.framebuffer[frIndex];
                 let txPixel = texture.texture[texIndex];
 
-                let r = Math.min(255, (fbPixel >> 0 & 0xff)  + (txPixel >> 0 & 0xff) * alpha);
-                let g = Math.min(255, (fbPixel >> 8 & 0xff)  + (txPixel >> 8 & 0xff) * alpha);
-                let b = Math.min(255, (fbPixel >> 16 & 0xff)  + (txPixel >> 16 & 0xff) * alpha);
+                let r = Math.min(255, (fbPixel >> 0 & 0xff) + (txPixel >> 0 & 0xff) * alpha);
+                let g = Math.min(255, (fbPixel >> 8 & 0xff) + (txPixel >> 8 & 0xff) * alpha);
+                let b = Math.min(255, (fbPixel >> 16 & 0xff) + (txPixel >> 16 & 0xff) * alpha);
 
                 this.framebuffer[frIndex] = r | (g << 8) | (b << 16) | (255 << 24);
                 texIndex++;
@@ -2588,10 +2594,10 @@ export default class Framebuffer {
         this.drawLensFlare(lensflareScreenSpace, elapsedTime * 100, texture, dirt);
     }
 
-    private getBlenderScene(): any {
+    private getBlenderScene(file: any, disp: boolean = true): any {
         let scene = [];
 
-        worldJson.forEach(object => {
+        file.forEach(object => {
             let points: Array<Vector4f> = new Array<Vector4f>();
             let normals: Array<Vector4f> = new Array<Vector4f>();
             let index: Array<number> = new Array<number>();
@@ -2599,7 +2605,11 @@ export default class Framebuffer {
 
             object.vertices.forEach((v) => {
                 // some transformation in order for the vertices to be in worldspace
-                points.push(new Vector4f(v.x, v.y, v.z).mul(2).add(new Vector4f(0, -2.7, 0, 0)));
+                if (disp)
+                    points.push(new Vector4f(v.x, v.y, v.z).mul(2).add(new Vector4f(0, -2.7, 0, 0)));
+                else
+                    points.push(new Vector4f(v.x, v.y, v.z).mul(2));
+
                 //points.push(new Vector4f(v.x, v.y, v.z).mul(0.5).add(new Vector4f(0,3.7,0,0)));
             });
 
@@ -2860,12 +2870,12 @@ export default class Framebuffer {
 
         for (let i = 0; i < num; i++) {
             let radius = 5.8;
-        
+
             for (let j = 0; j < num2; j++) {
 
                 let x = ((i - num / 2) * scale - elapsedTime * 0.008) % (num * scale) + (num * scale * 0.5);
-                let y = Math.cos(Math.PI * 2 / num2*j) * radius+Math.cos(Math.PI * 2 / num*i)*10;
-                let z = Math.sin(Math.PI * 2 / num2*j) * radius+Math.sin(Math.PI * 2 / num*i)*10;
+                let y = Math.cos(Math.PI * 2 / num2 * j) * radius + Math.cos(Math.PI * 2 / num * i) * 10;
+                let z = Math.sin(Math.PI * 2 / num2 * j) * radius + Math.sin(Math.PI * 2 / num * i) * 10;
 
                 points.push(new Vector3f(x, y, z));
             }
@@ -2873,11 +2883,11 @@ export default class Framebuffer {
 
 
         let modelViewMartrix = Matrix4f.constructTranslationMatrix(
-            Math.sin(-Math.PI*0.5+Math.PI * 2 / num *(elapsedTime * 0.004 * scale ))*10,
-            Math.cos(-Math.PI*0.5+Math.PI * 2 / num* (elapsedTime * 0.004 * scale ))*10
+            Math.sin(-Math.PI * 0.5 + Math.PI * 2 / num * (elapsedTime * 0.004 * scale)) * 10,
+            Math.cos(-Math.PI * 0.5 + Math.PI * 2 / num * (elapsedTime * 0.004 * scale)) * 10
             , -49).multiplyMatrix(
 
-            Matrix4f.constructYRotationMatrix(Math.PI * 0.5));
+                Matrix4f.constructYRotationMatrix(Math.PI * 0.5));
 
         let points2: Array<Vector3f> = new Array<Vector3f>(points.length);
         points.forEach(element => {
@@ -3060,6 +3070,43 @@ export default class Framebuffer {
         //this.drawLineDDANoZ(new Vector3f(width / 2 + width, height / 2, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
         //this.drawLineDDANoZ(new Vector3f(width / 2, height / 2 + height, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
     }
+
+    /**
+     * Requirements for blender export:
+     * - Wavefront OBJ
+     * - 
+     */
+    public drawBlenderScene2(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
+
+        this.clearDepthBuffer();
+
+        let camera: Matrix4f = Matrix4f.constructTranslationMatrix(0, 0, -12).multiplyMatrix(
+            Matrix4f.constructYRotationMatrix(elapsedTime * 0.0002)
+                .multiplyMatrix(
+                    Matrix4f.constructXRotationMatrix(elapsedTime * 0.0002)
+                )
+        );
+
+
+        let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(5,16,5));
+        let model = this.blenderObj2[0];
+        this.drawObject2(model, mv, 246, 165, 177);
+
+
+        mv = camera.multiplyMatrix(Matrix4f.constructZRotationMatrix(
+            Math.PI*0.5 * this.cosineInterpolate(0, 600, Math.floor(elapsedTime * 0.7) % 4000))
+            .multiplyMatrix(Matrix4f.constructXRotationMatrix(
+                Math.PI*0.5 * this.cosineInterpolate(2000, 2600, Math.floor(elapsedTime * 0.7) % 4000)))
+        );
+        model = this.blenderObj2[1];
+        this.drawObject2(model, mv, 186, 165, 197);
+
+        let lensflareScreenSpace = this.project(camera.multiply(new Vector3f(16.0*20, 16.0*20, 0)));
+
+        this.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.3, texture, dirt);
+
+    }
+
     public drawPlaneDeformation(elapsedTime: number, texture: Texture): void {
         // optimize
         // power of two modulo with &
@@ -5790,12 +5837,14 @@ export default class Framebuffer {
         }
         let dir = new Vector3f(320 / 2, 200 / 2, 0).sub(pos);
 
-        for (let i = 0; i < texture.length; i++) {
-            let temp = pos.add(dir.mul(texture[i].scale));
-            this.drawTexture(Math.round(temp.x) - texture[i].tex.width / 2, Math.round(temp.y) - texture[i].tex.height / 2, texture[i].tex, texture[i].alpha * scale);
+        if (scale > 0) {
+            for (let i = 0; i < texture.length; i++) {
+                let temp = pos.add(dir.mul(texture[i].scale));
+                this.drawTexture(Math.round(temp.x) - texture[i].tex.width / 2, Math.round(temp.y) - texture[i].tex.height / 2, texture[i].tex, texture[i].alpha * scale);
+            }
         }
 
-        this.drawTextureRectAdd(0,0,0,0,320,200, dirt, 0.03+0.15*scale);
+        this.drawTextureRectAdd(0, 0, 0, 0, 320, 200, dirt, 0.03 + 0.15 * scale);
     }
 
     // TODO: create interesting pattern!
