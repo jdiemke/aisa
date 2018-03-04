@@ -357,7 +357,7 @@ class Canvas {
         this.fpsCount++;
         let time = (Date.now() - this.start);
         time = time * 3 + 550000;
-        time = time % (700000);
+        time = time % (750000);
         this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
         /*
                 if (time < 5000) {
@@ -905,119 +905,18 @@ class Canvas {
                 }
         */
         // music: https://youtu.be/XNUaoQeTu9U
-        /*
         if (time < 50000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-            this.framebuffer.setCullFace(CullFace.BACK);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
             this.framebuffer.setBob(this.spheremap);
             this.framebuffer.shadingSphereEnvDisp(time * 0.0002);
-
             // Motion Blur
-            const tmpGlitch: Uint32Array = new Uint32Array(320 * 200);
+            const tmpGlitch = new Uint32Array(320 * 200);
             this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
-
-            const texture: Texture = new Texture();
+            const texture = new Texture_1.default();
             texture.texture = tmpGlitch;
             texture.width = 320;
             texture.height = 200;
-
-            const ukBasslineBpm: number = 140;
-            const ukBasslineClapMs: number = 60000 / ukBasslineBpm * 2;
-            const smashTime: number = (Date.now() - this.start) % ukBasslineClapMs;
-            const smash: number = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
-                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
-            const width: number = Math.round(320 + smash * 320 / 100);
-            const height: number = Math.round(200 + smash * 200 / 100);
-
-            this.framebuffer.drawScaledTextureClip(
-                Math.round(320 / 2 - width / 2),
-                Math.round(200 / 2 - height / 2),
-                width, height, texture, 1.0);
-
-            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-            this.framebuffer.drawTexture(0, 0, texture3, 0.85);
-
-            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-
-            this.framebuffer.noise(time, this.noise);
-        } else if (time < 100000) {
-            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-            this.framebuffer.setCullFace(CullFace.BACK);
-            // this.framebuffer.setBob(this.spheremap);
-            this.framebuffer.setBob(this.envmap);
-            this.framebuffer.shadingSphereEnvDisp2((time - 50000) * 0.0002);
-
-            // Motion Blur
-            const tmpGlitch: Uint32Array = new Uint32Array(320 * 200);
-            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
-
-            const texture: Texture = new Texture();
-            texture.texture = tmpGlitch;
-            texture.width = 320;
-            texture.height = 200;
-
-            const ukBasslineBpm: number = 140;
-            const ukBasslineClapMs: number = 60000 / ukBasslineBpm * 2;
-            const smashTime: number = (Date.now() - this.start) % ukBasslineClapMs;
-            const smash: number = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
-                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
-            const width: number = Math.round(320 + smash * 320 / 100);
-            const height: number = Math.round(200 + smash * 200 / 100);
-
-            this.framebuffer.drawScaledTextureClipBi(
-                Math.round(320 / 2 - width / 2),
-                Math.round(200 / 2 - height / 2),
-                width, height, texture, 1.0);
-
-            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-            this.framebuffer.drawTexture(0, 0, texture3, 0.85);
-            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-
-            this.framebuffer.noise(time, this.noise);
-        } else if (time < 150000) {
-            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-            this.framebuffer.drawParticleTorus(time, this.particleTexture2, true);
-
-            const tmpGlitch: Uint32Array = new Uint32Array(320 * 200);
-            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
-
-            const texture: Texture = new Texture();
-            texture.texture = tmpGlitch;
-            texture.width = 320;
-            texture.height = 200;
-
-            const ukBasslineBpm: number = 140;
-            const ukBasslineClapMs: number = 60000 / ukBasslineBpm * 2;
-            const smashTime: number = (Date.now() - this.start) % ukBasslineClapMs;
-            const smash: number = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
-                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
-            const width: number = Math.round(320 + smash * 320 / 100);
-            const height: number = Math.round(200 + smash * 200 / 100);
-
-            this.framebuffer.drawScaledTextureClipBi(
-                Math.round(320 / 2 - width / 2),
-                Math.round(200 / 2 - height / 2),
-                width, height, texture, 1.0);
-
-            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-            this.framebuffer.drawTexture(0, 0, texture3, 0.85);
-            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-
-            this.framebuffer.noise(time, this.noise);
-        } else if (time < 200000) {
-            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-            this.framebuffer.setCullFace(CullFace.BACK);
-            this.framebuffer.setBob(this.spheremap);
-            this.framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
-
-            const tmpGlitch: Uint32Array = new Uint32Array(320 * 200);
-            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
-
-            const texture: Texture = new Texture();
-            texture.texture = tmpGlitch;
-            texture.width = 320;
-            texture.height = 200;
-
             const ukBasslineBpm = 140;
             const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
             const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
@@ -1025,128 +924,190 @@ class Canvas {
                 this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
             const width = Math.round(320 + smash * 320 / 100);
             const height = Math.round(200 + smash * 200 / 100);
-
-            this.framebuffer.drawScaledTextureClipBi(
-                Math.round(320 / 2 - width / 2),
-                Math.round(200 / 2 - height / 2),
-                width, height, texture, 1.0);
-
-            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawScaledTextureClip(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            const texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.85);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-
             this.framebuffer.noise(time, this.noise);
-        } else if (time < 250000) {
+        }
+        else if (time < 100000) {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+            // this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.setBob(this.envmap);
+            this.framebuffer.shadingSphereEnvDisp2((time - 50000) * 0.0002);
+            // Motion Blur
+            const tmpGlitch = new Uint32Array(320 * 200);
+            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
+            const texture = new Texture_1.default();
+            texture.texture = tmpGlitch;
+            texture.width = 320;
+            texture.height = 200;
+            const ukBasslineBpm = 140;
+            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
+            const width = Math.round(320 + smash * 320 / 100);
+            const height = Math.round(200 + smash * 200 / 100);
+            this.framebuffer.drawScaledTextureClipBi(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            const texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.85);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            this.framebuffer.noise(time, this.noise);
+        }
+        else if (time < 150000) {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.drawParticleTorus(time, this.particleTexture2, true);
+            const tmpGlitch = new Uint32Array(320 * 200);
+            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
+            const texture = new Texture_1.default();
+            texture.texture = tmpGlitch;
+            texture.width = 320;
+            texture.height = 200;
+            const ukBasslineBpm = 140;
+            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
+            const width = Math.round(320 + smash * 320 / 100);
+            const height = Math.round(200 + smash * 200 / 100);
+            this.framebuffer.drawScaledTextureClipBi(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            const texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.85);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            this.framebuffer.noise(time, this.noise);
+        }
+        else if (time < 200000) {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+            this.framebuffer.setBob(this.spheremap);
+            this.framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
+            const tmpGlitch = new Uint32Array(320 * 200);
+            this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
+            const texture = new Texture_1.default();
+            texture.texture = tmpGlitch;
+            texture.width = 320;
+            texture.height = 200;
+            const ukBasslineBpm = 140;
+            const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
+            const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
+            const smash = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
+                this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
+            const width = Math.round(320 + smash * 320 / 100);
+            const height = Math.round(200 + smash * 200 / 100);
+            this.framebuffer.drawScaledTextureClipBi(Math.round(320 / 2 - width / 2), Math.round(200 / 2 - height / 2), width, height, texture, 1.0);
+            const texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.85);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            this.framebuffer.noise(time, this.noise);
+        }
+        else if (time < 250000) {
             this.framebuffer.raveMoview(time, this.rave);
             this.framebuffer.glitchScreen(time, this.noise, false);
-            this.framebuffer.setCullFace(CullFace.BACK);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
             this.framebuffer.setBob(this.spheremap);
             this.framebuffer.shadingPlaneEnv(time * 0.0002);
-
-            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+            const texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.85);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-
             this.framebuffer.noise(time, this.noise);
-        } else if (time < 300000) {
+        }
+        else if (time < 300000) {
             this.framebuffer.drawVoxelLandscape4(this.heightmap, time);
-            const tempTexture: Texture = new Texture();
+            const tempTexture = new Texture_1.default();
             tempTexture.texture = new Uint32Array(256 * 256);
-            for (let y: number = 0; y < 256; y++) {
-                for (let x: number = 0; x < 256; x++) {
-                    const ypos: number = 199 - Math.round(200 / 256 * x);
-                    const xpos: number = Math.round(320 / 256 * y);
+            for (let y = 0; y < 256; y++) {
+                for (let x = 0; x < 256; x++) {
+                    const ypos = 199 - Math.round(200 / 256 * x);
+                    const xpos = Math.round(320 / 256 * y);
                     tempTexture.texture[x + y * 256] = this.framebuffer.framebuffer[xpos + ypos * 320];
                 }
             }
-
             this.framebuffer.drawPolarDistotion2(time, tempTexture);
-
-            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+            const texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.65);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-
             this.framebuffer.noise(time, this.noise);
-        } else if (time < 350000) {
+        }
+        else if (time < 350000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-            this.framebuffer.setCullFace(CullFace.FRONT);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
             this.framebuffer.setBob(this.spheremap);
             this.framebuffer.shadingCylinderEnvDisp(time * 0.0002);
-
-            const texture3 = new Texture(this.accumulationBuffer, 320, 200);
+            const texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.85);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-
             this.framebuffer.noise(time, this.noise);
-        } else if (time < 400000) {
+        }
+        else if (time < 400000) {
             this.framebuffer.raveMoview(time, this.rave);
-            this.framebuffer.setCullFace(CullFace.BACK);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
             this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
             this.framebuffer.glitchScreen(time, this.noise);
-        } else if (time < 450000) {
-
+        }
+        else if (time < 450000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.drawParticleWaves(time, this.particleTexture2, true);
-
-            const texture3 = new Texture(this.accumulationBuffer, 320, 200);
+            const texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.85);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-
             this.framebuffer.noise(time, this.noise);
-
-        } else if (time < 500000) {
+        }
+        else if (time < 500000) {
             this.framebuffer.drawMetaballs();
             this.framebuffer.noise(time, this.noise, 0.1);
-        } else if (time < 550000) {
+        }
+        else if (time < 550000) {
             this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
             this.framebuffer.noise(time, this.noise);
-        } else if (time < 600000) {
-            // shadows are defect :(
-            this.framebuffer.setCullFace(CullFace.BACK);
-            this.framebuffer.reproduceRazorScene(time * 0.003, [
+        }
+        else if (time < 600000) {
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+            this.framebuffer.reproduceRazorScene(time * 0.0018, [
                 { tex: this.texture10, scale: 0.0, alpha: 1.0 },
                 { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                { tex: this.texture13, scale: 1.6, alpha: 0.25 }
-            ]);
-
-            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+                { tex: this.texture13, scale: 1.6, alpha: 0.25 },
+                { tex: this.texture13, scale: 0.7, alpha: 0.22 },
+                { tex: this.texture13, scale: -0.4, alpha: 0.22 },
+            ], this.dirt);
+            const texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.75);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-
-            this.framebuffer.noise(time, this.noise);
-        } else if (time < 650000) {
-
+            this.framebuffer.noise(time, this.noise, 0.04);
+        }
+        else if (time < 650000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.drawParticleStreams(time, this.particleTexture2, true);
-            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+            const texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.55);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             this.framebuffer.noise(time, this.noise);
-        } else {
-            this.framebuffer.setCullFace(CullFace.FRONT);
+        }
+        else if (time < 700000) {
+            this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
             this.framebuffer.torusTunnel(time * 0.007, (Date.now() - this.start), this.particleTexture);
-
-            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+            const texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.75);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-
             this.framebuffer.noise(time, this.noise);
         }
-        */
-        // shadows are defect :(
-        this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
-        this.framebuffer.reproduceRazorScene(time * 0.0018, [
-            { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-            { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-            { tex: this.texture13, scale: 1.6, alpha: 0.25 },
-            { tex: this.texture13, scale: 0.7, alpha: 0.22 },
-            { tex: this.texture13, scale: -0.4, alpha: 0.22 },
-        ], this.dirt);
-        const texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
-        this.framebuffer.drawTexture(0, 0, texture3, 0.75);
-        this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-        // this.framebuffer.cinematicScroller(this.texture4, time*0.3);
-        this.framebuffer.noise(time, this.noise, 0.04);
+        else {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
+            this.framebuffer.drawBlenderScene2(time, this.texture4, [
+                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                { tex: this.texture13, scale: 1.6, alpha: 0.25 },
+                { tex: this.texture13, scale: 0.7, alpha: 0.22 },
+                { tex: this.texture13, scale: -0.4, alpha: 0.22 },
+            ], this.dirt);
+            const texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.75);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            this.framebuffer.noise(time, this.noise);
+        }
+        // this.framebuffer.drawTexture(0, 0, this.mask, 1.0);
         // this.framebuffer.glitchScreen(time, this.noise);
         // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
         // this.framebuffer.drawWormhole(time, this.particleTexture2, true);
@@ -1161,7 +1122,6 @@ class Canvas {
          * - screen exploding intro cubes
          * - Split red green and blue channels and displace them in x direction
          */
-        this.framebuffer.drawTexture(0, 0, this.mask, 1.0);
         /**
          * TODO:
          * - Stripe landscape: http://farm3.static.flickr.com/2653/5710494901_2ca6ddbfb2_b.jpg
@@ -1604,47 +1564,47 @@ class Canvas {
             lastClick = currentClick;
         });
         Promise.all([
-            this.createTexture(__webpack_require__(24), false).then(texture => this.spheremap = texture),
-            this.createTexture(__webpack_require__(25), false).then(texture => this.metal = texture),
-            this.createTexture(__webpack_require__(26), false).then(texture => this.texture = texture),
-            this.createTexture(__webpack_require__(27), true).then(texture => this.texture2 = texture),
-            this.createTexture(__webpack_require__(28), false).then(texture => this.heightmap = texture),
-            this.createTexture(__webpack_require__(29), true).then(texture => this.texture4 = texture),
-            this.createTexture(__webpack_require__(30), false).then(texture => this.texture5 = texture),
-            this.createTexture(__webpack_require__(31), true).then(texture => this.texture6 = texture),
-            this.createTexture(__webpack_require__(32), true).then(texture => this.texture7 = texture),
-            this.createTexture(__webpack_require__(33), false).then(texture => this.texture8 = texture),
-            this.createTexture(__webpack_require__(34), false).then(texture => this.texture9 = texture),
-            this.createTexture(__webpack_require__(35), true).then(texture => this.texture10 = texture),
-            this.createTexture(__webpack_require__(36), true).then(texture => this.texture11 = texture),
-            this.createTexture(__webpack_require__(37), true).then(texture => this.texture12 = texture),
-            this.createTexture(__webpack_require__(38), true).then(texture => this.texture13 = texture),
-            this.createTexture(__webpack_require__(39), false).then(texture => this.texture14 = texture),
-            this.createTexture(__webpack_require__(40), false).then(texture => this.revision = texture),
-            this.createTexture(__webpack_require__(41), true).then(texture => this.meth = texture),
+            this.createTexture(__webpack_require__(25), false).then(texture => this.spheremap = texture),
+            this.createTexture(__webpack_require__(26), false).then(texture => this.metal = texture),
+            this.createTexture(__webpack_require__(27), false).then(texture => this.texture = texture),
+            this.createTexture(__webpack_require__(28), true).then(texture => this.texture2 = texture),
+            this.createTexture(__webpack_require__(29), false).then(texture => this.heightmap = texture),
+            this.createTexture(__webpack_require__(30), true).then(texture => this.texture4 = texture),
+            this.createTexture(__webpack_require__(31), false).then(texture => this.texture5 = texture),
+            this.createTexture(__webpack_require__(32), true).then(texture => this.texture6 = texture),
+            this.createTexture(__webpack_require__(33), true).then(texture => this.texture7 = texture),
+            this.createTexture(__webpack_require__(34), false).then(texture => this.texture8 = texture),
+            this.createTexture(__webpack_require__(35), false).then(texture => this.texture9 = texture),
+            this.createTexture(__webpack_require__(36), true).then(texture => this.texture10 = texture),
+            this.createTexture(__webpack_require__(37), true).then(texture => this.texture11 = texture),
+            this.createTexture(__webpack_require__(38), true).then(texture => this.texture12 = texture),
+            this.createTexture(__webpack_require__(39), true).then(texture => this.texture13 = texture),
+            this.createTexture(__webpack_require__(40), false).then(texture => this.texture14 = texture),
+            this.createTexture(__webpack_require__(41), false).then(texture => this.revision = texture),
+            this.createTexture(__webpack_require__(42), true).then(texture => this.meth = texture),
             this.createProceduralTexture().then(texture => this.texture15 = texture),
             this.createProceduralTexture2().then(texture => this.particleTexture = texture),
             this.createProceduralTexture3().then(texture => this.particleTexture2 = texture),
             this.createProceduralTexture4().then(texture => this.noise = texture),
             this.createProceduralDisplacementMap().then(texture => this.displacementMap = texture),
-            this.createTexture(__webpack_require__(42), true).then(texture => this.hoodlumLogo = texture),
-            this.createTexture(__webpack_require__(43), false).then(texture => this.abstract = texture),
-            this.createTexture(__webpack_require__(44), false).then(texture => this.rave = texture),
-            this.createTexture(__webpack_require__(45), false).then(texture => this.micro = texture),
-            this.createTexture(__webpack_require__(46), false).then(texture => this.blurred = texture),
-            this.createTexture(__webpack_require__(47), true).then(texture => this.hlm = texture),
-            this.createTexture(__webpack_require__(48), true).then(texture => this.cross = texture),
-            this.createTexture(__webpack_require__(49), false).then(texture => this.envmap = texture),
-            this.createTexture(__webpack_require__(50), false).then(texture => this.heightmapSphere = texture),
-            this.createTexture(__webpack_require__(51), true).then(texture => this.mask = texture),
-            this.createTexture(__webpack_require__(52), true).then(texture => this.dirt = texture),
+            this.createTexture(__webpack_require__(43), true).then(texture => this.hoodlumLogo = texture),
+            this.createTexture(__webpack_require__(44), false).then(texture => this.abstract = texture),
+            this.createTexture(__webpack_require__(45), false).then(texture => this.rave = texture),
+            this.createTexture(__webpack_require__(46), false).then(texture => this.micro = texture),
+            this.createTexture(__webpack_require__(47), false).then(texture => this.blurred = texture),
+            this.createTexture(__webpack_require__(48), true).then(texture => this.hlm = texture),
+            this.createTexture(__webpack_require__(49), true).then(texture => this.cross = texture),
+            this.createTexture(__webpack_require__(50), false).then(texture => this.envmap = texture),
+            this.createTexture(__webpack_require__(51), false).then(texture => this.heightmapSphere = texture),
+            this.createTexture(__webpack_require__(52), true).then(texture => this.mask = texture),
+            this.createTexture(__webpack_require__(53), true).then(texture => this.dirt = texture),
         ]).then(() => {
             // Web Audio API
             // FIXME: put this into a Player Class
             this.framebuffer.precompute(this.heightmap, this.heightmapSphere);
             let audioContext = new AudioContext();
             let request = new XMLHttpRequest();
-            request.open('GET', __webpack_require__(53), true);
+            request.open('GET', __webpack_require__(54), true);
             request.responseType = 'arraybuffer';
             request.onload = () => {
                 let undecodedAudio = request.response;
@@ -1715,6 +1675,9 @@ const RandomNumberGenerator_1 = __webpack_require__(7);
 let json = __webpack_require__(21);
 let bunnyJson = __webpack_require__(22);
 let worldJson = __webpack_require__(23);
+//let torusJson = <any>require('./assets/torus.json');
+let torusJson = __webpack_require__(24);
+//let torusJson = <any>require('./assets/platonian2.json');
 // TODO:
 // - use polymorphism in order to have different intersection methods
 // - one for plain clipping / one for tex coords / one for multitexturing / gouraud shading etc
@@ -1840,7 +1803,8 @@ class Framebuffer {
     precompute(texture, texture2) {
         this.obj = this.createObject();
         this.bunnyObj = this.createBunny();
-        this.blenderObj = this.getBlenderScene();
+        this.blenderObj = this.getBlenderScene(worldJson);
+        this.blenderObj2 = this.getBlenderScene(torusJson, false);
         this.sphere = this.createSphere();
         this.plane = this.createPlane();
         this.cylinder = this.createCylinder();
@@ -3747,16 +3711,19 @@ class Framebuffer {
         let lensflareScreenSpace = this.project(camera.multiply(new math_1.Vector3f(12.0, 4.0, 0)));
         this.drawLensFlare(lensflareScreenSpace, elapsedTime * 100, texture, dirt);
     }
-    getBlenderScene() {
+    getBlenderScene(file, disp = true) {
         let scene = [];
-        worldJson.forEach(object => {
+        file.forEach(object => {
             let points = new Array();
             let normals = new Array();
             let index = new Array();
             let faces = new Array();
             object.vertices.forEach((v) => {
                 // some transformation in order for the vertices to be in worldspace
-                points.push(new math_1.Vector4f(v.x, v.y, v.z).mul(2).add(new math_1.Vector4f(0, -2.7, 0, 0)));
+                if (disp)
+                    points.push(new math_1.Vector4f(v.x, v.y, v.z).mul(2).add(new math_1.Vector4f(0, -2.7, 0, 0)));
+                else
+                    points.push(new math_1.Vector4f(v.x, v.y, v.z).mul(2));
                 //points.push(new Vector4f(v.x, v.y, v.z).mul(0.5).add(new Vector4f(0,3.7,0,0)));
             });
             for (let x = 0; x < object.faces.length; x++) {
@@ -4094,6 +4061,25 @@ class Framebuffer {
         //this.drawLineDDANoZ(new Vector3f(width / 2, height / 2, 0), new Vector3f(width / 2, height / 2 + height, -100), colred);
         //this.drawLineDDANoZ(new Vector3f(width / 2 + width, height / 2, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
         //this.drawLineDDANoZ(new Vector3f(width / 2, height / 2 + height, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
+    }
+    /**
+     * Requirements for blender export:
+     * - Wavefront OBJ
+     * -
+     */
+    drawBlenderScene2(elapsedTime, texture3, texture, dirt) {
+        this.clearDepthBuffer();
+        let camera = math_1.Matrix4f.constructTranslationMatrix(0, 0, -12).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 0.0002)
+            .multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(elapsedTime * 0.0002)));
+        let mv = camera.multiplyMatrix(math_1.Matrix4f.constructScaleMatrix(5, 16, 5));
+        let model = this.blenderObj2[0];
+        this.drawObject2(model, mv, 246, 165, 177);
+        mv = camera.multiplyMatrix(math_1.Matrix4f.constructZRotationMatrix(Math.PI * 0.5 * this.cosineInterpolate(0, 600, Math.floor(elapsedTime * 0.7) % 4000))
+            .multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(Math.PI * 0.5 * this.cosineInterpolate(2000, 2600, Math.floor(elapsedTime * 0.7) % 4000))));
+        model = this.blenderObj2[1];
+        this.drawObject2(model, mv, 186, 165, 197);
+        let lensflareScreenSpace = this.project(camera.multiply(new math_1.Vector3f(16.0 * 20, 16.0 * 20, 0)));
+        this.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.3, texture, dirt);
     }
     drawPlaneDeformation(elapsedTime, texture) {
         // optimize
@@ -6268,9 +6254,11 @@ class Framebuffer {
             scale *= (1 - this.interpolate(this.lensFlareEnd, this.lensFlareEnd + 100, elapsedTime));
         }
         let dir = new math_1.Vector3f(320 / 2, 200 / 2, 0).sub(pos);
-        for (let i = 0; i < texture.length; i++) {
-            let temp = pos.add(dir.mul(texture[i].scale));
-            this.drawTexture(Math.round(temp.x) - texture[i].tex.width / 2, Math.round(temp.y) - texture[i].tex.height / 2, texture[i].tex, texture[i].alpha * scale);
+        if (scale > 0) {
+            for (let i = 0; i < texture.length; i++) {
+                let temp = pos.add(dir.mul(texture[i].scale));
+                this.drawTexture(Math.round(temp.x) - texture[i].tex.width / 2, Math.round(temp.y) - texture[i].tex.height / 2, texture[i].tex, texture[i].alpha * scale);
+            }
         }
         this.drawTextureRectAdd(0, 0, 0, 0, 320, 200, dirt, 0.03 + 0.15 * scale);
     }
@@ -8177,183 +8165,190 @@ module.exports = [{"name":"Icosphere","vertices":[{"x":-0.011315,"y":0.583982,"z
 
 /***/ }),
 /* 24 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-module.exports = __webpack_require__.p + "14bd8cd5c9c3b1bcb59e2ec9f4c8ed16.png";
+module.exports = [{"name":"Plane.003","vertices":[{"x":-3,"y":0.063801,"z":3},{"x":3,"y":0.063801,"z":3},{"x":-3,"y":0.063801,"z":-3},{"x":3,"y":0.063801,"z":-3},{"x":-3,"y":0.152405,"z":3},{"x":3,"y":0.152405,"z":3},{"x":-3,"y":0.152405,"z":-3},{"x":3,"y":0.152405,"z":-3},{"x":-3,"y":-0.297755,"z":3},{"x":3,"y":-0.297755,"z":3},{"x":-3,"y":-0.297755,"z":-3},{"x":3,"y":-0.297755,"z":-3},{"x":-3,"y":-0.209151,"z":3},{"x":3,"y":-0.209151,"z":3},{"x":-3,"y":-0.209151,"z":-3},{"x":3,"y":-0.209151,"z":-3},{"x":-3,"y":-0.149846,"z":3},{"x":3,"y":-0.149846,"z":3},{"x":-3,"y":-0.149846,"z":-3},{"x":3,"y":-0.149846,"z":-3},{"x":-3,"y":-0.061242,"z":3},{"x":3,"y":-0.061242,"z":3},{"x":-3,"y":-0.061242,"z":-3},{"x":3,"y":-0.061242,"z":-3},{"x":-3,"y":0.211711,"z":3},{"x":3,"y":0.211711,"z":3},{"x":-3,"y":0.211711,"z":-3},{"x":3,"y":0.211711,"z":-3},{"x":-3,"y":0.300315,"z":3},{"x":3,"y":0.300315,"z":3},{"x":-3,"y":0.300315,"z":-3},{"x":3,"y":0.300315,"z":-3},{"x":-1.640155,"y":-0.149846,"z":1.203565},{"x":-1.640155,"y":-0.061242,"z":1.203565},{"x":-1.640155,"y":0.152405,"z":1.203565},{"x":-1.640155,"y":0.063801,"z":1.203565},{"x":-1.640155,"y":0.211711,"z":1.203565},{"x":-1.640155,"y":0.300315,"z":1.203565},{"x":-1.640155,"y":-0.209151,"z":1.203565},{"x":-1.640155,"y":-0.297755,"z":1.203565},{"x":1.667709,"y":-0.149846,"z":1.203565},{"x":1.667709,"y":-0.061242,"z":1.203565},{"x":1.667709,"y":0.152405,"z":1.203565},{"x":1.667709,"y":0.063801,"z":1.203565},{"x":1.667709,"y":0.211711,"z":1.203565},{"x":1.667709,"y":0.300315,"z":1.203565},{"x":1.667709,"y":-0.209151,"z":1.203565},{"x":1.667709,"y":-0.297755,"z":1.203565},{"x":-1.640155,"y":-0.149846,"z":-1.18718},{"x":-1.640155,"y":-0.061242,"z":-1.18718},{"x":-1.640155,"y":0.152405,"z":-1.18718},{"x":-1.640155,"y":0.063801,"z":-1.18718},{"x":-1.640155,"y":0.211711,"z":-1.18718},{"x":-1.640155,"y":0.300315,"z":-1.18718},{"x":-1.640155,"y":-0.209151,"z":-1.18718},{"x":-1.640155,"y":-0.297755,"z":-1.18718},{"x":1.667709,"y":-0.149846,"z":-1.18718},{"x":1.667709,"y":-0.061242,"z":-1.18718},{"x":1.667709,"y":0.152405,"z":-1.18718},{"x":1.667709,"y":0.063801,"z":-1.18718},{"x":1.667709,"y":0.211711,"z":-1.18718},{"x":1.667709,"y":0.300315,"z":-1.18718},{"x":1.667709,"y":-0.209151,"z":-1.18718},{"x":1.667709,"y":-0.297755,"z":-1.18718}],"normals":[{"x":0,"y":-1,"z":0},{"x":0,"y":1,"z":0},{"x":0,"y":0,"z":-1},{"x":0,"y":0,"z":1},{"x":1,"y":0,"z":0},{"x":-1,"y":0,"z":0}],"faces":[{"vertices":[0,35,1],"normals":[0,0,0]},{"vertices":[5,58,42],"normals":[1,1,1]},{"vertices":[2,7,3],"normals":[2,2,2]},{"vertices":[1,4,0],"normals":[3,3,3]},{"vertices":[3,5,1],"normals":[4,4,4]},{"vertices":[0,6,2],"normals":[5,5,5]},{"vertices":[8,39,9],"normals":[0,0,0]},{"vertices":[13,62,46],"normals":[1,1,1]},{"vertices":[10,15,11],"normals":[2,2,2]},{"vertices":[9,12,8],"normals":[3,3,3]},{"vertices":[11,13,9],"normals":[4,4,4]},{"vertices":[8,14,10],"normals":[5,5,5]},{"vertices":[16,32,17],"normals":[0,0,0]},{"vertices":[21,57,41],"normals":[1,1,1]},{"vertices":[18,23,19],"normals":[2,2,2]},{"vertices":[17,20,16],"normals":[3,3,3]},{"vertices":[19,21,17],"normals":[4,4,4]},{"vertices":[16,22,18],"normals":[5,5,5]},{"vertices":[24,36,25],"normals":[0,0,0]},{"vertices":[29,61,45],"normals":[1,1,1]},{"vertices":[26,31,27],"normals":[2,2,2]},{"vertices":[25,28,24],"normals":[3,3,3]},{"vertices":[27,29,25],"normals":[4,4,4]},{"vertices":[24,30,26],"normals":[5,5,5]},{"vertices":[55,10,11],"normals":[0,0,0]},{"vertices":[50,7,6],"normals":[1,1,1]},{"vertices":[62,55,63],"normals":[3,3,3]},{"vertices":[57,48,56],"normals":[3,3,3]},{"vertices":[58,51,59],"normals":[3,3,3]},{"vertices":[61,52,60],"normals":[3,3,3]},{"vertices":[53,31,30],"normals":[1,1,1]},{"vertices":[48,18,19],"normals":[0,0,0]},{"vertices":[52,26,27],"normals":[0,0,0]},{"vertices":[46,63,47],"normals":[5,5,5]},{"vertices":[41,56,40],"normals":[5,5,5]},{"vertices":[42,59,43],"normals":[5,5,5]},{"vertices":[45,60,44],"normals":[5,5,5]},{"vertices":[51,2,3],"normals":[0,0,0]},{"vertices":[38,47,39],"normals":[2,2,2]},{"vertices":[33,40,32],"normals":[2,2,2]},{"vertices":[34,43,35],"normals":[2,2,2]},{"vertices":[37,44,36],"normals":[2,2,2]},{"vertices":[54,39,55],"normals":[4,4,4]},{"vertices":[49,32,48],"normals":[4,4,4]},{"vertices":[50,35,51],"normals":[4,4,4]},{"vertices":[52,37,36],"normals":[4,4,4]},{"vertices":[54,15,14],"normals":[1,1,1]},{"vertices":[49,23,22],"normals":[1,1,1]},{"vertices":[0,2,51],"normals":[0,0,0]},{"vertices":[35,43,1],"normals":[0,0,0]},{"vertices":[0,51,35],"normals":[0,0,0]},{"vertices":[34,4,5],"normals":[1,1,1]},{"vertices":[5,7,58],"normals":[1,1,1]},{"vertices":[42,34,5],"normals":[1,1,1]},{"vertices":[2,6,7],"normals":[2,2,2]},{"vertices":[1,5,4],"normals":[3,3,3]},{"vertices":[3,7,5],"normals":[4,4,4]},{"vertices":[0,4,6],"normals":[5,5,5]},{"vertices":[8,10,55],"normals":[0,0,0]},{"vertices":[39,47,9],"normals":[0,0,0]},{"vertices":[8,55,39],"normals":[0,0,0]},{"vertices":[38,12,13],"normals":[1,1,1]},{"vertices":[13,15,62],"normals":[1,1,1]},{"vertices":[46,38,13],"normals":[1,1,1]},{"vertices":[10,14,15],"normals":[2,2,2]},{"vertices":[9,13,12],"normals":[3,3,3]},{"vertices":[11,15,13],"normals":[4,4,4]},{"vertices":[8,12,14],"normals":[5,5,5]},{"vertices":[16,18,48],"normals":[0,0,0]},{"vertices":[32,40,17],"normals":[0,0,0]},{"vertices":[16,48,32],"normals":[0,0,0]},{"vertices":[33,20,21],"normals":[1,1,1]},{"vertices":[21,23,57],"normals":[1,1,1]},{"vertices":[41,33,21],"normals":[1,1,1]},{"vertices":[18,22,23],"normals":[2,2,2]},{"vertices":[17,21,20],"normals":[3,3,3]},{"vertices":[19,23,21],"normals":[4,4,4]},{"vertices":[16,20,22],"normals":[5,5,5]},{"vertices":[24,26,52],"normals":[0,0,0]},{"vertices":[36,44,25],"normals":[0,0,0]},{"vertices":[24,52,36],"normals":[0,0,0]},{"vertices":[37,28,29],"normals":[1,1,1]},{"vertices":[29,31,61],"normals":[1,1,1]},{"vertices":[45,37,29],"normals":[1,1,1]},{"vertices":[26,30,31],"normals":[2,2,2]},{"vertices":[25,29,28],"normals":[3,3,3]},{"vertices":[27,31,29],"normals":[4,4,4]},{"vertices":[24,28,30],"normals":[5,5,5]},{"vertices":[11,9,63],"normals":[0,0,0]},{"vertices":[63,55,11],"normals":[0,0,0]},{"vertices":[9,47,63],"normals":[0,0,0]},{"vertices":[4,34,50],"normals":[1,1,1]},{"vertices":[50,58,7],"normals":[1,1,1]},{"vertices":[6,4,50],"normals":[1,1,1]},{"vertices":[62,54,55],"normals":[3,3,3]},{"vertices":[57,49,48],"normals":[3,3,3]},{"vertices":[58,50,51],"normals":[3,3,3]},{"vertices":[61,53,52],"normals":[3,3,3]},{"vertices":[28,37,53],"normals":[1,1,1]},{"vertices":[53,61,31],"normals":[1,1,1]},{"vertices":[30,28,53],"normals":[1,1,1]},{"vertices":[19,17,56],"normals":[0,0,0]},{"vertices":[56,48,19],"normals":[0,0,0]},{"vertices":[17,40,56],"normals":[0,0,0]},{"vertices":[27,25,60],"normals":[0,0,0]},{"vertices":[60,52,27],"normals":[0,0,0]},{"vertices":[25,44,60],"normals":[0,0,0]},{"vertices":[46,62,63],"normals":[5,5,5]},{"vertices":[41,57,56],"normals":[5,5,5]},{"vertices":[42,58,59],"normals":[5,5,5]},{"vertices":[45,61,60],"normals":[5,5,5]},{"vertices":[3,1,59],"normals":[0,0,0]},{"vertices":[59,51,3],"normals":[0,0,0]},{"vertices":[1,43,59],"normals":[0,0,0]},{"vertices":[38,46,47],"normals":[2,2,2]},{"vertices":[33,41,40],"normals":[2,2,2]},{"vertices":[34,42,43],"normals":[2,2,2]},{"vertices":[37,45,44],"normals":[2,2,2]},{"vertices":[54,38,39],"normals":[4,4,4]},{"vertices":[49,33,32],"normals":[4,4,4]},{"vertices":[50,34,35],"normals":[4,4,4]},{"vertices":[52,53,37],"normals":[4,4,4]},{"vertices":[12,38,54],"normals":[1,1,1]},{"vertices":[54,62,15],"normals":[1,1,1]},{"vertices":[14,12,54],"normals":[1,1,1]},{"vertices":[20,33,49],"normals":[1,1,1]},{"vertices":[49,57,23],"normals":[1,1,1]},{"vertices":[22,20,49],"normals":[1,1,1]}]},{"name":"Cube.001_Cube.003","vertices":[{"x":-1.106432,"y":1.11411,"z":1.126241},{"x":1.12966,"y":1.118437,"z":1.126241},{"x":-1.106432,"y":1.114111,"z":-1.109855},{"x":1.12966,"y":1.118437,"z":-1.109855},{"x":-1.102106,"y":-1.121982,"z":1.126241},{"x":1.133987,"y":-1.117655,"z":1.126241},{"x":-1.102106,"y":-1.121982,"z":-1.109856},{"x":1.133986,"y":-1.117655,"z":-1.109856}],"normals":[{"x":-0.0019,"y":1,"z":0},{"x":0,"y":0,"z":-1},{"x":0.0019,"y":-1,"z":0},{"x":0,"y":0,"z":1},{"x":-1,"y":-0.0019,"z":0},{"x":1,"y":0.0019,"z":0}],"faces":[{"vertices":[0,3,2],"normals":[0,0,0]},{"vertices":[3,6,2],"normals":[1,1,1]},{"vertices":[7,4,6],"normals":[2,2,2]},{"vertices":[5,0,4],"normals":[3,3,3]},{"vertices":[6,0,2],"normals":[4,4,4]},{"vertices":[3,5,7],"normals":[5,5,5]},{"vertices":[0,1,3],"normals":[0,0,0]},{"vertices":[3,7,6],"normals":[1,1,1]},{"vertices":[7,5,4],"normals":[2,2,2]},{"vertices":[5,1,0],"normals":[3,3,3]},{"vertices":[6,4,0],"normals":[4,4,4]},{"vertices":[3,1,5],"normals":[5,5,5]}]}]
 
 /***/ }),
 /* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "2989b3135074a9d7d10f7d6c42cecd4a.png";
+module.exports = __webpack_require__.p + "14bd8cd5c9c3b1bcb59e2ec9f4c8ed16.png";
 
 /***/ }),
 /* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "36fbc222529fa8e2b722e7de1ca8f010.png";
+module.exports = __webpack_require__.p + "2989b3135074a9d7d10f7d6c42cecd4a.png";
 
 /***/ }),
 /* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "b30d17fb175566e9e20d5584d7ae6bfb.png";
+module.exports = __webpack_require__.p + "36fbc222529fa8e2b722e7de1ca8f010.png";
 
 /***/ }),
 /* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "c4e4b266fe4b4281371e908cb2fa6e89.png";
+module.exports = __webpack_require__.p + "b30d17fb175566e9e20d5584d7ae6bfb.png";
 
 /***/ }),
 /* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "211f2046cf2c6739bad5c6209b09dac4.png";
+module.exports = __webpack_require__.p + "c4e4b266fe4b4281371e908cb2fa6e89.png";
 
 /***/ }),
 /* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "bed841884f7920591d4279314a1b53da.png";
+module.exports = __webpack_require__.p + "211f2046cf2c6739bad5c6209b09dac4.png";
 
 /***/ }),
 /* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "dad0119c8dd1a33ab48b6870bfa8b432.png";
+module.exports = __webpack_require__.p + "bed841884f7920591d4279314a1b53da.png";
 
 /***/ }),
 /* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "f4f2b50d7d886d02949a38f94c217a86.png";
+module.exports = __webpack_require__.p + "dad0119c8dd1a33ab48b6870bfa8b432.png";
 
 /***/ }),
 /* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "0009cb245d8a3129bcd470b1c30a2c17.png";
+module.exports = __webpack_require__.p + "f4f2b50d7d886d02949a38f94c217a86.png";
 
 /***/ }),
 /* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "47d04e8b7dc74f4980d66796a632547c.png";
+module.exports = __webpack_require__.p + "0009cb245d8a3129bcd470b1c30a2c17.png";
 
 /***/ }),
 /* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "c196269cf8b2fc9593276f497c8ffdd9.png";
+module.exports = __webpack_require__.p + "47d04e8b7dc74f4980d66796a632547c.png";
 
 /***/ }),
 /* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "5c07fbf7949c365c56f8188b02827d6e.png";
+module.exports = __webpack_require__.p + "c196269cf8b2fc9593276f497c8ffdd9.png";
 
 /***/ }),
 /* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "f1dde6672b0d9b18b4373a26d3803351.png";
+module.exports = __webpack_require__.p + "5c07fbf7949c365c56f8188b02827d6e.png";
 
 /***/ }),
 /* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "54e31707db0fbae7dec46d063517665a.png";
+module.exports = __webpack_require__.p + "f1dde6672b0d9b18b4373a26d3803351.png";
 
 /***/ }),
 /* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "b456e9dc15d272b079029a5ca6468305.png";
+module.exports = __webpack_require__.p + "54e31707db0fbae7dec46d063517665a.png";
 
 /***/ }),
 /* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "f657ac4e01beddb5085242cb1c20ecb3.png";
+module.exports = __webpack_require__.p + "b456e9dc15d272b079029a5ca6468305.png";
 
 /***/ }),
 /* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "6a04a9d0a0989ac43da2da2261c14c98.png";
+module.exports = __webpack_require__.p + "f657ac4e01beddb5085242cb1c20ecb3.png";
 
 /***/ }),
 /* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "042200790f9c9b7eb4c1dcdc1bfa6778.png";
+module.exports = __webpack_require__.p + "6a04a9d0a0989ac43da2da2261c14c98.png";
 
 /***/ }),
 /* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "aecaf306ad634d628614dca09cfab828.png";
+module.exports = __webpack_require__.p + "042200790f9c9b7eb4c1dcdc1bfa6778.png";
 
 /***/ }),
 /* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "539826c16dd852792e84c205811ca9f8.png";
+module.exports = __webpack_require__.p + "aecaf306ad634d628614dca09cfab828.png";
 
 /***/ }),
 /* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "2047b8a2f49ee5b609dc16ab0e62c014.png";
+module.exports = __webpack_require__.p + "539826c16dd852792e84c205811ca9f8.png";
 
 /***/ }),
 /* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "bbaba2795420534ca9f0184e07fb74f8.png";
+module.exports = __webpack_require__.p + "2047b8a2f49ee5b609dc16ab0e62c014.png";
 
 /***/ }),
 /* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "680cc4a9d367653fc466577bbd376590.png";
+module.exports = __webpack_require__.p + "bbaba2795420534ca9f0184e07fb74f8.png";
 
 /***/ }),
 /* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "9f73952b51a9a6343babe0c489a2b980.png";
+module.exports = __webpack_require__.p + "680cc4a9d367653fc466577bbd376590.png";
 
 /***/ }),
 /* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "fa5e6c40cb378f6ee6cab4e16ef0934b.png";
+module.exports = __webpack_require__.p + "9f73952b51a9a6343babe0c489a2b980.png";
 
 /***/ }),
 /* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "b01bbcd1860ad00f64ab16cc21569634.png";
+module.exports = __webpack_require__.p + "fa5e6c40cb378f6ee6cab4e16ef0934b.png";
 
 /***/ }),
 /* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "04259b8d38e7b73dae45b2c29ceeb4d3.png";
+module.exports = __webpack_require__.p + "b01bbcd1860ad00f64ab16cc21569634.png";
 
 /***/ }),
 /* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "28310db934c54c285a709a1e980e4efc.png";
+module.exports = __webpack_require__.p + "04259b8d38e7b73dae45b2c29ceeb4d3.png";
 
 /***/ }),
 /* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "0e7cabddfc9af1214d72c4201b0da9d9.mp3";
+module.exports = __webpack_require__.p + "28310db934c54c285a709a1e980e4efc.png";
+
+/***/ }),
+/* 54 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "2e9db51edd326bb0396b77e56f2d11a2.mp3";
 
 /***/ })
 /******/ ]);
+//# sourceMappingURL=application.bundle.js.map
