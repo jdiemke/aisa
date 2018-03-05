@@ -43,6 +43,7 @@ let worldJson = <any>require('./assets/world2.json');
 //let torusJson = <any>require('./assets/torus.json');
 
 let torusJson = <any>require('./assets/stravaganza.json');
+let gearJson = <any>require('./assets/gear.json');
 //let torusJson = <any>require('./assets/platonian2.json');
 
 // TODO:
@@ -218,6 +219,7 @@ export default class Framebuffer {
     private bunnyObj: any;
     private blenderObj: any;
     private blenderObj2: any;
+    private blenderObj3: any;
     private bob: Texture;
     private sphere: any;
     private plane: any;
@@ -254,6 +256,7 @@ export default class Framebuffer {
         this.bunnyObj = this.createBunny();
         this.blenderObj = this.getBlenderScene(worldJson);
         this.blenderObj2 = this.getBlenderScene(torusJson, false);
+        this.blenderObj3 = this.getBlenderScene(gearJson, false);
         this.sphere = this.createSphere();
 
         this.plane = this.createPlane();
@@ -3088,23 +3091,50 @@ export default class Framebuffer {
         );
 
 
-        let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(5,16,5));
+        let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(5, 16, 5));
         let model = this.blenderObj2[0];
         this.drawObject2(model, mv, 246, 165, 177);
 
 
         mv = camera.multiplyMatrix(Matrix4f.constructZRotationMatrix(
-            Math.PI*0.5 * this.cosineInterpolate(0, 600, Math.floor(elapsedTime * 0.7) % 4000))
+            Math.PI * 0.5 * this.cosineInterpolate(0, 600, Math.floor(elapsedTime * 0.7) % 4000))
             .multiplyMatrix(Matrix4f.constructXRotationMatrix(
-                Math.PI*0.5 * this.cosineInterpolate(2000, 2600, Math.floor(elapsedTime * 0.7) % 4000)))
+                Math.PI * 0.5 * this.cosineInterpolate(2000, 2600, Math.floor(elapsedTime * 0.7) % 4000)))
         );
         model = this.blenderObj2[1];
         this.drawObject2(model, mv, 186, 165, 197);
 
-        let lensflareScreenSpace = this.project(camera.multiply(new Vector3f(16.0*20, 16.0*20, 0)));
+        let lensflareScreenSpace = this.project(camera.multiply(new Vector3f(16.0 * 20, 16.0 * 20, 0)));
 
         this.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.3, texture, dirt);
+    }
 
+    public drawBlenderScene3(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
+
+        this.clearDepthBuffer();
+
+        let camera: Matrix4f = Matrix4f.constructTranslationMatrix(0, 0, -5).multiplyMatrix(
+            Matrix4f.constructYRotationMatrix(elapsedTime * 0.0002)
+                .multiplyMatrix(
+                    Matrix4f.constructXRotationMatrix(elapsedTime * 0.0002)
+                )
+        );
+
+        for (let i: number = 0; i < 10; i++) {
+            const scale = Math.sin(Math.PI*2/10*i+elapsedTime*0.002)*0.2+0.2+0.3;
+            let mv: Matrix4f = camera.multiplyMatrix(
+                Matrix4f.constructTranslationMatrix(0,((i+elapsedTime*0.0008)%10)-5,0).multiplyMatrix(
+                Matrix4f.constructYRotationMatrix((i*0.36+elapsedTime * 0.0016)).multiplyMatrix(
+                    Matrix4f.constructScaleMatrix(scale,1,scale)
+                )
+            )
+            );
+            let model = this.blenderObj3[0];
+            this.drawObject2(model, mv, 246, 165, 177);
+        }
+        let lensflareScreenSpace = this.project(camera.multiply(new Vector3f(16.0 * 20, 16.0 * 20, 0)));
+
+        this.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.3, texture, dirt);
     }
 
     public drawPlaneDeformation(elapsedTime: number, texture: Texture): void {

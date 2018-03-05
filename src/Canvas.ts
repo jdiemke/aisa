@@ -116,7 +116,7 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3 + 550000;
-        time = time % (750000);
+        time = time % (800000);
 
         this.framebuffer.setCullFace(CullFace.FRONT);
         /*
@@ -892,7 +892,7 @@ export class Canvas {
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
 
             this.framebuffer.noise(time, this.noise);
-        } else {
+        } else if (time < 750000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.setCullFace(CullFace.BACK);
             this.framebuffer.drawBlenderScene2(time, this.texture4,
@@ -903,6 +903,24 @@ export class Canvas {
                     { tex: this.texture13, scale: 0.7, alpha: 0.22 },
                     { tex: this.texture13, scale: -0.4, alpha: 0.22 },
                 ], this.dirt);
+            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.75);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+
+            this.framebuffer.noise(time, this.noise);
+        } else {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.setCullFace(CullFace.FRONT);
+            this.framebuffer.drawBlenderScene3(time, this.texture4,
+                [
+                    { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                    { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                    { tex: this.texture13, scale: 1.6, alpha: 0.25 },
+                    { tex: this.texture13, scale: 0.7, alpha: 0.22 },
+                    { tex: this.texture13, scale: -0.4, alpha: 0.22 },
+                ], this.dirt);
+            this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, 0.6);
+
             const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.75);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
