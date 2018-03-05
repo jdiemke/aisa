@@ -357,7 +357,7 @@ class Canvas {
         this.fpsCount++;
         let time = (Date.now() - this.start);
         time = time * 3 + 550000;
-        time = time % (750000);
+        time = time % (800000);
         this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
         /*
                 if (time < 5000) {
@@ -1092,7 +1092,7 @@ class Canvas {
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             this.framebuffer.noise(time, this.noise);
         }
-        else {
+        else if (time < 750000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.setCullFace(CullFace_1.CullFace.BACK);
             this.framebuffer.drawBlenderScene2(time, this.texture4, [
@@ -1102,6 +1102,22 @@ class Canvas {
                 { tex: this.texture13, scale: 0.7, alpha: 0.22 },
                 { tex: this.texture13, scale: -0.4, alpha: 0.22 },
             ], this.dirt);
+            const texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.75);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            this.framebuffer.noise(time, this.noise);
+        }
+        else {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
+            this.framebuffer.drawBlenderScene3(time, this.texture4, [
+                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                { tex: this.texture13, scale: 1.6, alpha: 0.25 },
+                { tex: this.texture13, scale: 0.7, alpha: 0.22 },
+                { tex: this.texture13, scale: -0.4, alpha: 0.22 },
+            ], this.dirt);
+            this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, 0.6);
             const texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.75);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
@@ -1564,47 +1580,47 @@ class Canvas {
             lastClick = currentClick;
         });
         Promise.all([
-            this.createTexture(__webpack_require__(25), false).then(texture => this.spheremap = texture),
-            this.createTexture(__webpack_require__(26), false).then(texture => this.metal = texture),
-            this.createTexture(__webpack_require__(27), false).then(texture => this.texture = texture),
-            this.createTexture(__webpack_require__(28), true).then(texture => this.texture2 = texture),
-            this.createTexture(__webpack_require__(29), false).then(texture => this.heightmap = texture),
-            this.createTexture(__webpack_require__(30), true).then(texture => this.texture4 = texture),
-            this.createTexture(__webpack_require__(31), false).then(texture => this.texture5 = texture),
-            this.createTexture(__webpack_require__(32), true).then(texture => this.texture6 = texture),
-            this.createTexture(__webpack_require__(33), true).then(texture => this.texture7 = texture),
-            this.createTexture(__webpack_require__(34), false).then(texture => this.texture8 = texture),
-            this.createTexture(__webpack_require__(35), false).then(texture => this.texture9 = texture),
-            this.createTexture(__webpack_require__(36), true).then(texture => this.texture10 = texture),
-            this.createTexture(__webpack_require__(37), true).then(texture => this.texture11 = texture),
-            this.createTexture(__webpack_require__(38), true).then(texture => this.texture12 = texture),
-            this.createTexture(__webpack_require__(39), true).then(texture => this.texture13 = texture),
-            this.createTexture(__webpack_require__(40), false).then(texture => this.texture14 = texture),
-            this.createTexture(__webpack_require__(41), false).then(texture => this.revision = texture),
-            this.createTexture(__webpack_require__(42), true).then(texture => this.meth = texture),
+            this.createTexture(__webpack_require__(26), false).then(texture => this.spheremap = texture),
+            this.createTexture(__webpack_require__(27), false).then(texture => this.metal = texture),
+            this.createTexture(__webpack_require__(28), false).then(texture => this.texture = texture),
+            this.createTexture(__webpack_require__(29), true).then(texture => this.texture2 = texture),
+            this.createTexture(__webpack_require__(30), false).then(texture => this.heightmap = texture),
+            this.createTexture(__webpack_require__(31), true).then(texture => this.texture4 = texture),
+            this.createTexture(__webpack_require__(32), false).then(texture => this.texture5 = texture),
+            this.createTexture(__webpack_require__(33), true).then(texture => this.texture6 = texture),
+            this.createTexture(__webpack_require__(34), true).then(texture => this.texture7 = texture),
+            this.createTexture(__webpack_require__(35), false).then(texture => this.texture8 = texture),
+            this.createTexture(__webpack_require__(36), false).then(texture => this.texture9 = texture),
+            this.createTexture(__webpack_require__(37), true).then(texture => this.texture10 = texture),
+            this.createTexture(__webpack_require__(38), true).then(texture => this.texture11 = texture),
+            this.createTexture(__webpack_require__(39), true).then(texture => this.texture12 = texture),
+            this.createTexture(__webpack_require__(40), true).then(texture => this.texture13 = texture),
+            this.createTexture(__webpack_require__(41), false).then(texture => this.texture14 = texture),
+            this.createTexture(__webpack_require__(42), false).then(texture => this.revision = texture),
+            this.createTexture(__webpack_require__(43), true).then(texture => this.meth = texture),
             this.createProceduralTexture().then(texture => this.texture15 = texture),
             this.createProceduralTexture2().then(texture => this.particleTexture = texture),
             this.createProceduralTexture3().then(texture => this.particleTexture2 = texture),
             this.createProceduralTexture4().then(texture => this.noise = texture),
             this.createProceduralDisplacementMap().then(texture => this.displacementMap = texture),
-            this.createTexture(__webpack_require__(43), true).then(texture => this.hoodlumLogo = texture),
-            this.createTexture(__webpack_require__(44), false).then(texture => this.abstract = texture),
-            this.createTexture(__webpack_require__(45), false).then(texture => this.rave = texture),
-            this.createTexture(__webpack_require__(46), false).then(texture => this.micro = texture),
-            this.createTexture(__webpack_require__(47), false).then(texture => this.blurred = texture),
-            this.createTexture(__webpack_require__(48), true).then(texture => this.hlm = texture),
-            this.createTexture(__webpack_require__(49), true).then(texture => this.cross = texture),
-            this.createTexture(__webpack_require__(50), false).then(texture => this.envmap = texture),
-            this.createTexture(__webpack_require__(51), false).then(texture => this.heightmapSphere = texture),
-            this.createTexture(__webpack_require__(52), true).then(texture => this.mask = texture),
-            this.createTexture(__webpack_require__(53), true).then(texture => this.dirt = texture),
+            this.createTexture(__webpack_require__(44), true).then(texture => this.hoodlumLogo = texture),
+            this.createTexture(__webpack_require__(45), false).then(texture => this.abstract = texture),
+            this.createTexture(__webpack_require__(46), false).then(texture => this.rave = texture),
+            this.createTexture(__webpack_require__(47), false).then(texture => this.micro = texture),
+            this.createTexture(__webpack_require__(48), false).then(texture => this.blurred = texture),
+            this.createTexture(__webpack_require__(49), true).then(texture => this.hlm = texture),
+            this.createTexture(__webpack_require__(50), true).then(texture => this.cross = texture),
+            this.createTexture(__webpack_require__(51), false).then(texture => this.envmap = texture),
+            this.createTexture(__webpack_require__(52), false).then(texture => this.heightmapSphere = texture),
+            this.createTexture(__webpack_require__(53), true).then(texture => this.mask = texture),
+            this.createTexture(__webpack_require__(54), true).then(texture => this.dirt = texture),
         ]).then(() => {
             // Web Audio API
             // FIXME: put this into a Player Class
             this.framebuffer.precompute(this.heightmap, this.heightmapSphere);
             let audioContext = new AudioContext();
             let request = new XMLHttpRequest();
-            request.open('GET', __webpack_require__(54), true);
+            request.open('GET', __webpack_require__(55), true);
             request.responseType = 'arraybuffer';
             request.onload = () => {
                 let undecodedAudio = request.response;
@@ -1677,6 +1693,7 @@ let bunnyJson = __webpack_require__(22);
 let worldJson = __webpack_require__(23);
 //let torusJson = <any>require('./assets/torus.json');
 let torusJson = __webpack_require__(24);
+let gearJson = __webpack_require__(25);
 //let torusJson = <any>require('./assets/platonian2.json');
 // TODO:
 // - use polymorphism in order to have different intersection methods
@@ -1805,6 +1822,7 @@ class Framebuffer {
         this.bunnyObj = this.createBunny();
         this.blenderObj = this.getBlenderScene(worldJson);
         this.blenderObj2 = this.getBlenderScene(torusJson, false);
+        this.blenderObj3 = this.getBlenderScene(gearJson, false);
         this.sphere = this.createSphere();
         this.plane = this.createPlane();
         this.cylinder = this.createCylinder();
@@ -4078,6 +4096,19 @@ class Framebuffer {
             .multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(Math.PI * 0.5 * this.cosineInterpolate(2000, 2600, Math.floor(elapsedTime * 0.7) % 4000))));
         model = this.blenderObj2[1];
         this.drawObject2(model, mv, 186, 165, 197);
+        let lensflareScreenSpace = this.project(camera.multiply(new math_1.Vector3f(16.0 * 20, 16.0 * 20, 0)));
+        this.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.3, texture, dirt);
+    }
+    drawBlenderScene3(elapsedTime, texture3, texture, dirt) {
+        this.clearDepthBuffer();
+        let camera = math_1.Matrix4f.constructTranslationMatrix(0, 0, -5).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 0.0002)
+            .multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(elapsedTime * 0.0002)));
+        for (let i = 0; i < 10; i++) {
+            const scale = Math.sin(Math.PI * 2 / 10 * i + elapsedTime * 0.002) * 0.2 + 0.2 + 0.3;
+            let mv = camera.multiplyMatrix(math_1.Matrix4f.constructTranslationMatrix(0, ((i + elapsedTime * 0.0008) % 10) - 5, 0).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix((i * 0.36 + elapsedTime * 0.0016)).multiplyMatrix(math_1.Matrix4f.constructScaleMatrix(scale, 1, scale))));
+            let model = this.blenderObj3[0];
+            this.drawObject2(model, mv, 246, 165, 177);
+        }
         let lensflareScreenSpace = this.project(camera.multiply(new math_1.Vector3f(16.0 * 20, 16.0 * 20, 0)));
         this.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.3, texture, dirt);
     }
@@ -8171,180 +8202,186 @@ module.exports = [{"name":"Plane.003","vertices":[{"x":-3,"y":0.063801,"z":3},{"
 
 /***/ }),
 /* 25 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-module.exports = __webpack_require__.p + "14bd8cd5c9c3b1bcb59e2ec9f4c8ed16.png";
+module.exports = [{"name":"Torus","vertices":[{"x":0.875,"y":0.109724,"z":0},{"x":0.875,"y":-0.109724,"z":0},{"x":0.788348,"y":0.109724,"z":-0.379648},{"x":0.788348,"y":-0.109724,"z":-0.379648},{"x":0.545553,"y":0.109724,"z":-0.684103},{"x":0.545553,"y":-0.109724,"z":-0.684103},{"x":0.194706,"y":0.109724,"z":-0.853062},{"x":0.194706,"y":-0.109724,"z":-0.853062},{"x":-0.194706,"y":0.109724,"z":-0.853062},{"x":-0.194706,"y":-0.109724,"z":-0.853062},{"x":-0.545554,"y":0.109724,"z":-0.684102},{"x":-0.545554,"y":-0.109724,"z":-0.684102},{"x":-0.788348,"y":0.109724,"z":-0.379648},{"x":-0.788348,"y":-0.109724,"z":-0.379648},{"x":-0.875,"y":0.109724,"z":0},{"x":-0.875,"y":-0.109724,"z":0},{"x":-0.788348,"y":0.109724,"z":0.379648},{"x":-0.788348,"y":-0.109724,"z":0.379648},{"x":-0.545554,"y":0.109724,"z":0.684102},{"x":-0.545554,"y":-0.109724,"z":0.684102},{"x":-0.194706,"y":0.109724,"z":0.853062},{"x":-0.194706,"y":-0.109724,"z":0.853062},{"x":0.194706,"y":0.109724,"z":0.853062},{"x":0.194706,"y":-0.109724,"z":0.853062},{"x":0.545553,"y":0.109724,"z":0.684103},{"x":0.545553,"y":-0.109724,"z":0.684103},{"x":0.788348,"y":0.109724,"z":0.379649},{"x":0.788348,"y":-0.109724,"z":0.379649},{"x":1.058178,"y":0.132694,"z":0},{"x":1.058178,"y":-0.132694,"z":0},{"x":0.953386,"y":0.132694,"z":-0.459126},{"x":0.953386,"y":-0.132694,"z":-0.459126},{"x":0.659763,"y":0.132694,"z":-0.827317},{"x":0.659763,"y":-0.132694,"z":-0.827317},{"x":0.235467,"y":0.132694,"z":-1.031648},{"x":0.235467,"y":-0.132694,"z":-1.031648},{"x":-0.235467,"y":0.132694,"z":-1.031648},{"x":-0.235467,"y":-0.132694,"z":-1.031648},{"x":-0.659764,"y":0.132694,"z":-0.827317},{"x":-0.659764,"y":-0.132694,"z":-0.827317},{"x":-0.953386,"y":0.132694,"z":-0.459127},{"x":-0.953386,"y":-0.132694,"z":-0.459127},{"x":-1.058178,"y":0.132694,"z":0},{"x":-1.058178,"y":-0.132694,"z":0},{"x":-0.953386,"y":0.132694,"z":0.459126},{"x":-0.953386,"y":-0.132694,"z":0.459126},{"x":-0.659764,"y":0.132694,"z":0.827317},{"x":-0.659764,"y":-0.132694,"z":0.827317},{"x":-0.235467,"y":0.132694,"z":1.031648},{"x":-0.235467,"y":-0.132694,"z":1.031648},{"x":0.235467,"y":0.132694,"z":1.031648},{"x":0.235467,"y":-0.132694,"z":1.031648},{"x":0.659763,"y":0.132694,"z":0.827318},{"x":0.659763,"y":-0.132694,"z":0.827318},{"x":0.953386,"y":0.132694,"z":0.459127},{"x":0.953386,"y":-0.132694,"z":0.459127},{"x":-1.319376,"y":0.07224,"z":-0.169652},{"x":-1.319376,"y":-0.07224,"z":-0.169652},{"x":-1.082066,"y":0.042375,"z":0.766739},{"x":-1.082066,"y":-0.042375,"z":0.766739},{"x":0.972525,"y":0.056632,"z":0.9041},{"x":1.097839,"y":0.056632,"z":0.746961},{"x":0.972525,"y":-0.056632,"z":0.9041},{"x":1.097839,"y":-0.056632,"z":0.746961},{"x":1.270045,"y":0.05269,"z":-0.385783},{"x":1.270045,"y":-0.05269,"z":-0.385783},{"x":-0.988298,"y":0.042375,"z":0.88432},{"x":-0.988298,"y":-0.042375,"z":0.88432},{"x":0.667196,"y":-0.05799,"z":-1.148277},{"x":0.481769,"y":-0.05799,"z":-1.237574},{"x":0.078068,"y":0.043994,"z":1.324047},{"x":0.078068,"y":-0.043994,"z":1.324047},{"x":-0.672469,"y":0.061288,"z":-1.145738},{"x":-0.672469,"y":-0.061288,"z":-1.145738},{"x":-0.078067,"y":0.043994,"z":1.324047},{"x":-0.078067,"y":-0.043994,"z":1.324047},{"x":-1.262326,"y":-0.07224,"z":-0.419605},{"x":-0.476497,"y":-0.061288,"z":-1.240113},{"x":1.311656,"y":0.05269,"z":-0.203473},{"x":1.311656,"y":-0.05269,"z":-0.203473},{"x":0.667196,"y":0.05799,"z":-1.148277},{"x":0.481769,"y":0.05799,"z":-1.237574},{"x":-1.262326,"y":0.07224,"z":-0.419605},{"x":-0.476497,"y":0.061288,"z":-1.240113}],"normals":[{"x":0.9749,"y":0,"z":-0.2225},{"x":0.7818,"y":0,"z":-0.6235},{"x":0.4339,"y":0,"z":-0.901},{"x":0,"y":0,"z":-1},{"x":-0.4339,"y":0,"z":-0.901},{"x":-0.7818,"y":0,"z":-0.6235},{"x":-0.9749,"y":0,"z":-0.2225},{"x":-0.9749,"y":0,"z":0.2225},{"x":-0.7818,"y":0,"z":0.6235},{"x":-0.4339,"y":0,"z":0.901},{"x":0,"y":0,"z":1},{"x":0.4339,"y":0,"z":0.901},{"x":0.7818,"y":0,"z":0.6235},{"x":0.9749,"y":0,"z":0.2225},{"x":-0.171,"y":0,"z":-0.9853},{"x":-0.8805,"y":0,"z":-0.474},{"x":-0.2573,"y":0.9645,"z":0.0587},{"x":0.5447,"y":0,"z":-0.8386},{"x":0,"y":-0.9569,"z":-0.2903},{"x":0.1269,"y":0,"z":0.9919},{"x":0.1029,"y":-0.9715,"z":0.2137},{"x":-0.1244,"y":0.9918,"z":0.0284},{"x":-0.0554,"y":0.9918,"z":0.1149},{"x":-0.0997,"y":-0.9918,"z":-0.0795},{"x":-0.1244,"y":-0.9918,"z":-0.0284},{"x":-0.1244,"y":0.9918,"z":-0.0284},{"x":0,"y":0.9918,"z":-0.1276},{"x":-0.0554,"y":0.9918,"z":-0.1149},{"x":0.0997,"y":0.9918,"z":-0.0795},{"x":0.1244,"y":-0.9918,"z":0.0284},{"x":-0.1244,"y":-0.9918,"z":0.0284},{"x":0.0997,"y":-0.9918,"z":0.0795},{"x":0,"y":0.9918,"z":0.1276},{"x":0,"y":-0.9918,"z":-0.1276},{"x":0.0997,"y":0.9918,"z":0.0795},{"x":0.1244,"y":0.9918,"z":0.0284},{"x":-0.0997,"y":0.9918,"z":-0.0795},{"x":0.0554,"y":-0.9918,"z":-0.1149},{"x":-0.0997,"y":-0.9918,"z":0.0795},{"x":0.0554,"y":-0.9918,"z":0.1149},{"x":-0.0554,"y":-0.9918,"z":0.1149},{"x":-0.0997,"y":0.9918,"z":0.0795},{"x":0.0997,"y":-0.9918,"z":-0.0795},{"x":0.1244,"y":-0.9918,"z":-0.0284},{"x":0.0554,"y":0.9918,"z":-0.1149},{"x":-0.0554,"y":-0.9918,"z":-0.1149},{"x":0.0554,"y":0.9918,"z":0.1149},{"x":0,"y":-0.9918,"z":0.1276},{"x":0.1244,"y":0.9918,"z":-0.0284},{"x":-0.6542,"y":0,"z":0.7564},{"x":0.9992,"y":0,"z":-0.0399},{"x":0.9225,"y":0,"z":0.3859},{"x":0.8805,"y":0,"z":-0.474},{"x":0.1974,"y":-0.9793,"z":0.0451},{"x":0.1974,"y":0.9793,"z":0.0451},{"x":0.6414,"y":0,"z":0.7672},{"x":0.1029,"y":0.9715,"z":0.2137},{"x":-0.1968,"y":-0.9678,"z":-0.157},{"x":0,"y":0.9569,"z":-0.2903},{"x":-0.1968,"y":0.9678,"z":-0.157},{"x":-0.626,"y":0,"z":-0.7798},{"x":0.2384,"y":0,"z":-0.9712},{"x":-0.1074,"y":-0.9689,"z":0.223},{"x":-0.2256,"y":0,"z":0.9742},{"x":-0.8938,"y":0,"z":0.4485},{"x":-0.9997,"y":0,"z":-0.0232},{"x":0.2307,"y":-0.9555,"z":-0.184},{"x":0.2307,"y":0.9555,"z":-0.184},{"x":-0.2573,"y":-0.9645,"z":0.0587},{"x":-0.1074,"y":0.9689,"z":0.223}],"faces":[{"vertices":[1,2,0],"normals":[0,0,0]},{"vertices":[3,4,2],"normals":[1,1,1]},{"vertices":[5,6,4],"normals":[2,2,2]},{"vertices":[7,8,6],"normals":[3,3,3]},{"vertices":[9,10,8],"normals":[4,4,4]},{"vertices":[11,12,10],"normals":[5,5,5]},{"vertices":[13,14,12],"normals":[6,6,6]},{"vertices":[15,16,14],"normals":[7,7,7]},{"vertices":[17,18,16],"normals":[8,8,8]},{"vertices":[19,20,18],"normals":[9,9,9]},{"vertices":[21,22,20],"normals":[10,10,10]},{"vertices":[23,24,22],"normals":[11,11,11]},{"vertices":[25,26,24],"normals":[12,12,12]},{"vertices":[27,0,26],"normals":[13,13,13]},{"vertices":[47,66,46],"normals":[14,14,14]},{"vertices":[32,31,30],"normals":[8,8,8]},{"vertices":[51,70,50],"normals":[15,15,15]},{"vertices":[36,35,34],"normals":[10,10,10]},{"vertices":[29,65,31],"normals":[16,16,16]},{"vertices":[40,39,38],"normals":[12,12,12]},{"vertices":[43,56,42],"normals":[17,17,17]},{"vertices":[44,43,42],"normals":[0,0,0]},{"vertices":[50,74,48],"normals":[18,18,18]},{"vertices":[48,47,46],"normals":[2,2,2]},{"vertices":[40,76,41],"normals":[19,19,19]},{"vertices":[52,51,50],"normals":[4,4,4]},{"vertices":[38,83,36],"normals":[20,20,20]},{"vertices":[28,55,54],"normals":[6,6,6]},{"vertices":[17,43,45],"normals":[21,21,21]},{"vertices":[19,49,21],"normals":[22,22,22]},{"vertices":[12,38,10],"normals":[23,23,23]},{"vertices":[12,42,40],"normals":[24,24,24]},{"vertices":[13,43,15],"normals":[25,25,25]},{"vertices":[7,37,9],"normals":[26,26,26]},{"vertices":[9,39,11],"normals":[27,27,27]},{"vertices":[3,33,5],"normals":[28,28,28]},{"vertices":[26,28,54],"normals":[29,29,29]},{"vertices":[16,42,14],"normals":[30,30,30]},{"vertices":[26,52,24],"normals":[31,31,31]},{"vertices":[21,51,23],"normals":[32,32,32]},{"vertices":[8,34,6],"normals":[33,33,33]},{"vertices":[27,53,55],"normals":[34,34,34]},{"vertices":[27,29,1],"normals":[35,35,35]},{"vertices":[11,41,13],"normals":[36,36,36]},{"vertices":[6,32,4],"normals":[37,37,37]},{"vertices":[18,44,16],"normals":[38,38,38]},{"vertices":[24,50,22],"normals":[39,39,39]},{"vertices":[18,48,46],"normals":[40,40,40]},{"vertices":[19,45,47],"normals":[41,41,41]},{"vertices":[2,32,30],"normals":[42,42,42]},{"vertices":[2,28,0],"normals":[43,43,43]},{"vertices":[7,33,35],"normals":[44,44,44]},{"vertices":[10,36,8],"normals":[45,45,45]},{"vertices":[25,51,53],"normals":[46,46,46]},{"vertices":[22,48,20],"normals":[47,47,47]},{"vertices":[1,31,3],"normals":[48,48,48]},{"vertices":[64,79,78],"normals":[7,7,7]},{"vertices":[81,68,80],"normals":[9,9,9]},{"vertices":[72,77,83],"normals":[11,11,11]},{"vertices":[56,76,82],"normals":[13,13,13]},{"vertices":[66,59,58],"normals":[1,1,1]},{"vertices":[70,75,74],"normals":[3,3,3]},{"vertices":[61,62,60],"normals":[5,5,5]},{"vertices":[36,77,37],"normals":[49,49,49]},{"vertices":[39,72,38],"normals":[50,50,50]},{"vertices":[44,59,45],"normals":[51,51,51]},{"vertices":[48,75,49],"normals":[52,52,52]},{"vertices":[42,82,40],"normals":[53,53,53]},{"vertices":[43,76,57],"normals":[54,54,54]},{"vertices":[35,81,34],"normals":[55,55,55]},{"vertices":[37,73,39],"normals":[56,56,56]},{"vertices":[54,60,52],"normals":[57,57,57]},{"vertices":[49,71,51],"normals":[58,58,58]},{"vertices":[55,62,63],"normals":[59,59,59]},{"vertices":[28,79,29],"normals":[60,60,60]},{"vertices":[52,62,53],"normals":[61,61,61]},{"vertices":[34,80,32],"normals":[62,62,62]},{"vertices":[31,64,30],"normals":[63,63,63]},{"vertices":[55,61,54],"normals":[64,64,64]},{"vertices":[32,68,33],"normals":[65,65,65]},{"vertices":[46,58,44],"normals":[66,66,66]},{"vertices":[47,59,67],"normals":[67,67,67]},{"vertices":[28,64,78],"normals":[68,68,68]},{"vertices":[35,68,69],"normals":[69,69,69]},{"vertices":[1,3,2],"normals":[0,0,0]},{"vertices":[3,5,4],"normals":[1,1,1]},{"vertices":[5,7,6],"normals":[2,2,2]},{"vertices":[7,9,8],"normals":[3,3,3]},{"vertices":[9,11,10],"normals":[4,4,4]},{"vertices":[11,13,12],"normals":[5,5,5]},{"vertices":[13,15,14],"normals":[6,6,6]},{"vertices":[15,17,16],"normals":[7,7,7]},{"vertices":[17,19,18],"normals":[8,8,8]},{"vertices":[19,21,20],"normals":[9,9,9]},{"vertices":[21,23,22],"normals":[10,10,10]},{"vertices":[23,25,24],"normals":[11,11,11]},{"vertices":[25,27,26],"normals":[12,12,12]},{"vertices":[27,1,0],"normals":[13,13,13]},{"vertices":[47,67,66],"normals":[14,14,14]},{"vertices":[32,33,31],"normals":[8,8,8]},{"vertices":[51,71,70],"normals":[15,15,15]},{"vertices":[36,37,35],"normals":[10,10,10]},{"vertices":[29,79,65],"normals":[16,16,16]},{"vertices":[40,41,39],"normals":[12,12,12]},{"vertices":[43,57,56],"normals":[17,17,17]},{"vertices":[44,45,43],"normals":[0,0,0]},{"vertices":[50,70,74],"normals":[18,18,18]},{"vertices":[48,49,47],"normals":[2,2,2]},{"vertices":[40,82,76],"normals":[19,19,19]},{"vertices":[52,53,51],"normals":[4,4,4]},{"vertices":[38,72,83],"normals":[20,20,20]},{"vertices":[28,29,55],"normals":[6,6,6]},{"vertices":[17,15,43],"normals":[21,21,21]},{"vertices":[19,47,49],"normals":[22,22,22]},{"vertices":[12,40,38],"normals":[23,23,23]},{"vertices":[12,14,42],"normals":[24,24,24]},{"vertices":[13,41,43],"normals":[25,25,25]},{"vertices":[7,35,37],"normals":[26,26,26]},{"vertices":[9,37,39],"normals":[27,27,27]},{"vertices":[3,31,33],"normals":[28,28,28]},{"vertices":[26,0,28],"normals":[29,29,29]},{"vertices":[16,44,42],"normals":[30,30,30]},{"vertices":[26,54,52],"normals":[31,31,31]},{"vertices":[21,49,51],"normals":[32,32,32]},{"vertices":[8,36,34],"normals":[33,33,33]},{"vertices":[27,25,53],"normals":[34,34,34]},{"vertices":[27,55,29],"normals":[35,35,35]},{"vertices":[11,39,41],"normals":[36,36,36]},{"vertices":[6,34,32],"normals":[37,37,37]},{"vertices":[18,46,44],"normals":[38,38,38]},{"vertices":[24,52,50],"normals":[39,39,39]},{"vertices":[18,20,48],"normals":[40,40,40]},{"vertices":[19,17,45],"normals":[41,41,41]},{"vertices":[2,4,32],"normals":[42,42,42]},{"vertices":[2,30,28],"normals":[43,43,43]},{"vertices":[7,5,33],"normals":[44,44,44]},{"vertices":[10,38,36],"normals":[45,45,45]},{"vertices":[25,23,51],"normals":[46,46,46]},{"vertices":[22,50,48],"normals":[47,47,47]},{"vertices":[1,29,31],"normals":[48,48,48]},{"vertices":[64,65,79],"normals":[7,7,7]},{"vertices":[81,69,68],"normals":[9,9,9]},{"vertices":[72,73,77],"normals":[11,11,11]},{"vertices":[56,57,76],"normals":[13,13,13]},{"vertices":[66,67,59],"normals":[1,1,1]},{"vertices":[70,71,75],"normals":[3,3,3]},{"vertices":[61,63,62],"normals":[5,5,5]},{"vertices":[36,83,77],"normals":[49,49,49]},{"vertices":[39,73,72],"normals":[50,50,50]},{"vertices":[44,58,59],"normals":[51,51,51]},{"vertices":[48,74,75],"normals":[52,52,52]},{"vertices":[42,56,82],"normals":[53,53,53]},{"vertices":[43,41,76],"normals":[54,54,54]},{"vertices":[35,69,81],"normals":[55,55,55]},{"vertices":[37,77,73],"normals":[56,56,56]},{"vertices":[54,61,60],"normals":[57,57,57]},{"vertices":[49,75,71],"normals":[58,58,58]},{"vertices":[55,53,62],"normals":[59,59,59]},{"vertices":[28,78,79],"normals":[60,60,60]},{"vertices":[52,60,62],"normals":[61,61,61]},{"vertices":[34,81,80],"normals":[62,62,62]},{"vertices":[31,65,64],"normals":[63,63,63]},{"vertices":[55,63,61],"normals":[64,64,64]},{"vertices":[32,80,68],"normals":[65,65,65]},{"vertices":[46,66,58],"normals":[66,66,66]},{"vertices":[47,45,59],"normals":[67,67,67]},{"vertices":[28,30,64],"normals":[68,68,68]},{"vertices":[35,33,68],"normals":[69,69,69]}]}]
 
 /***/ }),
 /* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "2989b3135074a9d7d10f7d6c42cecd4a.png";
+module.exports = __webpack_require__.p + "14bd8cd5c9c3b1bcb59e2ec9f4c8ed16.png";
 
 /***/ }),
 /* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "36fbc222529fa8e2b722e7de1ca8f010.png";
+module.exports = __webpack_require__.p + "2989b3135074a9d7d10f7d6c42cecd4a.png";
 
 /***/ }),
 /* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "b30d17fb175566e9e20d5584d7ae6bfb.png";
+module.exports = __webpack_require__.p + "36fbc222529fa8e2b722e7de1ca8f010.png";
 
 /***/ }),
 /* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "c4e4b266fe4b4281371e908cb2fa6e89.png";
+module.exports = __webpack_require__.p + "b30d17fb175566e9e20d5584d7ae6bfb.png";
 
 /***/ }),
 /* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "211f2046cf2c6739bad5c6209b09dac4.png";
+module.exports = __webpack_require__.p + "c4e4b266fe4b4281371e908cb2fa6e89.png";
 
 /***/ }),
 /* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "bed841884f7920591d4279314a1b53da.png";
+module.exports = __webpack_require__.p + "211f2046cf2c6739bad5c6209b09dac4.png";
 
 /***/ }),
 /* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "dad0119c8dd1a33ab48b6870bfa8b432.png";
+module.exports = __webpack_require__.p + "bed841884f7920591d4279314a1b53da.png";
 
 /***/ }),
 /* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "f4f2b50d7d886d02949a38f94c217a86.png";
+module.exports = __webpack_require__.p + "dad0119c8dd1a33ab48b6870bfa8b432.png";
 
 /***/ }),
 /* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "0009cb245d8a3129bcd470b1c30a2c17.png";
+module.exports = __webpack_require__.p + "f4f2b50d7d886d02949a38f94c217a86.png";
 
 /***/ }),
 /* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "47d04e8b7dc74f4980d66796a632547c.png";
+module.exports = __webpack_require__.p + "0009cb245d8a3129bcd470b1c30a2c17.png";
 
 /***/ }),
 /* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "c196269cf8b2fc9593276f497c8ffdd9.png";
+module.exports = __webpack_require__.p + "47d04e8b7dc74f4980d66796a632547c.png";
 
 /***/ }),
 /* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "5c07fbf7949c365c56f8188b02827d6e.png";
+module.exports = __webpack_require__.p + "c196269cf8b2fc9593276f497c8ffdd9.png";
 
 /***/ }),
 /* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "f1dde6672b0d9b18b4373a26d3803351.png";
+module.exports = __webpack_require__.p + "5c07fbf7949c365c56f8188b02827d6e.png";
 
 /***/ }),
 /* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "54e31707db0fbae7dec46d063517665a.png";
+module.exports = __webpack_require__.p + "f1dde6672b0d9b18b4373a26d3803351.png";
 
 /***/ }),
 /* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "b456e9dc15d272b079029a5ca6468305.png";
+module.exports = __webpack_require__.p + "54e31707db0fbae7dec46d063517665a.png";
 
 /***/ }),
 /* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "f657ac4e01beddb5085242cb1c20ecb3.png";
+module.exports = __webpack_require__.p + "b456e9dc15d272b079029a5ca6468305.png";
 
 /***/ }),
 /* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "6a04a9d0a0989ac43da2da2261c14c98.png";
+module.exports = __webpack_require__.p + "f657ac4e01beddb5085242cb1c20ecb3.png";
 
 /***/ }),
 /* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "042200790f9c9b7eb4c1dcdc1bfa6778.png";
+module.exports = __webpack_require__.p + "6a04a9d0a0989ac43da2da2261c14c98.png";
 
 /***/ }),
 /* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "aecaf306ad634d628614dca09cfab828.png";
+module.exports = __webpack_require__.p + "042200790f9c9b7eb4c1dcdc1bfa6778.png";
 
 /***/ }),
 /* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "539826c16dd852792e84c205811ca9f8.png";
+module.exports = __webpack_require__.p + "aecaf306ad634d628614dca09cfab828.png";
 
 /***/ }),
 /* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "2047b8a2f49ee5b609dc16ab0e62c014.png";
+module.exports = __webpack_require__.p + "539826c16dd852792e84c205811ca9f8.png";
 
 /***/ }),
 /* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "bbaba2795420534ca9f0184e07fb74f8.png";
+module.exports = __webpack_require__.p + "2047b8a2f49ee5b609dc16ab0e62c014.png";
 
 /***/ }),
 /* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "680cc4a9d367653fc466577bbd376590.png";
+module.exports = __webpack_require__.p + "bbaba2795420534ca9f0184e07fb74f8.png";
 
 /***/ }),
 /* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "9f73952b51a9a6343babe0c489a2b980.png";
+module.exports = __webpack_require__.p + "680cc4a9d367653fc466577bbd376590.png";
 
 /***/ }),
 /* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "fa5e6c40cb378f6ee6cab4e16ef0934b.png";
+module.exports = __webpack_require__.p + "9f73952b51a9a6343babe0c489a2b980.png";
 
 /***/ }),
 /* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "b01bbcd1860ad00f64ab16cc21569634.png";
+module.exports = __webpack_require__.p + "fa5e6c40cb378f6ee6cab4e16ef0934b.png";
 
 /***/ }),
 /* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "04259b8d38e7b73dae45b2c29ceeb4d3.png";
+module.exports = __webpack_require__.p + "b01bbcd1860ad00f64ab16cc21569634.png";
 
 /***/ }),
 /* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "28310db934c54c285a709a1e980e4efc.png";
+module.exports = __webpack_require__.p + "04259b8d38e7b73dae45b2c29ceeb4d3.png";
 
 /***/ }),
 /* 54 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "28310db934c54c285a709a1e980e4efc.png";
+
+/***/ }),
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "2e9db51edd326bb0396b77e56f2d11a2.mp3";
