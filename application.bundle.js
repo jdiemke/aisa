@@ -357,7 +357,7 @@ class Canvas {
         this.fpsCount++;
         let time = (Date.now() - this.start);
         time = time * 3 + 550000;
-        time = time % (800000);
+        time = time % (850000);
         this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
         /*
                 if (time < 5000) {
@@ -1107,7 +1107,7 @@ class Canvas {
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             this.framebuffer.noise(time, this.noise);
         }
-        else {
+        else if (time < 800000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
             this.framebuffer.drawBlenderScene3(time, this.texture4, [
@@ -1118,6 +1118,22 @@ class Canvas {
                 { tex: this.texture13, scale: -0.4, alpha: 0.22 },
             ], this.dirt);
             this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, 0.6);
+            const texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.75);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            this.framebuffer.noise(time, this.noise);
+        }
+        else {
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.setCullFace(CullFace_1.CullFace.FRONT);
+            this.framebuffer.drawBlenderScene4(time, this.texture4, [
+                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                { tex: this.texture13, scale: 1.6, alpha: 0.25 },
+                { tex: this.texture13, scale: 0.7, alpha: 0.22 },
+                { tex: this.texture13, scale: -0.4, alpha: 0.22 },
+            ], this.dirt);
+            //this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, 0.6);
             const texture3 = new Texture_1.default(this.accumulationBuffer, 320, 200);
             this.framebuffer.drawTexture(0, 0, texture3, 0.75);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
@@ -4106,6 +4122,26 @@ class Framebuffer {
         for (let i = 0; i < 10; i++) {
             const scale = Math.sin(Math.PI * 2 / 10 * i + elapsedTime * 0.002) * 0.2 + 0.2 + 0.3;
             let mv = camera.multiplyMatrix(math_1.Matrix4f.constructTranslationMatrix(0, ((i + elapsedTime * 0.0008) % 10) - 5, 0).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix((i * 0.36 + elapsedTime * 0.0016)).multiplyMatrix(math_1.Matrix4f.constructScaleMatrix(scale, 1, scale))));
+            let model = this.blenderObj3[0];
+            this.drawObject2(model, mv, 246, 165, 177);
+        }
+        let lensflareScreenSpace = this.project(camera.multiply(new math_1.Vector3f(16.0 * 20, 16.0 * 20, 0)));
+        this.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.3, texture, dirt);
+    }
+    drawBlenderScene4(elapsedTime, texture3, texture, dirt) {
+        this.clearDepthBuffer();
+        let camera = math_1.Matrix4f.constructTranslationMatrix(0, 0, -21).multiplyMatrix(math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 0.0002)
+            .multiplyMatrix(math_1.Matrix4f.constructXRotationMatrix(elapsedTime * 0.0002)));
+        let scale = 0.1 * 2.1 * 2.1;
+        let factor = 2.1 - 0.09 - 0.09;
+        let fade = 0.09;
+        let dampFactor = Math.sin(elapsedTime * 0.00001) * 0.5 + 0.5;
+        for (let i = 1; i < 6; i++) {
+            scale *= factor;
+            factor -= fade;
+            let modelViewMartrix = math_1.Matrix4f.constructYRotationMatrix(elapsedTime * 0.0005 + dampFactor * 0.7 * (4 - i)).multiplyMatrix(math_1.Matrix4f.constructScaleMatrix(scale, scale, scale));
+            modelViewMartrix = math_1.Matrix4f.constructXRotationMatrix(elapsedTime * 0.0006 + dampFactor * 0.7 * (4 - i)).multiplyMatrix(modelViewMartrix);
+            let mv = camera.multiplyMatrix(modelViewMartrix);
             let model = this.blenderObj3[0];
             this.drawObject2(model, mv, 246, 165, 177);
         }
@@ -8384,7 +8420,7 @@ module.exports = __webpack_require__.p + "28310db934c54c285a709a1e980e4efc.png";
 /* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "2e9db51edd326bb0396b77e56f2d11a2.mp3";
+module.exports = __webpack_require__.p + "69adb964e9ef816f3bd99df3b7ddd560.ogg";
 
 /***/ })
 /******/ ]);
