@@ -1,6 +1,7 @@
 import { CullFace } from './CullFace';
 import Framebuffer from './Framebuffer';
 import { Vector4f } from './math/index';
+import { Matrix4f } from './math/Matrix4f';
 import { Sphere } from './math/Sphere';
 import { Vector3f } from './math/Vector3f';
 import RandomNumberGenerator from './RandomNumberGenerator';
@@ -116,7 +117,7 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3 + 550000;
-        time = time % (800000);
+        time = time % (950000);
 
         this.framebuffer.setCullFace(CullFace.FRONT);
         /*
@@ -706,7 +707,18 @@ export class Canvas {
             this.framebuffer.setCullFace(CullFace.BACK);
             // this.framebuffer.setBob(this.spheremap);
             this.framebuffer.setBob(this.envmap);
-            this.framebuffer.shadingSphereEnvDisp2((time - 50000) * 0.0002);
+
+            let scale: number = 3.7;
+            let elapsedTime: number = (time - 50000) * 0.0002;
+
+            let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.35)
+                .multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3)));
+
+            modelViewMartrix = Matrix4f.constructTranslationMatrix(-0, -0,
+                -10 - (Math.sin(elapsedTime * 0.3) * 0.5 + 0.5) * 6)
+                .multiplyMatrix(modelViewMartrix);
+            this.framebuffer.clearDepthBuffer();
+            this.framebuffer.shadingSphereEnvDisp2((time - 50000) * 0.0002, modelViewMartrix);
 
             // Motion Blur
             const tmpGlitch: Uint32Array = new Uint32Array(320 * 200);
@@ -908,7 +920,7 @@ export class Canvas {
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
 
             this.framebuffer.noise(time, this.noise);
-        } else {
+        } else if (time < 800000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.setCullFace(CullFace.FRONT);
             this.framebuffer.drawBlenderScene3(time, this.texture4,
@@ -926,9 +938,94 @@ export class Canvas {
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
 
             this.framebuffer.noise(time, this.noise);
-        }
+        } else if (time < 850000) {
 
-        // this.framebuffer.drawTexture(0, 0, this.mask, 1.0);
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.setCullFace(CullFace.FRONT);
+            this.framebuffer.drawBlenderScene4(time, this.texture4,
+                [
+                    { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                    { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                    { tex: this.texture13, scale: 1.6, alpha: 0.25 },
+                    { tex: this.texture13, scale: 0.7, alpha: 0.22 },
+                    { tex: this.texture13, scale: -0.4, alpha: 0.22 },
+                ], this.dirt);
+            //this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, 0.6);
+
+            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.75);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+
+            this.framebuffer.noise(time, this.noise);
+        } else if (time < 900000) {
+
+
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.setCullFace(CullFace.BACK);
+            this.framebuffer.setBob(this.envmap);
+
+            this.framebuffer.drawBlenderScene5(time, this.texture4,
+                [
+                    { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                    { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                    { tex: this.texture13, scale: 1.6, alpha: 0.25 },
+                    { tex: this.texture13, scale: 0.7, alpha: 0.22 },
+                    { tex: this.texture13, scale: -0.4, alpha: 0.22 },
+                ], this.dirt);
+
+            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.75);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            this.framebuffer.glitchScreen(time * 0.9, this.noise);
+        } else {
+            this.framebuffer.setCullFace(CullFace.BACK);
+            this.framebuffer.setBob(this.envmap);
+
+            this.framebuffer.drawBlenderScene6(time, this.particleTexture2,
+                [
+                    { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                    { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                    { tex: this.texture13, scale: 1.6, alpha: 0.25 },
+                    { tex: this.texture13, scale: 0.7, alpha: 0.22 },
+                    { tex: this.texture13, scale: -0.4, alpha: 0.22 },
+                ], this.dirt);
+
+            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.85);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+
+            this.framebuffer.noise(time, this.noise);
+        }
+/*
+        this.framebuffer.setCullFace(CullFace.BACK);
+        this.framebuffer.setBob(this.envmap);
+
+        this.framebuffer.drawBlenderScene6(time, this.particleTexture2,
+            [
+                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                { tex: this.texture13, scale: 1.6, alpha: 0.25 },
+                { tex: this.texture13, scale: 0.7, alpha: 0.22 },
+                { tex: this.texture13, scale: -0.4, alpha: 0.22 },
+            ], this.dirt);
+
+        const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+        this.framebuffer.drawTexture(0, 0, texture3, 0.75);
+        this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+        // this.framebuffer.glitchScreen(time * 0.9, this.noise);
+        this.framebuffer.noise(time, this.noise);
+*/
+        /**
+         * TODO:
+         * - Draw Vector ART in SVG Inkscape
+         * - Vectorize with Blender and Display
+         * - do texture mapped wavefront in blender
+         * - bake lighting
+         */
+        //this.framebuffer.drawTexture(30, 25, this.meth, 1);
+
+
+      //  this.framebuffer.drawTexture(0, 0, this.hlm, 0.50);
 
 
         // this.framebuffer.glitchScreen(time, this.noise);
@@ -972,7 +1069,7 @@ export class Canvas {
         let bufferLength = this.analyzer.frequencyBinCount;
         let dataArray = new Uint8Array(bufferLength);
         this.analyzer.getByteFrequencyData(dataArray);
-
+    
         let pos1 = new Vector3f(0,0,0);
         let pos2 = new Vector3f(0,0,0);
         const STEPS = 100;
@@ -1068,20 +1165,20 @@ export class Canvas {
     texture.texture = this.accumulationBuffer;
     texture.width = 320;
     texture.height = 200;
-
+    
     let scale = 1.05;
     let width = 320 *  scale;
     let height = 200 * scale;
-
+    
     // looks crappy with linear interpolation!
     // probably  bilinear is required here
- 
-    
+     
+     
         this.framebuffer.drawScaledTextureClipBi(
             Math.round(320/2-width/2),
             Math.round(200/2-height/2),
             width, height, texture, 0.95);
- 
+     
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             */
 
@@ -1091,7 +1188,7 @@ export class Canvas {
         // https://github.com/ninjadev/nin/blob/38e80381415934136c7bd97233a2792df2bffa8d/nin/dasBoot/shims.js
         /*****/
         /*
-
+    
         let scale =  (99-((time * 0.04) % 100))/99;
         let width = (this.micro.width * scale * 2) | 0;
         let height = (this.micro.height * scale * 2) | 0;
@@ -1101,7 +1198,7 @@ export class Canvas {
         for(let i=0; i < 100; i++) {
             pos.push({x:rng.getFloat(), y: rng.getFloat()});
         }
-
+    
         let xpos = 20+(320-40) * pos[((time*0.04/99)%100)|0].x;
         let ypos = 20+(200-40) * pos[((time*0.04/99)%100)|0].y;
         this.framebuffer.drawScaledTextureClipAdd(
@@ -1482,7 +1579,7 @@ export class Canvas {
 
             let audioContext = new AudioContext();
             let request = new XMLHttpRequest();
-            request.open('GET', require('./assets/Triace - 4KlaBumm.mp3'), true);
+            request.open('GET', require('./assets/xmix_q2_final.ogg'), true);
             request.responseType = 'arraybuffer';
             request.onload = () => {
                 let undecodedAudio = request.response;

@@ -40,11 +40,13 @@ declare function require(string): string;
 let json = require('./assets/f16.json');
 let bunnyJson = <any>require('./assets/bunny.json');
 let worldJson = <any>require('./assets/world2.json');
-//let torusJson = <any>require('./assets/torus.json');
 
 let torusJson = <any>require('./assets/stravaganza.json');
 let gearJson = <any>require('./assets/gear.json');
-//let torusJson = <any>require('./assets/platonian2.json');
+let roomJson = <any>require('./assets/room.json');
+let hoodlumJson = <any>require('./assets/hoodlum.json');
+let labJson = <any>require('./assets/lab.json');
+let hlm2018Json = <any>require('./assets/hoodlum2018.json');
 
 // TODO:
 // - use polymorphism in order to have different intersection methods
@@ -220,6 +222,10 @@ export default class Framebuffer {
     private blenderObj: any;
     private blenderObj2: any;
     private blenderObj3: any;
+    private blenderObj4: any;
+    private blenderObj5: any;
+    private blenderObj6: any;
+    private blenderObj7: any;
     private bob: Texture;
     private sphere: any;
     private plane: any;
@@ -257,6 +263,10 @@ export default class Framebuffer {
         this.blenderObj = this.getBlenderScene(worldJson);
         this.blenderObj2 = this.getBlenderScene(torusJson, false);
         this.blenderObj3 = this.getBlenderScene(gearJson, false);
+        this.blenderObj4 = this.getBlenderScene(roomJson, false);
+        this.blenderObj5 = this.getBlenderScene(hoodlumJson, false);
+        this.blenderObj6 = this.getBlenderScene(labJson, false);
+        this.blenderObj7 = this.getBlenderScene(hlm2018Json, false);
         this.sphere = this.createSphere();
 
         this.plane = this.createPlane();
@@ -1645,8 +1655,8 @@ export default class Framebuffer {
      * https://fgiesen.wordpress.com/2011/07/05/a-trip-through-the-graphics-pipeline-2011-part-5/
      * http://insolitdust.sourceforge.net/code.html
      */
-    private clearDepthBuffer(): void {
-        this.wBuffer.fill(-1 / 100);
+    public clearDepthBuffer(): void {
+        this.wBuffer.fill(-1 / 200);
     }
 
     public debug(elapsedTime: number): void {
@@ -3104,9 +3114,135 @@ export default class Framebuffer {
         model = this.blenderObj2[1];
         this.drawObject2(model, mv, 186, 165, 197);
 
+
         let lensflareScreenSpace = this.project(camera.multiply(new Vector3f(16.0 * 20, 16.0 * 20, 0)));
 
         this.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.3, texture, dirt);
+    }
+
+    public drawBlenderScene5(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
+
+        this.clearDepthBuffer();
+
+        let camera: Matrix4f =
+            Matrix4f.constructTranslationMatrix(0, 0, -54 + (Math.sin(elapsedTime * 0.0006) * 0.5 + 0.5) * 9).multiplyMatrix(
+                Matrix4f.constructXRotationMatrix((Math.sin(elapsedTime * 0.00014) * 0.5 + 0.5) * 0.8 - 0.1).multiplyMatrix(
+                    Matrix4f.constructYRotationMatrix(-elapsedTime * 0.0002).multiplyMatrix(
+
+                        Matrix4f.constructTranslationMatrix(0, -13, 0)
+                    )));
+
+
+        let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(9, 9, 9));
+
+        for (let j = 0; j < this.blenderObj4.length; j++) {
+            let model = this.blenderObj4[j];
+            if (j !== 0 && j !== 2)
+                this.drawObject2(model, mv, 200, 255, 216);
+
+            if (j === 0)
+                this.drawObject2(model, mv, 244, 200, 216);
+            if (j === 2)
+                this.drawObject2(model, mv, 244, 225, 216);
+
+        }
+
+        mv = camera.multiplyMatrix(
+            Matrix4f.constructTranslationMatrix(0, 14.2, -4).multiplyMatrix(Matrix4f.constructScaleMatrix(7, 7, 9).multiplyMatrix(
+                Matrix4f.constructXRotationMatrix(
+                    Math.PI * 2 * this.cosineInterpolate(0, 1300, Math.floor(elapsedTime * 0.7) % 4000)))
+            ));
+
+        let model2 = this.blenderObj5[0];
+        this.drawObject2(model2, mv, 200, 255, 216);
+
+        const scale: number = 8;
+        mv = camera.multiplyMatrix(
+            Matrix4f.constructTranslationMatrix(0, 19, 0).multiplyMatrix(
+                Matrix4f.constructScaleMatrix(scale, scale, scale)))
+
+        //   this.shadingSphereEnvDisp2(elapsedTime * 0.0003, mv);
+
+
+
+        let lensflareScreenSpace = this.project(camera.multiply(new Vector3f(20, 19, -90)));
+
+        this.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.15, texture, dirt);
+    }
+
+    public drawBlenderScene6(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
+
+        this.clearDepthBuffer();
+
+        let camera: Matrix4f =
+            Matrix4f.constructTranslationMatrix(0, 0, -34 + (Math.sin(elapsedTime * 0.00007) * 0.5 + 0.5) * 7).multiplyMatrix(
+                Matrix4f.constructXRotationMatrix((Math.sin(elapsedTime * 0.00014) * 0.5 + 0.5) * 0.5 - 0.2).multiplyMatrix(
+                    Matrix4f.constructYRotationMatrix(-elapsedTime * 0.0002).multiplyMatrix(
+
+                        Matrix4f.constructTranslationMatrix(0, 1.9, 0)
+                    )));
+
+
+        let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(13, 13, 13));
+
+        let scal = Math.sin(elapsedTime*0.003)*0.5+0.5;
+        for (let j = 0; j < this.blenderObj6.length; j++) {
+            let model = this.blenderObj6[j];
+            this.drawObject2(model, mv, 244*scal, 225*scal, 216*scal);
+        }
+        
+         mv = camera.multiplyMatrix(
+            Matrix4f.constructTranslationMatrix(0,-5.5,0).multiplyMatrix( 
+            Matrix4f.constructScaleMatrix(413, 413, 413).multiplyMatrix(
+             Matrix4f.constructXRotationMatrix(Math.PI*0.5)
+            )
+         ));
+
+        let model = this.blenderObj7[0];
+        this.drawObject2(model, mv, 244, 100, 116,false, true);
+
+        let points: Array<Vector3f> = new Array<Vector3f>();
+        const num = 10;
+        const num2 = 6;
+       
+        for (let i = 0; i < num; i++) {
+           
+            for (let j = 0; j < num2; j++) {
+                let y = ((i+elapsedTime*0.001)%10)*2.5-12;
+                let scale2 = (1+4*this.interpolate(-10, 10, y))*
+                
+                    ((Math.sin(elapsedTime*0.0012+Math.PI*2/num*i*2)*0.5+0.5)*0.5+0.5);
+                let x = scale2*Math.sin(Math.PI *2 /num2*j + elapsedTime * 0.0008);
+                
+                let z = scale2*Math.cos(Math.PI *2 /num2*j + elapsedTime * 0.0008);
+
+                points.push(new Vector3f(x, y, z));
+            }
+        }
+
+
+        let modelViewMartrix = camera.multiplyMatrix(Matrix4f.constructTranslationMatrix(0, -0.0, 0));
+
+        let points2: Array<Vector3f> = new Array<Vector3f>(points.length);
+        points.forEach(element => {
+
+
+            let transformed = this.project(modelViewMartrix.multiply(element));
+
+            points2.push(transformed);
+        });
+
+        points2.sort(function (a, b) {
+            return a.z - b.z;
+        });
+
+        points2.forEach(element => {
+            let size = -(4.3 * 192 / (element.z));
+            this.drawSoftParticle(
+                Math.round(element.x - size / 2),
+                Math.round(element.y - size / 2),
+                Math.round(size), Math.round(size), texture3, 1 / element.z, 0.7);
+        });
     }
 
     public drawBlenderScene3(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
@@ -3121,13 +3257,13 @@ export default class Framebuffer {
         );
 
         for (let i: number = 0; i < 10; i++) {
-            const scale = Math.sin(Math.PI*2/10*i+elapsedTime*0.002)*0.2+0.2+0.3;
+            const scale = Math.sin(Math.PI * 2 / 10 * i + elapsedTime * 0.002) * 0.2 + 0.2 + 0.3;
             let mv: Matrix4f = camera.multiplyMatrix(
-                Matrix4f.constructTranslationMatrix(0,((i+elapsedTime*0.0008)%10)-5,0).multiplyMatrix(
-                Matrix4f.constructYRotationMatrix((i*0.36+elapsedTime * 0.0016)).multiplyMatrix(
-                    Matrix4f.constructScaleMatrix(scale,1,scale)
+                Matrix4f.constructTranslationMatrix(0, ((i + elapsedTime * 0.0008) % 10) - 5, 0).multiplyMatrix(
+                    Matrix4f.constructYRotationMatrix((i * 0.36 + elapsedTime * 0.0016)).multiplyMatrix(
+                        Matrix4f.constructScaleMatrix(scale, 1, scale)
+                    )
                 )
-            )
             );
             let model = this.blenderObj3[0];
             this.drawObject2(model, mv, 246, 165, 177);
@@ -3136,6 +3272,39 @@ export default class Framebuffer {
 
         this.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.3, texture, dirt);
     }
+
+
+    public drawBlenderScene4(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
+
+        this.clearDepthBuffer();
+
+        let camera: Matrix4f = Matrix4f.constructTranslationMatrix(0, 0, -21).multiplyMatrix(
+            Matrix4f.constructYRotationMatrix(elapsedTime * 0.0002)
+                .multiplyMatrix(
+                    Matrix4f.constructXRotationMatrix(elapsedTime * 0.0002)
+                )
+        );
+
+        let scale = 0.1 * 2.1 * 2.1;
+        let factor = 2.1 - 0.09 - 0.09;
+        let fade = 0.09;
+        let dampFactor = Math.sin(elapsedTime * 0.00001) * 0.5 + 0.5;
+        for (let i = 1; i < 6; i++) {
+            scale *= factor;
+            factor -= fade;
+
+            let modelViewMartrix = Matrix4f.constructYRotationMatrix(elapsedTime * 0.0005 + dampFactor * 0.7 * (4 - i)).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));
+            modelViewMartrix = Matrix4f.constructXRotationMatrix(elapsedTime * 0.0006 + dampFactor * 0.7 * (4 - i)).multiplyMatrix(modelViewMartrix);
+
+            let mv = camera.multiplyMatrix(modelViewMartrix);
+            let model = this.blenderObj3[0];
+            this.drawObject2(model, mv, 246, 165, 177);
+        }
+        let lensflareScreenSpace = this.project(camera.multiply(new Vector3f(16.0 * 20, 16.0 * 20, 0)));
+
+        this.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.3, texture, dirt);
+    }
+
 
     public drawPlaneDeformation(elapsedTime: number, texture: Texture): void {
         // optimize
@@ -3280,7 +3449,7 @@ export default class Framebuffer {
 
     }
 
-    private drawObject2(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false) {
+    private drawObject2(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, culling: boolean = false) {
 
         let normalMatrix = modelViewMartrix.computeNormalMatrix();
 
@@ -3309,7 +3478,7 @@ export default class Framebuffer {
                 let p2 = this.project(v2);
                 let p3 = this.project(v3);
 
-                if (this.isTriangleCCW(p1, p2, p3)) {
+                if (culling  || this.isTriangleCCW(p1, p2, p3)) {
                     // TODO: do lighting only if triangle is visible
                     let scalar = Math.min((Math.max(0.0, normal.dot(lightDirection))), 1.0);
                     scalar = scalar * 0.85 + 0.15;
@@ -5371,9 +5540,9 @@ export default class Framebuffer {
 
 
 
-    public shadingSphereEnvDisp2(elapsedTime: number): void {
+    public shadingSphereEnvDisp2(elapsedTime: number, modelViewMartrix: Matrix4f): void {
 
-        this.wBuffer.fill(100);
+        // this.wBuffer.fill(100);
 
         let result = this.sphereDisp2;
 
@@ -5421,16 +5590,6 @@ export default class Framebuffer {
         for (let i = 0; i < normals.length; i++) {
             normals[i].normalize2();
         }
-
-        let scale = 3.7;
-
-        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.35)
-            .multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0
-                , 0))));
-
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(-0, -0,
-            -10 - (Math.sin(elapsedTime * 0.3) * 0.5 + 0.5) * 6)
-            .multiplyMatrix(modelViewMartrix);
 
         /**
          * Vertex Shader Stage
@@ -5849,7 +6008,7 @@ export default class Framebuffer {
         if (pos.z < 0 &&
             pos.x > 0 && pos.x < 320 &&
             pos.y > 0 && pos.y < 200 &&
-            this.wBuffer[pos.x + (pos.y * 320)] > (-1 / 100)) {
+            this.wBuffer[pos.x + (pos.y * 320)] > (1 / pos.z)) {
             if (!this.lensFlareVisible) {
                 this.lensFlareVisible = true;
                 this.lensFlareStart = elapsedTime;
