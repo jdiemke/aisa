@@ -1,17 +1,31 @@
 /**
  * Convert Wavefront OBJ to JSON format
- * 
+ *
  * @author Johannes Diemke
  * @since 2017-04-09
  */
-let fs = require('fs');
+import * as fs from 'fs';
 
-let args = process.argv.slice(2);
+class Vector {
+
+    private x: number;
+    private y: number;
+    private z: number;
+
+    public constructor(x: number, y: number, z: number) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+}
+
+const args: Array<string> = process.argv.slice(2);
 
 if (args.length > 0) {
-    let fileName = args[0];
+    const fileName: string = args[0];
 
-    fs.readFile(fileName, 'utf8', function (err, data) {
+    fs.readFile(fileName, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
 
         if (err) {
             throw err;
@@ -21,16 +35,16 @@ if (args.length > 0) {
 
         let currentObject = null;
 
-        let normalCount = 0;
-        let vertexCount = 0;
-        let normalOffset = 0;
-        let vertexOffset = 0;
+        let normalCount: number = 0;
+        let vertexCount: number = 0;
+        let normalOffset: number = 0;
+        let vertexOffset: number = 0;
 
-        data.toString().split('\n').forEach(line => {
+        data.toString().split('\n').forEach((line: string) => {
 
             if (line.startsWith('o ')) {
                 let coords = line.split(' ');
-                
+
                 currentObject = {
                     name: coords[1],
                     vertices: [],
@@ -43,37 +57,32 @@ if (args.length > 0) {
             }
 
             if (line.startsWith('v ')) {
-                let coords = line.split(' ');
-
-                let vertex = {
-                    x: Number(coords[1]),
-                    y: Number(coords[2]),
-                    z: Number(coords[3]),
-                }
-
+                const coords: Array<string> = line.split(' ');
+                const vertex: Vector = new Vector(Number(coords[1]), Number(coords[2]), Number(coords[3]));
                 currentObject.vertices.push(vertex);
                 vertexCount++;
             }
 
             if (line.startsWith('vn ')) {
-                let coords = line.split(' ');
+                const coords: Array<string> = line.split(' ');
 
                 let normal = {
                     x: Number(coords[1]),
                     y: Number(coords[2]),
                     z: Number(coords[3]),
-                }
+                };
 
                 currentObject.normals.push(normal);
                 normalCount++;
             }
 
             if (line.startsWith('f ')) {
-                let coords = line.split(' ');
+                const coords: Array<string> = line.split(' ');
+
                 let face = {
                     vertices: [],
                     normals: []
-                }
+                };
 
                 // vertex indices
                 face.vertices.push(Number(coords[1].split('/')[0]) - 1 - vertexOffset);
@@ -89,16 +98,12 @@ if (args.length > 0) {
             }
         });
 
-        //console.log("vertices: " + json.vertices.length);
-        //console.log("normals: " + json.normals.length);
-        //console.log("faces: " + json.faces.length / 6);
-
         console.log(json);
 
-        let outputName = fileName.substring(0, fileName.lastIndexOf('.')) + '.json';
-        fs.writeFile(outputName, JSON.stringify(json, null, 2), function (err) {
+        const outputName: string = fileName.substring(0, fileName.lastIndexOf('.')) + '.json';
+        fs.writeFile(outputName, JSON.stringify(json, null, 2), (err: NodeJS.ErrnoException) => {
             if (err) {
-                return console.log(err);
+                console.log(err);
             }
         });
 
