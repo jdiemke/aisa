@@ -21,7 +21,9 @@
             "object-destructuring",
             "array-destructuring"
         ],
-        "no-bitwise": false
+        "no-bitwise": false,
+        "trailing-comma": false,
+        "no-console": false
     },
     "rulesDirectory": []
 }
