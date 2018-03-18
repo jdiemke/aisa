@@ -17,18 +17,16 @@ module.exports = {
         rules: [
             {
                 test: /\.ts$/,
-                loader: 'awesome-typescript-loader',
-                options: {
-                    configFileName: './src/tsconfig.json'
-                }
+                use: 'ts-loader',
+                exclude: /node_modules/
             },
             {
                 test: /\.html$/,
-                loader: 'html-loader'
+                use: 'html-loader'
             },
             {
                 test: /\.(png|jpg|mp3|ogg)$/,
-                loader: 'file-loader'
+                use: 'file-loader'
             }
         ]
     },
