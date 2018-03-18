@@ -1,22 +1,44 @@
 /**
  * Convert Wavefront OBJ to JSON format
  *
+ * TODO:
+ *  - implement multiple JSON types
+ *  - with normals / with texture coords ...
+ *  - move types into modules
+ *
  * @author Johannes Diemke
  * @since 2017-04-09
  */
 import * as fs from 'fs';
+import { Vector } from './vector';
 
-class Vector {
+class Face {
+    public vertices: Array<number>;
+    public normals: Array<number>;
+    public uv: Array<number>;
+}
 
-    private x: number;
-    private y: number;
-    private z: number;
+// tslint:disable-next-line:max-classes-per-file
+class TexCoord {
 
-    public constructor(x: number, y: number, z: number) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    public u: number;
+    public v: number;
+
+    public constructor(u: number, v: number) {
+        this.u = u;
+        this.v = v;
     }
+
+}
+
+// tslint:disable-next-line:max-classes-per-file
+class Mesh {
+
+    public name: string;
+    public vertices: Array<Vector>;
+    public normals: Array<Vector>;
+    public uv: Array<TexCoord>;
+    public faces: Array<Face>;
 
 }
 
@@ -31,34 +53,44 @@ if (args.length > 0) {
             throw err;
         }
 
-        let json = [];
+        const json: Array<Mesh> = new Array<Mesh>();
 
-        let currentObject = null;
+        let currentObject: Mesh = null;
 
         let normalCount: number = 0;
         let vertexCount: number = 0;
+        let uvCount: number = 0;
         let normalOffset: number = 0;
         let vertexOffset: number = 0;
+        let uvOffset: number = 0;
 
         data.toString().split('\n').forEach((line: string) => {
 
             if (line.startsWith('o ')) {
-                let coords = line.split(' ');
+                const coords: Array<string> = line.split(' ');
 
-                currentObject = {
-                    name: coords[1],
-                    vertices: [],
-                    normals: [],
-                    faces: []
-                };
+                currentObject = new Mesh();
+                currentObject.name = coords[1];
+                currentObject.normals = [];
+                currentObject.vertices = [];
+                currentObject.faces = [];
+                currentObject.uv = []; // OPTIONAL
+
                 json.push(currentObject);
                 normalOffset = normalCount;
                 vertexOffset = vertexCount;
+                uvOffset = uvCount;
             }
 
             if (line.startsWith('v ')) {
                 const coords: Array<string> = line.split(' ');
-                const vertex: Vector = new Vector(Number(coords[1]), Number(coords[2]), Number(coords[3]));
+
+                const vertex: Vector = new Vector(
+                    Number.parseFloat(coords[1]),
+                    Number.parseFloat(coords[2]),
+                    Number.parseFloat(coords[3])
+                );
+
                 currentObject.vertices.push(vertex);
                 vertexCount++;
             }
@@ -66,28 +98,45 @@ if (args.length > 0) {
             if (line.startsWith('vn ')) {
                 const coords: Array<string> = line.split(' ');
 
-                let normal = {
-                    x: Number(coords[1]),
-                    y: Number(coords[2]),
-                    z: Number(coords[3]),
-                };
+                const normal: Vector = new Vector(
+                    Number.parseFloat(coords[1]),
+                    Number.parseFloat(coords[2]),
+                    Number.parseFloat(coords[3])
+                );
 
                 currentObject.normals.push(normal);
                 normalCount++;
             }
 
+            if (line.startsWith('vt ')) { // OPTIONAL
+                const coords: Array<string> = line.split(' ');
+
+                const uv: TexCoord = new TexCoord(
+                    Number.parseFloat(coords[1]),
+                    Number.parseFloat(coords[2])
+                );
+
+                currentObject.uv.push(uv);
+                uvCount++;
+            }
+
             if (line.startsWith('f ')) {
                 const coords: Array<string> = line.split(' ');
 
-                let face = {
-                    vertices: [],
-                    normals: []
-                };
+                const face: Face = new Face();
+                face.vertices = [];
+                face.normals = [];
+                face.uv = [];
 
                 // vertex indices
                 face.vertices.push(Number(coords[1].split('/')[0]) - 1 - vertexOffset);
                 face.vertices.push(Number(coords[2].split('/')[0]) - 1 - vertexOffset);
                 face.vertices.push(Number(coords[3].split('/')[0]) - 1 - vertexOffset);
+
+                // uv indices OPTIONAL!
+                face.uv.push(Number(coords[1].split('/')[1]) - 1 - uvOffset);
+                face.uv.push(Number(coords[2].split('/')[1]) - 1 - uvOffset);
+                face.uv.push(Number(coords[3].split('/')[1]) - 1 - uvOffset);
 
                 // normal indices
                 face.normals.push(Number(coords[1].split('/')[2]) - 1 - normalOffset);
@@ -101,9 +150,9 @@ if (args.length > 0) {
         console.log(json);
 
         const outputName: string = fileName.substring(0, fileName.lastIndexOf('.')) + '.json';
-        fs.writeFile(outputName, JSON.stringify(json, null, 2), (err: NodeJS.ErrnoException) => {
-            if (err) {
-                console.log(err);
+        fs.writeFile(outputName, JSON.stringify(json, null, 2), (error: NodeJS.ErrnoException) => {
+            if (error) {
+                console.log(error);
             }
         });
 
