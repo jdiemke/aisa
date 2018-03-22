@@ -23,11 +23,13 @@ export class Canvas {
     private heightmapSphere: Texture;
     private texture4: Texture;
     private texture5: Texture;
+    private baked: Texture;
     private texture6: Texture;
     private texture7: Texture;
     private texture8: Texture;
     private texture9: Texture;
     private texture10: Texture;
+    private platonian: Texture;
     private dirt: Texture;
     private texture11: Texture;
     private texture12: Texture;
@@ -117,7 +119,7 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3 + 550000;
-        time = time % (950000);
+        time = time % (1050000);
 
         this.framebuffer.setCullFace(CullFace.FRONT);
         /*
@@ -977,7 +979,7 @@ export class Canvas {
             this.framebuffer.drawTexture(0, 0, texture3, 0.75);
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             this.framebuffer.glitchScreen(time * 0.9, this.noise);
-        } else {
+        } else if (time < 950000) {
             this.framebuffer.setCullFace(CullFace.BACK);
             this.framebuffer.setBob(this.envmap);
 
@@ -995,26 +997,47 @@ export class Canvas {
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
 
             this.framebuffer.noise(time, this.noise);
+        } else if (time < 1000000) {
+
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.setCullFace(CullFace.BACK);
+            this.framebuffer.setBob(this.baked);
+
+            this.framebuffer.drawBlenderScene7(time, this.particleTexture2,
+                [
+                    { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                    { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                    { tex: this.texture13, scale: 1.6, alpha: 0.25 },
+                    { tex: this.texture13, scale: 0.7, alpha: 0.22 },
+                    { tex: this.texture13, scale: -0.4, alpha: 0.22 },
+                ], this.dirt);
+
+            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.75);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            //this.framebuffer.glitchScreen(time * 0.9, this.noise);
+            this.framebuffer.noise(time, this.noise);
+        } else {
+
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.setCullFace(CullFace.BACK);
+            this.framebuffer.setBob(this.platonian);
+
+            this.framebuffer.drawBlenderScene8(time, this.particleTexture2,
+                [
+                    { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                    { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                    { tex: this.texture13, scale: 1.6, alpha: 0.25 },
+                    { tex: this.texture13, scale: 0.7, alpha: 0.22 },
+                    { tex: this.texture13, scale: -0.4, alpha: 0.22 },
+                ], this.dirt);
+
+            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.75);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            //this.framebuffer.glitchScreen(time * 0.9, this.noise);
+            this.framebuffer.noise(time, this.noise);
         }
-/*
-        this.framebuffer.setCullFace(CullFace.BACK);
-        this.framebuffer.setBob(this.envmap);
-
-        this.framebuffer.drawBlenderScene6(time, this.particleTexture2,
-            [
-                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                { tex: this.texture13, scale: 1.6, alpha: 0.25 },
-                { tex: this.texture13, scale: 0.7, alpha: 0.22 },
-                { tex: this.texture13, scale: -0.4, alpha: 0.22 },
-            ], this.dirt);
-
-        const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-        this.framebuffer.drawTexture(0, 0, texture3, 0.75);
-        this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-        // this.framebuffer.glitchScreen(time * 0.9, this.noise);
-        this.framebuffer.noise(time, this.noise);
-*/
         /**
          * TODO:
          * - Draw Vector ART in SVG Inkscape
@@ -1025,7 +1048,7 @@ export class Canvas {
         //this.framebuffer.drawTexture(30, 25, this.meth, 1);
 
 
-      //  this.framebuffer.drawTexture(0, 0, this.hlm, 0.50);
+        //  this.framebuffer.drawTexture(0, 0, this.hlm, 0.50);
 
 
         // this.framebuffer.glitchScreen(time, this.noise);
@@ -1537,6 +1560,7 @@ export class Canvas {
             }
             lastClick = currentClick;
         });
+
         Promise.all([
             this.createTexture(require('./assets/spheremap.png'), false).then(texture => this.spheremap = texture),
             this.createTexture(require('./assets/metall.png'), false).then(texture => this.metal = texture),
@@ -1555,6 +1579,7 @@ export class Canvas {
             this.createTexture(require('./assets/bokeh.png'), true).then(texture => this.texture13 = texture),
             this.createTexture(require('./assets/led.png'), false).then(texture => this.texture14 = texture),
             this.createTexture(require('./assets/revision.png'), false).then(texture => this.revision = texture),
+            this.createTexture(require('./assets/platonian_baked.png'), false).then(texture => this.platonian = texture),
             this.createTexture(require('./assets/meth.png'), true).then(texture => this.meth = texture),
             this.createProceduralTexture().then(texture => this.texture15 = texture),
             this.createProceduralTexture2().then(texture => this.particleTexture = texture),
@@ -1565,6 +1590,7 @@ export class Canvas {
             this.createTexture(require('./assets/abstract.png'), false).then(texture => this.abstract = texture),
             this.createTexture(require('./assets/rave.png'), false).then(texture => this.rave = texture),
             this.createTexture(require('./assets/microstrange.png'), false).then(texture => this.micro = texture),
+            this.createTexture(require('./assets/Backed.png'), false).then(texture => this.baked = texture),
             this.createTexture(require('./assets/blurredBackground.png'), false).then(texture => this.blurred = texture),
             this.createTexture(require('./assets/hlm.png'), true).then(texture => this.hlm = texture),
             this.createTexture(require('./assets/cross.png'), true).then(texture => this.cross = texture),
