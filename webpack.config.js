@@ -1,6 +1,5 @@
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var path = require('path');
-const MinifyPlugin = require('babel-minify-webpack-plugin');
 
 module.exports = {
     entry: {
@@ -34,10 +33,6 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             template: './src/index.html'
-        }),
-        /**
-         * Removed minification due to sourcemap generation problems
-         */
-        // new MinifyPlugin()
+        })
     ]
 }
