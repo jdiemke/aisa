@@ -46,6 +46,7 @@ let gearJson = <any>require('./assets/gear.json');
 let roomJson = <any>require('./assets/room.json');
 let hoodlumJson = <any>require('./assets/hoodlum.json');
 let labJson = <any>require('./assets/lab.json');
+let labJson2 = <any>require('./assets/lab2.json');
 let bakedJson = <any>require('./assets/abstract.json');
 let platonian = <any>require('./assets/platonian_backed.json');
 
@@ -232,6 +233,7 @@ export default class Framebuffer {
     private blenderObj7: any;
     private blenderObj8: any;
     private blenderObj9: any;
+    private blenderObj10: any;
     private bob: Texture;
     private sphere: any;
     private plane: any;
@@ -275,6 +277,7 @@ export default class Framebuffer {
         this.blenderObj7 = this.getBlenderScene(hlm2018Json, false);
         this.blenderObj8 = this.getBlenderScene(bakedJson, false);
         this.blenderObj9 = this.getBlenderScene(platonian, false);
+        this.blenderObj10 = this.getBlenderScene(labJson2, false);
 
 
         this.sphere = this.createSphere();
@@ -1666,7 +1669,7 @@ export default class Framebuffer {
      * http://insolitdust.sourceforge.net/code.html
      */
     public clearDepthBuffer(): void {
-        this.wBuffer.fill(-1 / 200);
+        this.wBuffer.fill(-1 / 500);
     }
 
     public debug(elapsedTime: number): void {
@@ -2633,7 +2636,7 @@ export default class Framebuffer {
                 object.uv.forEach((v) => {
                     let uv = new TextureCoordinate();
                     uv.u = v.u;
-                    uv.v = 1-v.v;
+                    uv.v = 1 - v.v;
                     coords.push(uv);
                 });
             }
@@ -3269,8 +3272,10 @@ export default class Framebuffer {
     }
 
 
-    public drawBlenderScene7(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
+    public drawBlenderScene7(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture,
+    skybox?: any): void {
 
+        elapsedTime*= 0.2;
         this.clearDepthBuffer();
 
         let camera: Matrix4f =
@@ -3288,6 +3293,14 @@ export default class Framebuffer {
             let model = this.blenderObj8[j];
             this.drawObjectTexture(model, mv, 244 * scal, 225 * scal, 216 * scal);
         }
+
+        if(skybox)
+         this.drawSkyBox(mv.getRotation(),skybox);
+
+         let scale = 20;
+         let lensflareScreenSpace = this.project(camera.getRotation().multiply(new Vector3f(1.1*scale, 2*scale, -0.9*scale)));
+
+         this.drawLensFlare(lensflareScreenSpace, elapsedTime * 1.2, texture, dirt);
     }
 
     public drawBlenderScene8(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
@@ -3307,6 +3320,245 @@ export default class Framebuffer {
             let model = this.blenderObj9[j];
             this.drawObjectTexture(model, mv, 244 * scal, 225 * scal, 216 * scal);
         }
+    }
+
+    public drawSkyBox(rotation: Matrix4f, skybox: { back?: Texture, down?: Texture, front?: Texture, left?: Texture, right?: Texture, up?: Texture }): void {
+
+
+        const sclae = 20;
+        let textures = [
+            skybox.back,
+            skybox.left,
+            skybox.front,
+            skybox.right
+        ];
+        for (let i = 0; i < 4; i++) {
+            let camera: Matrix4f =
+              rotation.multiplyMatrix(
+                    Matrix4f.constructXRotationMatrix(Math.PI).multiplyMatrix(
+                        Matrix4f.constructYRotationMatrix(+ Math.PI * 2 / 4 * i)));
+
+
+            let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(sclae, sclae, sclae));
+
+            let skyPoints = [
+                new Vector4f(1, 1, -1, 1),
+                new Vector4f(-1, 1, -1, 1),
+                new Vector4f(-1, -1, -1, 1),
+                new Vector4f(1, 1, -1, 1),
+                new Vector4f(-1, -1, -1, 1),
+                new Vector4f(1, -1, -1, 1)
+            ];
+            //skybox: starz
+            let skyBoxSideModel = {
+                normals: [],
+                normals2: [],
+                points: skyPoints,
+                points2: skyPoints.map(x => new Vector3f(0, 0, 0)),
+                uv: [
+                    new TextureCoordinate(1, 1),
+                    new TextureCoordinate(0, 1),
+                    new TextureCoordinate(0, 0),
+                    new TextureCoordinate(1, 1),
+                    new TextureCoordinate(0, 0),
+                    new TextureCoordinate(1, 0),
+                ],
+                faces: [
+                    {
+                        vertices: [0, 1, 2],
+                        uv: [0, 1, 2]
+                    },
+                    {
+                        vertices: [3, 4, 5],
+                        uv: [3, 4, 5]
+                    }
+                ]
+            };
+
+            this.setBob(textures[i]);
+            this.drawObjectTexture2(skyBoxSideModel, mv, 244, 225, 216);
+
+        }
+
+         let camera: Matrix4f =
+
+
+  
+
+          rotation.multiplyMatrix(
+                Matrix4f.constructXRotationMatrix(Math.PI)).multiplyMatrix(
+                    Matrix4f.constructYRotationMatrix(0)
+                    .multiplyMatrix(Matrix4f.constructYRotationMatrix(Math.PI * 2 / 4*1 ).multiplyMatrix(Matrix4f.constructXRotationMatrix(-Math.PI * 2 / 4 )))
+                );
+
+
+         let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(sclae, sclae, sclae));
+
+         let skyPoints = [
+            new Vector4f(1, 1, -1, 1),
+            new Vector4f(-1, 1, -1, 1),
+            new Vector4f(-1, -1, -1, 1),
+            new Vector4f(1, 1, -1, 1),
+            new Vector4f(-1, -1, -1, 1),
+            new Vector4f(1, -1, -1, 1)
+        ];
+        //skybox: starz
+         let skyBoxSideModel = {
+            normals: [],
+            normals2: [],
+            points: skyPoints,
+            points2: skyPoints.map(x => new Vector3f(0, 0, 0)),
+            uv: [
+                new TextureCoordinate(0, 0),
+                new TextureCoordinate(1, 0),
+                new TextureCoordinate(1, 1),
+                new TextureCoordinate(0, 0),
+                new TextureCoordinate(1, 1),
+                new TextureCoordinate(0, 1),
+            ],
+            faces: [
+                {
+                    vertices: [0, 1, 2],
+                    uv: [0, 1, 2]
+                },
+                {
+                    vertices: [3, 4, 5],
+                    uv: [3, 4, 5]
+                }
+            ]
+        };
+
+        this.setBob(skybox.up);
+        this.drawObjectTexture2(skyBoxSideModel, mv, 244, 225, 216);
+
+
+         camera =
+         rotation.multiplyMatrix(
+            Matrix4f.constructXRotationMatrix(Math.PI)).multiplyMatrix(
+                Matrix4f.constructYRotationMatrix(0)
+                .multiplyMatrix(Matrix4f.constructYRotationMatrix(Math.PI * 2 / 2 ).multiplyMatrix(Matrix4f.constructXRotationMatrix(Math.PI * 2 / 4 )))
+            
+            );
+
+
+     mv = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(sclae, sclae, sclae));
+
+     skyPoints = [
+        new Vector4f(1, 1, -1, 1),
+        new Vector4f(-1, 1, -1, 1),
+        new Vector4f(-1, -1, -1, 1),
+        new Vector4f(1, 1, -1, 1),
+        new Vector4f(-1, -1, -1, 1),
+        new Vector4f(1, -1, -1, 1)
+    ];
+    //skybox: starz
+     skyBoxSideModel = {
+        normals: [],
+        normals2: [],
+        points: skyPoints,
+        points2: skyPoints.map(x => new Vector3f(0, 0, 0)),
+        uv: [
+            new TextureCoordinate(1, 1),
+            new TextureCoordinate(0, 1),
+            new TextureCoordinate(0, 0),
+            new TextureCoordinate(1, 1),
+            new TextureCoordinate(0, 0),
+            new TextureCoordinate(1, 0),
+        ],
+        faces: [
+            {
+                vertices: [0, 1, 2],
+                uv: [0, 1, 2]
+            },
+            {
+                vertices: [3, 4, 5],
+                uv: [3, 4, 5]
+            }
+        ]
+    };
+
+    this.setBob(skybox.down);
+    this.drawObjectTexture2(skyBoxSideModel, mv, 244, 225, 216);
+
+
+    }
+
+    public drawBlenderScene9(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture, skybox: { back?: Texture, down?: Texture, front?: Texture, left?: Texture, right?: Texture, up?: Texture }): void {
+
+        this.clearDepthBuffer();
+
+        let scal = Math.sin(elapsedTime * 0.003) * 0.5 + 0.5;
+        let camera: Matrix4f =
+            Matrix4f.constructTranslationMatrix(0, 0, -34 + (Math.sin(elapsedTime * 0.00007) * 0.5 + 0.5) * 7).multiplyMatrix(
+                Matrix4f.constructXRotationMatrix((Math.sin(elapsedTime * 0.00014) * 0.5 + 0.5) * 0.5 - 0.2).multiplyMatrix(
+                    Matrix4f.constructYRotationMatrix(-elapsedTime * 0.0002).multiplyMatrix(
+
+                        Matrix4f.constructTranslationMatrix(0, 1.9, 0)
+                    )));
+
+
+        let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(13, 13, 13));
+
+
+       
+        for (let j = 0; j < this.blenderObj10.length; j++) {
+            let model = this.blenderObj10[j];
+            this.drawObjectTexture2(model, mv, 244 * scal, 225 * scal, 216 * scal);
+        }
+
+        mv = camera.multiplyMatrix(
+            Matrix4f.constructTranslationMatrix(0, -5.5, 0).multiplyMatrix(
+                Matrix4f.constructScaleMatrix(413, 413, 413).multiplyMatrix(
+                    Matrix4f.constructXRotationMatrix(Math.PI * 0.5)
+                )
+            ));
+
+        let model = this.blenderObj7[0];
+        this.drawObject2(model, mv, 244, 100, 116, false, true);
+
+        let points: Array<Vector3f> = new Array<Vector3f>();
+        const num = 10;
+        const num2 = 6;
+
+        for (let i = 0; i < num; i++) {
+
+            for (let j = 0; j < num2; j++) {
+                let y = ((i + elapsedTime * 0.001) % 10) * 2.5 - 12;
+                let scale2 = (1 + 4 * this.interpolate(-10, 10, y)) *
+
+                    ((Math.sin(elapsedTime * 0.0012 + Math.PI * 2 / num * i * 2) * 0.5 + 0.5) * 0.5 + 0.5);
+                let x = scale2 * Math.sin(Math.PI * 2 / num2 * j + elapsedTime * 0.0008);
+
+                let z = scale2 * Math.cos(Math.PI * 2 / num2 * j + elapsedTime * 0.0008);
+
+                points.push(new Vector3f(x, y, z));
+            }
+        }
+
+
+        let modelViewMartrix = camera.multiplyMatrix(Matrix4f.constructTranslationMatrix(0, -0.0, 0));
+
+        let points2: Array<Vector3f> = new Array<Vector3f>(points.length);
+        points.forEach(element => {
+
+
+            let transformed = this.project(modelViewMartrix.multiply(element));
+
+            points2.push(transformed);
+        });
+
+        points2.sort(function (a, b) {
+            return a.z - b.z;
+        });
+
+        points2.forEach(element => {
+            let size = -(4.3 * 192 / (element.z));
+            this.drawSoftParticle(
+                Math.round(element.x - size / 2),
+                Math.round(element.y - size / 2),
+                Math.round(size), Math.round(size), texture3, 1 / element.z, 0.7);
+        });
+
     }
 
     public drawBlenderScene3(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
@@ -3623,6 +3875,63 @@ export default class Framebuffer {
         }
     }
 
+    private drawObjectTexture2(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, culling: boolean = false) {
+
+        let normalMatrix = modelViewMartrix.computeNormalMatrix();
+
+        for (let i = 0; i < obj.normals.length; i++) {
+            normalMatrix.multiplyHomArr(obj.normals[i], obj.normals2[i]);
+        }
+
+        for (let i = 0; i < obj.points.length; i++) {
+            modelViewMartrix.multiplyHomArr(obj.points[i], obj.points2[i]);
+        }
+
+        let vertexArray = new Array<Vertex>(new Vertex(), new Vertex(), new Vertex());
+
+        for (let i = 0; i < obj.faces.length; i++) {
+            let v1 = obj.points2[obj.faces[i].vertices[0]];
+            let v2 = obj.points2[obj.faces[i].vertices[1]];
+            let v3 = obj.points2[obj.faces[i].vertices[2]];
+
+            if (this.isInFrontOfNearPlane(v1) && this.isInFrontOfNearPlane(v2) && this.isInFrontOfNearPlane(v3)) {
+                let p1 = this.project(v1);
+                let p2 = this.project(v2);
+                let p3 = this.project(v3);
+
+                if (this.isTriangleCCW(p1, p2, p3)) {
+                    let color = 255;
+
+                    vertexArray[0].position = p1;
+                    vertexArray[0].textureCoordinate = obj.uv[obj.faces[i].uv[0]];
+
+                    vertexArray[1].position = p2;
+                    vertexArray[1].textureCoordinate = obj.uv[obj.faces[i].uv[1]];
+
+                    vertexArray[2].position = p3;
+                    vertexArray[2].textureCoordinate = obj.uv[obj.faces[i].uv[2]];
+
+                    this.clipConvexPolygon2(vertexArray, color);
+                }
+            } else if (!this.isInFrontOfNearPlane(v1) && !this.isInFrontOfNearPlane(v2) && !this.isInFrontOfNearPlane(v3)) {
+                continue;
+            } else {
+                let color = 255;
+
+                vertexArray[0].position = v1;
+                vertexArray[0].textureCoordinate = obj.uv[obj.faces[i].uv[0]];
+
+                vertexArray[1].position = v2;
+                vertexArray[1].textureCoordinate = obj.uv[obj.faces[i].uv[1]];
+
+                vertexArray[2].position = v3;
+                vertexArray[2].textureCoordinate = obj.uv[obj.faces[i].uv[2]];
+
+                this.zClipTriangle2(vertexArray, color);
+            }
+        }
+    }
+
     private drawObject(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, oldLDir: boolean = true) {
 
         let normalMatrix = modelViewMartrix.computeNormalMatrix();
@@ -3727,6 +4036,62 @@ export default class Framebuffer {
         }
         //if (this.isTriangleCCW(projected[0], projected[1], projected[2])) {
         this.clipConvexPolygon(projected, color, true);
+        // }
+    }
+
+    public computeNearPlaneIntersection2(p1: Vertex, p2: Vertex): Vertex {
+        let ratio = (this.NEAR_PLANE_Z - p1.position.z) / (p2.position.z - p1.position.z);
+        let vertex = new Vertex();
+        vertex.position = new Vector3f(ratio * (p2.position.x - p1.position.x) + p1.position.x, ratio * (p2.position.y - p1.position.y) + p1.position.y, this.NEAR_PLANE_Z);
+
+        let tex = new TextureCoordinate();
+        tex.u = ratio * (p2.textureCoordinate.u - p1.textureCoordinate.u) + p1.textureCoordinate.u;
+        tex.v = ratio * (p2.textureCoordinate.v - p1.textureCoordinate.v) + p1.textureCoordinate.v;
+        vertex.textureCoordinate = tex;
+
+        return vertex;
+    }
+
+    public zClipTriangle2(subject: Array<Vertex>, color: number): void {
+
+        let output = subject;
+
+        let input = output;
+        output = new Array<Vertex>();
+        let S = input[input.length - 1];
+
+        for (let i = 0; i < input.length; i++) {
+            let point = input[i];
+            if (this.isInFrontOfNearPlane(point.position)) {
+                if (!this.isInFrontOfNearPlane(S.position)) {
+                    output.push(this.computeNearPlaneIntersection2(S, point));
+                }
+                output.push(point);
+            } else if (this.isInFrontOfNearPlane(S.position)) {
+                output.push(this.computeNearPlaneIntersection2(S, point));
+            }
+            S = point;
+        }
+
+        if (output.length < 3) {
+            return;
+        }
+
+        let projected: Vertex[] = output.map<Vertex>((v) => {
+            v.position = this.project(v.position);
+            return v;
+        })
+
+        if (output.length === 3 && !this.isTriangleCCW(projected[0].position, projected[1].position, projected[2].position)) {
+            return;
+        }
+
+        if (output.length === 4 && !this.isTriangleCCW2(projected[0].position, projected[1].position, projected[2].position, projected[3].position)) {
+            return;
+        }
+        //if (this.isTriangleCCW(projected[0], projected[1], projected[2])) {
+        //this.clipConvexPolygon(projected, color, true);
+        this.clipConvexPolygon2(projected, color);
         // }
     }
 

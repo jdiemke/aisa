@@ -37,6 +37,7 @@ export class Canvas {
     private texture14: Texture;
     private texture15: Texture;
     private revision: Texture;
+    private lab2: Texture;
     private hoodlumLogo: Texture;
     private blurred: Texture;
     private envmap: Texture;
@@ -50,6 +51,14 @@ export class Canvas {
     private meth: Texture;
     private displacementMap: Texture;
     private cross: Texture;
+    private skybox: {
+        back?: Texture,
+        down?: Texture,
+        front?: Texture,
+        left?: Texture,
+        right?: Texture,
+        up?: Texture
+    } = {};
     private abstract: Texture;
     private myAudio: HTMLAudioElement;
     private spheremap: Texture;
@@ -119,7 +128,7 @@ export class Canvas {
 
         let time: number = (Date.now() - this.start);
         time = time * 3 + 550000;
-        time = time % (1050000);
+        time = time % (1150000);
 
         this.framebuffer.setCullFace(CullFace.FRONT);
         /*
@@ -1017,7 +1026,7 @@ export class Canvas {
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             //this.framebuffer.glitchScreen(time * 0.9, this.noise);
             this.framebuffer.noise(time, this.noise);
-        } else {
+        } else if (time < 1050000) {
 
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.setCullFace(CullFace.BACK);
@@ -1037,27 +1046,60 @@ export class Canvas {
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             //this.framebuffer.glitchScreen(time * 0.9, this.noise);
             this.framebuffer.noise(time, this.noise);
+        } else if (time < 1100000) {
+
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.setCullFace(CullFace.BACK);
+            this.framebuffer.setBob(this.lab2);
+
+            this.framebuffer.drawBlenderScene9(time, this.particleTexture2,
+                [
+                    { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                    { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                    { tex: this.texture13, scale: 1.6, alpha: 0.25 },
+                    { tex: this.texture13, scale: 0.7, alpha: 0.22 },
+                    { tex: this.texture13, scale: -0.4, alpha: 0.22 },
+                ], this.dirt, this.skybox);
+
+            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.75);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+
+            this.framebuffer.noise(time, this.noise);
+
+        } else {
+
+            this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+            this.framebuffer.setCullFace(CullFace.BACK);
+            this.framebuffer.setBob(this.baked);
+
+            this.framebuffer.drawBlenderScene7(time - 1100000, this.particleTexture2,
+                [
+                    //   { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                    { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                    { tex: this.texture13, scale: 1.6, alpha: 0.25 },
+                    { tex: this.texture13, scale: 0.7, alpha: 0.22 },
+                    { tex: this.texture13, scale: -0.4, alpha: 0.22 },
+                ], this.dirt, this.skybox);
+
+            const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+            this.framebuffer.drawTexture(0, 0, texture3, 0.75);
+            this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+            //this.framebuffer.glitchScreen(time * 0.9, this.noise);
+            this.framebuffer.noise(time, this.noise);
         }
+
+        // TODO: Front Mission Modell in Blender
+
         /**
          * TODO:
          * - Draw Vector ART in SVG Inkscape
          * - Vectorize with Blender and Display
-         * - do texture mapped wavefront in blender
-         * - bake lighting
          */
-        //this.framebuffer.drawTexture(30, 25, this.meth, 1);
-
-
         //  this.framebuffer.drawTexture(0, 0, this.hlm, 0.50);
-
-
-        // this.framebuffer.glitchScreen(time, this.noise);
-        // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-        // this.framebuffer.drawWormhole(time, this.particleTexture2, true);
 
         /**
          * TODO:
-         * - lens flare in razor scene
          * - transition effects with alpha layer
          * - wormhole particle tunnel
          * - rubiks cube animation :-)
@@ -1080,12 +1122,7 @@ export class Canvas {
 
         // this.framebuffer.drawRadialBlur();
 
-
-
-        //this.framebuffer.noise(time, this.noise);
-
-
-        // this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
+        this.framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
 
 
         /*
@@ -1579,6 +1616,15 @@ export class Canvas {
             this.createTexture(require('./assets/bokeh.png'), true).then(texture => this.texture13 = texture),
             this.createTexture(require('./assets/led.png'), false).then(texture => this.texture14 = texture),
             this.createTexture(require('./assets/revision.png'), false).then(texture => this.revision = texture),
+            this.createTexture(require('./assets/lab2.png'), false).then(texture => this.lab2 = texture),
+
+            this.createTexture(require('./assets/skybox/skybox_back.png'), false).then(texture => this.skybox.back = texture),
+            this.createTexture(require('./assets/skybox/skybox_down.png'), false).then(texture => this.skybox.down = texture),
+            this.createTexture(require('./assets/skybox/skybox_front.png'), false).then(texture => this.skybox.front = texture),
+            this.createTexture(require('./assets/skybox/skybox_left.png'), false).then(texture => this.skybox.left = texture),
+            this.createTexture(require('./assets/skybox/skybox_right.png'), false).then(texture => this.skybox.right = texture),
+            this.createTexture(require('./assets/skybox/skybox_up.png'), false).then(texture => this.skybox.up = texture),
+
             this.createTexture(require('./assets/platonian_baked.png'), false).then(texture => this.platonian = texture),
             this.createTexture(require('./assets/meth.png'), true).then(texture => this.meth = texture),
             this.createProceduralTexture().then(texture => this.texture15 = texture),
