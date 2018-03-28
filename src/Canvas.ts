@@ -29,6 +29,7 @@ export class Canvas {
     private texture8: Texture;
     private texture9: Texture;
     private texture10: Texture;
+    private metalheadz: Texture;
     private platonian: Texture;
     private dirt: Texture;
     private texture11: Texture;
@@ -678,7 +679,7 @@ export class Canvas {
         */
 
         // music: https://youtu.be/XNUaoQeTu9U
-
+/*
         if (time < 50000) {
             this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
             this.framebuffer.setCullFace(CullFace.BACK);
@@ -1088,6 +1089,26 @@ export class Canvas {
             //this.framebuffer.glitchScreen(time * 0.9, this.noise);
             this.framebuffer.noise(time, this.noise);
         }
+
+*/
+        this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+        this.framebuffer.setCullFace(CullFace.BACK);
+     
+
+        this.framebuffer.drawBlenderSceneM(time, this.particleTexture2,
+            [
+                //   { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                { tex: this.texture13, scale: 1.6, alpha: 0.25 },
+                { tex: this.texture13, scale: 0.7, alpha: 0.22 },
+                { tex: this.texture13, scale: -0.4, alpha: 0.22 },
+            ], this.dirt, this.skybox, this.metalheadz);
+
+        const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+        this.framebuffer.drawTexture(0, 0, texture3, 0.75);
+        this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+      //  this.framebuffer.glitchScreen(time * 0.9, this.noise);
+        this.framebuffer.noise(time, this.noise);
 
         // TODO: Front Mission Modell in Blender
 
@@ -1604,6 +1625,7 @@ export class Canvas {
             this.createTexture(require('./assets/logo.png'), false).then(texture => this.texture = texture),
             this.createTexture(require('./assets/razor1911.png'), true).then(texture => this.texture2 = texture),
             this.createTexture(require('./assets/heightmap.png'), false).then(texture => this.heightmap = texture),
+            this.createTexture(require('./assets/metalheadz.png'), false).then(texture => this.metalheadz = texture),
             this.createTexture(require('./assets/font.png'), true).then(texture => this.texture4 = texture),
             this.createTexture(require('./assets/atlantis.png'), false).then(texture => this.texture5 = texture),
             this.createTexture(require('./assets/lens.png'), true).then(texture => this.texture6 = texture),
