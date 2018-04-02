@@ -4,7 +4,7 @@
   "description": "A software 3D engine written in TypeScript",
   "scripts": {
     "build": "webpack --mode production",
-    "serve": "webpack-dev-server --no-inline",
+    "serve": "webpack-dev-server --no-inline --mode development",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "obj2json": "ts-node utils/obj2json.ts"
   },
@@ -19,7 +19,7 @@
     "ts-loader": "4.1.0",
     "ts-node": "5.0.1",
     "typescript": "2.8.1",
-    "webpack": "4.3.0",
+    "webpack": "4.4.1",
     "webpack-cli": "2.0.13",
     "webpack-dev-server": "3.1.1"
   }
