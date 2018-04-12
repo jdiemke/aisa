@@ -105,6 +105,13 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Shadow Mapping
 - Pixel Shaders (Bump Mapping, Parallax Mapping)
 ### References
+- http://www.jagregory.com/abrash-black-book/
+- http://www.robotrenegade.com/articles/id-tech-3-optimization/index.html
+- https://www.asc.ohio-state.edu/lewis.239/Gauge/abrash.pdf
+- https://www.bluesnews.com/abrash/chap64.shtml
+- http://www.cs.utah.edu/~jsnider/SeniorProj/BSP/default.htm
+- https://pdfs.semanticscholar.org/262c/8e3d09822a477b62d7eba8766755dffa35be.pdf
+- http://www.alsprogrammingresource.com/pvs_tutorial.html
 - https://hacks.mozilla.org/2011/12/faster-canvas-pixel-manipulation-with-typed-arrays/
 - http://www.ecere.com/3dbhole/
 - https://www.davrous.com/2013/06/21/tutorial-part-4-learning-how-to-write-a-3d-software-engine-in-c-ts-or-js-rasterization-z-buffering/
