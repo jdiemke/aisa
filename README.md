@@ -106,6 +106,8 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Pixel Shaders (Bump Mapping, Parallax Mapping)
 ### References
 - http://www.jagregory.com/abrash-black-book/
+- http://archive.gamedev.net/archive/reference/programming/features/bsptree/bsp.pdf
+- https://nothings.org/gamedev/thief_rendering.html
 - http://www.robotrenegade.com/articles/id-tech-3-optimization/index.html
 - https://www.asc.ohio-state.edu/lewis.239/Gauge/abrash.pdf
 - https://www.bluesnews.com/abrash/chap64.shtml
