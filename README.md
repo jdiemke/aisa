@@ -107,6 +107,7 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 ### References
 - http://www.jagregory.com/abrash-black-book/
 - http://archive.gamedev.net/archive/reference/programming/features/bsptree/bsp.pdf
+- http://www.cs.virginia.edu/%7Eluebke/publications/portals.html
 - https://nothings.org/gamedev/thief_rendering.html
 - http://www.robotrenegade.com/articles/id-tech-3-optimization/index.html
 - https://www.asc.ohio-state.edu/lewis.239/Gauge/abrash.pdf
