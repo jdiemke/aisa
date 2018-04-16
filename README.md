@@ -105,8 +105,15 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Shadow Mapping
 - Pixel Shaders (Bump Mapping, Parallax Mapping)
 ### References
+- https://gamebanana.com/articles/72
+- http://www.gamasutra.com/features/20060417/Anderson_Thesis.pdf
+- https://www.bc.edu/content/dam/files/schools/cas_sites/cs/pdf/academics/honors/04DerekCarr.pdf
+- http://www.alsprogrammingresource.com/pvs_tutorial.html
+- http://www.cs.utah.edu/~jsnider/SeniorProj/BSP/default.htm
 - http://www.jagregory.com/abrash-black-book/
 - http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.96.7085&rep=rep1&type=pdf
+- http://www.luki.webzdarma.cz/eng_06_en.htm
+- https://www.bluesnews.com/abrash/chap64.shtml
 - https://bwravencl.de/Bachelorarbeit.pdf
 - https://www.gamedev.net/articles/programming/general-and-gameplay-programming/frustum-culling-r4613/
 - http://archive.gamedev.net/archive/reference/programming/features/bsptree/bsp.pdf
