@@ -106,6 +106,7 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Pixel Shaders (Bump Mapping, Parallax Mapping)
 ### References
 - Portals & PVS
+    - Doom 3 Portal Rendering Code: https://github.com/id-Software/DOOM-3-BFG/blob/1caba1979589971b5ed44e315d9ead30b278d8b4/neo/renderer/RenderWorld_portals.cpp
     - http://fabiensanglard.net/doom3/renderer.php
     - https://gist.github.com/aeroson/b4b8b4a4b11ef5549a40
     - https://www.iddevnet.com/doom3/visportals.php
