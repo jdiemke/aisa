@@ -105,6 +105,31 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Shadow Mapping
 - Pixel Shaders (Bump Mapping, Parallax Mapping)
 ### References
+- Portals & PVS
+    - Doom 3 Portal Rendering Code: https://github.com/id-Software/DOOM-3-BFG/blob/1caba1979589971b5ed44e315d9ead30b278d8b4/neo/renderer/RenderWorld_portals.cpp
+    - http://fabiensanglard.net/doom3/renderer.php
+    - https://gist.github.com/aeroson/b4b8b4a4b11ef5549a40
+    - https://www.iddevnet.com/doom3/visportals.php
+    - https://gamebanana.com/articles/72
+    - http://www.gamasutra.com/features/20060417/Anderson_Thesis.pdf
+    - https://www.bc.edu/content/dam/files/schools/cas_sites/cs/pdf/academics/honors/04DerekCarr.pdf
+    - http://www.alsprogrammingresource.com/pvs_tutorial.html
+    - http://www.cs.utah.edu/~jsnider/SeniorProj/BSP/default.htm
+    - http://www.jagregory.com/abrash-black-book/
+    - http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.96.7085&rep=rep1&type=pdf
+    - http://www.luki.webzdarma.cz/eng_06_en.htm
+    - https://www.bluesnews.com/abrash/chap64.shtml
+    - https://bwravencl.de/Bachelorarbeit.pdf
+- https://www.gamedev.net/articles/programming/general-and-gameplay-programming/frustum-culling-r4613/
+- http://archive.gamedev.net/archive/reference/programming/features/bsptree/bsp.pdf
+- http://www.cs.virginia.edu/%7Eluebke/publications/portals.html
+- https://nothings.org/gamedev/thief_rendering.html
+- http://www.robotrenegade.com/articles/id-tech-3-optimization/index.html
+- https://www.asc.ohio-state.edu/lewis.239/Gauge/abrash.pdf
+- https://www.bluesnews.com/abrash/chap64.shtml
+- http://www.cs.utah.edu/~jsnider/SeniorProj/BSP/default.htm
+- https://pdfs.semanticscholar.org/262c/8e3d09822a477b62d7eba8766755dffa35be.pdf
+- http://www.alsprogrammingresource.com/pvs_tutorial.html
 - https://hacks.mozilla.org/2011/12/faster-canvas-pixel-manipulation-with-typed-arrays/
 - http://www.ecere.com/3dbhole/
 - https://www.davrous.com/2013/06/21/tutorial-part-4-learning-how-to-write-a-3d-software-engine-in-c-ts-or-js-rasterization-z-buffering/
