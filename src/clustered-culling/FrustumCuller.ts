@@ -1,9 +1,9 @@
-import { Sphere } from '../math/Sphere';
-import { Vector4f } from '../math/index';
 import { BoundingVolume } from '../math/BoundingVolume';
-import Plane from "../math/Plane";
-import { Matrix4f } from "../math/Matrix4f";
-import { Vector3f } from "../math/Vector3f";
+import { Vector4f } from '../math/index';
+import { Matrix4f } from '../math/Matrix4f';
+import { Plane } from '../math/Plane';
+import { Sphere } from '../math/Sphere';
+import { Vector3f } from '../math/Vector3f';
 
 export class FrustumCuller {
 
@@ -16,15 +16,15 @@ export class FrustumCuller {
     public constructor() {
         this.planes = new Array<Plane>();
 
-        for (let i = 0; i < 6; i++) {
+        for (let i: number = 0; i < 6; i++) {
             this.planes.push(new Plane(new Vector4f(0, 0, 0, 0), 0));
         }
 
         this.pos = new Vector4f(0, 0, 0, 0);
 
-        const DISTANCE = 192;
+        const DISTANCE: number = 192;
 
-        let SCREEN_HEIGHT = 320 / 2;
+        const SCREEN_HEIGHT: number = 320 / 2;
         let SCREEN_WIDTH = 200 / 2;
 
         let HORIZONTAL_FIELD_OF_VIEW = 2.0 * Math.atan(SCREEN_HEIGHT / (2.0 * DISTANCE));
@@ -49,10 +49,8 @@ export class FrustumCuller {
         ];
     }
 
-    // precompute normal vectors in constructor
-    // dont create temp objects
     public updateFrustum(modelViewMatrix: Matrix4f, position: Vector3f): void {
-        const inverseRotation = modelViewMatrix.getInverseRotation();
+        const inverseRotation: Matrix4f = modelViewMatrix.getInverseRotation();
 
         inverseRotation.multiplyHomArr(this.normals[0], this.planes[0].normal); // left
         inverseRotation.multiplyHomArr(this.normals[1], this.planes[1].normal); // right
@@ -69,6 +67,7 @@ export class FrustumCuller {
         this.planes[1].distance = -this.planes[1].normal.dot(this.pos);
         this.planes[2].distance = -this.planes[2].normal.dot(this.pos);
         this.planes[3].distance = -this.planes[3].normal.dot(this.pos);
+        // TODO: bugfix near and far plane!
         this.planes[4].distance = -this.planes[4].normal.dot(this.pos) + this.near;
         this.planes[5].distance = -this.planes[3].normal.dot(this.pos) - this.far;
     }

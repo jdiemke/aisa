@@ -1,4 +1,4 @@
-import Plane from './Plane';
+import { Plane } from './Plane';
 
 export interface BoundingVolume {
 

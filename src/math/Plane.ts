@@ -1,10 +1,10 @@
 /**
  * Defines a plane as used for primitive clipping against the
- * view frustum. 
+ * view frustum.
  */
-import { Vector4f } from './index';
+import { Vector4f } from './';
 
-export default class Plane {
+export class Plane {
 
     public distance: number;
     public normal: Vector4f;

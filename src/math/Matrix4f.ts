@@ -368,7 +368,6 @@ export class Matrix4f {
             this.m41 * vector.x + this.m42 * vector.y + this.m43 * vector.z + this.m44 * vector.w);
     }
 
-
     public multiplyHomArr(vector: Vector4f, result: Vector4f): void {
         result.x = this.m11 * vector.x + this.m12 * vector.y + this.m13 * vector.z + this.m14 * vector.w;
         result.y = this.m21 * vector.x + this.m22 * vector.y + this.m23 * vector.z + this.m24 * vector.w;
