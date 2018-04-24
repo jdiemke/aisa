@@ -24,8 +24,8 @@ export class FrustumCuller {
 
         const DISTANCE: number = 192;
 
-        const SCREEN_HEIGHT: number = 320 / 2;
-        let SCREEN_WIDTH = 200 / 2;
+        const SCREEN_HEIGHT: number = 320/2 / 2;
+        let SCREEN_WIDTH = 200/2 / 2;
 
         let HORIZONTAL_FIELD_OF_VIEW = 2.0 * Math.atan(SCREEN_HEIGHT / (2.0 * DISTANCE));
         let VERTICAL_FIELD_OF_VIEW = 2.0 * Math.atan(SCREEN_WIDTH / (2.0 * DISTANCE));
@@ -73,7 +73,7 @@ export class FrustumCuller {
     }
 
     public isPotentiallyVisible(boundingVolume: Sphere): boolean {
-        for (let i = 0; i < this.planes.length; i++) {
+        for (let i: number = 0; i < this.planes.length; i++) {
             if (!boundingVolume.isInsidePositiveHalfSpace(this.planes[i])) {
                 return false;
             }

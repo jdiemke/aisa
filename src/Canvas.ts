@@ -1089,12 +1089,10 @@ export class Canvas {
             //this.framebuffer.glitchScreen(time * 0.9, this.noise);
             this.framebuffer.noise(time, this.noise);
         }
-
 */
-        this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-        this.framebuffer.setCullFace(CullFace.BACK);
-     
 
+/*
+        this.framebuffer.setCullFace(CullFace.BACK);
         this.framebuffer.drawBlenderSceneM(time, this.particleTexture2,
             [
                 //   { tex: this.texture10, scale: 0.0, alpha: 1.0 },
@@ -1107,8 +1105,12 @@ export class Canvas {
         const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
         this.framebuffer.drawTexture(0, 0, texture3, 0.75);
         this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-      //  this.framebuffer.glitchScreen(time * 0.9, this.noise);
         this.framebuffer.noise(time, this.noise);
+        */
+
+       // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+        this.framebuffer.setCullFace(CullFace.BACK);
+        this.framebuffer.drawBlenderScene(time, this.texture4, null);
 
         // TODO: Front Mission Modell in Blender
 
