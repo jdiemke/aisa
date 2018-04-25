@@ -37,6 +37,8 @@ import { BasicCamera, ControllableCamera } from './camera';
 import RandomNumberGenerator from './RandomNumberGenerator';
 import { Portal } from './portal-system/Portal';
 import { Polygon } from './portal-system/Polygon';
+import { Plane } from './math/Plane';
+import { SutherlandHodgmanClipper } from './portal-system/SutherlandHodgmanClipper';
 
 declare function require(string): string;
 let json = require('./assets/f16.json');
@@ -3133,8 +3135,10 @@ export default class Framebuffer {
         // IDEA:
         // Make: drawPolygon and clipPolygon Methods! only LineDrawing
         // https://www.phatcode.net/res/224/files/html/ch65/65-03.html#Heading6
-        this.drawPolygon(elapsedTime*0.003, polygon, modelViewMartrix);
 
+        const clippingPlanes: Array<Plane> = [];
+        const clippedPolygon = SutherlandHodgmanClipper.clip(polygon, clippingPlanes);
+        this.drawPolygon(elapsedTime*0.003, clippedPolygon, modelViewMartrix);
     }
 
     public drawPolygon(elapsedTime: number, polygon: Polygon, matrix: Matrix4f): void {
