@@ -13,6 +13,10 @@ export class FrustumCuller {
     private near: number;
     private far: number;
 
+    public getPlanes(): Array<Plane> {
+        return this.planes;
+    }
+
     public constructor() {
         this.planes = new Array<Plane>();
 
@@ -24,14 +28,14 @@ export class FrustumCuller {
 
         const DISTANCE: number = 192;
 
-        const SCREEN_HEIGHT: number = 320/2 / 2;
-        let SCREEN_WIDTH = 200/2 / 2;
+        const SCREEN_HEIGHT: number = 160 / 2;
+        let SCREEN_WIDTH = 100 / 2;
 
-        let HORIZONTAL_FIELD_OF_VIEW = 2.0 * Math.atan(SCREEN_HEIGHT / (2.0 * DISTANCE));
-        let VERTICAL_FIELD_OF_VIEW = 2.0 * Math.atan(SCREEN_WIDTH / (2.0 * DISTANCE));
+        let HORIZONTAL_FIELD_OF_VIEW = 2.0 * Math.atan((4.0 * DISTANCE) / 160);
+        let VERTICAL_FIELD_OF_VIEW = 2.0 * Math.atan((4.0 * DISTANCE) / 100);
 
-        let HALF_HORIZONTAL_FOV = HORIZONTAL_FIELD_OF_VIEW * 1.0;
-        let HALF_VERTICAL_FOV = VERTICAL_FIELD_OF_VIEW * 1.0;
+        let HALF_HORIZONTAL_FOV = HORIZONTAL_FIELD_OF_VIEW;
+        let HALF_VERTICAL_FOV = VERTICAL_FIELD_OF_VIEW;
 
         const NEAR_DISTANCE: number = 1.7;
         const FAR_DISTANCE: number = 30.0;

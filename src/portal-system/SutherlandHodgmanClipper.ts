@@ -1,5 +1,6 @@
 import { Plane } from '../math/Plane';
 import { Polygon } from './Polygon';
+import { Vector4f } from '../math';
 
 /**
  * Used for Portal Clipping
@@ -12,7 +13,29 @@ import { Polygon } from './Polygon';
 export class SutherlandHodgmanClipper {
 
     public static clip(polygon: Polygon, planes: Array<Plane>): Polygon {
-        return polygon;
+        let output: Array<Vector4f> = polygon.vertices;
+
+        for (let j: number = 0; j < planes.length; j++) {
+            const plane: Plane = planes[j];
+            const input: Array<Vector4f> = output;
+            output = new Array<Vector4f>();
+            let S: Vector4f = input[input.length - 1];
+
+            for (let i: number = 0; i < input.length; i++) {
+                const point: Vector4f = input[i];
+                if (plane.isInside(point)) {
+                    if (!plane.isInside(S)) {
+                        output.push(plane.computeIntersection(S, point));
+                    }
+                    output.push(point);
+                } else if (plane.isInside(S)) {
+                    output.push(plane.computeIntersection(S, point));
+                }
+                S = point;
+            }
+        }
+
+        return new Polygon(output);
     }
 
 }

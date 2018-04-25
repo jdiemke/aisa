@@ -1110,7 +1110,7 @@ export class Canvas {
 
        // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
         this.framebuffer.setCullFace(CullFace.BACK);
-        this.framebuffer.drawBlenderScene(time, this.texture4, null);
+        this.framebuffer.drawBlenderScene(time*0.6, this.texture4, null);
 
         // TODO: Front Mission Modell in Blender
 

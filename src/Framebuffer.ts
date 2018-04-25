@@ -1631,7 +1631,8 @@ export default class Framebuffer {
              // negation breaks winding and cull mode!!
              Math.round((200 / 2) - (t1.y * 1.5 / (-t1.z * 0.0078))), t1.z);*/
         return new Vector3f(Math.round((320 / 2) + (192 * t1.x / (-t1.z))),
-            Math.round((200 / 2) - (t1.y * 1.5 / (-t1.z * 0.0078))), t1.z);
+                            Math.round((200 / 2) - (t1.y * 192 / (-t1.z))),
+                            t1.z);
     }
 
     // https://math.stackexchange.com/questions/859454/maximum-number-of-vertices-in-intersection-of-triangle-with-box/
@@ -3054,13 +3055,13 @@ export default class Framebuffer {
             if (frustumCuller.isPotentiallyVisible(model.boundingSphere)) {
                 this.drawObject2(model, modelViewMartrix, 144, 165, 116);
                 let colLine = 255 << 24 | 255 << 8;
-                // this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
-                // element.vis = true;
+                this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
+              
                 count++;
             } else {
                 let colLine = 255 << 24 | 255;
-                // this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
-                //   element.vis = false;
+                this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
+               
             }
 
         }
@@ -3136,9 +3137,10 @@ export default class Framebuffer {
         // Make: drawPolygon and clipPolygon Methods! only LineDrawing
         // https://www.phatcode.net/res/224/files/html/ch65/65-03.html#Heading6
 
-        const clippingPlanes: Array<Plane> = [];
+        const clippingPlanes: Array<Plane> = frustumCuller.getPlanes();
         const clippedPolygon = SutherlandHodgmanClipper.clip(polygon, clippingPlanes);
         this.drawPolygon(elapsedTime*0.003, clippedPolygon, modelViewMartrix);
+        this.drawText(8, 18 + 8+8, 'VISPORTAL: ' + (clippedPolygon.vertices.length > 0 ? 'TRUE': 'FALSE'), texture);
     }
 
     public drawPolygon(elapsedTime: number, polygon: Polygon, matrix: Matrix4f): void {
