@@ -1630,9 +1630,9 @@ export default class Framebuffer {
         /* return new Vector3f(Math.round((320 / 2) + (t1.x * 1.5 / (-t1.z * 0.0078))),
              // negation breaks winding and cull mode!!
              Math.round((200 / 2) - (t1.y * 1.5 / (-t1.z * 0.0078))), t1.z);*/
-        return new Vector3f(Math.round((320 / 2) + (192 * t1.x / (-t1.z))),
-                            Math.round((200 / 2) - (t1.y * 192 / (-t1.z))),
-                            t1.z);
+        return new Vector3f(Math.round((320 / 2) + (292 * t1.x / (-t1.z))),
+            Math.round((200 / 2) - (t1.y * 292 / (-t1.z))),
+            t1.z);
     }
 
     // https://math.stackexchange.com/questions/859454/maximum-number-of-vertices-in-intersection-of-triangle-with-box/
@@ -3056,12 +3056,12 @@ export default class Framebuffer {
                 this.drawObject2(model, modelViewMartrix, 144, 165, 116);
                 let colLine = 255 << 24 | 255 << 8;
                 this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
-              
+
                 count++;
             } else {
                 let colLine = 255 << 24 | 255;
                 this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
-               
+
             }
 
         }
@@ -3106,6 +3106,40 @@ export default class Framebuffer {
             });
         }
         this.drawText(8, 18 + 8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
+
+        /** PORTAL CLIPPING */
+        const m = {
+            normals: [new Vector4f(0, 0, 1)],
+            normals2: [new Vector4f(0, 0, 1)],
+            points: [new Vector4f(0, 5, 0), new Vector4f(10, 5, 0), new Vector4f(10, -5, 0)],
+            points2: [new Vector4f(0, 0, 0), new Vector4f(1, 0, 0), new Vector4f(1, -1, 0)],
+            faces: [
+                {
+                    vertices: [0, 1, 2],
+                    normals: [0, 0, 0]
+                }
+            ]
+        }
+        this.drawObject2(m, modelViewMartrix, 255, 0, 0);
+
+        const m2 = {
+            normals: [new Vector4f(0, 0, 1)],
+            normals2: [new Vector4f(0, 0, 1)],
+            points: [new Vector4f(0, 5-2, 3), new Vector4f(10, 5-2, 3), new Vector4f(10, -5-2, 3)],
+            points2: [new Vector4f(0, 0, 0), new Vector4f(1, 0, 0), new Vector4f(1, -1, 0)],
+            faces: [
+                {
+                    vertices: [0, 1, 2],
+                    normals: [0, 0, 0]
+                }
+            ]
+        }
+        this.drawObject2(m2, modelViewMartrix, 255, 255, 0);
+
+        // DRAW polygon and clip!
+        // IDEA:
+        // Make: drawPolygon and clipPolygon Methods! only LineDrawing
+        // https://www.phatcode.net/res/224/files/html/ch65/65-03.html#Heading6
         let colred = 255 << 24 | 255 | 255 << 8 | 255 << 16;
         let width = 320 / 2;
         let height = 200 / 2;
@@ -3114,36 +3148,26 @@ export default class Framebuffer {
         this.drawLineDDANoZ(new Vector3f(width / 2 + width, height / 2, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
         this.drawLineDDANoZ(new Vector3f(width / 2, height / 2 + height, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
 
-        /** PORTAL CLIPPING */
-        const m = {
-            normals: [new Vector4f(0,0,1)],
-            normals2: [new Vector4f(0,0,1)],
-            points: [new Vector4f(0,5,0),new Vector4f(10,5,0),new Vector4f(10,-5,0)],
-            points2: [new Vector4f(0,0,0),new Vector4f(1,0,0),new Vector4f(1,-1,0)],
-            faces: [
-                {
-                    vertices: [0,1,2],
-                    normals: [0,0,0]
-                }
-            ]
-        }
-        this.drawObject2(m, modelViewMartrix, 255, 0, 0);
-
         const polygon: Polygon = new Polygon();
-        polygon.vertices = [new Vector4f(0,5,0),new Vector4f(10,5,0),new Vector4f(10,-5,0)];
-
-        // DRAW polygon and clip!
-        // IDEA:
-        // Make: drawPolygon and clipPolygon Methods! only LineDrawing
-        // https://www.phatcode.net/res/224/files/html/ch65/65-03.html#Heading6
+        polygon.vertices = [new Vector4f(0, 5, 0), new Vector4f(10, 5, 0), new Vector4f(10, -5, 0)];
 
         const clippingPlanes: Array<Plane> = frustumCuller.getPlanes();
         const clippedPolygon = SutherlandHodgmanClipper.clip(polygon, clippingPlanes);
-        this.drawPolygon(elapsedTime*0.003, clippedPolygon, modelViewMartrix);
-        this.drawText(8, 18 + 8+8, 'VISPORTAL: ' + (clippedPolygon.vertices.length > 0 ? 'TRUE': 'FALSE'), texture);
+        this.drawPolygon(elapsedTime * 0.003, clippedPolygon, modelViewMartrix, 255, 0, 0);
+
+        ///
+        const polygon2: Polygon = new Polygon();
+        polygon2.vertices = [new Vector4f(0, 5-2, 3), new Vector4f(10, 5-2, 3), new Vector4f(10, -5-2, 3)];
+
+        if (clippedPolygon.isVisible()) {
+            const clippingPlanes2: Array<Plane> = clippedPolygon.getPlanes(cameraAnimator.pos);
+            const clippedPolygon2 = SutherlandHodgmanClipper.clip(polygon2, clippingPlanes2);
+            this.drawPolygon(elapsedTime * 0.003, clippedPolygon2, modelViewMartrix, 0, 0, 255);
+        }
+        this.drawText(8, 18 + 8 + 8, 'VISPORTAL: ' + (clippedPolygon.vertices.length > 0 ? 'TRUE' : 'FALSE'), texture);
     }
 
-    public drawPolygon(elapsedTime: number, polygon: Polygon, matrix: Matrix4f): void {
+    public drawPolygon(elapsedTime: number, polygon: Polygon, matrix: Matrix4f, red: number, green: number, blue: number): void {
         this.clearDepthBuffer();
         let points: Array<Vector4f> = polygon.vertices;
 
@@ -3164,8 +3188,8 @@ export default class Framebuffer {
 
         // TODO: draw without depth buffer DDA line
         for (let i = 0; i < points2.length; i++) {
-            let color = 255 | 0 << 16 | 255 << 24;
-            this.nearPlaneClipping(points2[i], points2[(i + 1)%points2.length], color);
+            let color = red | green << 8 | blue << 16 | 255 << 24;
+            this.nearPlaneClipping(points2[i], points2[(i + 1) % points2.length], color);
         }
     }
 

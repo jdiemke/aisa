@@ -13,26 +13,27 @@ export class FrustumCuller {
     private near: number;
     private far: number;
 
-    public getPlanes(): Array<Plane> {
-        return this.planes;
-    }
-
     public constructor() {
         this.planes = new Array<Plane>();
 
-        for (let i: number = 0; i < 6; i++) {
+        for (let i: number = 0; i < 4; i++) {
             this.planes.push(new Plane(new Vector4f(0, 0, 0, 0), 0));
         }
 
         this.pos = new Vector4f(0, 0, 0, 0);
 
-        const DISTANCE: number = 192;
+        const DISTANCE: number = 292;
 
         const SCREEN_HEIGHT: number = 160 / 2;
         let SCREEN_WIDTH = 100 / 2;
 
-        let HORIZONTAL_FIELD_OF_VIEW = 2.0 * Math.atan((4.0 * DISTANCE) / 160);
-        let VERTICAL_FIELD_OF_VIEW = 2.0 * Math.atan((4.0 * DISTANCE) / 100);
+        //let HORIZONTAL_FIELD_OF_VIEW = 2.0 * Math.atan((4.0 * DISTANCE) / 310);
+        //let VERTICAL_FIELD_OF_VIEW = 2.0 * Math.atan((4.0 * DISTANCE) / 190);
+
+        // FIXME: for some reason frustum planes are off by some degree :(
+
+        let HORIZONTAL_FIELD_OF_VIEW = 2.0 * Math.atan((DISTANCE) / 295 * 4);
+        let VERTICAL_FIELD_OF_VIEW = 2.0 * Math.atan((DISTANCE) / 190 * 4);
 
         let HALF_HORIZONTAL_FOV = HORIZONTAL_FIELD_OF_VIEW;
         let HALF_VERTICAL_FOV = VERTICAL_FIELD_OF_VIEW;
@@ -43,14 +44,28 @@ export class FrustumCuller {
         this.near = NEAR_DISTANCE;
         this.far = FAR_DISTANCE;
 
+        // for some reason this is fucked up
+        // READ: http://www.cubic.org/docs/3dclip.htm
         this.normals = [
-            new Vector4f(Math.cos(-HALF_HORIZONTAL_FOV), 0, Math.sin(-HALF_HORIZONTAL_FOV), 0.0),
-            new Vector4f(-Math.cos(HALF_HORIZONTAL_FOV), 0, -Math.sin(HALF_HORIZONTAL_FOV), 0.0),
-            new Vector4f(0, -Math.cos(HALF_VERTICAL_FOV), -Math.sin(HALF_VERTICAL_FOV), 0.0),
-            new Vector4f(0, Math.cos(-HALF_VERTICAL_FOV), Math.sin(-HALF_VERTICAL_FOV), 0.0),
-            new Vector4f(0.0, 0.0, -1.0, 0.0),
-            new Vector4f(0.0, 0.0, 1.0, 0.0)
+            //  new Vector4f(Math.cos(-HALF_HORIZONTAL_FOV), 0, Math.sin(-HALF_HORIZONTAL_FOV), 0.0),
+            //  new Vector4f(-Math.cos(HALF_HORIZONTAL_FOV), 0, -Math.sin(HALF_HORIZONTAL_FOV), 0.0),
+            //  new Vector4f(0, -Math.cos(HALF_VERTICAL_FOV), -Math.sin(HALF_VERTICAL_FOV), 0.0),
+            // new Vector4f(0, Math.cos(-HALF_VERTICAL_FOV), Math.sin(-HALF_VERTICAL_FOV), 0.0),
+            // new Vector4f(0.0, 0.0, -1.0, 0.0),
+            // new Vector4f(0.0, 0.0, 1.0, 0.0)
         ];
+
+        const vertices: Array<Vector4f> = [
+            new Vector4f(-160 / 2, -100 / 2, 292),
+            new Vector4f(160 / 2, -100 / 2, 292),
+            new Vector4f(160 / 2, 100 / 2, 292),
+            new Vector4f(-160 / 2, 100 / 2, 292),
+        ];
+        for (let i: number = 0; i < vertices.length; i++) {
+            const normal: Vector4f = vertices[i].cross(vertices[(i + 1) % vertices.length]).normalize().mul(-1);
+            this.normals.push(normal);
+        }
+
     }
 
     public updateFrustum(modelViewMatrix: Matrix4f, position: Vector3f): void {
@@ -60,8 +75,8 @@ export class FrustumCuller {
         inverseRotation.multiplyHomArr(this.normals[1], this.planes[1].normal); // right
         inverseRotation.multiplyHomArr(this.normals[2], this.planes[2].normal); // bottom
         inverseRotation.multiplyHomArr(this.normals[3], this.planes[3].normal); // top
-        inverseRotation.multiplyHomArr(this.normals[4], this.planes[4].normal); // near
-        inverseRotation.multiplyHomArr(this.normals[5], this.planes[5].normal); // far
+        // inverseRotation.multiplyHomArr(this.normals[4], this.planes[4].normal); // near
+        // inverseRotation.multiplyHomArr(this.normals[5], this.planes[5].normal); // far
 
         this.pos.x = -position.x;
         this.pos.y = -position.y;
@@ -72,8 +87,12 @@ export class FrustumCuller {
         this.planes[2].distance = -this.planes[2].normal.dot(this.pos);
         this.planes[3].distance = -this.planes[3].normal.dot(this.pos);
         // TODO: bugfix near and far plane!
-        this.planes[4].distance = -this.planes[4].normal.dot(this.pos) + this.near;
-        this.planes[5].distance = -this.planes[3].normal.dot(this.pos) - this.far;
+        // this.planes[4].distance = -this.planes[4].normal.dot(this.pos) + this.near;
+        // this.planes[5].distance = -this.planes[3].normal.dot(this.pos) - this.far;
+    }
+
+    public getPlanes(): Array<Plane> {
+        return this.planes;
     }
 
     public isPotentiallyVisible(boundingVolume: Sphere): boolean {
