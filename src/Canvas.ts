@@ -1112,6 +1112,10 @@ export class Canvas {
         this.framebuffer.setCullFace(CullFace.BACK);
         this.framebuffer.drawBlenderScene(time*0.5, this.texture4, null);
 
+        // TODO:
+        // * build level in code (portals and areas)
+        // * use controllable camera to move
+
         // TODO: Front Mission Modell in Blender
 
         /**
