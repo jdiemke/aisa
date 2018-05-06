@@ -20,6 +20,7 @@ import { Portal } from './portal-system/Portal';
 import { Polygon } from './portal-system/Polygon';
 import { Plane } from './math/Plane';
 import { SutherlandHodgmanClipper } from './portal-system/SutherlandHodgmanClipper';
+import { Color } from './core/Color';
 
 declare function require(string): string;
 let json = require('./assets/f16.json');
@@ -205,7 +206,7 @@ export default class Framebuffer {
 
     public cullMode: CullFace = CullFace.BACK;
 
-    private camera: ControllableCamera;
+    public camera: ControllableCamera;
 
     private obj: any;
     private bunnyObj: any;
@@ -3122,7 +3123,7 @@ export default class Framebuffer {
 
         const clippingPlanes: Array<Plane> = frustumCuller.getPlanes();
         const clippedPolygon = SutherlandHodgmanClipper.clip(polygon, clippingPlanes);
-        this.drawPolygon(elapsedTime * 0.003, clippedPolygon, modelViewMartrix, 255, 0, 0);
+        this.drawPolygon(elapsedTime * 0.003, clippedPolygon, modelViewMartrix, Color.RED);
 
         ///
         const polygon2: Polygon = new Polygon();
@@ -3131,86 +3132,12 @@ export default class Framebuffer {
         if (clippedPolygon.isVisible()) {
             const clippingPlanes2: Array<Plane> = clippedPolygon.getPlanes(cameraAnimator.pos);
             const clippedPolygon2 = SutherlandHodgmanClipper.clip(polygon2, clippingPlanes2);
-            this.drawPolygon(elapsedTime * 0.003, clippedPolygon2, modelViewMartrix, 0, 0, 255);
+            this.drawPolygon(elapsedTime * 0.003, clippedPolygon2, modelViewMartrix, Color.BLUE);
         }
         this.drawText(8, 18 + 8 + 8, 'VISPORTAL: ' + (clippedPolygon.vertices.length > 0 ? 'TRUE' : 'FALSE'), texture);
     }
 
-    public drawPortalEngine(): void {
-        /**
-         * TODO:
-         * * Build Areas and AreaPortals in Code
-         * * Add Portal Culling
-         */
-        this.clearColorBuffer(72 | 56 << 8 | 48 << 16 | 255 << 24);
-        this.clearDepthBuffer();
-
-        let modelViewMartrix: Matrix4f = this.camera.getViewMatrix();
-
-        let frustumCuller = new FrustumCuller();
-        frustumCuller.updateFrustum(modelViewMartrix, this.camera.getPosition());
-
-        /** PORTAL CLIPPING */
-        const m = {
-            normals: [new Vector4f(0, 0, 1)],
-            normals2: [new Vector4f(0, 0, 1)],
-            points: [new Vector4f(0, 5, 0), new Vector4f(10, 5, 0), new Vector4f(10, -5, 0)],
-            points2: [new Vector4f(0, 0, 0), new Vector4f(1, 0, 0), new Vector4f(1, -1, 0)],
-            faces: [
-                {
-                    vertices: [0, 1, 2],
-                    normals: [0, 0, 0]
-                }
-            ]
-        }
-        this.drawObject2(m, modelViewMartrix, 255, 0, 0, false, true);
-
-        const m2 = {
-            normals: [new Vector4f(0, 0, 1)],
-            normals2: [new Vector4f(0, 0, 1)],
-            points: [new Vector4f(0, 5-2, 3), new Vector4f(10, 5-2, 3), new Vector4f(10, -5-2, 3)],
-            points2: [new Vector4f(0, 0, 0), new Vector4f(1, 0, 0), new Vector4f(1, -1, 0)],
-            faces: [
-                {
-                    vertices: [0, 1, 2],
-                    normals: [0, 0, 0]
-                }
-            ]
-        }
-        this.drawObject2(m2, modelViewMartrix, 255, 255, 0, false, true);
-
-        // DRAW polygon and clip!
-        // IDEA:
-        // Make: drawPolygon and clipPolygon Methods! only LineDrawing
-        // https://www.phatcode.net/res/224/files/html/ch65/65-03.html#Heading6
-        let colred = 255 << 24 | 255 | 255 << 8 | 255 << 16;
-        let width = 320 / 2;
-        let height = 200 / 2;
-        this.drawLineDDANoZ(new Vector3f(width / 2, height / 2, 0), new Vector3f(width / 2 + width, height / 2, -100), colred);
-        this.drawLineDDANoZ(new Vector3f(width / 2, height / 2, 0), new Vector3f(width / 2, height / 2 + height, -100), colred);
-        this.drawLineDDANoZ(new Vector3f(width / 2 + width, height / 2, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
-        this.drawLineDDANoZ(new Vector3f(width / 2, height / 2 + height, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
-
-        const polygon: Polygon = new Polygon();
-        polygon.vertices = [new Vector4f(0, 5, 0), new Vector4f(10, 5, 0), new Vector4f(10, -5, 0)];
-
-        const clippingPlanes: Array<Plane> = frustumCuller.getPlanes();
-        const clippedPolygon = SutherlandHodgmanClipper.clip(polygon, clippingPlanes);
-        this.drawPolygon(0, clippedPolygon, modelViewMartrix, 255, 0, 0);
-
-        ///
-        const polygon2: Polygon = new Polygon();
-        polygon2.vertices = [new Vector4f(0, 5-2, 3), new Vector4f(10, 5-2, 3), new Vector4f(10, -5-2, 3)];
-
-        if (clippedPolygon.isVisible()) {
-            const clippingPlanes2: Array<Plane> = clippedPolygon.getPlanes(this.camera.getPosition());
-            const clippedPolygon2 = SutherlandHodgmanClipper.clip(polygon2, clippingPlanes2);
-            this.drawPolygon(0, clippedPolygon2, modelViewMartrix, 0, 0, 255);
-        }
-       // this.drawText(8, 18 + 8 + 8, 'VISPORTAL: ' + (clippedPolygon.vertices.length > 0 ? 'TRUE' : 'FALSE'), texture);
-    }
-
-    public drawPolygon(elapsedTime: number, polygon: Polygon, matrix: Matrix4f, red: number, green: number, blue: number): void {
+    public drawPolygon(elapsedTime: number, polygon: Polygon, matrix: Matrix4f, color: Color): void {
         this.clearDepthBuffer();
         let points: Array<Vector4f> = polygon.vertices;
 
@@ -3231,8 +3158,7 @@ export default class Framebuffer {
 
         // TODO: draw without depth buffer DDA line
         for (let i = 0; i < points2.length; i++) {
-            let color = red | green << 8 | blue << 16 | 255 << 24;
-            this.nearPlaneClipping(points2[i], points2[(i + 1) % points2.length], color);
+            this.nearPlaneClipping(points2[i], points2[(i + 1) % points2.length], color.toPackedFormat());
         }
     }
 
@@ -3930,7 +3856,7 @@ export default class Framebuffer {
 
     }
 
-    private drawObject2(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, culling: boolean = false) {
+    public drawObject2(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, culling: boolean = false) {
 
         let normalMatrix = modelViewMartrix.computeNormalMatrix();
 
