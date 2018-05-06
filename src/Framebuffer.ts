@@ -193,7 +193,7 @@ class BottomEdge extends AbstractClipEdge {
 
 }
 
-export default class Framebuffer {
+export class Framebuffer {
 
     static PIXEL_SIZE_IN_BYTES = 4;
 

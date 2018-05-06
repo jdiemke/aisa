@@ -1,5 +1,5 @@
 import { CullFace } from './CullFace';
-import Framebuffer from './Framebuffer';
+import { Framebuffer } from './Framebuffer';
 import { Vector4f } from './math/index';
 import { Matrix4f } from './math/Matrix4f';
 import { Sphere } from './math/Sphere';

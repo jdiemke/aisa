@@ -1,4 +1,4 @@
-import Framebuffer from "./../Framebuffer";
+import { Framebuffer } from "./../Framebuffer";
 import Texture from "../Texture";
 
 export abstract class AbstractScene {

@@ -1,6 +1,6 @@
 import { AbstractScene } from "./scenes/AbstractScene";
 import { CullFace } from "./CullFace";
-import Framebuffer from "./Framebuffer";
+import { Framebuffer } from "./Framebuffer";
 import Texture from "./Texture";
 
 export class TorusScene extends AbstractScene {

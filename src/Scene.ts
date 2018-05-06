@@ -1,4 +1,4 @@
-import Framebuffer from "./Framebuffer";
+import { Framebuffer } from "./Framebuffer";
 import { CullFace } from "./CullFace";
 import Texture from "./Texture";
 import RandomNumberGenerator from "./RandomNumberGenerator";
@@ -1137,7 +1137,7 @@ export class Scene extends AbstractScene {
         //this.framebuffer.setCullFace(CullFace.BACK);
         //this.framebuffer.drawBlenderScene(time*0.5, this.texture4, null);
 
-      
+
 
         // TODO:
         // * build level in code (portals and areas)
@@ -1558,7 +1558,7 @@ export class Scene extends AbstractScene {
         });
     }
 
-     // move
+    // move
     public createProceduralTexture4(): Promise<Texture> {
         return new Promise((resolve) => {
             const texture = new Texture();
