@@ -149,3 +149,13 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - http://www.songho.ca/opengl/gl_camera.html
 - http://www.songho.ca/opengl/gl_matrix.html
 - http://www.songho.ca/math/homogeneous/homogeneous.html
+- http://www.hugi.scene.org/online/coding/hugi%20se%204%20-%20index%20sorted%20by%20topic.htm
+- http://www.flipcode.com/archives/The_Art_of_Demomaking-Issue_01_Prologue.shtml
+- http://insolitdust.sourceforge.net/code.html
+- http://www.wab.com/screen.php?screen=20
+- http://www.helixsoft.nl/articles/circle/sincos.htm
+- https://gamedev.stackexchange.com/questions/24957/doing-an-snes-mode-7-affine-transform-effect-in-pygame
+- https://www.coranac.com/tonc/text/mode7ex.htm
+- http://codeincomplete.com/posts/javascript-racer-v1-straight/
+- http://www.extentofthejam.com/pseudo/
+- http://hugi.scene.org/online/hugi24/coding%20graphics%20bonz%20sines%20and%20cosines%20for%20fun%20and%20profit.htm
