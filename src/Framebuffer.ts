@@ -9,25 +9,6 @@ import { CameraAnimator } from './animation/CameraAnimator';
 import { CullFace } from './CullFace';
 import { TextureCoordinate, Vertex } from './Vertex';
 
-/**
- * 3d polygon clipping:
- * http://www.gamers.org/dEngine/quake/papers/ddjclip.html
- * http://www.jagregory.com/abrash-black-book/#chapter-65-3-d-clipping-and-other-thoughts
- * http://downloads.gamedev.net/pdf/gpbb/gpbb65.pdf
- * http://www.cubic.org/docs/3dclip.htm
- * http://fabiensanglard.net/polygon_codec/
- * 
- * http://fabiensanglard.net/quake2/quake2_software_renderer.php
- * 
- * http://www.xbdev.net/maths_of_3d/rasterization/clipping/index.php
- * http://www.gamasutra.com/view/news/168577/Indepth_Software_rasterizer_and_triangle_clipping.php
- * https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/projection-matrix-GPU-rendering-pipeline-clipping
- * http://www.songho.ca/opengl/gl_pipeline.html
- * http://www.songho.ca/opengl/gl_transform.html
- * http://www.songho.ca/opengl/gl_camera.html
- * http://www.songho.ca/opengl/gl_matrix.html
- * http://www.songho.ca/math/homogeneous/homogeneous.html
- */
 import Texture from './Texture';
 import Point from './Point';
 
@@ -222,7 +203,6 @@ export default class Framebuffer {
     private unsignedIntArray: Uint8ClampedArray;
     public wBuffer: Float32Array;
 
-    private x: number = 0;
     public cullMode: CullFace = CullFace.BACK;
 
     private camera: ControllableCamera;
@@ -267,7 +247,7 @@ export default class Framebuffer {
         this.unsignedIntArray = new Uint8ClampedArray(arrayBuffer);
 
         this.framebuffer = new Uint32Array(arrayBuffer);
-        this.camera = new ControllableCamera();
+        this.camera = new ControllableCamera(new Vector3f(14.84, 0, -19.25), -3.54, 0, 0);
     }
 
     public precompute(texture: Texture, texture2: Texture): void {
@@ -286,7 +266,6 @@ export default class Framebuffer {
         this.blenderObj10 = this.getBlenderScene(labJson2, false);
         this.blenderObjMetal = this.getBlenderScene(metalJson, false);
 
-
         this.sphere = this.createSphere();
 
         this.plane = this.createPlane();
@@ -295,15 +274,12 @@ export default class Framebuffer {
         this.sphereDisp = this.createSphereDistplaced(texture);
         this.sphereDisp2 = this.createSphereDistplaced(texture2);
 
-
-        /*
         document.addEventListener("keydown", (e) => {
-            console.log('key pressed');
             if (e.which == 38) this.camera.moveForward(0.2, 1.0);
             if (e.which == 40) this.camera.moveBackward(0.2, 1.0);
             if (e.which == 37) this.camera.turnLeft(0.05, 1.0);
             if (e.which == 39) this.camera.turnRight(0.05, 1.0);
-        });*/
+        });
     }
 
     public getImageData(): ImageData {
@@ -327,7 +303,7 @@ export default class Framebuffer {
         }
     }
 
-    public clearCol(color: number) {
+    public clearColorBuffer(color: number) {
         this.framebuffer.fill(color);
     }
 
@@ -2096,11 +2072,6 @@ export default class Framebuffer {
         }
     }
 
-
-    private clearColorBuffer() {
-        this.clear();
-    }
-
     public createObject() {
         let points: Array<Vector4f> = new Array<Vector4f>();
         let normals: Array<Vector4f> = new Array<Vector4f>();
@@ -2524,7 +2495,7 @@ export default class Framebuffer {
     public reproduceRazorScene(elapsedTime: number, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
         // camerea:
         // http://graphicsrunner.blogspot.de/search/label/Water
-        this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
+        this.clearColorBuffer(72 | 56 << 8 | 48 << 16 | 255 << 24);
         this.clearDepthBuffer();
 
         let modelViewMartrix: Matrix4f;
@@ -2806,7 +2777,7 @@ export default class Framebuffer {
 
 
     drawParticleWaves(elapsedTime: number, texture: Texture, noClear: boolean = false) {
-        if (!noClear) this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
+        if (!noClear) this.clearColorBuffer(72 | 56 << 8 | 48 << 16 | 255 << 24);
         this.clearDepthBuffer();
 
         let points: Array<Vector3f> = new Array<Vector3f>();
@@ -2961,7 +2932,7 @@ export default class Framebuffer {
     }
 
     drawParticleTorus(elapsedTime: number, texture: Texture, noClear: boolean = false) {
-        if (!noClear) this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
+        if (!noClear) this.clearColorBuffer(72 | 56 << 8 | 48 << 16 | 255 << 24);
         this.clearDepthBuffer();
 
         let points: Array<Vector3f> = new Array<Vector3f>();
@@ -3005,13 +2976,7 @@ export default class Framebuffer {
 
     /**
      * todo:
-     * - better wavefront format that uses precomputed normals
-     * - maybe use groups for material and culling
-     * - use normal matrix instead of normalization during shading
-     * - do not create the scene every frame
      * - create material class
-     * - use camera path :-)!!!!!
-     * - fix strange artefacts where geometry hits the plane
      * 
      * @param {number} elapsedTime 
      * @memberof Framebuffer
@@ -3021,7 +2986,7 @@ export default class Framebuffer {
     public drawBlenderScene(elapsedTime: number, texture: Texture, texture2?: Texture): void {
         // camerea:
         // http://graphicsrunner.blogspot.de/search/label/Water
-        this.clearCol(72 | 56 << 8 | 48 << 16 | 255 << 24);
+        this.clearColorBuffer(72 | 56 << 8 | 48 << 16 | 255 << 24);
         this.clearDepthBuffer();
 
         let keyFrames: Array<CameraKeyFrame> = [
@@ -3161,6 +3126,80 @@ export default class Framebuffer {
 
         if (clippedPolygon.isVisible()) {
             const clippingPlanes2: Array<Plane> = clippedPolygon.getPlanes(cameraAnimator.pos);
+            const clippedPolygon2 = SutherlandHodgmanClipper.clip(polygon2, clippingPlanes2);
+            this.drawPolygon(elapsedTime * 0.003, clippedPolygon2, modelViewMartrix, 0, 0, 255);
+        }
+        this.drawText(8, 18 + 8 + 8, 'VISPORTAL: ' + (clippedPolygon.vertices.length > 0 ? 'TRUE' : 'FALSE'), texture);
+    }
+
+    public drawPortalEngine(elapsedTime: number, texture: Texture, texture2?: Texture): void {
+        /**
+         * TODO:
+         * * Build Areas and AreaPortals in Code
+         * * Add Portal Culling
+         */
+        this.clearColorBuffer(72 | 56 << 8 | 48 << 16 | 255 << 24);
+        this.clearDepthBuffer();
+
+        let modelViewMartrix: Matrix4f = this.camera.getViewMatrix();
+
+        let frustumCuller = new FrustumCuller();
+        frustumCuller.updateFrustum(modelViewMartrix, this.camera.getPosition());
+
+        /** PORTAL CLIPPING */
+        const m = {
+            normals: [new Vector4f(0, 0, 1)],
+            normals2: [new Vector4f(0, 0, 1)],
+            points: [new Vector4f(0, 5, 0), new Vector4f(10, 5, 0), new Vector4f(10, -5, 0)],
+            points2: [new Vector4f(0, 0, 0), new Vector4f(1, 0, 0), new Vector4f(1, -1, 0)],
+            faces: [
+                {
+                    vertices: [0, 1, 2],
+                    normals: [0, 0, 0]
+                }
+            ]
+        }
+        this.drawObject2(m, modelViewMartrix, 255, 0, 0, false, true);
+
+        const m2 = {
+            normals: [new Vector4f(0, 0, 1)],
+            normals2: [new Vector4f(0, 0, 1)],
+            points: [new Vector4f(0, 5-2, 3), new Vector4f(10, 5-2, 3), new Vector4f(10, -5-2, 3)],
+            points2: [new Vector4f(0, 0, 0), new Vector4f(1, 0, 0), new Vector4f(1, -1, 0)],
+            faces: [
+                {
+                    vertices: [0, 1, 2],
+                    normals: [0, 0, 0]
+                }
+            ]
+        }
+        this.drawObject2(m2, modelViewMartrix, 255, 255, 0, false, true);
+
+        // DRAW polygon and clip!
+        // IDEA:
+        // Make: drawPolygon and clipPolygon Methods! only LineDrawing
+        // https://www.phatcode.net/res/224/files/html/ch65/65-03.html#Heading6
+        let colred = 255 << 24 | 255 | 255 << 8 | 255 << 16;
+        let width = 320 / 2;
+        let height = 200 / 2;
+        this.drawLineDDANoZ(new Vector3f(width / 2, height / 2, 0), new Vector3f(width / 2 + width, height / 2, -100), colred);
+        this.drawLineDDANoZ(new Vector3f(width / 2, height / 2, 0), new Vector3f(width / 2, height / 2 + height, -100), colred);
+        this.drawLineDDANoZ(new Vector3f(width / 2 + width, height / 2, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
+        this.drawLineDDANoZ(new Vector3f(width / 2, height / 2 + height, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), colred);
+
+        const polygon: Polygon = new Polygon();
+        polygon.vertices = [new Vector4f(0, 5, 0), new Vector4f(10, 5, 0), new Vector4f(10, -5, 0)];
+
+        const clippingPlanes: Array<Plane> = frustumCuller.getPlanes();
+        const clippedPolygon = SutherlandHodgmanClipper.clip(polygon, clippingPlanes);
+        this.drawPolygon(elapsedTime * 0.003, clippedPolygon, modelViewMartrix, 255, 0, 0);
+
+        ///
+        const polygon2: Polygon = new Polygon();
+        polygon2.vertices = [new Vector4f(0, 5-2, 3), new Vector4f(10, 5-2, 3), new Vector4f(10, -5-2, 3)];
+
+        if (clippedPolygon.isVisible()) {
+            const clippingPlanes2: Array<Plane> = clippedPolygon.getPlanes(this.camera.getPosition());
             const clippedPolygon2 = SutherlandHodgmanClipper.clip(polygon2, clippingPlanes2);
             this.drawPolygon(elapsedTime * 0.003, clippedPolygon2, modelViewMartrix, 0, 0, 255);
         }
@@ -3841,7 +3880,7 @@ export default class Framebuffer {
             stars2.push(new Vector3f(rng.getFloat() * 320, Math.round(rng.getFloat() * 200), 0));
         }
 
-        this.clearCol(backgroundColor);
+        this.clearColorBuffer(backgroundColor);
         for (let i = 0; i < 100; i++) {
             this.drawPixel(((stars[i].x + elapsedTime * 0.02) | 0) % 320, stars[i].y, darkStarColor);
         }
@@ -7854,7 +7893,7 @@ export default class Framebuffer {
      * @memberof Framebuffer
      */
     drawVoxelLandscape2(texture: Texture, time: number) {
-        this.clearCol(255 << 24);
+        this.clearColorBuffer(255 << 24);
 
         const MIN_DIST = 45;
         const MAX_DIST = 200;
@@ -7906,7 +7945,7 @@ export default class Framebuffer {
     }
 
     drawVoxelLandscape3(texture: Texture, time: number) {
-        this.clearCol(255 << 24);
+        this.clearColorBuffer(255 << 24);
 
         const MIN_DIST = 10;
         const MAX_DIST = 100;
@@ -7962,7 +8001,7 @@ export default class Framebuffer {
 
 
     drawVoxelLandscape4(texture: Texture, time: number) {
-        this.clearCol(255 << 24);
+        this.clearColorBuffer(255 << 24);
 
         const MIN_DIST = 14;
         const MAX_DIST = 80;

@@ -3,8 +3,8 @@ import { BasicCamera } from './BasicCamera';
 
 export class ControllableCamera extends BasicCamera {
 
-    constructor() {
-        super(new Vector3f(0, 0, 0), 0, 0, 0);
+    constructor(position: Vector3f, yaw: number, pitch: number, roll: number) {
+        super(position, yaw, pitch, roll);
     }
 
     public moveForward(speed: number, deltaTime: number): void {

@@ -1,4 +1,4 @@
-import { Matrix4f, Vector3f } from '../math';
+import { Matrix4f, Vector3f, Vector4f } from '../math';
 
 export class BasicCamera {
 
@@ -22,6 +22,10 @@ export class BasicCamera {
         let translation = Matrix4f.constructTranslationMatrix(-this.position.x, -this.position.y, -this.position.z);
 
         return roll.multiplyMatrix(pitch).multiplyMatrix(yaw).multiplyMatrix(translation);
+    }
+
+    public getPosition(): Vector3f {
+        return this.position;
     }
 
 }

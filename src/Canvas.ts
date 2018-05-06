@@ -1109,8 +1109,12 @@ export class Canvas {
         */
 
        // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
+        
+       //this.framebuffer.setCullFace(CullFace.BACK);
+        //this.framebuffer.drawBlenderScene(time*0.5, this.texture4, null);
+
         this.framebuffer.setCullFace(CullFace.BACK);
-        this.framebuffer.drawBlenderScene(time*0.5, this.texture4, null);
+        this.framebuffer.drawPortalEngine(time*0.5, this.texture4, this.particleTexture2);
 
         // TODO:
         // * build level in code (portals and areas)
