@@ -2,8 +2,9 @@ import Framebuffer from "./Framebuffer";
 import { CullFace } from "./CullFace";
 import Texture from "./Texture";
 import RandomNumberGenerator from "./RandomNumberGenerator";
+import { AbstractScene } from "./scenes/AbstractScene";
 
-export class Scene {
+export class Scene extends AbstractScene {
 
 
     // move
@@ -65,12 +66,8 @@ export class Scene {
 
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
 
-    constructor() {
-
-    }
-
     public init(framebuffer: Framebuffer): Promise<any> {
-        return Promise.all([
+        return Promise.all([/*
             this.createTexture(require('./assets/spheremap.png'), false).then(texture => this.spheremap = texture),
             this.createTexture(require('./assets/metall.png'), false).then(texture => this.metal = texture),
             this.createTexture(require('./assets/logo.png'), false).then(texture => this.texture = texture),
@@ -117,6 +114,7 @@ export class Scene {
             this.createTexture(require('./assets/heightmapSphere.png'), false).then(texture => this.heightmapSphere = texture),
             this.createTexture(require('./assets/mask.png'), true).then(texture => this.mask = texture),
             this.createTexture(require('./assets/dirt.png'), true).then(texture => this.dirt = texture),
+            */
         ]).then(() => {
             // Web Audio API
             // FIXME: put this into a Player Class
@@ -1139,8 +1137,7 @@ export class Scene {
         //this.framebuffer.setCullFace(CullFace.BACK);
         //this.framebuffer.drawBlenderScene(time*0.5, this.texture4, null);
 
-        framebuffer.setCullFace(CullFace.BACK);
-        framebuffer.drawPortalEngine(time * 0.5, this.texture4, this.particleTexture2);
+      
 
         // TODO:
         // * build level in code (portals and areas)
@@ -1450,44 +1447,6 @@ export class Scene {
         // starfield 2d /3d
         // wormhole
         // glitch logo
-    }
-
-     // Move
-     getImageData(image: HTMLImageElement, withAlpha: boolean = false): Uint32Array {
-        let canvas: HTMLCanvasElement = document.createElement('canvas');
-        canvas.width = image.width;
-        canvas.height = image.height;
-        let context: CanvasRenderingContext2D = canvas.getContext('2d');
-        context.drawImage(image, 0, 0);
-        let data = context.getImageData(0, 0, image.width, image.height).data;
-        let conv = new Uint32Array(data.length / 4);
-        let c = 0;
-        for (let i = 0; i < data.length; i += 4) {
-            if (withAlpha) {
-                conv[c] = (data[i + 3] << 24) | (data[i + 2] << 16) | (data[i + 1] << 8) | data[i + 0];
-            } else {
-                conv[c] = (255 << 24) | (data[i + 2] << 16) | (data[i + 1] << 8) | data[i + 0];
-            }
-
-            c++;
-        }
-        return conv;
-    }
-
-    // Move
-    public createTexture(path: string, hasAlpha: boolean): Promise<Texture> {
-        return new Promise((resolve) => {
-            const img = new Image();
-            img.onload = () => {
-                const texture = new Texture();
-                texture.texture = this.getImageData(img, hasAlpha);
-                texture.width = img.width;
-                texture.height = img.height;
-                resolve(texture);
-            };
-            img.onerror = () => resolve();
-            img.src = path;
-        });
     }
 
     // Move

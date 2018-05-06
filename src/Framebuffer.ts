@@ -274,6 +274,10 @@ export default class Framebuffer {
         this.sphereDisp = this.createSphereDistplaced(texture);
         this.sphereDisp2 = this.createSphereDistplaced(texture2);
 
+        this.setupCamera();
+    }
+
+    public setupCamera(): void {
         document.addEventListener("keydown", (e) => {
             if (e.which == 38) this.camera.moveForward(0.2, 1.0);
             if (e.which == 40) this.camera.moveBackward(0.2, 1.0);
@@ -3132,7 +3136,7 @@ export default class Framebuffer {
         this.drawText(8, 18 + 8 + 8, 'VISPORTAL: ' + (clippedPolygon.vertices.length > 0 ? 'TRUE' : 'FALSE'), texture);
     }
 
-    public drawPortalEngine(elapsedTime: number, texture: Texture, texture2?: Texture): void {
+    public drawPortalEngine(): void {
         /**
          * TODO:
          * * Build Areas and AreaPortals in Code
@@ -3192,7 +3196,7 @@ export default class Framebuffer {
 
         const clippingPlanes: Array<Plane> = frustumCuller.getPlanes();
         const clippedPolygon = SutherlandHodgmanClipper.clip(polygon, clippingPlanes);
-        this.drawPolygon(elapsedTime * 0.003, clippedPolygon, modelViewMartrix, 255, 0, 0);
+        this.drawPolygon(0, clippedPolygon, modelViewMartrix, 255, 0, 0);
 
         ///
         const polygon2: Polygon = new Polygon();
@@ -3201,9 +3205,9 @@ export default class Framebuffer {
         if (clippedPolygon.isVisible()) {
             const clippingPlanes2: Array<Plane> = clippedPolygon.getPlanes(this.camera.getPosition());
             const clippedPolygon2 = SutherlandHodgmanClipper.clip(polygon2, clippingPlanes2);
-            this.drawPolygon(elapsedTime * 0.003, clippedPolygon2, modelViewMartrix, 0, 0, 255);
+            this.drawPolygon(0, clippedPolygon2, modelViewMartrix, 0, 0, 255);
         }
-        this.drawText(8, 18 + 8 + 8, 'VISPORTAL: ' + (clippedPolygon.vertices.length > 0 ? 'TRUE' : 'FALSE'), texture);
+       // this.drawText(8, 18 + 8 + 8, 'VISPORTAL: ' + (clippedPolygon.vertices.length > 0 ? 'TRUE' : 'FALSE'), texture);
     }
 
     public drawPolygon(elapsedTime: number, polygon: Polygon, matrix: Matrix4f, red: number, green: number, blue: number): void {

@@ -7,6 +7,7 @@ import { Vector3f } from './math/Vector3f';
 import RandomNumberGenerator from './RandomNumberGenerator';
 import Texture from './Texture';
 import { Scene } from './Scene';
+import { AbstractScene } from './scenes/AbstractScene';
 
 export class Canvas {
 
@@ -16,7 +17,7 @@ export class Canvas {
 
     private boundRenderLoop: (time: number) => void;
 
-    constructor(width: number, height: number, private scene: Scene) {
+    constructor(width: number, height: number, private scene: AbstractScene) {
         this.canvas = document.createElement('canvas');
 
         this.canvas.width = width;
