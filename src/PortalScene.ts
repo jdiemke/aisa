@@ -48,6 +48,9 @@ export class PortalScene extends AbstractScene {
         this.frustumCuller.updateFrustum(modelViewMartrix, this.controllableCamera.getPosition());
 
         this.drawScreenBounds(framebuffer);
+        // TODO:
+        // * find the area to start the portal flooding in
+        // * const area: Area = getStartArea(position);
         this.portalRenderer.renderVisibleAreas(framebuffer, modelViewMartrix, this.area, this.frustumCuller.getPlanes(), this.controllableCamera);
     }
 
