@@ -1,11 +1,10 @@
-import { Framebuffer } from "./Framebuffer";
-import { CullFace } from "./CullFace";
-import Texture from "./Texture";
-import RandomNumberGenerator from "./RandomNumberGenerator";
-import { AbstractScene } from "./scenes/AbstractScene";
+import { CullFace } from './CullFace';
+import { Framebuffer } from './Framebuffer';
+import RandomNumberGenerator from './RandomNumberGenerator';
+import { AbstractScene } from './scenes/AbstractScene';
+import Texture from './Texture';
 
 export class Scene extends AbstractScene {
-
 
     // move
     private start: number;
@@ -67,7 +66,7 @@ export class Scene extends AbstractScene {
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        return Promise.all([/*
+        return Promise.all([
             this.createTexture(require('./assets/spheremap.png'), false).then(texture => this.spheremap = texture),
             this.createTexture(require('./assets/metall.png'), false).then(texture => this.metal = texture),
             this.createTexture(require('./assets/logo.png'), false).then(texture => this.texture = texture),
@@ -114,7 +113,7 @@ export class Scene extends AbstractScene {
             this.createTexture(require('./assets/heightmapSphere.png'), false).then(texture => this.heightmapSphere = texture),
             this.createTexture(require('./assets/mask.png'), true).then(texture => this.mask = texture),
             this.createTexture(require('./assets/dirt.png'), true).then(texture => this.dirt = texture),
-            */
+
         ]).then(() => {
             // Web Audio API
             // FIXME: put this into a Player Class
@@ -1115,22 +1114,9 @@ export class Scene extends AbstractScene {
                 }
         */
 
-        /*
-                this.framebuffer.setCullFace(CullFace.BACK);
-                this.framebuffer.drawBlenderSceneM(time, this.particleTexture2,
-                    [
-                        //   { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                        { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                        { tex: this.texture13, scale: 1.6, alpha: 0.25 },
-                        { tex: this.texture13, scale: 0.7, alpha: 0.22 },
-                        { tex: this.texture13, scale: -0.4, alpha: 0.22 },
-                    ], this.dirt, this.skybox, this.metalheadz);
-        
-                const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-                this.framebuffer.drawTexture(0, 0, texture3, 0.75);
-                this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-                this.framebuffer.noise(time, this.noise);
-                */
+
+
+
 
         // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
 
@@ -1533,7 +1519,7 @@ export class Scene extends AbstractScene {
             const texture = new Texture();
             texture.texture = new Uint32Array(256 * 256);
 
-            let rng = new RandomNumberGenerator();
+            const rng: RandomNumberGenerator = new RandomNumberGenerator();
             rng.setSeed(100);
 
             texture.texture.fill(128 | 255 << 24);

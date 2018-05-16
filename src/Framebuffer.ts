@@ -218,7 +218,6 @@ export class Framebuffer {
     private blenderObj6: any;
     private blenderObj7: any;
     private blenderObj8: any;
-    private blenderObjMetal: any;
     private blenderObj9: any;
     private blenderObj10: any;
     private bob: Texture;
@@ -265,7 +264,6 @@ export class Framebuffer {
         this.blenderObj8 = this.getBlenderScene(bakedJson, false);
         this.blenderObj9 = this.getBlenderScene(platonian, false);
         this.blenderObj10 = this.getBlenderScene(labJson2, false);
-        this.blenderObjMetal = this.getBlenderScene(metalJson, false);
 
         this.sphere = this.createSphere();
 
@@ -2604,7 +2602,7 @@ export class Framebuffer {
         this.drawLensFlare(lensflareScreenSpace, elapsedTime * 100, texture, dirt);
     }
 
-    private getBlenderScene(file: any, disp: boolean = true): any {
+    public getBlenderScene(file: any, disp: boolean = true): any {
         let scene = [];
 
         file.forEach(object => {
@@ -3282,44 +3280,6 @@ export class Framebuffer {
 
         if (skybox)
             this.drawSkyBox(mv.getRotation(), skybox);
-
-        let scale = 20;
-        let lensflareScreenSpace = this.project(camera.getRotation().multiply(new Vector3f(1.1 * scale, 2 * scale, -0.9 * scale)));
-
-        this.drawLensFlare(lensflareScreenSpace, elapsedTime * 1.2, texture, dirt);
-    }
-
-    public drawBlenderSceneM(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture,
-        skybox: any, metal: Texture): void {
-
-        elapsedTime *= 0.2;
-
-
-
-        this.clearDepthBuffer();
-
-        let camera: Matrix4f =
-            Matrix4f.constructTranslationMatrix(0, 0, -134 + (Math.sin(elapsedTime * 0.00007) * 0.5 + 0.5) * 17).multiplyMatrix(
-                Matrix4f.constructXRotationMatrix(elapsedTime * 0.0008).multiplyMatrix(
-                    Matrix4f.constructYRotationMatrix(-elapsedTime * 0.0009).multiplyMatrix(
-                        Matrix4f.constructTranslationMatrix(0, 0, 0)
-                    )));
-
-
-        let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(7, 7, 7));
-
-        if (skybox)
-            this.drawSkyBox(mv.getRotation(), skybox);
-
-        this.clearDepthBuffer();
-        this.setBob(metal);
-        let scal = 1.0;
-        for (let j = 0; j < this.blenderObjMetal.length; j++) {
-            let model = this.blenderObjMetal[j];
-            this.drawObjectTexture(model, mv, 244 * scal, 225 * scal, 216 * scal);
-        }
-
-
 
         let scale = 20;
         let lensflareScreenSpace = this.project(camera.getRotation().multiply(new Vector3f(1.1 * scale, 2 * scale, -0.9 * scale)));
