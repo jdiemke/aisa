@@ -16,6 +16,13 @@ import { Mesh } from './mesh';
 import { TexCoord } from './tex-coord';
 import { Vector } from './vector';
 
+class PortalData {
+
+    public vertices: Array<Vector>;
+    public name: string;
+
+}
+
 const args: Array<string> = process.argv.slice(2);
 
 if (args.length <= 0) {

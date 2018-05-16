@@ -1,12 +1,12 @@
-import { AbstractScene } from "./scenes/AbstractScene";
-import { CullFace } from "./CullFace";
-import { Framebuffer } from "./Framebuffer";
-import { Matrix4f, Vector4f, Vector3f } from "./math";
-import { FrustumCuller } from "./clustered-culling/FrustumCuller";
-import { Plane } from "./math/Plane";
-import { Color } from "./core/Color";
-import { ControllableCamera } from "./camera";
-import { Area, Polygon, PortalRenderer, Portal } from "./portal-system";
+import { ControllableCamera } from './camera';
+import { FrustumCuller } from './clustered-culling/FrustumCuller';
+import { Color } from './core/Color';
+import { CullFace } from './CullFace';
+import { Framebuffer } from './Framebuffer';
+import { Matrix4f, Vector3f, Vector4f } from './math';
+import { Plane } from './math/Plane';
+import { Area, Polygon, Portal, PortalRenderer } from './portal-system';
+import { AbstractScene } from './scenes/AbstractScene';
 
 export class PortalScene extends AbstractScene {
 
@@ -25,11 +25,19 @@ export class PortalScene extends AbstractScene {
         this.frustumCuller = new FrustumCuller();
         this.portalRenderer = new PortalRenderer();
 
-        document.addEventListener("keydown", (e) => {
-            if (e.which == 38) this.controllableCamera.moveForward(0.2, 1.0);
-            if (e.which == 40) this.controllableCamera.moveBackward(0.2, 1.0);
-            if (e.which == 37) this.controllableCamera.turnLeft(0.05, 1.0);
-            if (e.which == 39) this.controllableCamera.turnRight(0.05, 1.0);
+        document.addEventListener('keydown', (e: KeyboardEvent) => {
+            if (e.which === 38) {
+                this.controllableCamera.moveForward(0.2, 1.0);
+            }
+            if (e.which === 40) {
+                this.controllableCamera.moveBackward(0.2, 1.0);
+            }
+            if (e.which === 37) {
+                this.controllableCamera.turnLeft(0.05, 1.0);
+            }
+            if (e.which === 39) {
+                this.controllableCamera.turnRight(0.05, 1.0);
+            }
         });
 
         return Promise.all([]);
@@ -51,7 +59,13 @@ export class PortalScene extends AbstractScene {
         // TODO:
         // * find the area to start the portal flooding in
         // * const area: Area = getStartArea(position);
-        this.portalRenderer.renderVisibleAreas(framebuffer, modelViewMartrix, this.area, this.frustumCuller.getPlanes(), this.controllableCamera);
+        this.portalRenderer.renderVisibleAreas(
+            framebuffer,
+            modelViewMartrix,
+            this.area,
+            this.frustumCuller.getPlanes(),
+            this.controllableCamera
+        );
     }
 
     /**
@@ -60,9 +74,9 @@ export class PortalScene extends AbstractScene {
      * * use special naming convention to identify portals and their connectivity
      * * "portal:area-name:into-area-name"
      * * problem: how to identify the first area?
-     * 
+     *
      * @private
-     * @returns {Area} 
+     * @returns {Area}
      * @memberof PortalScene
      */
     private generateAreaPortalNetwork(): Area {
@@ -95,11 +109,30 @@ export class PortalScene extends AbstractScene {
         const color: number = Color.WHITE.toPackedFormat();
         const width: number = 320 / 2;
         const height: number = 200 / 2;
-    
-        framebuffer.drawLineDDANoZ(new Vector3f(width / 2, height / 2, 0), new Vector3f(width / 2 + width, height / 2, -100), color);
-        framebuffer.drawLineDDANoZ(new Vector3f(width / 2, height / 2, 0), new Vector3f(width / 2, height / 2 + height, -100), color);
-        framebuffer.drawLineDDANoZ(new Vector3f(width / 2 + width, height / 2, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), color);
-        framebuffer.drawLineDDANoZ(new Vector3f(width / 2, height / 2 + height, 0), new Vector3f(width / 2 + width, height / 2 + height, -100), color);
+
+        framebuffer.drawLineDDANoZ(
+            new Vector3f(width / 2, height / 2, 0),
+            new Vector3f(width / 2 + width, height / 2, -100),
+            color
+        );
+
+        framebuffer.drawLineDDANoZ(
+            new Vector3f(width / 2, height / 2, 0),
+            new Vector3f(width / 2, height / 2 + height, -100),
+            color
+        );
+
+        framebuffer.drawLineDDANoZ(
+            new Vector3f(width / 2 + width, height / 2, 0),
+            new Vector3f(width / 2 + width, height / 2 + height, -100),
+            color
+        );
+
+        framebuffer.drawLineDDANoZ(
+            new Vector3f(width / 2, height / 2 + height, 0),
+            new Vector3f(width / 2 + width, height / 2 + height, -100),
+            color
+        );
     }
 
 }
