@@ -3,7 +3,9 @@ var path = require('path');
 
 module.exports = {
     entry: {
-        application: './src/Application.ts'
+        metalheadz: './src/examples/metalheadz/Application.ts',
+        portals: './src/examples/portals/Application.ts',
+        torus: './src/examples/torus/Application.ts'
     },
     output: {
         filename: '[name].bundle.js',
@@ -32,7 +34,19 @@ module.exports = {
     devtool: "source-map",
     plugins: [
         new HtmlWebpackPlugin({
-            template: './src/index.html'
+            template: './src/index.html',
+            chunks: ['metalheadz'],
+            filename: 'metalheadz.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['portals'],
+            filename: 'portals.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['torus'],
+            filename: 'torus.html'
         })
     ]
 }

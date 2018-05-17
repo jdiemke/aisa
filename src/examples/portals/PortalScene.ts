@@ -1,12 +1,12 @@
-import { ControllableCamera } from './camera';
-import { FrustumCuller } from './clustered-culling/FrustumCuller';
-import { Color } from './core/Color';
-import { CullFace } from './CullFace';
-import { Framebuffer } from './Framebuffer';
-import { Matrix4f, Vector3f, Vector4f } from './math';
-import { Plane } from './math/Plane';
-import { Area, Polygon, Portal, PortalRenderer } from './portal-system';
-import { AbstractScene } from './scenes/AbstractScene';
+import { ControllableCamera } from '../../camera';
+import { FrustumCuller } from '../../clustered-culling/FrustumCuller';
+import { Color } from '../../core/Color';
+import { CullFace } from '../../CullFace';
+import { Framebuffer } from '../../Framebuffer';
+import { Matrix4f, Vector3f, Vector4f } from '../../math';
+import { Plane } from '../../math/Plane';
+import { Area, Polygon, Portal, PortalRenderer } from '../../portal-system';
+import { AbstractScene } from '../../scenes/AbstractScene';
 
 export class PortalScene extends AbstractScene {
 
