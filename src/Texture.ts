@@ -1,8 +1,8 @@
 export default class Texture {
 
-    texture: Uint32Array
-    width: number;
-    height: number;
+    public texture: Uint32Array;
+    public width: number;
+    public height: number;
 
     constructor(texture?: Uint32Array, width?: number, height?: number) {
         this.texture = texture;

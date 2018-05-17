@@ -2,16 +2,16 @@ export default class RandomNumberGenerator {
 
     private seed: number;
 
-    constructor() {
+    public constructor() {
         this.seed = 6;
     }
 
-    getFloat() {
+    public getFloat(): number {
         this.seed = (this.seed * 9301 + 49297) % 233280;
         return this.seed / 233280;
     }
 
-    setSeed(seed) {
+    public setSeed(seed: number): void {
         this.seed = seed;
     }
 

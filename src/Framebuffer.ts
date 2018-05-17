@@ -1538,33 +1538,6 @@ export class Framebuffer {
         }
     }
 
-
-
-    /**
-     * Span Renderer
-     * 
-     * http://stackoverflow.com/questions/27639005/how-to-copy-static-files-to-build-directory-with-webpack
-     */
-    drawSpan(dist: number, xpos: number, ypos: number, scale: number, texture: Texture) {
-        let framebufferIndex = xpos + ypos * this.width;
-        let textureIndex = (((ypos - Date.now() * 0.029) | 0) & 0xff) * texture.width;
-        let textureForwardDifference = texture.width / dist;
-        let hightlight = Math.pow(scale, 11) * 115;
-
-        for (let j = 0; j < dist; j++) {
-            let color = texture.texture[textureIndex | 0];
-
-            let r = Math.min(((color >> 0 & 0xff) * scale) + hightlight, 255);
-            let g = Math.min(((color >> 8 & 0xff) * scale) + hightlight, 255);
-            let b = Math.min(((color >> 16 & 0xff) * scale) + hightlight, 255);
-
-            this.framebuffer[framebufferIndex] = r | g << 8 | b << 16 | 255 << 24;
-
-            framebufferIndex++;
-            textureIndex += textureForwardDifference;
-        }
-    }
-
     // TODO:
     // - implement scale and translate using homogenous 4x4 matrices
     //   instead of fucking around with the projection formular
@@ -7104,7 +7077,6 @@ export class Framebuffer {
         tslope1u = (v3.textureCoordinate.u / v3.position.z - v2.textureCoordinate.u / v2.position.z) / yDistanceLeft;
         tslope1v = (v3.textureCoordinate.v / v3.position.z - v2.textureCoordinate.v / v2.position.z) / yDistanceLeft;
 
-
         curx1 = v2.position.x;
         curz1 = 1.0 / v2.position.z;
         curu1 = v2.textureCoordinate.u / v2.position.z;
@@ -7253,7 +7225,6 @@ export class Framebuffer {
         tslope2u = (t3.x / v3.z - t2.x / v2.z) / yDistanceRight;
         tslope2v = (t3.y / v3.z - t2.y / v2.z) / yDistanceRight;
 
-
         curx2 = v2.x;
         curz2 = 1.0 / v2.z;
 
@@ -7313,7 +7284,6 @@ export class Framebuffer {
             curv2 += tslope2v;
         }
     }
-
 
     fillLongLeftTriangle(v1: Vector3f, v2: Vector3f, v3: Vector3f, color: number): void {
 
@@ -7411,7 +7381,6 @@ export class Framebuffer {
         let curz1 = 1.0 / v1.z;
         let curz2 = 1.0 / v1.z;
 
-
         let length = Math.round(yDistance);
 
         let xPosition = v1.x;
@@ -7444,7 +7413,6 @@ export class Framebuffer {
         }
     }
 
-
     fillTopFlatTriangle(v1: Vector3f, v2: Vector3f, v3: Vector3f, color: number): void {
         let yDistance = v3.y - v1.y;
         let slope1 = (v3.x - v1.x) / yDistance;
@@ -7464,8 +7432,6 @@ export class Framebuffer {
         let yPosition = v1.y;
 
         for (let i = 0; i < yDistance; i++) {
-
-
             let length = Math.round(xPosition2) - Math.round(xPosition);
             let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
             for (let j = 0; j < length; j++) {
@@ -7648,8 +7614,6 @@ export class Framebuffer {
         let xPosition: number = start.x;
         let yPosition: number = start.y;
 
-
-
         for (let i = 0; i <= length; i++) {
 
             this.drawPixel(Math.round(xPosition), Math.round(yPosition), color);
@@ -7659,7 +7623,6 @@ export class Framebuffer {
 
         }
     }
-
 
     /**
      * TODO:
@@ -7822,7 +7785,6 @@ export class Framebuffer {
         }
     }
 
-
     drawVoxelLandscape4(texture: Texture, time: number) {
         this.clearColorBuffer(255 << 24);
 
@@ -7878,11 +7840,9 @@ export class Framebuffer {
         }
     }
 
-
     getPixel(texture: Texture, x: number, y: number) {
         return texture.texture[(x & 0xff) + (y & 0xff) * 256];
     }
-
 
     getPixel2(texture: Texture, x: number, y: number) {
         return texture.texture[x + y * texture.width];
@@ -7933,14 +7893,10 @@ export class Framebuffer {
         return col;
     }
 
-
     drawTitanEffect() {
         this.clear();
         const horizontalNum = 320 / 20;
         const verticalNum = 200 / 20;
-
-
-
 
         for (let x = 0; x < horizontalNum; x++) {
             for (let y = 0; y < verticalNum; y++) {
@@ -7997,47 +7953,6 @@ export class Framebuffer {
             return this.interpolateColor(100, 230, intensity, 255 << 8, 255 << 8 | 255);
         }
         return 255 << 8;
-    }
-
-    draw(texture: Texture, time: number) {
-        // this.clearCol(80 << 16 | 80 << 8 | 99 << 0 | 255 << 24)
-        let a = time * 0.001;
-        for (let i = 10; i < 190; i++) {
-            let xoff = (Math.sin(a + i * 0.01) * 50) | 0;
-            let rot = Math.sin(a * 0.4 + i * 0.0021) * Math.PI * 2;
-            let x1 = (Math.sin(rot) * 32) | 0;
-            let x2 = (Math.sin(Math.PI * 2 / 4 + rot) * 32) | 0;
-            let x3 = (Math.sin(Math.PI * 2 / 4 * 2 + rot) * 32) | 0;
-            let x4 = (Math.sin(Math.PI * 2 / 4 * 3 + rot) * 32) | 0;
-
-            if (x2 > x1) {
-                let scale = Math.max(0, Math.sin(Math.PI * 2 / 4 * 1.5 + rot));
-                let dist = x2 - x1;
-                let xPos = x1 + 120 + xoff;
-                this.drawSpan(dist, xPos, i, scale, texture);
-            }
-
-            if (x3 > x2) {
-                let scale = Math.max(0, Math.sin(Math.PI * 2 / 4 * 2.5 + rot));
-                let dist = x3 - x2;
-                let xPos = x2 + 120 + xoff;
-                this.drawSpan(dist, xPos, i, scale, texture);
-            }
-
-            if (x4 > x3) {
-                let scale = Math.max(0, Math.sin(Math.PI * 2 / 4 * 3.5 + rot));
-                let dist = x4 - x3;
-                let xPos = x3 + 120 + xoff;
-                this.drawSpan(dist, xPos, i, scale, texture);
-            }
-
-            if (x1 > x4) {
-                let scale = Math.max(0, Math.sin(Math.PI * 2 / 4 * 4.5 + rot));
-                let dist = x1 - x4;
-                let xPos = x4 + 120 + xoff;
-                this.drawSpan(dist, xPos, i, scale, texture);
-            }
-        }
     }
 
 }

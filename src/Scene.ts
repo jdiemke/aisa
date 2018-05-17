@@ -161,8 +161,7 @@ export class Scene extends AbstractScene {
                     this.framebuffer.shadingTorus(time * 0.02);
                     this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
                 } else if (time < 15000) {
-                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
-                    this.framebuffer.draw(this.texture, time);
+             
                 } else if (time < 25000) {
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
                     this.framebuffer.drawLens(this.texture5, this.texture6, time);

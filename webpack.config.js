@@ -5,7 +5,8 @@ module.exports = {
     entry: {
         metalheadz: './src/examples/metalheadz/Application.ts',
         portals: './src/examples/portals/Application.ts',
-        torus: './src/examples/torus/Application.ts'
+        torus: './src/examples/torus/Application.ts',
+        twister: './src/examples/twister/Application.ts'
     },
     output: {
         filename: '[name].bundle.js',
@@ -47,6 +48,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['torus'],
             filename: 'torus.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['twister'],
+            filename: 'twister.html'
         })
     ]
 }
