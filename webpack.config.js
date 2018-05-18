@@ -3,14 +3,18 @@ var path = require('path');
 
 module.exports = {
     entry: {
-        metalheadz: './src/examples/metalheadz/Application.ts',
-        portals: './src/examples/portals/Application.ts',
-        torus: './src/examples/torus/Application.ts',
-        twister: './src/examples/twister/Application.ts',
-        lens: './src/examples/lens/Application.ts',
-        plasma: './src/examples/plasma/Application.ts',
-        metaballs: './src/examples/metaballs/Application.ts',
-        razor: './src/examples/razor/Application.ts'
+        'metalheadz': './src/examples/metalheadz/Application.ts',
+        'portals': './src/examples/portals/Application.ts',
+        'torus': './src/examples/torus/Application.ts',
+        'twister': './src/examples/twister/Application.ts',
+        'lens': './src/examples/lens/Application.ts',
+        'plasma': './src/examples/plasma/Application.ts',
+        'metaballs': './src/examples/metaballs/Application.ts',
+        'razor': './src/examples/razor/Application.ts',
+        'roto-zoomer': './src/examples/roto-zoomer/Application.ts',
+        'voxel-landscape': './src/examples/voxel-landscape/Application.ts',
+        'cube': './src/examples/cube/Application.ts',
+        'bobs': './src/examples/bobs/Application.ts',
     },
     output: {
         filename: '[name].bundle.js',
@@ -77,6 +81,26 @@ module.exports = {
             template: './src/index.html',
             chunks: ['razor'],
             filename: 'razor.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['roto-zoomer'],
+            filename: 'roto-zoomer.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['voxel-landscape'],
+            filename: 'voxel-landscape.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['cube'],
+            filename: 'cube.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['bobs'],
+            filename: 'bob.html'
         })
     ]
 }

@@ -4,8 +4,7 @@ import { Matrix4f, Vector3f } from '../../math';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { SkyBox } from '../../SkyBox';
-import Texture from '../../Texture';
-import { TextureUtils } from '../../TextureUtils';
+import { Texture, TextureUtils } from '../../texture';
 
 const metalJson = require('../../assets/metalheadz.json');
 

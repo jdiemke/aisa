@@ -2,7 +2,6 @@ import { Canvas } from '../../Canvas';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import Texture from '../../Texture';
 
 /**
  * TODO: extract lens into effect class

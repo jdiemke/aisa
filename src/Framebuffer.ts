@@ -9,7 +9,7 @@ import { CameraAnimator } from './animation/CameraAnimator';
 import { CullFace } from './CullFace';
 import { TextureCoordinate, Vertex } from './Vertex';
 
-import Texture from './Texture';
+import { Texture, TextureUtils } from './texture';
 import Point from './Point';
 
 import { Matrix3f, Matrix4f, Vector3f, Vector4f } from './math';

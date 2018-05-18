@@ -2,8 +2,7 @@ import { Canvas } from '../../Canvas';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import Texture from '../../Texture';
-import { TextureUtils } from '../../TextureUtils';
+import { Texture, TextureUtils } from '../../texture';
 
 export class TorusScene extends AbstractScene {
 

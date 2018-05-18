@@ -1,4 +1,4 @@
-export default class Texture {
+export class Texture {
 
     public texture: Uint32Array;
     public width: number;

@@ -2,7 +2,7 @@ import { CullFace } from './CullFace';
 import { Framebuffer } from './Framebuffer';
 import RandomNumberGenerator from './RandomNumberGenerator';
 import { AbstractScene } from './scenes/AbstractScene';
-import Texture from './Texture';
+import { Texture, TextureUtils } from './texture';
 
 export class Scene extends AbstractScene {
 
@@ -156,27 +156,16 @@ export class Scene extends AbstractScene {
 
         framebuffer.setCullFace(CullFace.FRONT);
         /*
-             if (time < 30000) {
-                    this.framebuffer.drawRotoZoomer(this.texture);
-                    this.framebuffer.shadingDemo(time * 0.02);
-                } else if (time < 35000) {
-                    this.framebuffer.drawRotoZoomer(this.texture);
+             if (time < 30000) {   
                     this.framebuffer.shadingSphere(time * 0.01);
                 } else if (time < 40000) {
-                    this.framebuffer.drawRotoZoomer(this.texture);
                     this.framebuffer.wireFrameSphereClipping(time * 0.01);
                 } else if (time < 45000) {
-                    this.framebuffer.drawVoxelLandscape2(this.heightmap, time);
-                    this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
-                } else if (time < 60000) {
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
                     this.framebuffer.shadingTorus2(time * 0.02);
                 } else if (time < 70000) {
                     this.framebuffer.floodFill(this.texture5, time - 60000);
                 } else if (time < 80000) {
-                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
-                    this.framebuffer.drawBobs(this.texture7, time);
-                } else if (time < 95000) {
                     this.framebuffer.blockFace(this.texture5, time, 80000);
                 } else if (time < 140000) {
                     this.framebuffer.scrollingBackground(this.texture8, time - 95000);
@@ -220,14 +209,7 @@ export class Scene extends AbstractScene {
                         { tex: this.texture11, scale: 2.3, alpha: 0.5 },
                         { tex: this.texture13, scale: 1.6, alpha: 0.25 }
                     ]);
-                } else if (time < 250000) {
-                    this.framebuffer.setCullFace(CullFace.BACK);
-                    this.framebuffer.reproduceRazorScene(time * 0.003);
-                    this.framebuffer.drawLensFlare(time - 185000, [
-                        { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                        { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                        { tex: this.texture13, scale: 1.6, alpha: 0.25 }
-                    ]);
+                }
                 } else if (time < 260000) {
                     this.framebuffer.setCullFace(CullFace.BACK);
                     this.framebuffer.setBob(this.spheremap);
@@ -1537,7 +1519,7 @@ export class Scene extends AbstractScene {
         });
     }
 
-    
+
     public createTexture(path: string, hasAlpha: boolean): Promise<Texture> {
         return new Promise<Texture>((resolve) => {
             const img = new Image();

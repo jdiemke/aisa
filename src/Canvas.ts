@@ -7,7 +7,7 @@ import { Vector3f } from './math/Vector3f';
 import RandomNumberGenerator from './RandomNumberGenerator';
 import { Scene } from './Scene';
 import { AbstractScene } from './scenes/AbstractScene';
-import Texture from './Texture';
+import { Texture } from './Texture';
 
 export class Canvas {
 

@@ -1,10 +1,9 @@
 import { Canvas } from '../../Canvas';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { AbstractScene } from '../../scenes/AbstractScene';
-import Texture from '../../Texture';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
-import { TextureUtils } from '../../TextureUtils';
+import { AbstractScene } from '../../scenes/AbstractScene';
+import { Texture, TextureUtils } from '../../texture';
 
 /**
  * TODO: extract lens into effect class
