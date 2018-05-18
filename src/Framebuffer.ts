@@ -4280,7 +4280,6 @@ export class Framebuffer {
         }
     }
 
-
     public torusTunnel(elapsedTime: number, sync: number, texture: Texture): void {
 
         this.wBuffer.fill(100);
@@ -4360,8 +4359,6 @@ export class Framebuffer {
 
         let finalMatrix = rotation.transpose().multiplyMatrix(translation);
 
-
-
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.035));
         modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -10).multiplyMatrix(modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.04)));
         modelViewMartrix = Matrix4f.constructZRotationMatrix(elapsedTime * 0.01).multiplyMatrix(finalMatrix);
@@ -4422,7 +4419,6 @@ export class Framebuffer {
 
     }
 
-
     public shadingTorus4(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
@@ -4468,7 +4464,6 @@ export class Framebuffer {
             let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
             normals.push(normal);
         }
-
 
         let scale = 2.1;
 
@@ -4567,7 +4562,6 @@ export class Framebuffer {
         }
     }
 
-
     public shadingTorusENvironment(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
@@ -4576,9 +4570,6 @@ export class Framebuffer {
 
         // compute normals
         let normals: Array<Vector3f> = new Array<Vector3f>();
-
-
-
         const STEPS = 15 * 2;
         const STEPS2 = 8 * 2;
         for (let i = 0; i < STEPS + 1; i++) {
@@ -6067,7 +6058,6 @@ export class Framebuffer {
         }
     }
 
-
     public fakeSphere(normal: Vector3f, vertex: Vertex): void {
         // https://www.mvps.org/directx/articles/spheremap.htm
         //vertex.textureCoordinate.u = 0.5 + normal.x * 0.5;
@@ -6077,10 +6067,8 @@ export class Framebuffer {
     }
 
     public fakeSphere2(normal: Vector3f, tex: TextureCoordinate): void {
-
         tex.u = 0.5 + Math.asin(normal.x) / Math.PI;
         tex.v = 0.5 - Math.asin(normal.y) / Math.PI;
-
     }
     public shadingTorus3(elapsedTime: number): void {
         let points: Array<Vector3f> = [];
@@ -6144,8 +6132,6 @@ export class Framebuffer {
             }
         }
     }
-
-
 
     // Sutherland-Hodgman
     // http://www.sunshine2k.de/coding/java/SutherlandHodgman/SutherlandHodgman.html
@@ -7424,44 +7410,6 @@ export class Framebuffer {
     }
 
     /**
-     * TODO:
-     * - adjust method in order to have window coordinates as parameter
-     *   that gonna be used to define the area to be displayed
-     * - http://qzx.com/pc-gpe/
-     */
-    drawRotoZoomer(texture: Texture) {
-        let scale = Math.sin(Date.now() * 0.0005) + 1.1;
-
-        let yStepX = Math.sin(Date.now() * 0.0003) * scale;
-        let yStepY = Math.cos(Date.now() * 0.0003) * scale;
-
-        let xStepX = yStepY;
-        let xStepY = -yStepX;
-
-        let texYCoord = Math.sin(Date.now() * 0.0002) * 512;
-        let texXCoord = Math.cos(Date.now() * 0.0002) * 512;
-
-        let texYCoordInner = 0;
-        let texXCoordInner = 0;
-        let framebufferPos = 0;
-
-        for (let y = 0; y < 200; y++) {
-            texXCoordInner = texXCoord;
-            texYCoordInner = texYCoord;
-
-            for (let x = 0; x < 320; x++) {
-                this.framebuffer[framebufferPos++] = texture.texture[(texXCoordInner & 63) + (texYCoordInner & 0xff) * 64];
-
-                texXCoordInner += xStepX;
-                texYCoordInner += xStepY;
-            }
-
-            texXCoord += yStepX;
-            texYCoord += yStepY;
-        }
-    }
-
-    /**
      * Generates a voxel landscape.
      * 
      * TODO:
@@ -7677,8 +7625,6 @@ export class Framebuffer {
         let x0y1 = this.getPixel2(texture, x0, y1);
         let x1y1 = this.getPixel2(texture, x1, y1);
 
-
-
         return this.interpolateComp(x, y, x0y0 & 0xff, x1y0 & 0xff, x0y1 & 0xff, x1y1 & 0xff) |
             this.interpolateComp(x, y, x0y0 >> 8 & 0xff, x1y0 >> 8 & 0xff, x0y1 >> 8 & 0xff, x1y1 >> 8 & 0xff) << 8 |
             this.interpolateComp(x, y, x0y0 >> 16 & 0xff, x1y0 >> 16 & 0xff, x0y1 >> 16 & 0xff, x1y1 >> 16 & 0xff) << 16;
@@ -7690,24 +7636,6 @@ export class Framebuffer {
         let col = col1 * (1 - (y - Math.floor(y))) + (col2 * ((y - Math.floor(y))));
 
         return col;
-    }
-
-    drawTitanEffect() {
-        this.clear();
-        const horizontalNum = 320 / 20;
-        const verticalNum = 200 / 20;
-
-        for (let x = 0; x < horizontalNum; x++) {
-            for (let y = 0; y < verticalNum; y++) {
-
-                let scale = ((Math.sin(Date.now() * 0.004 + x * 0.7 + y * 0.4) + 1) / 2);
-                let size = Math.round(scale * 8 + 1) * 2;
-                let offset = (20 / 2 - size / 2) | 0;
-                let color = 255 << 24 | (85 * scale) << 16 | (55 * scale) << 8 | (55 * scale);
-                this.drawBox2(x * 20 + offset, y * 20 + offset, size, size, color);
-            }
-        }
-
     }
 
 }
