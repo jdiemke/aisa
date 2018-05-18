@@ -3211,8 +3211,8 @@ export class Framebuffer {
             this.drawObjectTexture(model, mv, 244 * scal, 225 * scal, 216 * scal);
         }
 
-        if (skybox)
-            this.drawSkyBox(mv.getRotation(), skybox);
+        //if (skybox)
+        //   this.drawSkyBox(mv.getRotation(), skybox);
 
         let scale = 20;
         let lensflareScreenSpace = this.project(camera.getRotation().multiply(new Vector3f(1.1 * scale, 2 * scale, -0.9 * scale)));
@@ -3237,167 +3237,6 @@ export class Framebuffer {
             let model = this.blenderObj9[j];
             this.drawObjectTexture(model, mv, 244 * scal, 225 * scal, 216 * scal);
         }
-    }
-
-    public drawSkyBox(rotation: Matrix4f, skybox: { back?: Texture, down?: Texture, front?: Texture, left?: Texture, right?: Texture, up?: Texture }): void {
-
-
-        const sclae = 20;
-        let textures = [
-            skybox.back,
-            skybox.left,
-            skybox.front,
-            skybox.right
-        ];
-        for (let i = 0; i < 4; i++) {
-            let camera: Matrix4f =
-                rotation.multiplyMatrix(
-                    Matrix4f.constructXRotationMatrix(Math.PI).multiplyMatrix(
-                        Matrix4f.constructYRotationMatrix(+ Math.PI * 2 / 4 * i)));
-
-
-            let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(sclae, sclae, sclae));
-
-            let skyPoints = [
-                new Vector4f(1, 1, -1, 1),
-                new Vector4f(-1, 1, -1, 1),
-                new Vector4f(-1, -1, -1, 1),
-                new Vector4f(1, 1, -1, 1),
-                new Vector4f(-1, -1, -1, 1),
-                new Vector4f(1, -1, -1, 1)
-            ];
-            //skybox: starz
-            let skyBoxSideModel = {
-                normals: [],
-                normals2: [],
-                points: skyPoints,
-                points2: skyPoints.map(x => new Vector3f(0, 0, 0)),
-                uv: [
-                    new TextureCoordinate(1, 1),
-                    new TextureCoordinate(0, 1),
-                    new TextureCoordinate(0, 0),
-                    new TextureCoordinate(1, 1),
-                    new TextureCoordinate(0, 0),
-                    new TextureCoordinate(1, 0),
-                ],
-                faces: [
-                    {
-                        vertices: [0, 1, 2],
-                        uv: [0, 1, 2]
-                    },
-                    {
-                        vertices: [3, 4, 5],
-                        uv: [3, 4, 5]
-                    }
-                ]
-            };
-
-            this.setBob(textures[i]);
-            this.drawObjectTexture2(skyBoxSideModel, mv, 244, 225, 216);
-
-        }
-
-        let camera: Matrix4f =
-
-
-
-
-            rotation.multiplyMatrix(
-                Matrix4f.constructXRotationMatrix(Math.PI)).multiplyMatrix(
-                    Matrix4f.constructYRotationMatrix(0)
-                        .multiplyMatrix(Matrix4f.constructYRotationMatrix(Math.PI * 2 / 4 * 1).multiplyMatrix(Matrix4f.constructXRotationMatrix(-Math.PI * 2 / 4)))
-                );
-
-
-        let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(sclae, sclae, sclae));
-
-        let skyPoints = [
-            new Vector4f(1, 1, -1, 1),
-            new Vector4f(-1, 1, -1, 1),
-            new Vector4f(-1, -1, -1, 1),
-            new Vector4f(1, 1, -1, 1),
-            new Vector4f(-1, -1, -1, 1),
-            new Vector4f(1, -1, -1, 1)
-        ];
-        //skybox: starz
-        let skyBoxSideModel = {
-            normals: [],
-            normals2: [],
-            points: skyPoints,
-            points2: skyPoints.map(x => new Vector3f(0, 0, 0)),
-            uv: [
-                new TextureCoordinate(0, 0),
-                new TextureCoordinate(1, 0),
-                new TextureCoordinate(1, 1),
-                new TextureCoordinate(0, 0),
-                new TextureCoordinate(1, 1),
-                new TextureCoordinate(0, 1),
-            ],
-            faces: [
-                {
-                    vertices: [0, 1, 2],
-                    uv: [0, 1, 2]
-                },
-                {
-                    vertices: [3, 4, 5],
-                    uv: [3, 4, 5]
-                }
-            ]
-        };
-
-        this.setBob(skybox.up);
-        this.drawObjectTexture2(skyBoxSideModel, mv, 244, 225, 216);
-
-
-        camera =
-            rotation.multiplyMatrix(
-                Matrix4f.constructXRotationMatrix(Math.PI)).multiplyMatrix(
-                    Matrix4f.constructYRotationMatrix(0)
-                        .multiplyMatrix(Matrix4f.constructYRotationMatrix(Math.PI * 2 / 2).multiplyMatrix(Matrix4f.constructXRotationMatrix(Math.PI * 2 / 4)))
-
-                );
-
-
-        mv = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(sclae, sclae, sclae));
-
-        skyPoints = [
-            new Vector4f(1, 1, -1, 1),
-            new Vector4f(-1, 1, -1, 1),
-            new Vector4f(-1, -1, -1, 1),
-            new Vector4f(1, 1, -1, 1),
-            new Vector4f(-1, -1, -1, 1),
-            new Vector4f(1, -1, -1, 1)
-        ];
-        //skybox: starz
-        skyBoxSideModel = {
-            normals: [],
-            normals2: [],
-            points: skyPoints,
-            points2: skyPoints.map(x => new Vector3f(0, 0, 0)),
-            uv: [
-                new TextureCoordinate(1, 1),
-                new TextureCoordinate(0, 1),
-                new TextureCoordinate(0, 0),
-                new TextureCoordinate(1, 1),
-                new TextureCoordinate(0, 0),
-                new TextureCoordinate(1, 0),
-            ],
-            faces: [
-                {
-                    vertices: [0, 1, 2],
-                    uv: [0, 1, 2]
-                },
-                {
-                    vertices: [3, 4, 5],
-                    uv: [3, 4, 5]
-                }
-            ]
-        };
-
-        this.setBob(skybox.down);
-        this.drawObjectTexture2(skyBoxSideModel, mv, 244, 225, 216);
-
-
     }
 
     public drawBlenderScene9(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture, skybox: { back?: Texture, down?: Texture, front?: Texture, left?: Texture, right?: Texture, up?: Texture }): void {
@@ -3792,7 +3631,7 @@ export class Framebuffer {
         }
     }
 
-    private drawObjectTexture2(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, culling: boolean = false) {
+    public drawObjectTexture2(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, culling: boolean = false) {
 
         let normalMatrix = modelViewMartrix.computeNormalMatrix();
 
