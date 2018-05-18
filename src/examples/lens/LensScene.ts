@@ -3,6 +3,7 @@ import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import Texture from '../../Texture';
+import { TextureUtils } from '../../TextureUtils';
 
 /**
  * TODO: extract lens into effect class
@@ -14,10 +15,10 @@ export class LensScene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         return Promise.all([
-            this.createTexture(require('./assets/atlantis.png'), false).then(
+            TextureUtils.load(require('./assets/atlantis.png'), false).then(
                 (texture: Texture) => this.texture5 = texture
             ),
-            this.createTexture(require('./assets/lens.png'), true).then(
+            TextureUtils.load(require('./assets/lens.png'), true).then(
                 (texture: Texture) => this.texture6 = texture
             ),
         ]);

@@ -5,6 +5,7 @@ import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { SkyBox } from '../../SkyBox';
 import Texture from '../../Texture';
+import { TextureUtils } from '../../TextureUtils';
 
 const metalJson = require('../../assets/metalheadz.json');
 
@@ -31,19 +32,19 @@ export class MetalHeadzScene extends AbstractScene {
 
         return Promise.all([
             this.skyBox.init(),
-            this.createTexture(require('../../assets/metalheadz.png'), false).then(
+            TextureUtils.load(require('../../assets/metalheadz.png'), false).then(
                 (texture: Texture) => this.metalheadz = texture
             ),
-            this.createTexture(require('../../assets/ring.png'), true).then(
+            TextureUtils.load(require('../../assets/ring.png'), true).then(
                 (texture: Texture) => this.texture11 = texture
             ),
-            this.createTexture(require('../../assets/bokeh.png'), true).then(
+            TextureUtils.load(require('../../assets/bokeh.png'), true).then(
                 (texture: Texture) => this.texture13 = texture
             ),
             this.createProceduralTexture4().then(
                 (texture: Texture) => this.noise = texture
             ),
-            this.createTexture(require('../../assets/dirt.png'), true).then(
+            TextureUtils.load(require('../../assets/dirt.png'), true).then(
                 (texture: Texture) => this.dirt = texture
             ),
         ]);

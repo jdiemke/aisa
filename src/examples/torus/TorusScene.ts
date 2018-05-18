@@ -3,6 +3,7 @@ import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import Texture from '../../Texture';
+import { TextureUtils } from '../../TextureUtils';
 
 export class TorusScene extends AbstractScene {
 
@@ -12,7 +13,7 @@ export class TorusScene extends AbstractScene {
         framebuffer.setCullFace(CullFace.FRONT);
 
         return Promise.all([
-            this.createTexture(require('./assets/razor1911.png'), true).then(
+            TextureUtils.load(require('./assets/razor1911.png'), true).then(
                 (texture: Texture) => this.razorLogo = texture
             )
         ]);

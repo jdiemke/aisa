@@ -4,6 +4,7 @@ import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import Texture from '../../Texture';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
+import { TextureUtils } from '../../TextureUtils';
 
 /**
  * TODO: extract lens into effect class
@@ -20,10 +21,10 @@ export class RazorScene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         return Promise.all([
-            this.createTexture(require('./assets/spark.png'), true).then(texture => this.texture10 = texture),
-            this.createTexture(require('./assets/ring.png'), true).then(texture => this.texture11 = texture),
-            this.createTexture(require('./assets/bokeh.png'), true).then(texture => this.texture13 = texture),
-            this.createTexture(require('./assets/dirt.png'), true).then(texture => this.dirt = texture),
+            TextureUtils.load(require('./assets/spark.png'), true).then(texture => this.texture10 = texture),
+            TextureUtils.load(require('./assets/ring.png'), true).then(texture => this.texture11 = texture),
+            TextureUtils.load(require('./assets/bokeh.png'), true).then(texture => this.texture13 = texture),
+            TextureUtils.load(require('./assets/dirt.png'), true).then(texture => this.dirt = texture),
             this.createProceduralTexture4().then(texture => this.noise = texture),
         ]);
     }

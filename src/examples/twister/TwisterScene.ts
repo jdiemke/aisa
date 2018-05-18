@@ -3,6 +3,7 @@ import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import Texture from '../../Texture';
+import { TextureUtils } from '../../TextureUtils';
 
 /**
  * TODO: extract twister into effect class
@@ -14,10 +15,10 @@ export class TwisterScene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         return Promise.all([
-            this.createTexture(require('./assets/atlantis.png'), false).then(
+            TextureUtils.load(require('./assets/atlantis.png'), false).then(
                 (texture: Texture) => this.backgroundTexture = texture
             ),
-            this.createTexture(require('./assets/logo.png'), false).then(
+            TextureUtils.load(require('./assets/logo.png'), false).then(
                 (texture: Texture) => this.logoTexture = texture
             ),
         ]);
