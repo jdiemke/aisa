@@ -22,7 +22,6 @@ import { Plane } from './math/Plane';
 import { SutherlandHodgmanClipper } from './portal-system/SutherlandHodgmanClipper';
 import { Color } from './core/Color';
 
-declare function require(string): string;
 let json = require('./assets/f16.json');
 let bunnyJson = <any>require('./assets/bunny.json');
 let worldJson = <any>require('./assets/world2.json');
@@ -35,10 +34,7 @@ let labJson = <any>require('./assets/lab.json');
 let labJson2 = <any>require('./assets/lab2.json');
 let bakedJson = <any>require('./assets/abstract.json');
 let platonian = <any>require('./assets/platonian_backed.json');
-let metalJson = <any>require('./assets/metalheadz.json');
-
 let hlm2018Json = <any>require('./assets/hoodlum2018.json');
-
 
 // TODO:
 // - use polymorphism in order to have different intersection methods
@@ -422,7 +418,6 @@ export class Framebuffer {
         }
     }
 
-
     public drawTextureRect(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Texture, alpha2: number): void {
         let texIndex = xt + yt * texture.width;
         let frIndex = xs + ys * 320;
@@ -447,8 +442,6 @@ export class Framebuffer {
             frIndex += 320 - width;
         }
     }
-
-
 
     public drawTextureRectAdd(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Texture, alpha2: number): void {
         let texIndex = xt + yt * texture.width;
@@ -708,11 +701,6 @@ export class Framebuffer {
         }
     }
 
-    public draw3dBobs() {
-
-    }
-
-
     public fastFramebufferCopyOffset(src: Uint32Array, dest: Uint32Array, offset = 0) {
         let i = 320 * 200 / 32 + 1;
         let k = 320 * 200;
@@ -743,31 +731,6 @@ export class Framebuffer {
     // 6 times faster than the slow method that clips and does alpha blending
     public fastFramebufferCopy(src: Uint32Array, dest: Uint32Array, offset = 0) {
         src.set(dest);
-        /*
-        let i = 320 * 200 / 32 + 1;
-        let k = 320 * 200;
-        while (--i) {
-            src[--k] = dest[k]; src[--k] = dest[k];
-            src[--k] = dest[k]; src[--k] = dest[k];
-            src[--k] = dest[k]; src[--k] = dest[k];
-            src[--k] = dest[k]; src[--k] = dest[k];
-
-            src[--k] = dest[k]; src[--k] = dest[k];
-            src[--k] = dest[k]; src[--k] = dest[k];
-            src[--k] = dest[k]; src[--k] = dest[k];
-            src[--k] = dest[k]; src[--k] = dest[k];
-
-            src[--k] = dest[k]; src[--k] = dest[k];
-            src[--k] = dest[k]; src[--k] = dest[k];
-            src[--k] = dest[k]; src[--k] = dest[k];
-            src[--k] = dest[k]; src[--k] = dest[k];
-
-            src[--k] = dest[k]; src[--k] = dest[k];
-            src[--k] = dest[k]; src[--k] = dest[k];
-            src[--k] = dest[k]; src[--k] = dest[k];
-            src[--k] = dest[k]; src[--k] = dest[k];
-        }
-        */
     }
 
     public drawBobs(texture: Texture, time: number) {
@@ -784,10 +747,7 @@ export class Framebuffer {
     tmpGlitch = new Uint32Array(320 * 200);
 
     public raveMoview(elapsedTime: number, texture: Texture): void {
-
-
         this.fastFramebufferCopyOffset(this.framebuffer, texture.texture, -(((elapsedTime / 200) | 0) % 11) * 200);
-
     }
 
     public drawPolarDistotion(elapsedTime: number, texture: Texture): void {
@@ -7909,50 +7869,6 @@ export class Framebuffer {
             }
         }
 
-    }
-
-    drawMetaballs() {
-        let balls: Array<Vector3f> = [
-            new Vector3f(Math.sin(Date.now() * 0.002) * 100 + 150,
-                Math.cos(Date.now() * 0.0035) * 70 + 100, 0),
-            new Vector3f(Math.sin(Date.now() * 0.0015) * 100 + 150,
-                Math.cos(Date.now() * 0.002) * 70 + 100, 0),
-            new Vector3f(Math.sin(Date.now() * 0.003) * 100 + 150,
-                Math.cos(Date.now() * 0.0045) * 70 + 100, 0)
-        ]
-
-        let index = 0;
-
-        for (let y = 0; y < 200; y++) {
-            for (let x = 0; x < 320; x++) {
-                let intensity = 0;
-                for (let b = 0; b < 3; b++) {
-                    let xx = (balls[b].x - x);
-                    let yy = (balls[b].y - y);
-                    let length = Math.sqrt(xx * xx + yy * yy);
-                    intensity += 5500 / length;
-                }
-                this.framebuffer[index++] = 255 << 24 | this.mapColor(intensity);
-            }
-        }
-    }
-
-    private interpolateColor(start: number, end: number, value: number, color1: number, color2: number): number {
-        let scale = this.interpolate(start, end, value);
-        let red = (color1 >> 0 & 0xff) * (1 - scale) + scale * (color2 >> 0 & 0xff);
-        let green = (color1 >> 8 & 0xff) * (1 - scale) + scale * (color2 >> 8 & 0xff);
-        let blue = (color1 >> 16 & 0xff) * (1 - scale) + scale * (color2 >> 16 & 0xff);
-        return red | green << 8 | blue << 16;
-    }
-    private mapColor(intensity: number): number {
-        if (intensity >= 235) {
-            return 255;
-        } else if (intensity >= 230) {
-            return this.interpolateColor(230, 235, intensity, 255 << 8 | 255, 255);
-        } else if (intensity >= 100) {
-            return this.interpolateColor(100, 230, intensity, 255 << 8, 255 << 8 | 255);
-        }
-        return 255 << 8;
     }
 
 }

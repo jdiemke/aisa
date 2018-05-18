@@ -6,7 +6,11 @@ module.exports = {
         metalheadz: './src/examples/metalheadz/Application.ts',
         portals: './src/examples/portals/Application.ts',
         torus: './src/examples/torus/Application.ts',
-        twister: './src/examples/twister/Application.ts'
+        twister: './src/examples/twister/Application.ts',
+        lens: './src/examples/lens/Application.ts',
+        plasma: './src/examples/plasma/Application.ts',
+        metaballs: './src/examples/metaballs/Application.ts',
+        razor: './src/examples/razor/Application.ts'
     },
     output: {
         filename: '[name].bundle.js',
@@ -53,6 +57,26 @@ module.exports = {
             template: './src/index.html',
             chunks: ['twister'],
             filename: 'twister.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['lens'],
+            filename: 'lens.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['plasma'],
+            filename: 'plasma.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['metaballs'],
+            filename: 'metaballs.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['razor'],
+            filename: 'razor.html'
         })
     ]
 }

@@ -5,9 +5,9 @@ import { Matrix4f } from './math/Matrix4f';
 import { Sphere } from './math/Sphere';
 import { Vector3f } from './math/Vector3f';
 import RandomNumberGenerator from './RandomNumberGenerator';
-import Texture from './Texture';
 import { Scene } from './Scene';
 import { AbstractScene } from './scenes/AbstractScene';
+import Texture from './Texture';
 
 export class Canvas {
 

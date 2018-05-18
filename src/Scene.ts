@@ -156,16 +156,7 @@ export class Scene extends AbstractScene {
 
         framebuffer.setCullFace(CullFace.FRONT);
         /*
-                if (time < 5000) {
-                    this.framebuffer.drawTitanEffect();
-                    this.framebuffer.shadingTorus(time * 0.02);
-                    this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
-                } else if (time < 15000) {
-             
-                } else if (time < 25000) {
-                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
-                    this.framebuffer.drawLens(this.texture5, this.texture6, time);
-                } else if (time < 30000) {
+             if (time < 30000) {
                     this.framebuffer.drawRotoZoomer(this.texture);
                     this.framebuffer.shadingDemo(time * 0.02);
                 } else if (time < 35000) {
@@ -177,11 +168,6 @@ export class Scene extends AbstractScene {
                 } else if (time < 45000) {
                     this.framebuffer.drawVoxelLandscape2(this.heightmap, time);
                     this.framebuffer.drawTexture(32, 1, this.texture2, 1.0);
-                } else if (time < 50000) {
-                    this.framebuffer.drawOldSchoolPlasma(time);
-                } else if (time < 55000) {
-                    // https://www.youtube.com/watch?v=ccYLb7cLB1I&t=773s
-                    this.framebuffer.drawMetaballs();
                 } else if (time < 60000) {
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
                     this.framebuffer.shadingTorus2(time * 0.02);
@@ -908,19 +894,7 @@ export class Scene extends AbstractScene {
                     this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
                     this.framebuffer.noise(time, this.noise);
                 } else if (time < 600000) {
-                    this.framebuffer.setCullFace(CullFace.BACK);
-                    this.framebuffer.reproduceRazorScene(time * 0.0018, [
-                        { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                        { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                        { tex: this.texture13, scale: 1.6, alpha: 0.25 },
-                        { tex: this.texture13, scale: 0.7, alpha: 0.22 },
-                        { tex: this.texture13, scale: -0.4, alpha: 0.22 },
-                    ], this.dirt);
-        
-                    const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-                    this.framebuffer.drawTexture(0, 0, texture3, 0.75);
-                    this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-                    this.framebuffer.noise(time, this.noise, 0.04);
+                   
                 } else if (time < 650000) {
         
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
