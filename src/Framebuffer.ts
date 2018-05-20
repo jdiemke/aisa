@@ -468,34 +468,6 @@ export class Framebuffer {
         }
     }
 
-    public drawLens(texture: Texture, tex: Texture, time: number) {
-
-        const radius = 47;
-        let xoff = 320 / 2 + Math.cos(6 * time * 0.0002) * (320 / 2 - 50);
-        let yoff = 200 / 2 + Math.sin(4 * time * 0.0002) * (200 / 2 - 50);
-
-        // TODO: precalculate displacement in an array
-        for (let y = -radius; y <= radius; y++) {
-            for (let x = -radius; x <= radius; x++) {
-                if (x * x + y * y <= radius * radius) {
-
-                    let xx = Math.round(x + xoff);
-                    let yy = Math.round(y + yoff);
-
-                    let z = 1 + Math.sqrt(radius * radius - x * x - y * y) * 0.03;
-                    let xx2 = Math.round(x / z + xoff);
-                    let yy2 = Math.round(y / z + yoff);
-                    let col = texture.texture[xx2 + yy2 * 320];
-
-                    let index = xx + yy * 320;
-                    this.framebuffer[index] = col;
-                }
-            }
-        }
-
-        this.drawTexture(Math.round(xoff - 50), Math.round(yoff - 50), tex, 1.0);
-    }
-
     public cinematicScroller(texture: Texture, time: number) {
         let scrollText: Array<string> = [
             '', '', '', '', '', '', '', '', '', '',
@@ -731,17 +703,6 @@ export class Framebuffer {
     // 6 times faster than the slow method that clips and does alpha blending
     public fastFramebufferCopy(src: Uint32Array, dest: Uint32Array, offset = 0) {
         src.set(dest);
-    }
-
-    public drawBobs(texture: Texture, time: number) {
-        let scaledTime = time * 0.2;
-        const BALL_SIZE = 16;
-        for (let i = 0; i < 30; i++) {
-            let x = (Math.cos(3 * scaledTime * 0.002 + i * 0.11) * (320 / 2 - BALL_SIZE / 2)) | 0;
-            let y = (Math.sin(4 * scaledTime * 0.002 + i * 0.11) * (200 / 2 - BALL_SIZE / 2)) | 0;
-            //this.drawTexture(320 / 2 - BALL_SIZE / 2 + x, 200 / 2 - BALL_SIZE / 2 + y, texture, 1.0);
-            this.drawTextureNoClipAlpha(320 / 2 - BALL_SIZE / 2 + x, 200 / 2 - BALL_SIZE / 2 + y, texture);
-        }
     }
 
     tmpGlitch = new Uint32Array(320 * 200);
@@ -1696,32 +1657,6 @@ export class Framebuffer {
         }
     }
 
-    public drawOldSchoolPlasma(elapsedTime: number): void {
-        let time = elapsedTime * 0.0007 * 1.0;
-        let lineDirection = new Vector3f(Math.sin(time), Math.cos(time), 0);
-        let radialWaveCenter = new Vector3f(470.0 / 2.0, 230.0 / 2.0, 0).add(new Vector3f(470.0 / 2.0 *
-            Math.sin(-time), 230.0 / 2.0 * Math.cos(-time), 0));
-
-        let difference = new Vector3f(0, 0, 0);
-        // TODO: implement sin/cos lookup tables plus starfield ;)
-        let index = 0;
-        for (let y = 0; y < 200; y++) {
-            for (let x = 0; x < 320; x++) {
-                let directionalWave = Math.sin(((x * lineDirection.x + y * lineDirection.y) * 0.02 + time) + 1.0) * 0.5;
-                difference.x = x - radialWaveCenter.x;
-                difference.y = y - radialWaveCenter.y;
-                let radialWave = (Math.cos(difference.length() * 0.03) + 1.0) * 0.5;
-                let waveSum: number = (radialWave + directionalWave) * 0.5;
-
-                let red = (Math.cos(Math.PI * waveSum / 0.5 + time) + 1.0) * 0.5 * 255;
-                let green = (Math.sin(Math.PI * waveSum / 0.5 + time) + 1.0) * 0.5 * 255;
-                let blue = (Math.sin(time) + 1.0) * 0.5 * 255;
-
-                this.framebuffer[index++] = 255 << 24 | blue << 16 | green << 8 | red;
-            }
-        }
-    }
-
     public wireFrameSphereClipping(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
@@ -2108,7 +2043,7 @@ export class Framebuffer {
         }
     }
 
-    private getDodecahedronMesh(): any {
+    public getDodecahedronMesh(): any {
         let points: Array<Vector4f> = new Array<Vector4f>();
         let normals: Array<Vector4f> = new Array<Vector4f>();
         let index: Array<number> = new Array<number>();
@@ -2157,7 +2092,7 @@ export class Framebuffer {
         return obj;
     }
 
-    private getIcosahedronMesh(): any {
+    public getIcosahedronMesh(): any {
         let points: Array<Vector4f> = new Array<Vector4f>();
         let normals: Array<Vector4f> = new Array<Vector4f>();
         let index: Array<number> = new Array<number>();
@@ -2249,7 +2184,7 @@ export class Framebuffer {
         return obj;
     }
 
-    private getCubeMesh(): any {
+    public getCubeMesh(): any {
         let points: Array<Vector4f> = new Array<Vector4f>();
         let normals: Array<Vector4f> = new Array<Vector4f>();
         let index: Array<number> = new Array<number>();
@@ -2290,7 +2225,7 @@ export class Framebuffer {
         return obj;
     }
 
-    private getPyramidMesh(): any {
+    public getPyramidMesh(): any {
         let points: Array<Vector4f> = new Array<Vector4f>();
         let normals: Array<Vector4f> = new Array<Vector4f>();
         let index: Array<number> = new Array<number>();
@@ -2426,113 +2361,6 @@ export class Framebuffer {
             this.nearPlaneClipping(v3, v2, color);
 
         }
-    }
-
-    public reproduceRazorScene(elapsedTime: number, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
-        // camerea:
-        // http://graphicsrunner.blogspot.de/search/label/Water
-        this.clearColorBuffer(72 | 56 << 8 | 48 << 16 | 255 << 24);
-        this.clearDepthBuffer();
-
-        let modelViewMartrix: Matrix4f;
-
-        let camera = Matrix4f.constructTranslationMatrix(0, 0, -6.4 - 5 * (Math.sin(elapsedTime * 0.06) * 0.5 + 0.5)).multiplyMatrix(
-            Matrix4f.constructXRotationMatrix((Math.sin(elapsedTime * 0.08) * 0.5 + 0.5) * 0.5).multiplyMatrix(
-                Matrix4f.constructYRotationMatrix(elapsedTime * 0.1)));
-
-        let scale = 2.0;
-        modelViewMartrix = Matrix4f.constructYRotationMatrix(elapsedTime * 0.2).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 1.0, 0).multiplyMatrix(modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(-elapsedTime * 0.2)));
-        modelViewMartrix = camera.multiplyMatrix(
-            modelViewMartrix);
-
-        let colLine = 255 << 24 | 255 << 8;
-
-        let model = this.getDodecahedronMesh();
-        this.drawObject(model, modelViewMartrix, 221, 96, 48);
-
-        let yDisplacement = -1.5;
-        let distance = 2.8;
-        scale = 1.0;
-        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 1.0, distance).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
-
-        model = this.getIcosahedronMesh();
-        this.drawObject(model, modelViewMartrix, 239, 187, 115);
-
-        scale = 1.0;
-        modelViewMartrix = Matrix4f.constructScaleMatrix(scale * 0.5, scale * 2, scale * 0.5);
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 1, distance).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
-
-        model = this.getCubeMesh()
-        this.drawObject(model, modelViewMartrix, 144, 165, 116);
-
-        scale = 1.0;
-        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
-
-        model = this.getCubeMesh();
-        this.drawObject(model, modelViewMartrix, 191, 166, 154);
-
-        scale = 1.0;
-        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
-
-        model = this.getPyramidMesh();
-        this.drawObject(model, modelViewMartrix, 125, 128, 146);
-
-        /**
-         * SHADOWS
-         */
-
-        scale = 2.0;
-        modelViewMartrix = Matrix4f.constructYRotationMatrix(elapsedTime * 0.2).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 1.0, 0).multiplyMatrix(modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(-elapsedTime * 0.2)));
-        modelViewMartrix = camera.multiplyMatrix(
-            Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
-
-        this.drawObject(this.getDodecahedronMesh(), modelViewMartrix, 48, 32, 24, true);
-
-        scale = 1.0;
-        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(
-            Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
-
-        this.drawObject(this.getPyramidMesh(), modelViewMartrix, 48, 32, 24, true, true);
-
-        scale = 1.0;
-        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(
-            Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix))
-
-        this.drawObject(this.getCubeMesh(), modelViewMartrix, 48, 32, 24, true);
-
-        scale = 1.0;
-        modelViewMartrix = Matrix4f.constructScaleMatrix(scale * 0.5, scale * 2, scale * 0.5);
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 1, distance).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(
-            Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix))
-
-        this.drawObject(this.getCubeMesh(), modelViewMartrix, 48, 32, 24, true);
-
-        scale = 1.0;
-        modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 1.0, distance).multiplyMatrix(modelViewMartrix);
-        modelViewMartrix = camera.multiplyMatrix(
-            Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
-
-
-        this.drawObject(this.getIcosahedronMesh(), modelViewMartrix, 48, 32, 24, true);
-
-        let lensflareScreenSpace = this.project(camera.multiply(new Vector3f(12.0, 4.0, 0)));
-
-        this.drawLensFlare(lensflareScreenSpace, elapsedTime * 100, texture, dirt);
     }
 
     public getBlenderScene(file: any, disp: boolean = true): any {
@@ -3456,35 +3284,6 @@ export class Framebuffer {
         });
     }
 
-
-    public drawStarField(elapsedTime: number): void {
-        let darkStarColor = 255 << 24 | 128 << 16 | 128 << 8 | 128;
-        let lightStarColor = 255 << 24 | 255 << 16 | 255 << 8 | 255;
-        let backgroundColor = 255 << 24 | 87 << 16 | 62 << 8 | 47;
-
-        let rng = new RandomNumberGenerator();
-        rng.setSeed(666);
-        let stars = new Array<Vector3f>();
-        let stars2 = new Array<Vector3f>();
-
-        for (let i = 0; i < 100; i++) {
-            stars.push(new Vector3f(rng.getFloat() * 320, Math.round(rng.getFloat() * 200), 0));
-        }
-
-        for (let i = 0; i < 60; i++) {
-            stars2.push(new Vector3f(rng.getFloat() * 320, Math.round(rng.getFloat() * 200), 0));
-        }
-
-        this.clearColorBuffer(backgroundColor);
-        for (let i = 0; i < 100; i++) {
-            this.drawPixel(((stars[i].x + elapsedTime * 0.02) | 0) % 320, stars[i].y, darkStarColor);
-        }
-
-        for (let i = 0; i < 60; i++) {
-            this.drawPixel(((stars2[i].x + elapsedTime * 0.04) | 0) % 320, stars2[i].y, lightStarColor);
-        }
-    }
-
     // TODO: implement fursutm culling here!
     private isVisible(element: any): boolean {
         return true;
@@ -3688,7 +3487,7 @@ export class Framebuffer {
         }
     }
 
-    private drawObject(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, oldLDir: boolean = true) {
+    public drawObject(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, oldLDir: boolean = true) {
 
         let normalMatrix = modelViewMartrix.computeNormalMatrix();
 
@@ -3851,8 +3650,7 @@ export class Framebuffer {
         // }
     }
 
-
-    private torusFunction(alpha: number): Vector3f {
+    public torusFunction(alpha: number): Vector3f {
         return new Vector3f(Math.sin(alpha) * 10, 0, Math.cos(alpha) * 10);
     }
 
@@ -4056,8 +3854,6 @@ export class Framebuffer {
             normals.push(normal);
         }
 
-
-
         for (let i = 0; i < 7; i++) {
             let scale = 0.1 + 0.1 * i;
 
@@ -4145,8 +3941,6 @@ export class Framebuffer {
             }
         }
     }
-
-
 
     public shadingTorus5(elapsedTime: number, sync: number): void {
 
@@ -6283,232 +6077,6 @@ export class Framebuffer {
         }
     }
 
-    public shadingTorus(elapsedTime: number): void {
-
-        this.wBuffer.fill(100);
-
-        let points: Array<Vector3f> = [];
-
-        const STEPS = 15;
-        const STEPS2 = 12;
-        for (let i = 0; i < STEPS; i++) {
-            let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
-            let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
-            let up = new Vector3f(0.0, 4.0, 0);
-            let right = frame2.sub(frame).cross(up);
-
-            for (let r = 0; r < STEPS2; r++) {
-                let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
-                points.push(pos);
-            }
-        }
-
-        let index: Array<number> = [];
-
-        for (let j = 0; j < STEPS; j++) {
-            for (let i = 0; i < STEPS2; i++) {
-                index.push(((STEPS2 * j) + (1 + i) % STEPS2) % points.length); // 2
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 1
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
-
-                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2) % points.length); //4
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2) % points.length); //3
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 5
-            }
-        }
-
-        // compute normals
-        let normals: Array<Vector3f> = new Array<Vector3f>();
-
-        for (let i = 0; i < index.length; i += 3) {
-            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
-            normals.push(normal);
-        }
-
-        let scale = 1.0;
-
-        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.05));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.08));
-
-        /**
-         * Vertex Shader Stage
-         */
-        let points2: Array<Vector3f> = new Array<Vector3f>();
-
-        let normals2: Array<Vector3f> = new Array<Vector3f>();
-        for (let n = 0; n < normals.length; n++) {
-            normals2.push(modelViewMartrix.multiply(normals[n]));
-        }
-
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -24).multiplyMatrix(modelViewMartrix);
-
-        for (let p = 0; p < points.length; p++) {
-            let transformed = modelViewMartrix.multiply(points[p]);
-
-            let x = transformed.x;
-            let y = transformed.y;
-            let z = transformed.z; // TODO: use translation matrix!
-
-            let xx = (320 * 0.5) + (x / (-z * 0.0078));
-            let yy = (200 * 0.5) + (y / (-z * 0.0078));
-            // commented out because it breaks the winding. inversion
-            // of y has to be done after back-face culling in the
-            // viewport transform
-            // yy =(200 * 0.5) - (y / (-z * 0.0078));
-
-            points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
-        }
-
-        /**
-         * Primitive Assembly and Rasterization Stage:
-         * 1. back-face culling
-         * 2. viewport transform
-         * 3. scan conversion (rasterization)
-         */
-        for (let i = 0; i < index.length; i += 3) {
-
-            // Only render triangles with CCW-ordered vertices
-            // 
-            // Reference:
-            // David H. Eberly (2006).
-            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
-            // p. 69. Morgan Kaufmann Publishers, United States.
-            //
-            let v1 = points2[index[i]];
-            let v2 = points2[index[i + 1]];
-            let v3 = points2[index[i + 2]];
-
-            if (this.isTriangleCCW(v1, v2, v3)) {
-                let normal = normals2[i / 3];
-                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3f(0.5, 0.5, 0.5).normalize())) * 100), 255) + 50;
-                let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar + 100;
-                this.drawTriangleDDA(v1, v2, v3, color);
-            }
-        }
-    }
-
-    /**
-     * Full Pipeline:
-     * https://www.ntu.edu.sg/home/ehchua/programming/opengl/CG_BasicsTheory.html
-     * http://www.songho.ca/index.html
-     * https://en.wikipedia.org/wiki/Graphics_pipeline
-     * https://en.wikipedia.org/wiki/Clipping_(computer_graphics)
-     * https://www.ntu.edu.sg/home/ehchua/programming/opengl/CG_BasicsTheory.html
-     * http://www.gamasutra.com/blogs/MichaelKissner/20160112/263097/Writing_a_Game_Engine_from_Scratch__Part_4_Graphics_Library.php
-     * culling:
-     * https://developer.tizen.org/development/guides/native-application/graphics/opengl-es/primitive-assembly-and-rasterization
-     * assumption:
-     * By default, vertices of every 3D triangle are in a counter-clockwise (CCW) order
-     */
-    public shadingDemo(elapsedTime: number): void {
-
-        this.wBuffer.fill(100);
-
-        let index: Array<number> = [
-            1, 2, 3, 4, 1, 3,
-            5, 7, 6, 8, 7, 5,
-
-            2, 6, 7, 7, 3, 2,
-            5, 1, 4, 4, 8, 5,
-
-            4, 3, 7, 7, 8, 4,
-            1, 6, 2, 5, 6, 1
-        ];
-
-        let points: Array<Vector3f> = [
-            new Vector3f(-1.0, -1.0, 1.0), new Vector3f(1.0, -1.0, 1.0),
-            new Vector3f(1.0, 1.0, 1.0), new Vector3f(-1.0, 1.0, 1.0),
-            new Vector3f(-1.0, -1.0, -1.0), new Vector3f(1.0, -1.0, -1.0),
-            new Vector3f(1.0, 1.0, -1.0), new Vector3f(-1.0, 1.0, -1.0),
-        ];
-
-        // compute normals
-        let normals: Array<Vector3f> = new Array<Vector3f>();
-
-        for (let i = 0; i < index.length; i += 3) {
-            let normal = points[index[i + 1] - 1].sub(points[index[i] - 1]).cross(points[index[i + 2] - 1].sub(points[index[i] - 1]));
-            normals.push(normal);
-        }
-
-
-        let colorAr: Array<number> = [
-            255 << 24 | 255 << 0,
-            255 << 24 | 255 << 8,
-            255 << 24 | 255 << 16,
-            255 << 24 | 255 << 16 | 255,
-            255 << 24 | 255 << 16 | 255 << 8,
-            255 << 24 | 255 << 8 | 128,
-        ];
-
-        let scale = 3.2;
-
-        let modelViewMartrix = Matrix3f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3f.constructYRotationMatrix(elapsedTime * 0.05));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3f.constructXRotationMatrix(elapsedTime * 0.08));
-
-        /**
-         * Vertex Shader Stage:
-         * 1. Local Space -> World Space -> Eye Space -> Clip Space -> NDC Space -> Screen Space
-         * 2. Computes Lighting per Vertex
-         */
-        let points2: Array<Vector3f> = new Array<Vector3f>();
-
-        let normals2: Array<Vector3f> = new Array<Vector3f>();
-        normals.forEach(element => {
-            normals2.push(modelViewMartrix.multiply(element));
-        });
-
-        points.forEach(element => {
-            let transformed = modelViewMartrix.multiply(element);
-
-            let x = transformed.x;
-            let y = transformed.y;
-            let z = transformed.z - 9; // TODO: use translation matrix!
-
-            let xx = (320 * 0.5) + (x / (-z * 0.0078));
-            let yy = (200 * 0.5) + (y / (-z * 0.0078));
-            // commented out because it breaks the winding. inversion
-            // of y has to be done after back-face culling in the
-            // viewport transform
-            // yy =(200 * 0.5) - (y / (-z * 0.0078));
-
-            points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
-        });
-
-        /**
-         * Primitive Assembly and Rasterization Stage:
-         * 1. back-face culling
-         * 2. viewport transform
-         * 3. scan conversion (rasterization)
-         */
-        for (let i = 0; i < index.length; i += 3) {
-            /**
-             * Only render triangles with CCW-ordered vertices
-             * 
-             * Reference:
-             * David H. Eberly (2006).
-             * 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
-             * p. 69. Morgan Kaufmann Publishers, United States.
-             */
-            let v1 = points2[index[i] - 1];
-            let v2 = points2[index[i + 1] - 1];
-            let v3 = points2[index[i + 2] - 1];
-
-            if (this.isTriangleCCW(v1, v2, v3)) {
-                let normal = normals2[i / 3];
-
-                let light = new Vector3f(0.5, 0.5, 0.5);
-                let ambient = new Vector3f(50, 100, 50);
-                let diffuse = new Vector3f(90, 90, 90).mul(Math.max(0.0, normal.normalize().dot(light.normalize())));
-                let reflection = new Vector3f(0, 0, 1).sub(light.mul(-1).normalize());
-                // http://www.lighthouse3d.com/tutorials/glsl-tutorial/directional-lights-per-vertex-ii/
-                let specular = new Vector3f(0, 0, 0);
-                let phong: Vector3f = ambient.add(diffuse).add(specular);
-                let color = 255 << 24 | (phong.z & 0xff) << 16 | (phong.y & 0xff) << 8 | (phong.x & 0xff);
-                this.drawTriangleDDA(v1, v2, v3, color);
-            }
-        }
-    }
-
     /**
      * based on signed polygon area computation:
      * http://www.faqs.org/faqs/graphics/algorithms-faq/
@@ -6525,7 +6093,7 @@ export class Framebuffer {
     
      * 
      */
-    private isTriangleCCW(v1: { x: number, y: number, z: number }, v2: { x: number, y: number, z: number }, v3: { x: number, y: number, z: number }): boolean {
+    public isTriangleCCW(v1: { x: number, y: number, z: number }, v2: { x: number, y: number, z: number }, v3: { x: number, y: number, z: number }): boolean {
         let det: number =  //(v2.x - v1.x) * (v3.y - v1.y) - (v2.y - v1.y) * (v3.x - v1.x);
             v1.x * v2.y - v2.x * v1.y +
             v2.x * v3.y - v3.x * v2.y +

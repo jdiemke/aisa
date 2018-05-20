@@ -15,6 +15,7 @@ module.exports = {
         'voxel-landscape': './src/examples/voxel-landscape/Application.ts',
         'cube': './src/examples/cube/Application.ts',
         'bobs': './src/examples/bobs/Application.ts',
+        'starfield': './src/examples/starfield/Application.ts',
     },
     output: {
         filename: '[name].bundle.js',
@@ -101,6 +102,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['bobs'],
             filename: 'bob.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['starfield'],
+            filename: 'starfield.html'
         })
     ]
 }
