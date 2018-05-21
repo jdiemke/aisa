@@ -17,6 +17,8 @@ module.exports = {
         'bobs': './src/examples/bobs/Application.ts',
         'starfield': './src/examples/starfield/Application.ts',
         'hoodlum': './src/examples/hoodlum/Application.ts',
+        'misc': './src/examples/misc/Application.ts',
+        'baked-lighting': './src/examples/baked-lighting/Application.ts',
     },
     output: {
         filename: '[name].bundle.js',
@@ -113,6 +115,16 @@ module.exports = {
             template: './src/index.html',
             chunks: ['hoodlum'],
             filename: 'hoodlum.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['misc'],
+            filename: 'misc.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['baked-lighting'],
+            filename: 'baked-lighting.html'
         })
     ]
 }

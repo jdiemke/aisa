@@ -3016,38 +3016,6 @@ export class Framebuffer {
         });
     }
 
-
-    public drawBlenderScene7(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture,
-        skybox?: any): void {
-
-        elapsedTime *= 0.2;
-        this.clearDepthBuffer();
-
-        let camera: Matrix4f =
-            Matrix4f.constructTranslationMatrix(0, 0, -134 + (Math.sin(elapsedTime * 0.00007) * 0.5 + 0.5) * 17).multiplyMatrix(
-                Matrix4f.constructXRotationMatrix(elapsedTime * 0.0006).multiplyMatrix(
-                    Matrix4f.constructYRotationMatrix(-elapsedTime * 0.0005).multiplyMatrix(
-                        Matrix4f.constructTranslationMatrix(0, -25, 0)
-                    )));
-
-
-        let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(13, 13, 13));
-
-        let scal = 1.0;
-        for (let j = 0; j < this.blenderObj8.length; j++) {
-            let model = this.blenderObj8[j];
-            this.drawObjectTexture(model, mv, 244 * scal, 225 * scal, 216 * scal);
-        }
-
-        //if (skybox)
-        //   this.drawSkyBox(mv.getRotation(), skybox);
-
-        let scale = 20;
-        let lensflareScreenSpace = this.project(camera.getRotation().multiply(new Vector3f(1.1 * scale, 2 * scale, -0.9 * scale)));
-
-        this.drawLensFlare(lensflareScreenSpace, elapsedTime * 1.2, texture, dirt);
-    }
-
     public drawBlenderScene8(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
 
         this.clearDepthBuffer();
@@ -3297,7 +3265,7 @@ export class Framebuffer {
         }
     }
 
-    private drawObjectTexture(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, culling: boolean = false) {
+    public drawObjectTexture(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, culling: boolean = false) {
 
         let normalMatrix = modelViewMartrix.computeNormalMatrix();
 

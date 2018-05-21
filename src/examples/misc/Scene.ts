@@ -1,8 +1,8 @@
-import { CullFace } from './CullFace';
-import { Framebuffer } from './Framebuffer';
-import RandomNumberGenerator from './RandomNumberGenerator';
-import { AbstractScene } from './scenes/AbstractScene';
-import { Texture, TextureUtils } from './texture';
+import { CullFace } from '../../CullFace';
+import { Framebuffer } from '../../Framebuffer';
+import RandomNumberGenerator from '../../RandomNumberGenerator';
+import { AbstractScene } from '../../scenes/AbstractScene';
+import { Texture, TextureUtils } from '../../texture';
 
 export class Scene extends AbstractScene {
 
@@ -67,52 +67,52 @@ export class Scene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         return Promise.all([
-            this.createTexture(require('./assets/spheremap.png'), false).then(texture => this.spheremap = texture),
-            this.createTexture(require('./assets/metall.png'), false).then(texture => this.metal = texture),
-            this.createTexture(require('./assets/logo.png'), false).then(texture => this.texture = texture),
-            this.createTexture(require('./assets/razor1911.png'), true).then(texture => this.texture2 = texture),
-            this.createTexture(require('./assets/heightmap.png'), false).then(texture => this.heightmap = texture),
-            this.createTexture(require('./assets/metalheadz.png'), false).then(texture => this.metalheadz = texture),
-            this.createTexture(require('./assets/font.png'), true).then(texture => this.texture4 = texture),
-            this.createTexture(require('./assets/atlantis.png'), false).then(texture => this.texture5 = texture),
-            this.createTexture(require('./assets/lens.png'), true).then(texture => this.texture6 = texture),
-            this.createTexture(require('./assets/ball2.png'), true).then(texture => this.texture7 = texture),
-            this.createTexture(require('./assets/pandabear.png'), false).then(texture => this.texture8 = texture),
-            this.createTexture(require('./assets/battleofilona.png'), false).then(texture => this.texture9 = texture),
-            this.createTexture(require('./assets/spark.png'), true).then(texture => this.texture10 = texture),
-            this.createTexture(require('./assets/ring.png'), true).then(texture => this.texture11 = texture),
-            this.createTexture(require('./assets/sky.png'), true).then(texture => this.texture12 = texture),
-            this.createTexture(require('./assets/bokeh.png'), true).then(texture => this.texture13 = texture),
-            this.createTexture(require('./assets/led.png'), false).then(texture => this.texture14 = texture),
-            this.createTexture(require('./assets/revision.png'), false).then(texture => this.revision = texture),
-            this.createTexture(require('./assets/lab2.png'), false).then(texture => this.lab2 = texture),
+            this.createTexture(require('../../assets/spheremap.png'), false).then(texture => this.spheremap = texture),
+            this.createTexture(require('../../assets/metall.png'), false).then(texture => this.metal = texture),
+            this.createTexture(require('../../assets/logo.png'), false).then(texture => this.texture = texture),
+            this.createTexture(require('../../assets/razor1911.png'), true).then(texture => this.texture2 = texture),
+            this.createTexture(require('../../assets/heightmap.png'), false).then(texture => this.heightmap = texture),
+            this.createTexture(require('../../assets/metalheadz.png'), false).then(texture => this.metalheadz = texture),
+            this.createTexture(require('../../assets/font.png'), true).then(texture => this.texture4 = texture),
+            this.createTexture(require('../../assets/atlantis.png'), false).then(texture => this.texture5 = texture),
+            this.createTexture(require('../../assets/lens.png'), true).then(texture => this.texture6 = texture),
+            this.createTexture(require('../../assets/ball2.png'), true).then(texture => this.texture7 = texture),
+            this.createTexture(require('../../assets/pandabear.png'), false).then(texture => this.texture8 = texture),
+            this.createTexture(require('../../assets/battleofilona.png'), false).then(texture => this.texture9 = texture),
+            this.createTexture(require('../../assets/spark.png'), true).then(texture => this.texture10 = texture),
+            this.createTexture(require('../../assets/ring.png'), true).then(texture => this.texture11 = texture),
+            this.createTexture(require('../../assets/sky.png'), true).then(texture => this.texture12 = texture),
+            this.createTexture(require('../../assets/bokeh.png'), true).then(texture => this.texture13 = texture),
+            this.createTexture(require('../../assets/led.png'), false).then(texture => this.texture14 = texture),
+            this.createTexture(require('../../assets/revision.png'), false).then(texture => this.revision = texture),
+            this.createTexture(require('../../assets/lab2.png'), false).then(texture => this.lab2 = texture),
 
-            this.createTexture(require('./assets/skybox/skybox_back.png'), false).then(texture => this.skybox.back = texture),
-            this.createTexture(require('./assets/skybox/skybox_down.png'), false).then(texture => this.skybox.down = texture),
-            this.createTexture(require('./assets/skybox/skybox_front.png'), false).then(texture => this.skybox.front = texture),
-            this.createTexture(require('./assets/skybox/skybox_left.png'), false).then(texture => this.skybox.left = texture),
-            this.createTexture(require('./assets/skybox/skybox_right.png'), false).then(texture => this.skybox.right = texture),
-            this.createTexture(require('./assets/skybox/skybox_up.png'), false).then(texture => this.skybox.up = texture),
+            this.createTexture(require('../../assets/skybox/skybox_back.png'), false).then(texture => this.skybox.back = texture),
+            this.createTexture(require('../../assets/skybox/skybox_down.png'), false).then(texture => this.skybox.down = texture),
+            this.createTexture(require('../../assets/skybox/skybox_front.png'), false).then(texture => this.skybox.front = texture),
+            this.createTexture(require('../../assets/skybox/skybox_left.png'), false).then(texture => this.skybox.left = texture),
+            this.createTexture(require('../../assets/skybox/skybox_right.png'), false).then(texture => this.skybox.right = texture),
+            this.createTexture(require('../../assets/skybox/skybox_up.png'), false).then(texture => this.skybox.up = texture),
 
-            this.createTexture(require('./assets/platonian_baked.png'), false).then(texture => this.platonian = texture),
-            this.createTexture(require('./assets/meth.png'), true).then(texture => this.meth = texture),
+            this.createTexture(require('../../assets/platonian_baked.png'), false).then(texture => this.platonian = texture),
+            this.createTexture(require('../../assets/meth.png'), true).then(texture => this.meth = texture),
             this.createProceduralTexture().then(texture => this.texture15 = texture),
             this.createProceduralTexture2().then(texture => this.particleTexture = texture),
             this.createProceduralTexture3().then(texture => this.particleTexture2 = texture),
             this.createProceduralTexture4().then(texture => this.noise = texture),
             this.createProceduralDisplacementMap().then(texture => this.displacementMap = texture),
-            this.createTexture(require('./assets/hoodlumLogo.png'), true).then(texture => this.hoodlumLogo = texture),
-            this.createTexture(require('./assets/abstract.png'), false).then(texture => this.abstract = texture),
-            this.createTexture(require('./assets/rave.png'), false).then(texture => this.rave = texture),
-            this.createTexture(require('./assets/microstrange.png'), false).then(texture => this.micro = texture),
-            this.createTexture(require('./assets/Backed.png'), false).then(texture => this.baked = texture),
-            this.createTexture(require('./assets/blurredBackground.png'), false).then(texture => this.blurred = texture),
-            this.createTexture(require('./assets/hlm.png'), true).then(texture => this.hlm = texture),
-            this.createTexture(require('./assets/cross.png'), true).then(texture => this.cross = texture),
-            this.createTexture(require('./assets/envmap.png'), false).then(texture => this.envmap = texture),
-            this.createTexture(require('./assets/heightmapSphere.png'), false).then(texture => this.heightmapSphere = texture),
-            this.createTexture(require('./assets/mask.png'), true).then(texture => this.mask = texture),
-            this.createTexture(require('./assets/dirt.png'), true).then(texture => this.dirt = texture),
+            this.createTexture(require('../../assets/hoodlumLogo.png'), true).then(texture => this.hoodlumLogo = texture),
+            this.createTexture(require('../../assets/abstract.png'), false).then(texture => this.abstract = texture),
+            this.createTexture(require('../../assets/rave.png'), false).then(texture => this.rave = texture),
+            this.createTexture(require('../../assets/microstrange.png'), false).then(texture => this.micro = texture),
+            this.createTexture(require('../../assets/Backed.png'), false).then(texture => this.baked = texture),
+            this.createTexture(require('../../assets/blurredBackground.png'), false).then(texture => this.blurred = texture),
+            this.createTexture(require('../../assets/hlm.png'), true).then(texture => this.hlm = texture),
+            this.createTexture(require('../../assets/cross.png'), true).then(texture => this.cross = texture),
+            this.createTexture(require('../../assets/envmap.png'), false).then(texture => this.envmap = texture),
+            this.createTexture(require('../../assets/heightmapSphere.png'), false).then(texture => this.heightmapSphere = texture),
+            this.createTexture(require('../../assets/mask.png'), true).then(texture => this.mask = texture),
+            this.createTexture(require('../../assets/dirt.png'), true).then(texture => this.dirt = texture),
 
         ]).then(() => {
             // Web Audio API
@@ -121,7 +121,7 @@ export class Scene extends AbstractScene {
 
             let audioContext = new AudioContext();
             let request = new XMLHttpRequest();
-            request.open('GET', require('./assets/xmix_q2_final.ogg'), true);
+            request.open('GET', require('../../assets/xmix_q2_final.ogg'), true);
             request.responseType = 'arraybuffer';
             request.onload = () => {
                 let undecodedAudio = request.response;
@@ -1029,38 +1029,9 @@ export class Scene extends AbstractScene {
         
         
                 } else {
-        
-                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-                    this.framebuffer.setCullFace(CullFace.BACK);
-                    this.framebuffer.setBob(this.baked);
-        
-                    this.framebuffer.drawBlenderScene7(time - 1100000, this.particleTexture2,
-                        [
-                            //   { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                            { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                            { tex: this.texture13, scale: 1.6, alpha: 0.25 },
-                            { tex: this.texture13, scale: 0.7, alpha: 0.22 },
-                            { tex: this.texture13, scale: -0.4, alpha: 0.22 },
-                        ], this.dirt, this.skybox);
-        
-                    const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-                    this.framebuffer.drawTexture(0, 0, texture3, 0.75);
-                    this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-                    //this.framebuffer.glitchScreen(time * 0.9, this.noise);
-                    this.framebuffer.noise(time, this.noise);
-                }
         */
 
-
-
-
-
-        // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-
-        //this.framebuffer.setCullFace(CullFace.BACK);
         //this.framebuffer.drawBlenderScene(time*0.5, this.texture4, null);
-
-
 
         // TODO:
         // * build level in code (portals and areas)
@@ -1099,28 +1070,6 @@ export class Scene extends AbstractScene {
         // this.framebuffer.drawRadialBlur();
 
         framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
-
-
-        /*
-        let bufferLength = this.analyzer.frequencyBinCount;
-        let dataArray = new Uint8Array(bufferLength);
-        this.analyzer.getByteFrequencyData(dataArray);
-    
-        let pos1 = new Vector3f(0,0,0);
-        let pos2 = new Vector3f(0,0,0);
-        const STEPS = 100;
-        for (let i = 0; i < STEPS; i++) {
-            
-            let x = Math.sin(Math.PI * 2 / STEPS * i+time*0.0003);
-            let y = Math.cos(Math.PI * 2 / STEPS * i+time*0.0003);
-            pos1.x = x*60 +320/2;
-            pos1.y = y*60 + 200/2;
-            pos2.y=  y*(60+dataArray[Math.floor(bufferLength/ STEPS * (i))]/255*40)+200/2;
-            pos2.x = x*(60+dataArray[Math.floor(bufferLength/ STEPS * (i))]/255*40)+ 320/2;
-            this.framebuffer.drawLineDDANoZ(pos1, pos2, 255);
-        }
-        */
-
 
         // TS SoftSynth Project
         // http://natureofcode.com/book/
