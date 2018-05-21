@@ -19,6 +19,7 @@ module.exports = {
         'hoodlum': './src/examples/hoodlum/Application.ts',
         'misc': './src/examples/misc/Application.ts',
         'baked-lighting': './src/examples/baked-lighting/Application.ts',
+        'platonian': './src/examples/platonian/Application.ts',
     },
     output: {
         filename: '[name].bundle.js',
@@ -125,6 +126,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['baked-lighting'],
             filename: 'baked-lighting.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['platonian'],
+            filename: 'platonian.html'
         })
     ]
 }

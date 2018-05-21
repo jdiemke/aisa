@@ -19,7 +19,6 @@ export class BakedLighting extends AbstractScene {
     private skyBox: SkyBox;
 
     private baked: Texture;
-    private blurred: Texture;
     private noise: Texture;
     private dirt: Texture;
 
@@ -37,9 +36,6 @@ export class BakedLighting extends AbstractScene {
             TextureUtils.load(require('../../assets/Backed.png'), false).then(
                 (texture: Texture) => this.baked = texture
             ),
-            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
-                (texture: Texture) => this.blurred = texture
-            ),
             TextureUtils.load(require('../../assets/dirt.png'), true).then(
                 (texture: Texture) => this.dirt = texture
             ),
@@ -52,7 +48,6 @@ export class BakedLighting extends AbstractScene {
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
 
-        framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         this.drawBlenderScene7(framebuffer, time - 1100000, null, null);
         /*
             [
@@ -89,10 +84,9 @@ export class BakedLighting extends AbstractScene {
 
         framebuffer.setBob(this.baked);
 
-        let scal = 1.0;
         for (let j = 0; j < this.blenderObj8.length; j++) {
             let model = this.blenderObj8[j];
-            framebuffer.drawObjectTexture(model, mv, 244 * scal, 225 * scal, 216 * scal);
+            framebuffer.drawObjectTexture(model, mv);
         }
 
         let scale = 20;

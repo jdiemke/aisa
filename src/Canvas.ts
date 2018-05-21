@@ -39,6 +39,7 @@ export class Canvas {
 
     //  Move parts
     public init(): void {
+        // FIXME: move fullsccreen handling into utils class
         let fullscreen = false;
         let toggleFullscreen = function () {
             if (!fullscreen) {

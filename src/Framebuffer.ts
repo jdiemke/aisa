@@ -3016,25 +3016,6 @@ export class Framebuffer {
         });
     }
 
-    public drawBlenderScene8(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
-
-        this.clearDepthBuffer();
-
-        let camera: Matrix4f =
-            Matrix4f.constructTranslationMatrix(0, 0, -64 + (Math.sin(elapsedTime * 0.00007) * 0.5 + 0.5) * 17).multiplyMatrix(
-                Matrix4f.constructXRotationMatrix(elapsedTime * 0.00035).multiplyMatrix(
-                    Matrix4f.constructYRotationMatrix(-elapsedTime * 0.0003)));
-
-
-        let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(13, 13, 13));
-
-        let scal = 1.0;
-        for (let j = 0; j < this.blenderObj9.length; j++) {
-            let model = this.blenderObj9[j];
-            this.drawObjectTexture(model, mv, 244 * scal, 225 * scal, 216 * scal);
-        }
-    }
-
     public drawBlenderScene3(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
 
         this.clearDepthBuffer();
@@ -3265,7 +3246,7 @@ export class Framebuffer {
         }
     }
 
-    public drawObjectTexture(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, culling: boolean = false) {
+    public drawObjectTexture(obj: any, modelViewMartrix: Matrix4f) {
 
         let normalMatrix = modelViewMartrix.computeNormalMatrix();
 
@@ -3286,7 +3267,6 @@ export class Framebuffer {
 
             if (this.isTriangleCCW(v1, v2, v3)) {
                 let color = 255;
-                //let color = 255 << 24 | 255 << 16 | 150 << 8 | 255;
 
                 vertexArray[0].position = v1;
                 vertexArray[0].textureCoordinate = obj.uv[obj.faces[i].uv[0]];
@@ -3309,11 +3289,8 @@ export class Framebuffer {
                     v1.y > Framebuffer.maxWindow.y ||
                     v2.y > Framebuffer.maxWindow.y ||
                     v3.y > Framebuffer.maxWindow.y) {
-
-
                     this.clipConvexPolygon2(vertexArray, color);
                 } else {
-                    // this.drawTriangleDDA(v1, v2, v3, color);
                     this.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], color);
                 }
             }
