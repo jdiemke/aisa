@@ -16,6 +16,7 @@ module.exports = {
         'cube': './src/examples/cube/Application.ts',
         'bobs': './src/examples/bobs/Application.ts',
         'starfield': './src/examples/starfield/Application.ts',
+        'hoodlum': './src/examples/hoodlum/Application.ts',
     },
     output: {
         filename: '[name].bundle.js',
@@ -107,6 +108,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['starfield'],
             filename: 'starfield.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['hoodlum'],
+            filename: 'hoodlum.html'
         })
     ]
 }

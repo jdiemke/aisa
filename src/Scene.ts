@@ -1027,24 +1027,6 @@ export class Scene extends AbstractScene {
                     this.framebuffer.noise(time, this.noise);
                 } else if (time < 1100000) {
         
-                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-                    this.framebuffer.setCullFace(CullFace.BACK);
-                    this.framebuffer.setBob(this.lab2);
-        
-                    this.framebuffer.drawBlenderScene9(time, this.particleTexture2,
-                        [
-                            { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                            { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                            { tex: this.texture13, scale: 1.6, alpha: 0.25 },
-                            { tex: this.texture13, scale: 0.7, alpha: 0.22 },
-                            { tex: this.texture13, scale: -0.4, alpha: 0.22 },
-                        ], this.dirt, this.skybox);
-        
-                    const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-                    this.framebuffer.drawTexture(0, 0, texture3, 0.75);
-                    this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-        
-                    this.framebuffer.noise(time, this.noise);
         
                 } else {
         
@@ -1091,7 +1073,6 @@ export class Scene extends AbstractScene {
          * - Draw Vector ART in SVG Inkscape
          * - Vectorize with Blender and Display
          */
-        //  this.framebuffer.drawTexture(0, 0, this.hlm, 0.50);
 
         /**
          * TODO:

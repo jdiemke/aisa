@@ -625,7 +625,7 @@ export class Framebuffer {
         this.drawLineDDA(new Vector3f(xoff + 20 * 5, yoff, -0.3), new Vector3f(xoff + 20 * 5, yoff + 20 * 5, -0.3), 0xffffffff);
     }
 
-    private interpolate(start: number, end: number, current: number): number {
+    public interpolate(start: number, end: number, current: number): number {
         if (current <= start) {
             return 0;
         }
@@ -3065,84 +3065,6 @@ export class Framebuffer {
             let model = this.blenderObj9[j];
             this.drawObjectTexture(model, mv, 244 * scal, 225 * scal, 216 * scal);
         }
-    }
-
-    public drawBlenderScene9(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture, skybox: { back?: Texture, down?: Texture, front?: Texture, left?: Texture, right?: Texture, up?: Texture }): void {
-
-        this.clearDepthBuffer();
-
-        let scal = Math.sin(elapsedTime * 0.003) * 0.5 + 0.5;
-        let camera: Matrix4f =
-            Matrix4f.constructTranslationMatrix(0, 0, -34 + (Math.sin(elapsedTime * 0.00007) * 0.5 + 0.5) * 7).multiplyMatrix(
-                Matrix4f.constructXRotationMatrix((Math.sin(elapsedTime * 0.00014) * 0.5 + 0.5) * 0.5 - 0.2).multiplyMatrix(
-                    Matrix4f.constructYRotationMatrix(-elapsedTime * 0.0002).multiplyMatrix(
-
-                        Matrix4f.constructTranslationMatrix(0, 1.9, 0)
-                    )));
-
-
-        let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(13, 13, 13));
-
-
-
-        for (let j = 0; j < this.blenderObj10.length; j++) {
-            let model = this.blenderObj10[j];
-            this.drawObjectTexture2(model, mv, 244 * scal, 225 * scal, 216 * scal);
-        }
-
-        mv = camera.multiplyMatrix(
-            Matrix4f.constructTranslationMatrix(0, -5.5, 0).multiplyMatrix(
-                Matrix4f.constructScaleMatrix(413, 413, 413).multiplyMatrix(
-                    Matrix4f.constructXRotationMatrix(Math.PI * 0.5)
-                )
-            ));
-
-        let model = this.blenderObj7[0];
-        this.drawObject2(model, mv, 244, 100, 116, false, true);
-
-        let points: Array<Vector3f> = new Array<Vector3f>();
-        const num = 10;
-        const num2 = 6;
-
-        for (let i = 0; i < num; i++) {
-
-            for (let j = 0; j < num2; j++) {
-                let y = ((i + elapsedTime * 0.001) % 10) * 2.5 - 12;
-                let scale2 = (1 + 4 * this.interpolate(-10, 10, y)) *
-
-                    ((Math.sin(elapsedTime * 0.0012 + Math.PI * 2 / num * i * 2) * 0.5 + 0.5) * 0.5 + 0.5);
-                let x = scale2 * Math.sin(Math.PI * 2 / num2 * j + elapsedTime * 0.0008);
-
-                let z = scale2 * Math.cos(Math.PI * 2 / num2 * j + elapsedTime * 0.0008);
-
-                points.push(new Vector3f(x, y, z));
-            }
-        }
-
-
-        let modelViewMartrix = camera.multiplyMatrix(Matrix4f.constructTranslationMatrix(0, -0.0, 0));
-
-        let points2: Array<Vector3f> = new Array<Vector3f>(points.length);
-        points.forEach(element => {
-
-
-            let transformed = this.project(modelViewMartrix.multiply(element));
-
-            points2.push(transformed);
-        });
-
-        points2.sort(function (a, b) {
-            return a.z - b.z;
-        });
-
-        points2.forEach(element => {
-            let size = -(4.3 * 192 / (element.z));
-            this.drawSoftParticle(
-                Math.round(element.x - size / 2),
-                Math.round(element.y - size / 2),
-                Math.round(size), Math.round(size), texture3, 1 / element.z, 0.7);
-        });
-
     }
 
     public drawBlenderScene3(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
