@@ -40,7 +40,7 @@ export class MetalHeadzScene extends AbstractScene {
             TextureUtils.load(require('../../assets/bokeh.png'), true).then(
                 (texture: Texture) => this.texture13 = texture
             ),
-            this.createProceduralTexture4().then(
+            TextureUtils.generateProceduralNoise().then(
                 (texture: Texture) => this.noise = texture
             ),
             TextureUtils.load(require('../../assets/dirt.png'), true).then(
@@ -83,25 +83,6 @@ export class MetalHeadzScene extends AbstractScene {
         framebuffer.drawTexture(0, 0, texture3, 0.75);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
         framebuffer.noise(time, this.noise);
-    }
-
-    public createProceduralTexture4(): Promise<Texture> {
-        return new Promise((resolve) => {
-            const texture: Texture = new Texture();
-            texture.texture = new Uint32Array(256 * 256);
-
-            const rng: RandomNumberGenerator = new RandomNumberGenerator();
-            rng.setSeed(100);
-
-            for (let i: number = 0; i < 256 * 256; i++) {
-                const scale: number = rng.getFloat();
-                texture.texture[i] = 200 * scale | 255 * scale << 8 | 205 * scale << 16 | 255 << 24;
-            }
-
-            texture.width = 256;
-            texture.height = 256;
-            resolve(texture);
-        });
     }
 
     private computeCameraMovement(elapsedTime: number): Matrix4f {

@@ -25,7 +25,7 @@ export class HoodlumScene extends AbstractScene {
         return Promise.all([
             TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(texture => this.blurred = texture),
             TextureUtils.load(require('../../assets/lab2.png'), false).then(texture => this.lab2 = texture),
-            this.createProceduralTexture4().then(texture => this.noise = texture),
+            TextureUtils.generateProceduralNoise().then(texture => this.noise = texture),
             this.createProceduralTexture3().then(texture => this.particleTexture2 = texture),
         ]);
     }
@@ -112,25 +112,6 @@ export class HoodlumScene extends AbstractScene {
                 Math.round(element.x - size / 2),
                 Math.round(element.y - size / 2),
                 Math.round(size), Math.round(size), texture3, 1 / element.z, 0.7);
-        });
-    }
-
-    public createProceduralTexture4(): Promise<Texture> {
-        return new Promise((resolve) => {
-            const texture = new Texture();
-            texture.texture = new Uint32Array(256 * 256);
-
-            const rng: RandomNumberGenerator = new RandomNumberGenerator();
-            rng.setSeed(100);
-
-            for (let i: number = 0; i < 256 * 256; i++) {
-                const scale: number = rng.getFloat();
-                texture.texture[i] = 200 * scale | 255 * scale << 8 | 205 * scale << 16 | 255 << 24;
-            }
-
-            texture.width = 256;
-            texture.height = 256;
-            resolve(texture);
         });
     }
 

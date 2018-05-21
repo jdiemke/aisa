@@ -1,6 +1,26 @@
+import RandomNumberGenerator from '../RandomNumberGenerator';
 import { Texture } from './Texture';
 
 export class TextureUtils {
+
+    public static generateProceduralNoise(): Promise<Texture> {
+        return new Promise((resolve) => {
+            const texture = new Texture();
+            texture.texture = new Uint32Array(256 * 256);
+
+            const rng: RandomNumberGenerator = new RandomNumberGenerator();
+            rng.setSeed(100);
+
+            for (let i: number = 0; i < 256 * 256; i++) {
+                const scale: number = rng.getFloat();
+                texture.texture[i] = 200 * scale | 255 * scale << 8 | 205 * scale << 16 | 255 << 24;
+            }
+
+            texture.width = 256;
+            texture.height = 256;
+            resolve(texture);
+        });
+    }
 
     public static load(filename: string, transparency: boolean): Promise<Texture> {
         return new Promise<Texture>((resolve: (texture?: Texture) => void): void => {

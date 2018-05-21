@@ -99,7 +99,7 @@ export class Scene extends AbstractScene {
             this.createProceduralTexture().then(texture => this.texture15 = texture),
             this.createProceduralTexture2().then(texture => this.particleTexture = texture),
             this.createProceduralTexture3().then(texture => this.particleTexture2 = texture),
-            this.createProceduralTexture4().then(texture => this.noise = texture),
+            TextureUtils.generateProceduralNoise().then(texture => this.noise = texture),
             this.createProceduralDisplacementMap().then(texture => this.displacementMap = texture),
             this.createTexture(require('../../assets/hoodlumLogo.png'), true).then(texture => this.hoodlumLogo = texture),
             this.createTexture(require('../../assets/abstract.png'), false).then(texture => this.abstract = texture),
@@ -1398,26 +1398,6 @@ export class Scene extends AbstractScene {
 
                     texture.texture[x + y * 256] = (texture.texture[x + y * 256] & 0xffffff00) | texture.texture[x + y * 256] & 0xff + (c * 255);
                 }
-            }
-
-            texture.width = 256;
-            texture.height = 256;
-            resolve(texture);
-        });
-    }
-
-    // move
-    public createProceduralTexture4(): Promise<Texture> {
-        return new Promise((resolve) => {
-            const texture = new Texture();
-            texture.texture = new Uint32Array(256 * 256);
-
-            const rng: RandomNumberGenerator = new RandomNumberGenerator();
-            rng.setSeed(100);
-
-            for (let i: number = 0; i < 256 * 256; i++) {
-                const scale: number = rng.getFloat();
-                texture.texture[i] = 200 * scale | 255 * scale << 8 | 205 * scale << 16 | 255 << 24;
             }
 
             texture.width = 256;
