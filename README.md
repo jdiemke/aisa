@@ -159,4 +159,24 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - http://codeincomplete.com/posts/javascript-racer-v1-straight/
 - http://www.extentofthejam.com/pseudo/
 - http://hugi.scene.org/online/hugi24/coding%20graphics%20bonz%20sines%20and%20cosines%20for%20fun%20and%20profit.htm
-- https://www.phatcode.net/res/224/files/html/ch65/65-03.html#Heading6
+- https://www.phatcode.net/res/224/files/html/ch65/65-03.html#Heading6  
+- https://mikro.naprvyraz.sk/docs/
+- http://simonstechblog.blogspot.de/2012/04/software-rasterizer-part-1.html
+- http://www.lysator.liu.se/~mikaelk/doc/perspectivetexture/
+- http://chrishecker.com/Miscellaneous_Technical_Articles
+- http://www.gamasutra.com/blogs/MichaelKissner/20160112/263097/Writing_a_Game_Engine_from_Scratch__Part_4_Graphics_Library.php
+- https://www.codeproject.com/Articles/170296/D-Software-Rendering-Engine-Part-I
+- https://www.davrous.com/2013/06/13/tutorial-series-learning-how-to-write-a-3d-soft-engine-from-scratch-in-c-typescript-or-javascript/
+- https://www.youtube.com/playlist?list=PLEETnX-uPtBXP_B2yupUKlflXBznWIlL5
+- https://www.youtube.com/watch?v=cQY3WTKRI7I
+- https://www.youtube.com/playlist?list=PLEETnX-uPtBUbVOok816vTl1K9vV1GgH5
+- https://www.youtube.com/playlist?list=PLEETnX-uPtBUG4iRqc6bEBv5uxMXswlEL
+- https://www.youtube.com/playlist?list=PLbCDZQXIq7uYaf263gr-zb0wZGoCL-T5G
+- https://www.youtube.com/watch?v=9A5TVh6kPLA
+- http://joshbeam.com/articles/triangle_rasterization/
+- http://developers-club.com/posts/257107/
+- https://www.codeproject.com/Articles/170296/3D-Software-Rendering-Engine-Part-I
+- https://gamedev.stackexchange.com/questions/44263/fast-software-color-interpolating-triangle-rasterization-technique
+- https://fgiesen.wordpress.com/2011/07/05/a-trip-through-the-graphics-pipeline-2011-part-5/
+- http://insolitdust.sourceforge.net/code.html
+     

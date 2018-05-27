@@ -82,7 +82,7 @@ export class BakedLighting extends AbstractScene {
         this.skyBox.draw(framebuffer, mv);
         framebuffer.clearDepthBuffer();
 
-        framebuffer.setBob(this.baked);
+        framebuffer.setTexture(this.baked);
 
         for (let j = 0; j < this.blenderObj8.length; j++) {
             let model = this.blenderObj8[j];

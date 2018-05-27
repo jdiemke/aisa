@@ -35,7 +35,7 @@ export class HoodlumScene extends AbstractScene {
 
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         framebuffer.setCullFace(CullFace.BACK);
-        framebuffer.setBob(this.lab2);
+        framebuffer.setTexture(this.lab2);
 
         this.drawBlenderScene9(framebuffer, time, this.particleTexture2);
 

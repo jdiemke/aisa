@@ -20,6 +20,7 @@ module.exports = {
         'misc': './src/examples/misc/Application.ts',
         'baked-lighting': './src/examples/baked-lighting/Application.ts',
         'platonian': './src/examples/platonian/Application.ts',
+        'gears': './src/examples/gears/Application.ts',
     },
     output: {
         filename: '[name].bundle.js',
@@ -131,6 +132,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['platonian'],
             filename: 'platonian.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['gears'],
+            filename: 'gears.html'
         })
     ]
 }

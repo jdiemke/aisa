@@ -90,7 +90,7 @@ export class SkyBox {
                 ]
             };
 
-            framebuffer.setBob(textures[i]);
+            framebuffer.setTexture(textures[i]);
             framebuffer.drawObjectTexture2(skyBoxSideModel, mv, 244, 225, 216);
 
         }
@@ -143,7 +143,7 @@ export class SkyBox {
             ]
         };
 
-        framebuffer.setBob(this.up);
+        framebuffer.setTexture(this.up);
         framebuffer.drawObjectTexture2(skyBoxSideModel, mv, 244, 225, 216);
 
 
@@ -192,7 +192,7 @@ export class SkyBox {
             ]
         };
 
-        framebuffer.setBob(this.down);
+        framebuffer.setTexture(this.down);
         framebuffer.drawObjectTexture2(skyBoxSideModel, mv, 244, 225, 216);
     }
 

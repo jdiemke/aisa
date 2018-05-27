@@ -61,7 +61,7 @@ export class PlatonianScene extends AbstractScene {
 
         const mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(13, 13, 13));
 
-        framebuffer.setBob(this.platonian);
+        framebuffer.setTexture(this.platonian);
         // FIXME: move looping code into utils method or helper class!
         for (let j = 0; j < this.platonianMesh.length; j++) {
             let model = this.platonianMesh[j];

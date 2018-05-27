@@ -49,7 +49,7 @@ export class MetalHeadzScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: any): void {
+    public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
         let elapsedTime = 0.2 * time;
 
@@ -62,11 +62,11 @@ export class MetalHeadzScene extends AbstractScene {
         this.skyBox.draw(framebuffer, mv);
 
         framebuffer.clearDepthBuffer();
-        framebuffer.setBob(this.metalheadz);
+        framebuffer.setTexture(this.metalheadz);
         const scal: number = 1.0;
         for (let j: number = 0; j < this.blenderObjMetal.length; j++) {
             let model: any = this.blenderObjMetal[j];
-            framebuffer.drawObjectTexture(model, mv, 244 * scal, 225 * scal, 216 * scal);
+            framebuffer.drawObjectTexture(model, mv);
         }
 
         let scale = 20;

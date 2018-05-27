@@ -224,12 +224,11 @@ export class Framebuffer {
     private sphereDisp: any;
     private sphereDisp2: any;
 
-
     public setCullFace(face: CullFace): void {
         this.cullMode = face;
     }
 
-    setBob(texture: Texture) {
+    setTexture(texture: Texture) {
         this.bob = texture;
     }
 
@@ -366,7 +365,6 @@ export class Framebuffer {
             }
         }
     }
-
 
     public drawTextureRect2(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Texture, alpha2: number): void {
         for (let w = 0; w < width; w++) {
@@ -505,16 +503,6 @@ export class Framebuffer {
         }
     }
 
-    public starField() {
-        // plus razor logo
-    }
-
-
-    // Crossfade 2 effects
-    public crossFade() {
-
-    }
-
     // optimization:
     // - downscale image to half the size before bluring
     // render result to texture in order to not blur the logo
@@ -611,8 +599,6 @@ export class Framebuffer {
     public pixelate() {
         let xoff = 20;
         let yoff = 50;
-
-
 
         for (let x = 0; x < 10; x++) {
             for (let y = 0; y < 10; y++) {
@@ -800,8 +786,6 @@ export class Framebuffer {
 
         // now distort the tmpGlitch buffer and render to framebuffer again
 
-
-
         let rng2 = new RandomNumberGenerator();
 
         for (let k = 0; k < 8; k++) {
@@ -820,7 +804,6 @@ export class Framebuffer {
                 for (let i = 0; i < Math.max(0, offset); i++) {
                     this.framebuffer[index++] = this.tmpGlitch[glIndex++];
                 }
-
 
                 glIndex = yStart * 320;
                 let count = 320 - offset;
@@ -897,7 +880,6 @@ export class Framebuffer {
             newWidth = width - Math.max(xp + width - 320, 0);
         }
 
-
         let index2 = (xStart) + (yStart) * 320;
         for (let y = 0; y < newHeight; y++) {
             for (let x = 0; x < newWidth; x++) {
@@ -919,8 +901,6 @@ export class Framebuffer {
             index2 += -newWidth + 320;
         }
     }
-
-
 
     public drawParticle(xp: number, yp: number, width: number, height: number, texture: Texture, z: number, alphaBlend: number): void {
         let xStep = texture.width / width;
@@ -988,7 +968,6 @@ export class Framebuffer {
             index2 += -newWidth + 320;
         }
     }
-
 
     public drawParticleNoDepth(xp: number, yp: number, width: number, height: number, texture: Texture, z: number, alphaBlend: number): void {
         let xStep = texture.width / width;
@@ -1492,7 +1471,6 @@ export class Framebuffer {
             points2.push(new Vector3f(x, y, z));
         });
 
-
         for (let i = 0; i < index.length; i += 2) {
             let color = 255 | 0 << 16 | 255 << 24;
             this.nearPlaneClipping(points2[index[i]], points2[index[i + 1]], color);
@@ -1500,9 +1478,6 @@ export class Framebuffer {
     }
 
     public project(t1: { x: number, y: number, z: number }): Vector3f {
-        /* return new Vector3f(Math.round((320 / 2) + (t1.x * 1.5 / (-t1.z * 0.0078))),
-             // negation breaks winding and cull mode!!
-             Math.round((200 / 2) - (t1.y * 1.5 / (-t1.z * 0.0078))), t1.z);*/
         return new Vector3f(Math.round((320 / 2) + (292 * t1.x / (-t1.z))),
             Math.round((200 / 2) - (t1.y * 292 / (-t1.z))),
             t1.z);
@@ -1511,7 +1486,6 @@ export class Framebuffer {
     // https://math.stackexchange.com/questions/859454/maximum-number-of-vertices-in-intersection-of-triangle-with-box/
     public nearPlaneClipping(t1: Vector3f, t2: Vector3f, color: number): void {
         const NEAR_PLANE_Z = -1.7;
-
 
         if (t1.z < NEAR_PLANE_Z && t2.z < NEAR_PLANE_Z) {
             this.cohenSutherlandLineClipper(this.project(t1), this.project(t2), color);
@@ -1528,27 +1502,6 @@ export class Framebuffer {
         }
     }
 
-    /**
-     * https://mikro.naprvyraz.sk/docs/
-     * http://simonstechblog.blogspot.de/2012/04/software-rasterizer-part-1.html
-     * http://www.lysator.liu.se/~mikaelk/doc/perspectivetexture/
-     * http://chrishecker.com/Miscellaneous_Technical_Articles
-     * http://www.gamasutra.com/blogs/MichaelKissner/20160112/263097/Writing_a_Game_Engine_from_Scratch__Part_4_Graphics_Library.php
-     * https://www.codeproject.com/Articles/170296/D-Software-Rendering-Engine-Part-I
-     * https://www.davrous.com/2013/06/13/tutorial-series-learning-how-to-write-a-3d-soft-engine-from-scratch-in-c-typescript-or-javascript/
-     * https://www.youtube.com/playlist?list=PLEETnX-uPtBXP_B2yupUKlflXBznWIlL5
-     * https://www.youtube.com/watch?v=cQY3WTKRI7I
-     * https://www.youtube.com/playlist?list=PLEETnX-uPtBUbVOok816vTl1K9vV1GgH5
-     * https://www.youtube.com/playlist?list=PLEETnX-uPtBUG4iRqc6bEBv5uxMXswlEL
-     * https://www.youtube.com/playlist?list=PLbCDZQXIq7uYaf263gr-zb0wZGoCL-T5G
-     * https://www.youtube.com/watch?v=9A5TVh6kPLA
-     * http://joshbeam.com/articles/triangle_rasterization/
-     * http://developers-club.com/posts/257107/
-     * https://www.codeproject.com/Articles/170296/3D-Software-Rendering-Engine-Part-I
-     * https://gamedev.stackexchange.com/questions/44263/fast-software-color-interpolating-triangle-rasterization-technique
-     * https://fgiesen.wordpress.com/2011/07/05/a-trip-through-the-graphics-pipeline-2011-part-5/
-     * http://insolitdust.sourceforge.net/code.html
-     */
     public clearDepthBuffer(): void {
         this.wBuffer.fill(-1 / 900);
     }
@@ -1587,8 +1540,6 @@ export class Framebuffer {
         let modelViewMartrix = Matrix3f.constructScaleMatrix(scale, scale, scale);
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3f.constructZRotationMatrix(elapsedTime * 0.08));
 
-
-
         let points2: Array<Vector3f> = new Array<Vector3f>();
         points.forEach(element => {
             let transformed = modelViewMartrix.multiply(element);
@@ -1611,9 +1562,6 @@ export class Framebuffer {
         }
     }
 
-
-
-
     private sphereFunction(theta: number, phi: number): Vector4f {
 
         let pos = new Vector4f(Math.cos(theta) * Math.cos(phi),
@@ -1626,8 +1574,6 @@ export class Framebuffer {
         pos.z = pos.z + pos.z * radius;
         return pos;
     }
-
-
 
     private sphereFunction2(theta: number, phi: number): Vector4f {
 
@@ -2373,7 +2319,6 @@ export class Framebuffer {
             let faces: Array<{ vertices: number[], normals: number[] }> = new Array();
             let coords: Array<TextureCoordinate>;
 
-
             if (object.uv) {
                 coords = [];
                 object.uv.forEach((v) => {
@@ -2390,8 +2335,6 @@ export class Framebuffer {
                     points.push(new Vector4f(v.x, v.y, v.z).mul(2).add(new Vector4f(0, -2.7, 0, 0)));
                 else
                     points.push(new Vector4f(v.x, v.y, v.z).mul(2));
-
-                //points.push(new Vector4f(v.x, v.y, v.z).mul(0.5).add(new Vector4f(0,3.7,0,0)));
             });
 
             for (let x = 0; x < object.faces.length; x++) {
@@ -3043,39 +2986,6 @@ export class Framebuffer {
 
         this.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.3, texture, dirt);
     }
-
-
-    public drawBlenderScene4(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
-
-        this.clearDepthBuffer();
-
-        let camera: Matrix4f = Matrix4f.constructTranslationMatrix(0, 0, -21).multiplyMatrix(
-            Matrix4f.constructYRotationMatrix(elapsedTime * 0.0002)
-                .multiplyMatrix(
-                    Matrix4f.constructXRotationMatrix(elapsedTime * 0.0002)
-                )
-        );
-
-        let scale = 0.1 * 2.1 * 2.1;
-        let factor = 2.1 - 0.09 - 0.09;
-        let fade = 0.09;
-        let dampFactor = Math.sin(elapsedTime * 0.00001) * 0.5 + 0.5;
-        for (let i = 1; i < 6; i++) {
-            scale *= factor;
-            factor -= fade;
-
-            let modelViewMartrix = Matrix4f.constructYRotationMatrix(elapsedTime * 0.0005 + dampFactor * 0.7 * (4 - i)).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));
-            modelViewMartrix = Matrix4f.constructXRotationMatrix(elapsedTime * 0.0006 + dampFactor * 0.7 * (4 - i)).multiplyMatrix(modelViewMartrix);
-
-            let mv = camera.multiplyMatrix(modelViewMartrix);
-            let model = this.blenderObj3[0];
-            this.drawObject2(model, mv, 246, 165, 177);
-        }
-        let lensflareScreenSpace = this.project(camera.multiply(new Vector3f(16.0 * 20, 16.0 * 20, 0)));
-
-        this.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.3, texture, dirt);
-    }
-
 
     public drawPlaneDeformation(elapsedTime: number, texture: Texture): void {
         // optimize
