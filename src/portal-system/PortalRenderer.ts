@@ -1,11 +1,12 @@
 import { Framebuffer } from "../Framebuffer";
-import { Matrix4f } from "../math";
+import { Matrix4f, Vector4f, Vector3f } from "../math";
 import { Area } from "./Area";
 import { Plane } from "../math/Plane";
 import { Portal } from "./Portal";
 import { SutherlandHodgmanClipper } from "./SutherlandHodgmanClipper";
 import { Color } from "../core/Color";
 import { ControllableCamera } from "../camera";
+import { Polygon } from "./Polygon";
 
 export class PortalRenderer {
 
@@ -40,8 +41,33 @@ export class PortalRenderer {
                 continue;
             }
 
-            framebuffer.drawPolygon(0, clippedPortalGeometry, modelViewMatrix, area.portalColor ? area.portalColor : Color.CYAN);
+            this.drawPolygon(framebuffer, 0, clippedPortalGeometry, modelViewMatrix, area.portalColor ? area.portalColor : Color.CYAN);
             this.renderVisibleAreas(framebuffer, modelViewMatrix, portal.intoArea, clippedPortalGeometry.getPlanes(controllableCamera.getPosition()), controllableCamera);
+        }
+    }
+
+    public drawPolygon(framebuffer: Framebuffer, elapsedTime: number, polygon: Polygon, matrix: Matrix4f, color: Color): void {
+        framebuffer.clearDepthBuffer();
+        let points: Array<Vector4f> = polygon.vertices;
+
+        let scale = 0.8;
+
+        let modelViewMartrix = matrix;
+
+        let points2: Array<Vector3f> = new Array<Vector3f>();
+        points.forEach(element => {
+            let transformed = modelViewMartrix.multiplyHom(element);
+
+            let x = transformed.x;
+            let y = transformed.y;
+            let z = transformed.z; // TODO: use translation matrix!
+
+            points2.push(new Vector3f(x, y, z));
+        });
+
+        // TODO: draw without depth buffer DDA line
+        for (let i = 0; i < points2.length; i++) {
+            framebuffer.nearPlaneClipping(points2[i], points2[(i + 1) % points2.length], color.toPackedFormat());
         }
     }
 

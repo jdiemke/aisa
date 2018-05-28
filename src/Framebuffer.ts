@@ -21,6 +21,11 @@ import { Polygon } from './portal-system/Polygon';
 import { Plane } from './math/Plane';
 import { SutherlandHodgmanClipper } from './portal-system/SutherlandHodgmanClipper';
 import { Color } from './core/Color';
+import { AbstractClipEdge } from './screen-space-clipping/AbstractClipEdge';
+import { RightClipEdge } from './screen-space-clipping/RightClipEdge';
+import { LeftClipEdge } from './screen-space-clipping/LeftClipEdge';
+import { TopClipEdge } from './screen-space-clipping/TopClipEdge';
+import { BottomClipEdge } from './screen-space-clipping/BottomClipEdge';
 
 let json = require('./assets/f16.json');
 let bunnyJson = <any>require('./assets/bunny.json');
@@ -35,159 +40,6 @@ let labJson2 = <any>require('./assets/lab2.json');
 let bakedJson = <any>require('./assets/abstract.json');
 let platonian = <any>require('./assets/platonian_backed.json');
 let hlm2018Json = <any>require('./assets/hoodlum2018.json');
-
-// TODO:
-// - use polymorphism in order to have different intersection methods
-// - one for plain clipping / one for tex coords / one for multitexturing / gouraud shading etc
-abstract class AbstractClipEdge {
-
-    public abstract isInside(p: Vector3f): boolean;
-    public abstract isInside2(p: Vertex): boolean;
-    public abstract computeIntersection(p1: Vector3f, p2: Vector3f): Vector3f;
-    public abstract computeIntersection2(p1: Vertex, p2: Vertex): Vertex;
-
-}
-
-class RightEdge extends AbstractClipEdge {
-
-    public isInside(p: Vector3f): boolean {
-        return p.x < 320;
-    }
-
-    public isInside2(p: Vertex): boolean {
-        return p.position.x < 320;
-    }
-
-    public computeIntersection(p1: Vector3f, p2: Vector3f): Vector3f {
-        return new Vector3f(Framebuffer.maxWindow.x + 1,
-            Math.round(p1.y + (p2.y - p1.y) * (Framebuffer.maxWindow.x + 1 - p1.x) / (p2.x - p1.x)),
-            1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.maxWindow.x + 1 - p1.x) / (p2.x - p1.x)));
-    }
-
-    public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {
-        let vertex = new Vertex();
-        vertex.position =
-            new Vector3f(Framebuffer.maxWindow.x + 1,
-                Math.round(p1.position.y + (p2.position.y - p1.position.y) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x)),
-                1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x)));
-
-        let textCoord = new TextureCoordinate();
-        let z = vertex.position.z;
-        textCoord.u = (p1.textureCoordinate.u / p1.position.z + (p2.textureCoordinate.u / p2.position.z - p1.textureCoordinate.u / p1.position.z) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x)) * z;
-        textCoord.v = (p1.textureCoordinate.v / p1.position.z + (p2.textureCoordinate.v / p2.position.z - p1.textureCoordinate.v / p1.position.z) * (Framebuffer.maxWindow.x + 1 - p1.position.x) / (p2.position.x - p1.position.x)) * z;
-
-        vertex.textureCoordinate = textCoord;
-        return vertex;
-    }
-
-}
-
-class LeftEdge extends AbstractClipEdge {
-
-    public isInside(p: Vector3f): boolean {
-        return p.x >= 0;
-    }
-
-    public isInside2(p: Vertex): boolean {
-        return p.position.x >= 0;
-    }
-
-    public computeIntersection(p1: Vector3f, p2: Vector3f): Vector3f {
-        return new Vector3f(Framebuffer.minWindow.x,
-            Math.round(p1.y + (p2.y - p1.y) * (Framebuffer.minWindow.x - p1.x) / (p2.x - p1.x)),
-            1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.minWindow.x - p1.x) / (p2.x - p1.x)));
-    }
-
-    public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {
-        let vertex = new Vertex();
-        vertex.position =
-            new Vector3f(Framebuffer.minWindow.x,
-                Math.round(p1.position.y + (p2.position.y - p1.position.y) * (Framebuffer.minWindow.x - p1.position.x) / (p2.position.x - p1.position.x)),
-                1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.minWindow.x - p1.position.x) / (p2.position.x - p1.position.x)));
-
-        let textCoord = new TextureCoordinate();
-        let z = vertex.position.z;
-        textCoord.u = (p1.textureCoordinate.u / p1.position.z + (p2.textureCoordinate.u / p2.position.z - p1.textureCoordinate.u / p1.position.z) * (Framebuffer.minWindow.x - p1.position.x) / (p2.position.x - p1.position.x)) * z;
-        textCoord.v = (p1.textureCoordinate.v / p1.position.z + (p2.textureCoordinate.v / p2.position.z - p1.textureCoordinate.v / p1.position.z) * (Framebuffer.minWindow.x - p1.position.x) / (p2.position.x - p1.position.x)) * z;
-        vertex.textureCoordinate = textCoord;
-
-        return vertex;
-    }
-
-}
-
-class TopEdge extends AbstractClipEdge {
-
-    public isInside(p: Vector3f): boolean {
-        return p.y < Framebuffer.maxWindow.y + 1;
-    }
-
-    public isInside2(p: Vertex): boolean {
-        return p.position.y < Framebuffer.maxWindow.y + 1;
-    }
-
-    public computeIntersection(p1: Vector3f, p2: Vector3f): Vector3f {
-        return new Vector3f(
-            Math.round(p1.x + (p2.x - p1.x) * (Framebuffer.maxWindow.y + 1 - p1.y) / (p2.y - p1.y)),
-            Framebuffer.maxWindow.y + 1,
-            1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.maxWindow.y + 1 - p1.y) / (p2.y - p1.y)));
-    }
-
-    public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {
-        let vertex = new Vertex();
-        vertex.position =
-            new Vector3f(
-                Math.round(p1.position.x + (p2.position.x - p1.position.x) * (Framebuffer.maxWindow.y + 1 - p1.position.y) / (p2.position.y - p1.position.y)),
-                Framebuffer.maxWindow.y + 1,
-                1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.maxWindow.y + 1 - p1.position.y) / (p2.position.y - p1.position.y)));
-
-        let textCoord = new TextureCoordinate();
-        let z = vertex.position.z;
-        textCoord.u = (p1.textureCoordinate.u / p1.position.z + (p2.textureCoordinate.u / p2.position.z - p1.textureCoordinate.u / p1.position.z) * (Framebuffer.maxWindow.y + 1 - p1.position.y) / (p2.position.y - p1.position.y)) * z;
-        textCoord.v = (p1.textureCoordinate.v / p1.position.z + (p2.textureCoordinate.v / p2.position.z - p1.textureCoordinate.v / p1.position.z) * (Framebuffer.maxWindow.y + 1 - p1.position.y) / (p2.position.y - p1.position.y)) * z;
-
-        vertex.textureCoordinate = textCoord;
-        return vertex;
-    }
-
-
-}
-
-class BottomEdge extends AbstractClipEdge {
-
-    public isInside(p: Vector3f): boolean {
-        return p.y >= Framebuffer.minWindow.y;
-    }
-
-    public isInside2(p: Vertex): boolean {
-        return p.position.y >= Framebuffer.minWindow.y;
-    }
-
-    public computeIntersection(p1: Vector3f, p2: Vector3f): Vector3f {
-        return new Vector3f(
-            Math.round(p1.x + (p2.x - p1.x) * (Framebuffer.minWindow.y - p1.y) / (p2.y - p1.y)),
-            Framebuffer.minWindow.y,
-            1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.minWindow.y - p1.y) / (p2.y - p1.y)));
-    }
-
-    public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {
-        let vertex = new Vertex();
-        vertex.position =
-            new Vector3f(
-                Math.round(p1.position.x + (p2.position.x - p1.position.x) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y)),
-                Framebuffer.minWindow.y,
-                1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y)));
-
-        let textCoord = new TextureCoordinate();
-        let z = vertex.position.z;
-        textCoord.u = (p1.textureCoordinate.u / p1.position.z + (p2.textureCoordinate.u / p2.position.z - p1.textureCoordinate.u / p1.position.z) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y)) * z;
-        textCoord.v = (p1.textureCoordinate.v / p1.position.z + (p2.textureCoordinate.v / p2.position.z - p1.textureCoordinate.v / p1.position.z) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y)) * z;
-        vertex.textureCoordinate = textCoord;
-
-        return vertex;
-    }
-
-}
 
 export class Framebuffer {
 
@@ -213,9 +65,6 @@ export class Framebuffer {
     private blenderObj5: any;
     private blenderObj6: any;
     private blenderObj7: any;
-    private blenderObj8: any;
-    private blenderObj9: any;
-    private blenderObj10: any;
     private bob: Texture;
     private sphere: any;
     private plane: any;
@@ -256,9 +105,6 @@ export class Framebuffer {
         this.blenderObj5 = this.getBlenderScene(hoodlumJson, false);
         this.blenderObj6 = this.getBlenderScene(labJson, false);
         this.blenderObj7 = this.getBlenderScene(hlm2018Json, false);
-        this.blenderObj8 = this.getBlenderScene(bakedJson, false);
-        this.blenderObj9 = this.getBlenderScene(platonian, false);
-        this.blenderObj10 = this.getBlenderScene(labJson2, false);
 
         this.sphere = this.createSphere();
 
@@ -1233,7 +1079,7 @@ export class Framebuffer {
         for (let y = 0; y < newHeight; y++) {
             for (let x = 0; x < newWidth; x++) {
                 //let textureIndex = //Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
-                let color = this.getBilinearFilteredPixel2(texture, xx, yy);
+                let color = texture.getBilinearFilteredPixel2(xx, yy);
 
                 let alpha = 255 * alphaScale;
                 let inverseAlpha = 1 - alpha;
@@ -1299,7 +1145,7 @@ export class Framebuffer {
         for (let y = 0; y < newHeight; y++) {
             for (let x = 0; x < newWidth; x++) {
                 //let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
-                let color = this.getBilinearFilteredPixel2(texture, xx, yy);
+                let color = texture.getBilinearFilteredPixel2(xx, yy);
 
                 let framebufferPixel = this.framebuffer[index2];
                 let texturePixel = color;
@@ -2772,39 +2618,12 @@ export class Framebuffer {
         this.drawText(8, 18 + 8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
     }
 
-    public drawPolygon(elapsedTime: number, polygon: Polygon, matrix: Matrix4f, color: Color): void {
-        this.clearDepthBuffer();
-        let points: Array<Vector4f> = polygon.vertices;
-
-        let scale = 0.8;
-
-        let modelViewMartrix = matrix;
-
-        let points2: Array<Vector3f> = new Array<Vector3f>();
-        points.forEach(element => {
-            let transformed = modelViewMartrix.multiplyHom(element);
-
-            let x = transformed.x;
-            let y = transformed.y;
-            let z = transformed.z; // TODO: use translation matrix!
-
-            points2.push(new Vector3f(x, y, z));
-        });
-
-        // TODO: draw without depth buffer DDA line
-        for (let i = 0; i < points2.length; i++) {
-            this.nearPlaneClipping(points2[i], points2[(i + 1) % points2.length], color.toPackedFormat());
-        }
-    }
-
-
     /**
      * Requirements for blender export:
      * - Wavefront OBJ
      * - 
      */
     public drawBlenderScene2(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
-
         this.clearDepthBuffer();
 
         let camera: Matrix4f = Matrix4f.constructTranslationMatrix(0, 0, -12).multiplyMatrix(
@@ -2813,7 +2632,6 @@ export class Framebuffer {
                     Matrix4f.constructXRotationMatrix(elapsedTime * 0.0002)
                 )
         );
-
 
         let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(5, 16, 5));
         let model = this.blenderObj2[0];
@@ -5709,10 +5527,10 @@ export class Framebuffer {
     // http://www.cubic.org/docs/3dclip.htm
 
     private static clipRegion = new Array<AbstractClipEdge>(
-        new RightEdge(),
-        new LeftEdge(),
-        new BottomEdge(),
-        new TopEdge()
+        new RightClipEdge(),
+        new LeftClipEdge(),
+        new BottomClipEdge(),
+        new TopClipEdge()
     );
 
     /**
@@ -6862,57 +6680,6 @@ export class Framebuffer {
                 rayY += dirY;
             }
         }
-    }
-
-    getPixel(texture: Texture, x: number, y: number) {
-        return texture.texture[(x & 0xff) + (y & 0xff) * 256];
-    }
-
-    getPixel2(texture: Texture, x: number, y: number) {
-        return texture.texture[x + y * texture.width];
-    }
-
-    getBilinearFilteredPixel(texture: Texture, x: number, y: number) {
-        let x0 = (((x | 0) % 256) + 256) % 256;
-        let x1 = ((((x + 1) | 0) % 256) + 256) % 256;
-        let y0 = (((y | 0) % 256) + 256) % 256;
-        let y1 = ((((y + 1) | 0) % 256) + 256) % 256;
-
-        let x0y0 = this.getPixel(texture, x0, y0) & 0xff;
-        let x1y0 = this.getPixel(texture, x1, y0) & 0xff;
-        let x0y1 = this.getPixel(texture, x0, y1) & 0xff;
-        let x1y1 = this.getPixel(texture, x1, y1) & 0xff;
-
-        let col1 = x0y0 * (1 - (x - Math.floor(x))) + (x1y0 * ((x - Math.floor(x))));
-        let col2 = x0y1 * (1 - (x - Math.floor(x))) + (x1y1 * ((x - Math.floor(x))));
-        let col = col1 * (1 - (y - Math.floor(y))) + (col2 * ((y - Math.floor(y))));
-
-        return col;
-    }
-
-    getBilinearFilteredPixel2(texture: Texture, x: number, y: number) {
-
-        let x0 = Math.min(x | 0, texture.width - 1);
-        let x1 = Math.min((x | 0) + 1, texture.width - 1);
-        let y0 = Math.min(y | 0, texture.height - 1);
-        let y1 = Math.min((y | 0) + 1, texture.height - 1);
-
-        let x0y0 = this.getPixel2(texture, x0, y0);
-        let x1y0 = this.getPixel2(texture, x1, y0);
-        let x0y1 = this.getPixel2(texture, x0, y1);
-        let x1y1 = this.getPixel2(texture, x1, y1);
-
-        return this.interpolateComp(x, y, x0y0 & 0xff, x1y0 & 0xff, x0y1 & 0xff, x1y1 & 0xff) |
-            this.interpolateComp(x, y, x0y0 >> 8 & 0xff, x1y0 >> 8 & 0xff, x0y1 >> 8 & 0xff, x1y1 >> 8 & 0xff) << 8 |
-            this.interpolateComp(x, y, x0y0 >> 16 & 0xff, x1y0 >> 16 & 0xff, x0y1 >> 16 & 0xff, x1y1 >> 16 & 0xff) << 16;
-    }
-
-    interpolateComp(x, y, x0y0, x1y0, x0y1, x1y1) {
-        let col1 = x0y0 * (1 - (x - Math.floor(x))) + (x1y0 * ((x - Math.floor(x))));
-        let col2 = x0y1 * (1 - (x - Math.floor(x))) + (x1y1 * ((x - Math.floor(x))));
-        let col = col1 * (1 - (y - Math.floor(y))) + (col2 * ((y - Math.floor(y))));
-
-        return col;
     }
 
 }

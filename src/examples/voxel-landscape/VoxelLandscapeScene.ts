@@ -71,7 +71,7 @@ export class VoxelLandscapeScene extends AbstractScene {
 
             for (let dist = MIN_DIST; dist < MAX_DIST; dist++) {
 
-                let height = framebuffer.getBilinearFilteredPixel(texture, rayX, rayY);
+                let height = texture.getBilinearFilteredPixel(rayX, rayY);
                 let projHeight = Math.round((height - eye) * focus / dist + center);
                 let color = Math.round(height) * Math.min(1.0, (1 - (dist - MIN_DIST) / (MAX_DIST - MIN_DIST)) * 10);
                 let packedRGB = 255 << 24 | (color + 10) << 16 | (color + 20) << 8 | (color + 13);
