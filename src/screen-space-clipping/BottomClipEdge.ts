@@ -1,7 +1,7 @@
-import { Vector3f } from "../math";
-import { AbstractClipEdge } from "./AbstractClipEdge";
-import { Vertex, TextureCoordinate } from "../Vertex";
-import { Framebuffer } from "../Framebuffer";
+import { Framebuffer } from '../Framebuffer';
+import { Vector3f } from '../math';
+import { TextureCoordinate, Vertex } from '../Vertex';
+import { AbstractClipEdge } from './AbstractClipEdge';
 
 export class BottomClipEdge extends AbstractClipEdge {
 
@@ -21,15 +21,15 @@ export class BottomClipEdge extends AbstractClipEdge {
     }
 
     public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {
-        let vertex = new Vertex();
+        const vertex: Vertex = new Vertex();
         vertex.position =
             new Vector3f(
                 Math.round(p1.position.x + (p2.position.x - p1.position.x) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y)),
                 Framebuffer.minWindow.y,
                 1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y)));
 
-        let textCoord = new TextureCoordinate();
-        let z = vertex.position.z;
+        const textCoord: TextureCoordinate = new TextureCoordinate();
+        const z: number = vertex.position.z;
         textCoord.u = (p1.textureCoordinate.u / p1.position.z + (p2.textureCoordinate.u / p2.position.z - p1.textureCoordinate.u / p1.position.z) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y)) * z;
         textCoord.v = (p1.textureCoordinate.v / p1.position.z + (p2.textureCoordinate.v / p2.position.z - p1.textureCoordinate.v / p1.position.z) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y)) * z;
         vertex.textureCoordinate = textCoord;

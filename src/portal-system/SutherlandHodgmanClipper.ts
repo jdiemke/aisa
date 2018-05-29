@@ -1,6 +1,6 @@
+import { Vector4f } from '../math';
 import { Plane } from '../math/Plane';
 import { Polygon } from './Polygon';
-import { Vector4f } from '../math';
 
 /**
  * Used for Portal Clipping

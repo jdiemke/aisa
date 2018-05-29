@@ -26,6 +26,7 @@ import { RightClipEdge } from './screen-space-clipping/RightClipEdge';
 import { LeftClipEdge } from './screen-space-clipping/LeftClipEdge';
 import { TopClipEdge } from './screen-space-clipping/TopClipEdge';
 import { BottomClipEdge } from './screen-space-clipping/BottomClipEdge';
+import { SutherlandHodgman2DClipper } from './screen-space-clipping/SutherlandHodgman2DClipper';
 
 let json = require('./assets/f16.json');
 let bunnyJson = <any>require('./assets/bunny.json');
@@ -2957,7 +2958,16 @@ export class Framebuffer {
                         color = 255 << 24 | red | green << 8 | blue << 16;
                     }
 
-                    this.clipConvexPolygon(new Array<Vector3f>(p1, p2, p3), color, true);
+                    const clippedPolygon = SutherlandHodgman2DClipper.clipConvexPolygon(new Array<Vector3f>(p1, p2, p3), color);
+
+                    if (clippedPolygon.length < 3) {
+                        continue;
+                    }
+            
+                    // triangulate new point set
+                    for (let i = 0; i < clippedPolygon.length - 2; i++) {
+                        this.drawTriangleDDA(clippedPolygon[0], clippedPolygon[1 + i], clippedPolygon[2 + i], color);
+                    }
                 }
             } else if (!this.isInFrontOfNearPlane(v1) && !this.isInFrontOfNearPlane(v2) && !this.isInFrontOfNearPlane(v3)) {
                 continue;
@@ -3120,7 +3130,16 @@ export class Framebuffer {
                         color = 255 << 24 | red | green << 8 | blue << 16;
                     }
 
-                    this.clipConvexPolygon(new Array<Vector3f>(p1, p2, p3), color, true);
+                    const clippedPolygon = SutherlandHodgman2DClipper.clipConvexPolygon(new Array<Vector3f>(p1, p2, p3), color);
+
+                    if (clippedPolygon.length < 3) {
+                        continue;
+                    }
+            
+                    // triangulate new point set
+                    for (let i = 0; i < clippedPolygon.length - 2; i++) {
+                        this.drawTriangleDDA(clippedPolygon[0], clippedPolygon[1 + i], clippedPolygon[2 + i], color);
+                    }
                 }
             } else if (!this.isInFrontOfNearPlane(v1) && !this.isInFrontOfNearPlane(v2) && !this.isInFrontOfNearPlane(v3)) {
                 continue;
@@ -3185,7 +3204,17 @@ export class Framebuffer {
             return;
         }
         //if (this.isTriangleCCW(projected[0], projected[1], projected[2])) {
-        this.clipConvexPolygon(projected, color, true);
+
+        const clippedPolygon = SutherlandHodgman2DClipper.clipConvexPolygon(projected, color);
+
+        if (clippedPolygon.length < 3) {
+            return;
+        }
+
+        // triangulate new point set
+        for (let i = 0; i < clippedPolygon.length - 2; i++) {
+            this.drawTriangleDDA(clippedPolygon[0], clippedPolygon[1 + i], clippedPolygon[2 + i], color);
+        }
         // }
     }
 
@@ -3387,7 +3416,16 @@ export class Framebuffer {
                     v1.y > Framebuffer.maxWindow.y ||
                     v2.y > Framebuffer.maxWindow.y ||
                     v3.y > Framebuffer.maxWindow.y) {
-                    this.clipConvexPolygon(new Array<Vector3f>(v1, v2, v3), color, false);
+                    const clippedPolygon = SutherlandHodgman2DClipper.clipConvexPolygon(new Array<Vector3f>(v1, v2, v3), color);
+
+                    if (clippedPolygon.length < 3) {
+                        continue;
+                    }
+            
+                    // triangulate new point set
+                    for (let i = 0; i < clippedPolygon.length - 2; i++) {
+                        this.drawTriangleDDA(clippedPolygon[0], clippedPolygon[1 + i], clippedPolygon[2 + i], color);
+                    }
                 } else {
                     this.drawTriangleDDA(v1, v2, v3, color);
                     //this.drawTriangleDDA2(v1, v2, v3, new Vector3f(0, 0, 0), new Vector3f(0, 16, 0), new Vector3f(16, 16, 0), color);
@@ -3527,7 +3565,16 @@ export class Framebuffer {
                         v1.y > Framebuffer.maxWindow.y ||
                         v2.y > Framebuffer.maxWindow.y ||
                         v3.y > Framebuffer.maxWindow.y) {
-                        this.clipConvexPolygon(new Array<Vector3f>(v1, v2, v3), color, false);
+                        const clippedPolygon = SutherlandHodgman2DClipper.clipConvexPolygon(new Array<Vector3f>(v1, v2, v3), color);
+
+                        if (clippedPolygon.length < 3) {
+                            continue;
+                        }
+                
+                        // triangulate new point set
+                        for (let i = 0; i < clippedPolygon.length - 2; i++) {
+                            this.drawTriangleDDA(clippedPolygon[0], clippedPolygon[1 + i], clippedPolygon[2 + i], color);
+                        }
                     } else {
                         this.drawTriangleDDA(v1, v2, v3, color);
                         //this.drawTriangleDDA2(v1, v2, v3, new Vector3f(0, 0, 0), new Vector3f(0, 16, 0), new Vector3f(16, 16, 0), color);
@@ -3660,7 +3707,17 @@ export class Framebuffer {
                     v1.y > Framebuffer.maxWindow.y ||
                     v2.y > Framebuffer.maxWindow.y ||
                     v3.y > Framebuffer.maxWindow.y) {
-                    this.clipConvexPolygon(new Array<Vector3f>(v1, v2, v3), color, false);
+                  
+                    const clippedPolygon = SutherlandHodgman2DClipper.clipConvexPolygon(new Array<Vector3f>(v1, v2, v3), color);
+
+                    if (clippedPolygon.length < 3) {
+                        continue;
+                    }
+            
+                    // triangulate new point set
+                    for (let i = 0; i < clippedPolygon.length - 2; i++) {
+                        this.drawTriangleDDA(clippedPolygon[0], clippedPolygon[1 + i], clippedPolygon[2 + i], color);
+                    }
                 } else {
                     this.drawTriangleDDA(v1, v2, v3, color);
                     //this.drawTriangleDDA2(v1, v2, v3, new Vector3f(0, 0, 0), new Vector3f(0, 16, 0), new Vector3f(16, 16, 0), color);
@@ -3890,35 +3947,18 @@ export class Framebuffer {
             points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
         }
 
-        /**
-         * Primitive Assembly and Rasterization Stage:
-         * 1. back-face culling
-         * 2. viewport transform
-         * 3. scan conversion (rasterization)
-         */
-
         let vertexArray = new Array<Vertex>(new Vertex(), new Vertex(), new Vertex());
 
         for (let i = 0; i < index.length; i += 3) {
-
-            // Only render triangles with CCW-ordered vertices
-            // 
-            // Reference:
-            // David H. Eberly (2006).
-            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
-            // p. 69. Morgan Kaufmann Publishers, United States.
-            //
             let v1 = points2[index[i]];
             let v2 = points2[index[i + 1]];
             let v3 = points2[index[i + 2]];
 
             if (this.isTriangleCCW(v1, v2, v3)) {
-
                 let normal = normals2[i / 3];
                 let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3f(0.2, 0.2, 1).normalize())) * 255), 255);
                 let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
-                //let color = 255 << 24 | 255 << 16 | 150 << 8 | 255;
-
+               
                 vertexArray[0].position = v1;
                 vertexArray[0].textureCoordinate = textCoords[index[i]];
 
@@ -3928,20 +3968,10 @@ export class Framebuffer {
                 vertexArray[2].position = v3;
                 vertexArray[2].textureCoordinate = textCoords[index[i + 2]];
 
-                if (v1.x < Framebuffer.minWindow.x ||
-                    v2.x < Framebuffer.minWindow.x ||
-                    v3.x < Framebuffer.minWindow.x ||
-                    v1.x > Framebuffer.maxWindow.x ||
-                    v2.x > Framebuffer.maxWindow.x ||
-                    v3.x > Framebuffer.maxWindow.x ||
-                    v1.y < Framebuffer.minWindow.y ||
-                    v2.y < Framebuffer.minWindow.y ||
-                    v3.y < Framebuffer.minWindow.y ||
-                    v1.y > Framebuffer.maxWindow.y ||
-                    v2.y > Framebuffer.maxWindow.y ||
-                    v3.y > Framebuffer.maxWindow.y) {
-
-
+                if (v1.x < Framebuffer.minWindow.x || v2.x < Framebuffer.minWindow.x || v3.x < Framebuffer.minWindow.x ||
+                    v1.x > Framebuffer.maxWindow.x || v2.x > Framebuffer.maxWindow.x || v3.x > Framebuffer.maxWindow.x ||
+                    v1.y < Framebuffer.minWindow.y || v2.y < Framebuffer.minWindow.y || v3.y < Framebuffer.minWindow.y ||
+                    v1.y > Framebuffer.maxWindow.y || v2.y > Framebuffer.maxWindow.y || v3.y > Framebuffer.maxWindow.y) {
                     this.clipConvexPolygon2(vertexArray, color);
                 } else {
                     // this.drawTriangleDDA(v1, v2, v3, color);
@@ -5354,10 +5384,6 @@ export class Framebuffer {
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3));
         modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -8).multiplyMatrix(modelViewMartrix);
 
-        /**
-         * Vertex Shader Stage
-         */
-
         let normalMatrix = modelViewMartrix.computeNormalMatrix();
 
         for (let n = 0; n < obj.normals.length; n++) {
@@ -5379,13 +5405,6 @@ export class Framebuffer {
             obj.points2[p].z = z;
         }
 
-        /**
-         * Primitive Assembly and Rasterization Stage:
-         * 1. back-face culling
-         * 2. viewport transform
-         * 3. scan conversion (rasterization)
-         */
-
         let vertex1 = new Vertex();
         vertex1.textureCoordinate = new TextureCoordinate();
         let vertex2 = new Vertex();
@@ -5395,24 +5414,9 @@ export class Framebuffer {
         let vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
 
         for (let i = 0; i < obj.index.length; i += 6) {
-
-            // Only render triangles with CCW-ordered vertices
-            // 
-            // Reference:
-            // David H. Eberly (2006).
-            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
-            // p. 69. Morgan Kaufmann Publishers, United States.
-            //
             let v1 = obj.points2[obj.index[i]];
             let v2 = obj.points2[obj.index[i + 1]];
             let v3 = obj.points2[obj.index[i + 2]];
-
-            // this is the bottleneck: 20 -> 48 fps speedup
-            // when normalization is removed!
-            // solution: dont use MV for normal transformation
-            // use normal matrix instead
-            // normalMatrix : transpose(inverse(MV))
-
 
             if (this.isTriangleCCW(v1, v2, v3)) {
                 vertexArray[0].position = v1;
@@ -5532,52 +5536,6 @@ export class Framebuffer {
         new BottomClipEdge(),
         new TopClipEdge()
     );
-
-    /**
-     * FIXME: optimize by minimizing creation of new arrays
-     * https://www.npmjs.com/package/npm-check-updates
-     * 
-     * @param {Vector3f} v1 
-     * @param {Vector3f} v2 
-     * @param {Vector3f} v3 
-     * @param {number} color 
-     * @returns {void} 
-     * @memberof Framebuffer
-     */
-    public clipConvexPolygon(subject: Array<Vector3f>, color: number, clipping: boolean = true): void {
-
-        let output = subject;
-
-        for (let j = 0; j < Framebuffer.clipRegion.length; j++) {
-            let edge = Framebuffer.clipRegion[j];
-            let input = output;
-            output = new Array<Vector3f>();
-            let S = input[input.length - 1];
-
-            for (let i = 0; i < input.length; i++) {
-                let point = input[i];
-                if (edge.isInside(point)) {
-                    if (!edge.isInside(S)) {
-                        output.push(edge.computeIntersection(S, point));
-                    }
-                    output.push(point);
-                } else if (edge.isInside(S)) {
-                    output.push(edge.computeIntersection(S, point));
-                }
-                S = point;
-            }
-        };
-
-        if (output.length < 3) {
-            return;
-        }
-
-        // triangulate new point set
-        for (let i = 0; i < output.length - 2; i++) {
-            this.drawTriangleDDA(output[0], output[1 + i], output[2 + i], color);
-        }
-    }
-
 
     public clipConvexPolygon2(subject: Array<Vertex>, color: number): void {
 
@@ -5767,18 +5725,12 @@ export class Framebuffer {
 
             for (let i = 0; i < index.length; i += 3) {
                 if (points2[index[i + 1] - 1].sub(points2[index[i] - 1]).cross(points2[index[i + 2] - 1].sub(points2[index[i] - 1])).z < 0) {
-
-                    // TODO: use eye space triangles for backface culling
                     let col = 255 << 24 | 255 << 16;
                     let col2 = 255 << 24 | 255;
-
-
                     this.drawTriangleDDA(points2[index[i] - 1], points2[index[i + 1] - 1], points2[index[i + 2] - 1], colorAr[(((i) / 6) | 0) % 6]);
-
                 }
             }
         }
-
     }
 
     public scene9(elapsedTime: number): void {
@@ -5823,17 +5775,8 @@ export class Framebuffer {
                 let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
                 let col3 = 255 << 24 | 0;
                 this.drawTriangleDDA(points2[index[i] - 1], points2[index[i + 1] - 1], points2[index[i + 2] - 1], color);
-                //       this.drawLineDDA(points2[index[i] - 1], points2[index[i + 1] - 1], col3);
-                //      this.drawLineDDA(points2[index[i + 1] - 1], points2[index[i + 2] - 1], col3);
-                //    this.drawLineDDA(points2[index[i + 2] - 1], points2[index[i] - 1], col3);
             }
         }
-
-    }
-
-    drawTriangleSpan(dist: number, xpos: number, ypos: number, color: number): void {
-        let framebufferIndex = xpos + ypos * this.width;
-        this.framebuffer.fill(color, framebufferIndex, framebufferIndex + dist);
     }
 
     /**
