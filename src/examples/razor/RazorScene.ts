@@ -17,11 +17,14 @@ export class RazorScene extends AbstractScene {
     private texture13: Texture;
     private dirt: Texture;
     private noise: Texture;
+    private cube: Cube;
 
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
 
     public init(framebuffer: Framebuffer): Promise<any> {
         framebuffer.setCullFace(CullFace.BACK);
+
+        this.cube = new Cube();
 
         return Promise.all([
             TextureUtils.load(require('./assets/spark.png'), true).then(texture => this.texture10 = texture),
@@ -88,7 +91,7 @@ export class RazorScene extends AbstractScene {
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
 
         // TODO:  store Mesh inside cube instance and use cube.draw(framebuffer);
-        model = new Cube().getCubeMesh();
+        model = this.cube.getCubeMesh();
         framebuffer.drawObject2(model, modelViewMartrix, 144, 165, 116);
 
         scale = 1.0;
@@ -96,7 +99,7 @@ export class RazorScene extends AbstractScene {
         modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
 
-        model = new Cube().getCubeMesh();
+        model = this.cube.getCubeMesh();
         framebuffer.drawObject2(model, modelViewMartrix, 191, 166, 154);
 
         scale = 1.0;
@@ -133,7 +136,7 @@ export class RazorScene extends AbstractScene {
         modelViewMartrix = camera.multiplyMatrix(
             Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix))
 
-        framebuffer.drawObject2(new Cube().getCubeMesh(), modelViewMartrix, 48, 32, 24, true);
+        framebuffer.drawObject2(this.cube.getCubeMesh(), modelViewMartrix, 48, 32, 24, true);
 
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale * 0.5, scale * 2, scale * 0.5);
@@ -141,7 +144,7 @@ export class RazorScene extends AbstractScene {
         modelViewMartrix = camera.multiplyMatrix(
             Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix))
 
-        framebuffer.drawObject2(new Cube().getCubeMesh(), modelViewMartrix, 48, 32, 24, true);
+        framebuffer.drawObject2(this.cube.getCubeMesh(), modelViewMartrix, 48, 32, 24, true);
 
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);

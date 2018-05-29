@@ -27,6 +27,7 @@ import { LeftClipEdge } from './screen-space-clipping/LeftClipEdge';
 import { TopClipEdge } from './screen-space-clipping/TopClipEdge';
 import { BottomClipEdge } from './screen-space-clipping/BottomClipEdge';
 import { SutherlandHodgman2DClipper } from './screen-space-clipping/SutherlandHodgman2DClipper';
+import { Mesh } from './geometrical-objects/Mesh';
 
 let json = require('./assets/f16.json');
 let bunnyJson = <any>require('./assets/bunny.json');
@@ -2926,7 +2927,7 @@ export class Framebuffer {
 
     // compare to drawObject
     // used by blender modells
-    public drawObject2(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, culling: boolean = false) {
+    public drawObject2(obj: Mesh, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, culling: boolean = false) {
 
         let normalMatrix = modelViewMartrix.computeNormalMatrix();
 
@@ -2986,7 +2987,7 @@ export class Framebuffer {
                 if (noLighting) {
                     color = 255 << 24 | red | green << 8 | blue << 16;
                 }
-                this.zClipTriangle(new Array<Vector3f>(v1, v2, v3), color);
+                this.zClipTriangle(new Array<Vector4f>(v1, v2, v3), color);
             }
         }
     }
@@ -3155,28 +3156,28 @@ export class Framebuffer {
                 if (noLighting) {
                     color = 255 << 24 | red | green << 8 | blue << 16;
                 }
-                this.zClipTriangle(new Array<Vector3f>(v1, v2, v3), color);
+                this.zClipTriangle(new Array<Vector4f>(v1, v2, v3), color);
             }
         }
     }
 
     NEAR_PLANE_Z = -1.7;
 
-    public isInFrontOfNearPlane(p: Vector3f): boolean {
+    public isInFrontOfNearPlane(p: {x: number; y:number; z: number}): boolean {
         return p.z < this.NEAR_PLANE_Z;
     }
 
-    public computeNearPlaneIntersection(p1: Vector3f, p2: Vector3f): Vector3f {
+    public computeNearPlaneIntersection(p1: Vector4f, p2: Vector4f): Vector4f {
         let ratio = (this.NEAR_PLANE_Z - p1.z) / (p2.z - p1.z);
-        return new Vector3f(ratio * (p2.x - p1.x) + p1.x, ratio * (p2.y - p1.y) + p1.y, this.NEAR_PLANE_Z);
+        return new Vector4f(ratio * (p2.x - p1.x) + p1.x, ratio * (p2.y - p1.y) + p1.y, this.NEAR_PLANE_Z);
     }
 
-    public zClipTriangle(subject: Array<Vector3f>, color: number): void {
+    public zClipTriangle(subject: Array<Vector4f>, color: number): void {
 
         let output = subject;
 
         let input = output;
-        output = new Array<Vector3f>();
+        output = new Array<Vector4f>();
         let S = input[input.length - 1];
 
         for (let i = 0; i < input.length; i++) {
