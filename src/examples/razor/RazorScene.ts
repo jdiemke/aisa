@@ -5,6 +5,7 @@ import { Matrix4f, Vector3f } from '../../math';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
+import { Cube } from '../../geometrical-objects/Cube';
 
 /**
  * TODO: extract lens into effect class
@@ -69,7 +70,7 @@ export class RazorScene extends AbstractScene {
         let colLine = 255 << 24 | 255 << 8;
 
         let model = framebuffer.getDodecahedronMesh();
-        framebuffer.drawObject(model, modelViewMartrix, 221, 96, 48);
+        framebuffer.drawObject2(model, modelViewMartrix, 221, 96, 48);
 
         let yDisplacement = -1.5;
         let distance = 2.8;
@@ -79,23 +80,24 @@ export class RazorScene extends AbstractScene {
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
 
         model = framebuffer.getIcosahedronMesh();
-        framebuffer.drawObject(model, modelViewMartrix, 239, 187, 115);
+        framebuffer.drawObject2(model, modelViewMartrix, 239, 187, 115);
 
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale * 0.5, scale * 2, scale * 0.5);
         modelViewMartrix = Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 1, distance).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
 
-        model = framebuffer.getCubeMesh()
-        framebuffer.drawObject(model, modelViewMartrix, 144, 165, 116);
+        // TODO:  store Mesh inside cube instance and use cube.draw(framebuffer);
+        model = new Cube().getCubeMesh();
+        framebuffer.drawObject2(model, modelViewMartrix, 144, 165, 116);
 
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
         modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
 
-        model = framebuffer.getCubeMesh();
-        framebuffer.drawObject(model, modelViewMartrix, 191, 166, 154);
+        model = new Cube().getCubeMesh();
+        framebuffer.drawObject2(model, modelViewMartrix, 191, 166, 154);
 
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
@@ -103,7 +105,7 @@ export class RazorScene extends AbstractScene {
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
 
         model = framebuffer.getPyramidMesh();
-        framebuffer.drawObject(model, modelViewMartrix, 125, 128, 146);
+        framebuffer.drawObject2(model, modelViewMartrix, 125, 128, 146);
 
         /**
          * SHADOWS
@@ -115,7 +117,7 @@ export class RazorScene extends AbstractScene {
         modelViewMartrix = camera.multiplyMatrix(
             Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
 
-        framebuffer.drawObject(framebuffer.getDodecahedronMesh(), modelViewMartrix, 48, 32, 24, true);
+        framebuffer.drawObject2(framebuffer.getDodecahedronMesh(), modelViewMartrix, 48, 32, 24, true);
 
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
@@ -123,7 +125,7 @@ export class RazorScene extends AbstractScene {
         modelViewMartrix = camera.multiplyMatrix(
             Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
 
-        framebuffer.drawObject(framebuffer.getPyramidMesh(), modelViewMartrix, 48, 32, 24, true, true);
+        framebuffer.drawObject2(framebuffer.getPyramidMesh(), modelViewMartrix, 48, 32, 24, true, true);
 
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
@@ -131,7 +133,7 @@ export class RazorScene extends AbstractScene {
         modelViewMartrix = camera.multiplyMatrix(
             Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix))
 
-        framebuffer.drawObject(framebuffer.getCubeMesh(), modelViewMartrix, 48, 32, 24, true);
+        framebuffer.drawObject2(new Cube().getCubeMesh(), modelViewMartrix, 48, 32, 24, true);
 
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale * 0.5, scale * 2, scale * 0.5);
@@ -139,7 +141,7 @@ export class RazorScene extends AbstractScene {
         modelViewMartrix = camera.multiplyMatrix(
             Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix))
 
-        framebuffer.drawObject(framebuffer.getCubeMesh(), modelViewMartrix, 48, 32, 24, true);
+        framebuffer.drawObject2(new Cube().getCubeMesh(), modelViewMartrix, 48, 32, 24, true);
 
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
@@ -147,7 +149,7 @@ export class RazorScene extends AbstractScene {
         modelViewMartrix = camera.multiplyMatrix(
             Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
 
-        framebuffer.drawObject(framebuffer.getIcosahedronMesh(), modelViewMartrix, 48, 32, 24, true);
+        framebuffer.drawObject2(framebuffer.getIcosahedronMesh(), modelViewMartrix, 48, 32, 24, true);
 
         let lensflareScreenSpace = framebuffer.project(camera.multiply(new Vector3f(12.0, 4.0, 0)));
 

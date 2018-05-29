@@ -1873,11 +1873,21 @@ export class Framebuffer {
             normals.push(normal.normalize()); // normalize?
         }
 
+        let faces: Array<{ vertices: number[], normals: number[] }> = new Array();
+
+        for (let i = 0; i < index.length; i += 3) {
+
+            faces.push({
+                vertices: [index[0+i],index[1+i],index[2+i]],
+                normals: [i/3,i/3,i/3]
+            });
+        }
+
         // Create class for objects
         let obj = {
             points: points,
             normals: normals,
-            index: index,
+            faces: faces,
             points2: points.map(() => new Vector4f(0, 0, 0, 0)),
             normals2: normals.map(() => new Vector4f(0, 0, 0, 0))
         };
@@ -1915,11 +1925,21 @@ export class Framebuffer {
             normals.push(normal.normalize()); // normalize?
         }
 
+        let faces: Array<{ vertices: number[], normals: number[] }> = new Array();
+
+        for (let i = 0; i < index.length; i += 3) {
+
+            faces.push({
+                vertices: [index[0+i],index[1+i],index[2+i]],
+                normals: [i/3,i/3,i/3]
+            });
+        }
+
         // Create class for objects
         let obj = {
             points: points,
             normals: normals,
-            index: index,
+            faces: faces,
             points2: points.map(() => new Vector4f(0, 0, 0, 0)),
             normals2: normals.map(() => new Vector4f(0, 0, 0, 0))
         };
@@ -1965,58 +1985,28 @@ export class Framebuffer {
             normals.push(normal.normalize()); // normalize?
         }
 
-        // Create class for objects
-        let obj = {
-            points: points,
-            normals: normals,
-            index: index,
-            points2: points.map(() => new Vector4f(0, 0, 0, 0)),
-            normals2: normals.map(() => new Vector4f(0, 0, 0, 0))
-        };
+        let faces: Array<{ vertices: number[], normals: number[] }> = new Array();
 
-        return obj;
-    }
-
-    public getCubeMesh(): any {
-        let points: Array<Vector4f> = new Array<Vector4f>();
-        let normals: Array<Vector4f> = new Array<Vector4f>();
-        let index: Array<number> = new Array<number>();
-
-        // https://github.com/chiptune/lol3d/blob/master/index.html
-        let a = 0.5;
-
-        points = [
-            new Vector4f(-a, -a, -a),
-            new Vector4f(a, -a, -a),
-            new Vector4f(a, a, -a),
-            new Vector4f(-a, a, -a),
-            new Vector4f(-a, -a, a),
-            new Vector4f(a, -a, a),
-            new Vector4f(a, a, a),
-            new Vector4f(-a, a, a)
-        ];
-
-        index = [
-            0, 2, 1, 0, 3, 2, 5, 7, 4, 5, 6, 7, 1, 6, 5, 1, 2, 6, 4, 3, 0, 4, 7, 3, 4, 1, 5, 4, 0, 1, 3, 6, 2, 3, 7, 6
-        ];
-
-        // todo use index array for normals to have less normal objects
         for (let i = 0; i < index.length; i += 3) {
-            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
-            normals.push(normal.normalize()); // normalize?
+
+            faces.push({
+                vertices: [index[0+i],index[1+i],index[2+i]],
+                normals: [i/3,i/3,i/3]
+            });
         }
 
         // Create class for objects
         let obj = {
             points: points,
             normals: normals,
-            index: index,
+            faces: faces,
             points2: points.map(() => new Vector4f(0, 0, 0, 0)),
             normals2: normals.map(() => new Vector4f(0, 0, 0, 0))
         };
 
         return obj;
     }
+
 
     public getPyramidMesh(): any {
         let points: Array<Vector4f> = new Array<Vector4f>();
@@ -2049,11 +2039,21 @@ export class Framebuffer {
             normals.push(normal.normalize()); // normalize?
         }
 
+        let faces: Array<{ vertices: number[], normals: number[] }> = new Array();
+
+        for (let i = 0; i < index.length; i += 3) {
+
+            faces.push({
+                vertices: [index[0+i],index[1+i],index[2+i]],
+                normals: [i/3,i/3,i/3]
+            });
+        }
+
         // Create class for objects
         let obj = {
             points: points,
             normals: normals,
-            index: index,
+            faces: faces,
             points2: points.map(() => new Vector4f(0, 0, 0, 0)),
             normals2: normals.map(() => new Vector4f(0, 0, 0, 0))
         };
@@ -2088,11 +2088,21 @@ export class Framebuffer {
             normals.push(normal.normalize()); // normalize?
         }
 
+        let faces: Array<{ vertices: number[], normals: number[] }> = new Array();
+
+        for (let i = 0; i < index.length; i += 3) {
+
+            faces.push({
+                vertices: [index[0+i],index[1+i],index[2+i]],
+                normals: [i/3,i/3,i/3]
+            });
+        }
+
         // Create class for objects
         let obj = {
             points: points,
             normals: normals,
-            index: index,
+            faces: faces,
             points2: points.map(() => new Vector4f(0, 0, 0, 0)),
             normals2: normals.map(() => new Vector4f(0, 0, 0, 0))
         };
@@ -2156,13 +2166,13 @@ export class Framebuffer {
         }
     }
 
-    public getBlenderScene(file: any, disp: boolean = true): any {
+    // TODO: if flat shaded, then store only one normal per face!
+    public getBlenderScene(file: any, disp: boolean = true, flat: boolean = false): any {
         let scene = [];
 
         file.forEach(object => {
             let points: Array<Vector4f> = new Array<Vector4f>();
             let normals: Array<Vector4f> = new Array<Vector4f>();
-            let index: Array<number> = new Array<number>();
             let faces: Array<{ vertices: number[], normals: number[] }> = new Array();
             let coords: Array<TextureCoordinate>;
 
@@ -2184,12 +2194,6 @@ export class Framebuffer {
                     points.push(new Vector4f(v.x, v.y, v.z).mul(2));
             });
 
-            for (let x = 0; x < object.faces.length; x++) {
-                index.push(object.faces[x].vertices[0]);
-                index.push(object.faces[x].vertices[1]);
-                index.push(object.faces[x].vertices[2]);
-            }
-
             object.normals.forEach((v) => {
                 normals.push(new Vector4f(v.x, v.y, v.z));
             });
@@ -2199,14 +2203,14 @@ export class Framebuffer {
 
             // Create class for objects
             let obj = {
-                points: points,
-                normals: normals,
-                uv: coords,
-                faces: object.faces,
+                points: points, 
+                normals: normals, 
+                uv: coords,           // NO!!!
+                faces: object.faces, // NOO!!!
                 points2: points.map(() => new Vector4f(0, 0, 0, 0)),
                 normals2: normals.map(() => new Vector4f(0, 0, 0, 0)),
-                boundingSphere: sphere,
-                name: object.name
+                boundingSphere: sphere, // NO!!!
+                name: object.name /// NO!
             };
             scene.push(obj);
         });
@@ -2920,6 +2924,8 @@ export class Framebuffer {
 
     }
 
+    // compare to drawObject
+    // used by blender modells
     public drawObject2(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, culling: boolean = false) {
 
         let normalMatrix = modelViewMartrix.computeNormalMatrix();
@@ -2935,6 +2941,7 @@ export class Framebuffer {
         let lightDirection = new Vector4f(0.5, 0.5, 0.3, 0.0).normalize();
 
         for (let i = 0; i < obj.faces.length; i++) {
+            // this data structure is different as well !!!!
             let v1 = obj.points2[obj.faces[i].vertices[0]];
             let v2 = obj.points2[obj.faces[i].vertices[1]];
             let v3 = obj.points2[obj.faces[i].vertices[2]];
@@ -2949,6 +2956,7 @@ export class Framebuffer {
                 let p2 = this.project(v2);
                 let p3 = this.project(v3);
 
+                // DIFFERENCE IS cullin variable here!!!!
                 if (culling || this.isTriangleCCW(p1, p2, p3)) {
                     // TODO: do lighting only if triangle is visible
                     let scalar = Math.min((Math.max(0.0, normal.dot(lightDirection))), 1.0);
@@ -2980,7 +2988,6 @@ export class Framebuffer {
                 }
                 this.zClipTriangle(new Array<Vector3f>(v1, v2, v3), color);
             }
-
         }
     }
 
@@ -3092,6 +3099,8 @@ export class Framebuffer {
         }
     }
 
+    // used by rez modells..
+    // maybe use just one method and adjust modell data accordingly??
     public drawObject(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, oldLDir: boolean = true) {
 
         let normalMatrix = modelViewMartrix.computeNormalMatrix();
@@ -3113,16 +3122,12 @@ export class Framebuffer {
 
             let normal = obj.normals2[i / 3];
 
-            // if (this.isTriangleCCW(v1,v2,v3)) {
-            // 2d Backface culling is here not allowed because we did not project here!
-            // FIXME: find a robust way to cull without cracks!
             if (this.isInFrontOfNearPlane(v1) && this.isInFrontOfNearPlane(v2) && this.isInFrontOfNearPlane(v3)) {
                 let p1 = this.project(v1);
                 let p2 = this.project(v2);
                 let p3 = this.project(v3);
 
                 if (this.isTriangleCCW(p1, p2, p3)) {
-                    // TODO: do lighting only if triangle is visible
                     let scalar = Math.min((Math.max(0.0, normal.dot(lightDirection))), 1.0);
                     scalar = scalar * 0.85 + 0.15;
                     let color = 255 << 24 | Math.min(scalar * blue, 255) << 16 | Math.min(scalar * green, 255) << 8 | Math.min(scalar * red, 255);
@@ -3152,7 +3157,6 @@ export class Framebuffer {
                 }
                 this.zClipTriangle(new Array<Vector3f>(v1, v2, v3), color);
             }
-
         }
     }
 
