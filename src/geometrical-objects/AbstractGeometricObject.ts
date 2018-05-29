@@ -34,7 +34,7 @@ export class AbstractGeometricObject {
         };
     }
 
-    public getCubeMesh(): Mesh {
+    public getMesh(): Mesh {
         return this.mesh;
     }
 
