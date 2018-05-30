@@ -3,18 +3,21 @@ import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix3f, Vector3f } from '../../math';
+import { TriangleRasterizer } from '../../rasterizer/TriangleRasterizer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 
 /**
- * TODO: extract lens into effect class
+ * TODO: use cube mesh and draw using drawObject2
  */
 export class CubeScene extends AbstractScene {
 
     private static BACKGROUND_COLOR: number = Color.BLACK.toPackedFormat();
+    private triangleRasterizer: TriangleRasterizer;
 
     public init(framebuffer: Framebuffer): Promise<any> {
         framebuffer.setCullFace(CullFace.FRONT);
+        this.triangleRasterizer = new TriangleRasterizer(framebuffer);
         return super.init(framebuffer);
     }
 
@@ -140,7 +143,7 @@ export class CubeScene extends AbstractScene {
                 let specular = new Vector3f(0, 0, 0);
                 let phong: Vector3f = ambient.add(diffuse).add(specular);
                 let color = 255 << 24 | (phong.z & 0xff) << 16 | (phong.y & 0xff) << 8 | (phong.x & 0xff);
-                framebuffer.drawTriangleDDA(v1, v2, v3, color);
+                this.triangleRasterizer.drawTriangleDDA(v1, v2, v3, color);
             }
         }
     }
