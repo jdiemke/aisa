@@ -28,6 +28,7 @@ import { TopClipEdge } from './screen-space-clipping/TopClipEdge';
 import { BottomClipEdge } from './screen-space-clipping/BottomClipEdge';
 import { SutherlandHodgman2DClipper } from './screen-space-clipping/SutherlandHodgman2DClipper';
 import { Mesh } from './geometrical-objects/Mesh';
+import { CohenSutherlandLineClipper } from './screen-space-clipping/CohenSutherlandLineClipper';
 
 let json = require('./assets/f16.json');
 let bunnyJson = <any>require('./assets/bunny.json');
@@ -74,6 +75,8 @@ export class Framebuffer {
     private cylinder2: any;
     private sphereDisp: any;
     private sphereDisp2: any;
+
+    private linerClipper = new CohenSutherlandLineClipper(this);
 
     public setCullFace(face: CullFace): void {
         this.cullMode = face;
@@ -1336,17 +1339,17 @@ export class Framebuffer {
         const NEAR_PLANE_Z = -1.7;
 
         if (t1.z < NEAR_PLANE_Z && t2.z < NEAR_PLANE_Z) {
-            this.cohenSutherlandLineClipper(this.project(t1), this.project(t2), color);
+            this.linerClipper.cohenSutherlandLineClipper(this.project(t1), this.project(t2), color);
         } else if (t1.z > NEAR_PLANE_Z && t2.z > NEAR_PLANE_Z) {
             return;
         } else if (t1.z < NEAR_PLANE_Z) {
             let ratio = (NEAR_PLANE_Z - t1.z) / (t2.z - t1.z);
             let t3 = new Vector3f(ratio * (t2.x - t1.x) + t1.x, ratio * (t2.y - t1.y) + t1.y, NEAR_PLANE_Z);
-            this.cohenSutherlandLineClipper(this.project(t1), this.project(t3), color);
+            this.linerClipper.cohenSutherlandLineClipper(this.project(t1), this.project(t3), color);
         } else if (t2.z < NEAR_PLANE_Z) {
             let ratio = (NEAR_PLANE_Z - t2.z) / (t1.z - t2.z);
             let t3 = new Vector3f(ratio * (t1.x - t2.x) + t2.x, ratio * (t1.y - t2.y) + t2.y, NEAR_PLANE_Z);
-            this.cohenSutherlandLineClipper(this.project(t2), this.project(t3), color);
+            this.linerClipper.cohenSutherlandLineClipper(this.project(t2), this.project(t3), color);
         }
     }
 
@@ -1474,9 +1477,6 @@ export class Framebuffer {
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.08));
         modelViewMartrix = Matrix4f.constructTranslationMatrix(0 + 20 * Math.sin(elapsedTime * 0.04), 5 * Math.sin(elapsedTime * 0.06), -36).multiplyMatrix(modelViewMartrix);
 
-        /**
-         * Vertex Shader Stage
-         */
         let points2: Array<Vector3f> = new Array<Vector3f>();
 
         for (let p = 0; p < points.length; p++) {
@@ -1488,11 +1488,7 @@ export class Framebuffer {
 
             let xx = (320 * 0.5) + (x / (-z * 0.0078));
             let yy = (200 * 0.5) + (y / (-z * 0.0078));
-            // commented out because it breaks the winding. inversion
-            // of y has to be done after back-face culling in the
-            // viewport transform
-            // yy =(200 * 0.5) - (y / (-z * 0.0078));
-
+         
             points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
         }
 
@@ -1504,124 +1500,23 @@ export class Framebuffer {
         this.drawLineDDA(new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.maxWindow.y + 1, 0), new Vector3f(Framebuffer.maxWindow.x + 2, Framebuffer.maxWindow.y + 1, 0), colred);
 
         this.drawBox();
-        /**
-         * Primitive Assembly and Rasterization Stage:
-         * 1. back-face culling
-         * 2. viewport transform
-         * 3. scan conversion (rasterization)
-         */
+       
         for (let i = 0; i < index.length; i += 3) {
-
-            // Only render triangles with CCW-ordered vertices
-            // 
-            // Reference:
-            // David H. Eberly (2006).
-            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
-            // p. 69. Morgan Kaufmann Publishers, United States.
-            //
             let v1 = points2[index[i]];
             let v2 = points2[index[i + 1]];
             let v3 = points2[index[i + 2]];
 
             let colLine = 255 << 24 | 255 << 16 | 255 << 8 | 255;
             if (this.isTriangleCCW(v1, v2, v3)) {
-                this.cohenSutherlandLineClipper(v1, v2, colLine);
-                this.cohenSutherlandLineClipper(v1, v3, colLine);
-                this.cohenSutherlandLineClipper(v3, v2, colLine);
+                this.linerClipper.cohenSutherlandLineClipper(v1, v2, colLine);
+                this.linerClipper.cohenSutherlandLineClipper(v1, v3, colLine);
+                this.linerClipper.cohenSutherlandLineClipper(v3, v2, colLine);
             }
         }
     }
 
     public static minWindow: Vector3f = new Vector3f(0, 0, 0);
     public static maxWindow: Vector3f = new Vector3f(319, 199, 0);
-    // seems to habe a small bug
-    public cohenSutherlandLineClipper(start: Vector3f, end: Vector3f, col: number) {
-        let p1: Vector3f = new Vector3f(start.x, start.y, start.z);
-        let p2: Vector3f = new Vector3f(end.x, end.y, end.z);
-
-        let code1: number = this.computeRegionCode(p1);
-        let code2: number = this.computeRegionCode(p2);
-
-        let accept: boolean = false;
-        let done: boolean = false;
-
-        while (!done) {
-
-            if (this.isTrivialAccept(code1, code2)) {
-                accept = true;
-                done = true;
-            } else if (this.isTrivialReject(code1, code2)) {
-                done = true;
-            } else {
-
-                if (code1 == Framebuffer.REGION_CODE_CENTER) {
-                    let tempCode: number = code1;
-                    code1 = code2;
-                    code2 = tempCode;
-
-                    let tempPoint: Vector3f = p1;
-                    p1 = p2;
-                    p2 = tempPoint;
-                }
-
-                if ((code1 & Framebuffer.REGION_CODE_TOP) != Framebuffer.REGION_CODE_CENTER) {
-                    p1.x = Math.round(p1.x + (p2.x - p1.x) * (Framebuffer.maxWindow.y - p1.y) / (p2.y - p1.y));
-                    p1.y = Framebuffer.maxWindow.y;
-                } else if ((code1 & Framebuffer.REGION_CODE_BOTTOM) != Framebuffer.REGION_CODE_CENTER) {
-                    p1.x = Math.round(p1.x + (p2.x - p1.x) * (Framebuffer.minWindow.y - p1.y) / (p2.y - p1.y));
-                    p1.y = Framebuffer.minWindow.y;
-                } else if ((code1 & Framebuffer.REGION_CODE_RIGHT) != Framebuffer.REGION_CODE_CENTER) {
-                    p1.y = Math.round(p1.y + (p2.y - p1.y) * (Framebuffer.maxWindow.x - p1.x) / (p2.x - p1.x));
-                    p1.x = Framebuffer.maxWindow.x;
-                } else if ((code1 & Framebuffer.REGION_CODE_LEFT) != Framebuffer.REGION_CODE_CENTER) {
-                    p1.y = Math.round(p1.y + (p2.y - p1.y) * (Framebuffer.minWindow.x - p1.x) / (p2.x - p1.x));
-                    p1.x = Framebuffer.minWindow.x;
-                }
-
-                code1 = this.computeRegionCode(p1);
-            }
-        }
-
-        if (accept) {
-            this.drawLineDDA(p1, p2, col);
-        }
-    }
-
-    public isTrivialAccept(code1: number, code2: number): boolean {
-        return (code1 | code2) == Framebuffer.REGION_CODE_CENTER;
-    }
-
-    public isTrivialReject(code1: number, code2: number): boolean {
-        return (code1 & code2) != Framebuffer.REGION_CODE_CENTER;
-    }
-
-    public static REGION_CODE_CENTER = 0b0000;
-    public static REGION_CODE_LEFT = 0b0001;
-    public static REGION_CODE_RIGHT = 0b0010;
-    public static REGION_CODE_BOTTOM = 0b0100;
-    public static REGION_CODE_TOP = 0b1000;
-
-    public dec2bin(dec: number) {
-        return (dec >>> 0).toString(2);
-    }
-
-    public computeRegionCode(point: Vector3f): number {
-        let regionCode: number = Framebuffer.REGION_CODE_CENTER;
-
-        if (point.x < Framebuffer.minWindow.x) {
-            regionCode |= Framebuffer.REGION_CODE_LEFT;
-        } else if (point.x > Framebuffer.maxWindow.x) {
-            regionCode |= Framebuffer.REGION_CODE_RIGHT;
-        }
-
-        if (point.y < Framebuffer.minWindow.y) {
-            regionCode |= Framebuffer.REGION_CODE_BOTTOM;
-        } else if (point.y > Framebuffer.maxWindow.y) {
-            regionCode |= Framebuffer.REGION_CODE_TOP;
-        }
-
-        return regionCode;
-    }
 
     public createObject() {
         let points: Array<Vector4f> = new Array<Vector4f>();
@@ -1715,7 +1610,6 @@ export class Framebuffer {
             points2.push(new Vector3f(x, y, z));
         });
 
-
         for (let i = 0; i < index.length; i += 2) {
             let scale = (1 - Math.min(255, -points2[index[i]].z * 0.9) / 255);
             let color = (255 * scale) << 8 | 100 * scale | (200 * scale) << 16 | 255 << 24;
@@ -1724,8 +1618,6 @@ export class Framebuffer {
     }
 
     public drawBoundingSphere(sphere: Sphere, matrix: Matrix4f, color: number): void {
-
-
         let points: Array<Vector4f> = [];
 
         const STEPS = 8;
@@ -2764,7 +2656,6 @@ export class Framebuffer {
         if (output.length === 4 && !this.isTriangleCCW2(projected[0], projected[1], projected[2], projected[3])) {
             return;
         }
-        //if (this.isTriangleCCW(projected[0], projected[1], projected[2])) {
 
         const clippedPolygon = SutherlandHodgman2DClipper.clipConvexPolygon(projected, color);
 
