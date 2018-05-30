@@ -882,15 +882,6 @@ export class Scene extends AbstractScene {
                     this.framebuffer.drawTexture(0, 0, texture3, 0.55);
                     this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
                     this.framebuffer.noise(time, this.noise);
-                } else if (time < 700000) {
-                    this.framebuffer.setCullFace(CullFace.FRONT);
-                    this.framebuffer.torusTunnel(time * 0.007, (Date.now() - this.start), this.particleTexture);
-        
-                    const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-                    this.framebuffer.drawTexture(0, 0, texture3, 0.75);
-                    this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-        
-                    this.framebuffer.noise(time, this.noise);
                 } else if (time < 750000) {
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
                     this.framebuffer.setCullFace(CullFace.BACK);
@@ -1028,7 +1019,7 @@ export class Scene extends AbstractScene {
         //framebuffer.clear();
         //framebuffer.shadingSphereClip(time*0.005);
         // framebuffer.scene8(time*0.02);
-       
+
         framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
 
         // TS SoftSynth Project
@@ -1329,8 +1320,8 @@ export class Scene extends AbstractScene {
         });
     }
 
-    
-    public  createProceduralTexture3(): Promise<Texture> {
+
+    public createProceduralTexture3(): Promise<Texture> {
         return new Promise((resolve) => {
             const texture = new Texture();
             texture.texture = new Uint32Array(256 * 256);

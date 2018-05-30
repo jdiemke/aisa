@@ -24,6 +24,7 @@ module.exports = {
         'led-plasma': './src/examples/led-plasma/Application.ts',
         'particle-streams': './src/examples/particle-streams/Application.ts',
         'moving-torus': './src/examples/moving-torus/Application.ts',
+        'torus-knot-tunnel': './src/examples/torus-knot-tunnel/Application.ts',
     },
     output: {
         filename: '[name].bundle.js',
@@ -155,6 +156,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['moving-torus'],
             filename: 'moving-torus.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['torus-knot-tunnel'],
+            filename: 'torus-knot-tunnel.html'
         })
     ]
 }
