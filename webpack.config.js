@@ -21,6 +21,7 @@ module.exports = {
         'baked-lighting': './src/examples/baked-lighting/Application.ts',
         'platonian': './src/examples/platonian/Application.ts',
         'gears': './src/examples/gears/Application.ts',
+        'led-plasma': './src/examples/led-plasma/Application.ts',
     },
     output: {
         filename: '[name].bundle.js',
@@ -137,6 +138,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['gears'],
             filename: 'gears.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['led-plasma'],
+            filename: 'led-plasma.html'
         })
     ]
 }

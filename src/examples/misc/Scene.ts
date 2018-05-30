@@ -1028,6 +1028,7 @@ export class Scene extends AbstractScene {
 
         // this.framebuffer.drawRadialBlur();
 
+        framebuffer.clear();
         framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
 
         // TS SoftSynth Project

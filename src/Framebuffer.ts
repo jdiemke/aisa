@@ -1836,7 +1836,7 @@ export class Framebuffer {
             this.nearPlaneClipping(points2[index[i]], points2[index[i + 1]], color);
         }
     }
-    
+
     public drawBoundingSphere(sphere: Sphere, matrix: Matrix4f, color: number): void {
 
 
@@ -3024,7 +3024,6 @@ export class Framebuffer {
             r * Math.cos(q * alpha),
             r * Math.sin(p * alpha)).mul(70);
     }
-
 
     /**
      * https://www.youtube.com/watch?v=VMD7fsCYO9o
@@ -5340,27 +5339,6 @@ export class Framebuffer {
         this.drawTextureRectAdd(0, 0, 0, 0, 320, 200, dirt, 0.03 + 0.15 * scale);
     }
 
-    // TODO: create interesting pattern!
-    public led(elapsedTime: number, texture: Texture): void {
-        let time = elapsedTime * 0.0007 * 1.0;
-        let lineDirection = new Vector3f(Math.sin(time), Math.cos(time), 0);
-        let radialWaveCenter = new Vector3f(40.0 / 2.0, 35.0 / 2.0, 0).add(new Vector3f(40.0 / 2.0 *
-            Math.sin(-time * 1.2), 35.0 / 2.0 * Math.cos(-time * 1.2), 0));
-        let difference: Vector3f = new Vector3f(0, 0, 0);
-        for (let y = 0; y < 25; y++) {
-            for (let x = 0; x < 40; x++) {
-                let directionalWave = (Math.sin((x * lineDirection.x + y * lineDirection.y) * 0.8 + time) + 1.0) * 0.5;
-                difference.x = x - radialWaveCenter.x;
-                difference.y = y - radialWaveCenter.y;
-                let radialWave = (Math.cos(difference.length() * 0.7) + 1.0) * 0.5;
-                let waveSum: number = (radialWave + directionalWave) * 0.5;
-
-                let intensity = ((waveSum * 15) | 0) % 16;
-                this.drawTextureRectNoAlpha(x * 8, y * 8, 0, 8 * intensity, 8, 8, texture);
-            }
-        }
-    }
-
     /**
      * based on signed polygon area computation:
      * http://www.faqs.org/faqs/graphics/algorithms-faq/
@@ -5374,7 +5352,6 @@ export class Framebuffer {
      * @param {{ x: number, y: number, z: number }} v3 
      * @returns {boolean} 
      * @memberof Framebuffer
-    
      * 
      */
     public isTriangleCCW(v1: { x: number, y: number, z: number }, v2: { x: number, y: number, z: number }, v3: { x: number, y: number, z: number }): boolean {
@@ -5402,134 +5379,6 @@ export class Framebuffer {
             return det > 0.0;
         }
     }
-
-    public scene10(elapsedTime: number): void {
-
-        this.wBuffer.fill(100);
-
-        let index: Array<number> = [
-            1, 2, 3, 4, 1, 3,
-            5, 7, 6, 8, 7, 5,
-
-            2, 6, 7, 7, 3, 2,
-            5, 1, 4, 4, 8, 5,
-
-            4, 3, 7, 7, 8, 4,
-            1, 6, 2, 5, 6, 1
-        ];
-
-        let points: Array<Vector3f> = [
-            new Vector3f(-1.0, -1.0, 1.0), new Vector3f(1.0, -1.0, 1.0),
-            new Vector3f(1.0, 1.0, 1.0), new Vector3f(-1.0, 1.0, 1.0),
-            new Vector3f(-1.0, -1.0, -1.0), new Vector3f(1.0, -1.0, -1.0),
-            new Vector3f(1.0, 1.0, -1.0), new Vector3f(-1.0, 1.0, -1.0),
-        ];
-
-        let colorAr: Array<number> = [
-            255 << 24 | 255 << 0,
-            255 << 24 | 255 << 8,
-            255 << 24 | 255 << 16,
-            255 << 24 | 255 << 16 | 255,
-            255 << 24 | 255 << 16 | 255 << 8,
-            255 << 24 | 255 << 8 | 128,
-        ];
-
-        let scale = 3.2;
-
-        let modelViewMartrix = Matrix3f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3f.constructYRotationMatrix(elapsedTime * 0.05));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3f.constructXRotationMatrix(elapsedTime * 0.08));
-
-        for (let i = 0; i < 2; i++) {
-
-            let points2: Array<Vector3f> = new Array<Vector3f>();
-            points.forEach(element => {
-                let transformed = modelViewMartrix.multiply(element);
-
-                let x = transformed.x + i * 4 - 2;
-                let y = transformed.y;
-                let z = transformed.z - 9; // TODO: use translation matrix!
-
-                let xx = (320 * 0.5) + (x / (-z * 0.0078));
-                let yy = (200 * 0.5) - (y / (-z * 0.0078));
-                points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
-            });
-
-            for (let i = 0; i < index.length; i += 3) {
-                if (points2[index[i + 1] - 1].sub(points2[index[i] - 1]).cross(points2[index[i + 2] - 1].sub(points2[index[i] - 1])).z < 0) {
-                    let col = 255 << 24 | 255 << 16;
-                    let col2 = 255 << 24 | 255;
-                    this.drawTriangleDDA(points2[index[i] - 1], points2[index[i + 1] - 1], points2[index[i + 2] - 1], colorAr[(((i) / 6) | 0) % 6]);
-                }
-            }
-        }
-    }
-
-    public scene9(elapsedTime: number): void {
-
-        this.wBuffer.fill(100);
-
-        let data: any = json;
-
-        let index: Array<number> = data.faces;
-
-        let points: Array<Vector3f> = new Array<Vector3f>();
-        data.vertices.forEach(x => {
-            points.push(new Vector3f(x.x, x.y, x.z));
-        });
-
-        let scale = 4.0;
-
-        let modelViewMartrix = Matrix3f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3f.constructYRotationMatrix(elapsedTime * 0.05));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3f.constructXRotationMatrix(elapsedTime * 0.05));
-
-        let points2: Array<Vector3f> = new Array<Vector3f>();
-        points.forEach(element => {
-            let transformed = modelViewMartrix.multiply(element);
-
-            let x = transformed.x;
-            let y = transformed.y;
-            let z = transformed.z - 9; // TODO: use translation matrix!
-
-            let xx = (320 * 0.5) + (x / (-z * 0.0078));
-            let yy = (200 * 0.5) - (y / (-z * 0.0078));
-            points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
-        });
-
-        let color = 255 | 255 << 16 | 255 << 24;
-
-        for (let i = 0; i < index.length; i += 3) {
-            // backface culling
-            if (points2[index[i + 1] - 1].sub(points2[index[i] - 1]).cross(points2[index[i + 2] - 1].sub(points2[index[i] - 1])).z < 0) {
-                let normal = points[index[i + 1] - 1].sub(points[index[i] - 1]).cross(points[index[i + 2] - 1].sub(points[index[i] - 1])).mul(-1);
-                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3f(1, -1, 0).normalize())) * 155), 255) + 100;
-
-                let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
-                let col3 = 255 << 24 | 0;
-                this.drawTriangleDDA(points2[index[i] - 1], points2[index[i + 1] - 1], points2[index[i + 2] - 1], color);
-            }
-        }
-    }
-
-    /**
-     * https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/opengl-perspective-projection-matrix
-     * http://www.flipcode.com/archives/articles.shtml
-     * http://lodev.org/cgtutor/
-     * http://lodev.org/cgtutor/lineclipping.html
-     * http://www.hugi.scene.org/online/coding/
-     * https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/perspective-correct-interpolation-vertex-attributes
-     * http://simonstechblog.blogspot.de/2012/04/software-rasterizer-part-2.html
-     * https://www.scratchapixel.com/lessons/3d-basic-rendering/rendering-3d-scene-overview
-     * http://www.sunshine2k.de/coding/java/TriangleRasterization/TriangleRasterization.html
-     * https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/visibility-problem-depth-buffer-depth-interpolation
-     * https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/perspective-correct-interpolation-vertex-attributes
-     * https://gamedev.stackexchange.com/questions/38213/depth-interpolation-for-z-buffer-with-scanline
-     * https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-shading/shading-normals
-     * https://www.scratchapixel.com/lessons/3d-basic-rendering/transforming-objects-using-matrices
-     * https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-polygon-mesh
-     * https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix
-     * https://www.scratchapixel.com/lessons/3d-basic-rendering/3d-viewing-pinhole-camera
-     * https://www.scratchapixel.com/lessons/3d-basic-rendering/computing-pixel-coordinates-of-3d-point/mathematics-computing-2d-coordinates-of-3d-points
-     */
 
     fillLongRightTriangle(v1: Vector3f, v2: Vector3f, v3: Vector3f, color: number): void {
 

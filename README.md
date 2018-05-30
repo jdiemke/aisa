@@ -179,4 +179,22 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - https://gamedev.stackexchange.com/questions/44263/fast-software-color-interpolating-triangle-rasterization-technique
 - https://fgiesen.wordpress.com/2011/07/05/a-trip-through-the-graphics-pipeline-2011-part-5/
 - http://insolitdust.sourceforge.net/code.html
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/opengl-perspective-projection-matrix
+- http://www.flipcode.com/archives/articles.shtml
+- http://lodev.org/cgtutor/
+- http://lodev.org/cgtutor/lineclipping.html
+- http://www.hugi.scene.org/online/coding/
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/perspective-correct-interpolation-vertex-attributes
+- http://simonstechblog.blogspot.de/2012/04/software-rasterizer-part-2.html
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/rendering-3d-scene-overview
+- http://www.sunshine2k.de/coding/java/TriangleRasterization/TriangleRasterization.html
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/visibility-problem-depth-buffer-depth-interpolation
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/perspective-correct-interpolation-vertex-attributes
+- https://gamedev.stackexchange.com/questions/38213/depth-interpolation-for-z-buffer-with-scanline
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-shading/shading-normals
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/transforming-objects-using-matrices
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-polygon-mesh
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/3d-viewing-pinhole-camera
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/computing-pixel-coordinates-of-3d-point/mathematics-computing-2d-coordinates-of-3d-points
      
