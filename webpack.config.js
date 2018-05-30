@@ -23,6 +23,7 @@ module.exports = {
         'gears': './src/examples/gears/Application.ts',
         'led-plasma': './src/examples/led-plasma/Application.ts',
         'particle-streams': './src/examples/particle-streams/Application.ts',
+        'moving-torus': './src/examples/moving-torus/Application.ts',
     },
     output: {
         filename: '[name].bundle.js',
@@ -149,6 +150,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['particle-streams'],
             filename: 'particle-streams.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['moving-torus'],
+            filename: 'moving-torus.html'
         })
     ]
 }

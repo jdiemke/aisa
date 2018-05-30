@@ -2669,27 +2669,6 @@ export class Framebuffer {
             r * Math.sin(p * alpha)).mul(70);
     }
 
-    /**
-     * https://www.youtube.com/watch?v=VMD7fsCYO9o
-     * http://www.cs.jhu.edu/~misha/Fall16/13.pdf
-     * http://www.cubic.org/docs/3dclip.htm
-     * 
-     * @param {number} elapsedTime 
-     * @memberof Framebuffer
-     */
-    public shadingTorus2(elapsedTime: number): void {
-        this.wBuffer.fill(100);
-        let scale = 1.0;
-
-        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.09));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.08));
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.04) * 25,
-            Math.sin(elapsedTime * 0.05) * 9, -24).multiplyMatrix(modelViewMartrix);
-
-        this.setCullFace(CullFace.BACK);
-        this.drawObject2(new Torus().getMesh(), modelViewMartrix, 190, 100, 100);
-    }
-
     public cosineInterpolate(y1: number, y2: number, mu: number): number {
         let mu2: number;
         if (mu <= y1) return 0;
