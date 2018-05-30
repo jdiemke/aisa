@@ -1410,19 +1410,6 @@ export class Framebuffer {
         }
     }
 
-    private sphereFunction(theta: number, phi: number): Vector4f {
-
-        let pos = new Vector4f(Math.cos(theta) * Math.cos(phi),
-            Math.cos(theta) * Math.sin(phi),
-            Math.sin(theta), 1.0);
-        let radius = (Math.sin(pos.z * 11 + Date.now() * 0.001) + 1) / 2 +
-            (Math.sin(pos.x * 11 + Date.now() * 0.001) + 1) / 3;
-        pos.x = pos.x + pos.x * radius;
-        pos.y = pos.y + pos.y * radius;
-        pos.z = pos.z + pos.z * radius;
-        return pos;
-    }
-
     private sphereFunction2(theta: number, phi: number): Vector4f {
 
         let pos = new Vector4f(Math.cos(theta) * Math.cos(phi),
@@ -1634,107 +1621,6 @@ export class Framebuffer {
         }
 
         return regionCode;
-    }
-
-    public shadingSphere(elapsedTime: number): void {
-
-        this.wBuffer.fill(100);
-
-        let points: Array<Vector4f> = [];
-
-        const STEPS = 16;
-        const STEPS2 = 16;
-        for (let i = 0; i <= STEPS; i++) {
-            for (let r = 0; r < STEPS2; r++) {
-                points.push(this.sphereFunction(-i * Math.PI / STEPS - Math.PI / 2, -r * 2 * Math.PI / STEPS2));
-            }
-        }
-
-        let index: Array<number> = [];
-
-        for (let j = 0; j < STEPS; j++) {
-            for (let i = 0; i < STEPS2; i++) {
-                index.push(((STEPS2 * j) + (1 + i) % STEPS2)); // 2
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 1
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); //3
-
-                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2)); //4
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); //3
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 5
-            }
-        }
-
-        // compute normals
-        let normals: Array<Vector4f> = new Array<Vector4f>();
-
-        for (let i = 0; i < index.length; i += 3) {
-            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
-            normals.push(normal);
-        }
-
-        // Create MV Matrix
-        let scale = 5.8;
-        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.05));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.08));
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -26 + 4 * Math.sin(elapsedTime * 0.7)).multiplyMatrix(modelViewMartrix);
-
-        /**
-         * Vertex Shader Stage
-         */
-        let points2: Array<Vector3f> = new Array<Vector3f>();
-
-        let normals2: Array<Vector4f> = new Array<Vector4f>();
-        normals.forEach(element => {
-            normals2.push(modelViewMartrix.multiplyHom(element));
-        });
-
-        points.forEach(element => {
-            let transformed = modelViewMartrix.multiplyHom(element);
-
-            let x = transformed.x;
-            let y = transformed.y;
-            let z = transformed.z;
-
-            let xx = (320 * 0.5) + (x / (-z * 0.0078));
-            let yy = (200 * 0.5) + (y / (-z * 0.0078));
-            // commented out because it breaks the winding. inversion
-            // of y has to be done after back-face culling in the
-            // viewport transform
-            // yy =(200 * 0.5) - (y / (-z * 0.0078));
-
-            points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
-        });
-
-        /**
-         * Primitive Assembly and Rasterization Stage:
-         * 1. back-face culling
-         * 2. viewport transform
-         * 3. scan conversion (rasterization)
-         */
-        for (let i = 0; i < index.length; i += 3) {
-
-            // Only render triangles with CCW-ordered vertices
-            // 
-            // Reference:
-            // David H. Eberly (2006).
-            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
-            // p. 69. Morgan Kaufmann Publishers, United States.
-            //
-            let v1 = points2[index[i]];
-            let v2 = points2[index[i + 1]];
-            let v3 = points2[index[i + 2]];
-
-            let colLine = 255 << 24 | 255 << 16 | 255 << 8 | 255;
-            if (this.isTriangleCCW(v1, v2, v3)) {
-                let normal = normals2[i / 3];
-                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector4f(0.5, 0.5, 0.5, 0.0).normalize())) * 100), 255) + 50;
-                let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar + 100;
-                this.drawTriangleDDA(v1, v2, v3, color);
-                //this.drawLineDDA(v1, v2, colLine);
-                //this.drawLineDDA(v1, v3, colLine);
-                //this.drawLineDDA(v3, v2, colLine);
-            }
-        }
     }
 
     public createObject() {
@@ -2107,7 +1993,6 @@ export class Framebuffer {
                 Math.round(size), Math.round(size), texture, 1 / element.z, this.interpolate(-60, -25, element.z));
         });
     }
-
 
     public drawParticleStreams(elapsedTime: number, texture: Texture, noClear: boolean = false) {
 

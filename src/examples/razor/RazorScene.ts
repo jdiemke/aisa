@@ -9,6 +9,7 @@ import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { Icosahedron } from '../../geometrical-objects/Icosahedron';
+import { Sphere } from '../../geometrical-objects/Sphere';
 
 /**
  * TODO: extract lens into effect class
@@ -24,7 +25,7 @@ export class RazorScene extends AbstractScene {
     private cube: Cube;
     private dodecahedron: Dodecahedron;
     private pyramid: Pyramid;
-    private icosahedron: Icosahedron;
+    private icosahedron: Sphere; //Icosahedron;
 
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
 
@@ -34,7 +35,7 @@ export class RazorScene extends AbstractScene {
         this.cube = new Cube();
         this.dodecahedron = new Dodecahedron();
         this.pyramid = new Pyramid();
-        this.icosahedron = new Icosahedron();
+        this.icosahedron = new Sphere();
 
         return Promise.all([
             TextureUtils.load(require('./assets/spark.png'), true).then(texture => this.texture10 = texture),
