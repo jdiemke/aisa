@@ -1,12 +1,14 @@
 import { Canvas } from '../../Canvas';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
+import { Cube } from '../../geometrical-objects/Cube';
+import { Dodecahedron } from '../../geometrical-objects/Dodecahedron';
+import { Pyramid } from '../../geometrical-objects/Pyramid';
 import { Matrix4f, Vector3f } from '../../math';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
-import { Cube } from '../../geometrical-objects/Cube';
-import { Dodecahedron } from '../../geometrical-objects/Dodecahedron';
+import { Icosahedron } from '../../geometrical-objects/Icosahedron';
 
 /**
  * TODO: extract lens into effect class
@@ -21,6 +23,8 @@ export class RazorScene extends AbstractScene {
 
     private cube: Cube;
     private dodecahedron: Dodecahedron;
+    private pyramid: Pyramid;
+    private icosahedron: Icosahedron;
 
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
 
@@ -29,6 +33,8 @@ export class RazorScene extends AbstractScene {
 
         this.cube = new Cube();
         this.dodecahedron = new Dodecahedron();
+        this.pyramid = new Pyramid();
+        this.icosahedron = new Icosahedron();
 
         return Promise.all([
             TextureUtils.load(require('./assets/spark.png'), true).then(texture => this.texture10 = texture),
@@ -86,7 +92,7 @@ export class RazorScene extends AbstractScene {
         modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 1.0, distance).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
 
-        model = framebuffer.getIcosahedronMesh();
+        model = this.icosahedron.getMesh();
         framebuffer.drawObject2(model, modelViewMartrix, 239, 187, 115);
 
         scale = 1.0;
@@ -111,7 +117,7 @@ export class RazorScene extends AbstractScene {
         modelViewMartrix = Matrix4f.constructTranslationMatrix(-distance, yDisplacement + 0.5, -distance).multiplyMatrix(modelViewMartrix);
         modelViewMartrix = camera.multiplyMatrix(modelViewMartrix);
 
-        model = framebuffer.getPyramidMesh();
+        model = this.pyramid.getMesh();
         framebuffer.drawObject2(model, modelViewMartrix, 125, 128, 146);
 
         /**
@@ -132,7 +138,7 @@ export class RazorScene extends AbstractScene {
         modelViewMartrix = camera.multiplyMatrix(
             Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
 
-        framebuffer.drawObject2(framebuffer.getPyramidMesh(), modelViewMartrix, 48, 32, 24, true, true);
+        framebuffer.drawObject2(this.pyramid.getMesh(), modelViewMartrix, 48, 32, 24, true, true);
 
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
@@ -156,7 +162,7 @@ export class RazorScene extends AbstractScene {
         modelViewMartrix = camera.multiplyMatrix(
             Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
 
-        framebuffer.drawObject2(framebuffer.getIcosahedronMesh(), modelViewMartrix, 48, 32, 24, true);
+        framebuffer.drawObject2(this.icosahedron.getMesh(), modelViewMartrix, 48, 32, 24, true);
 
         let lensflareScreenSpace = framebuffer.project(camera.multiply(new Vector3f(12.0, 4.0, 0)));
 
