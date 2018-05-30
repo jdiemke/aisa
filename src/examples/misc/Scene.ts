@@ -1329,8 +1329,8 @@ export class Scene extends AbstractScene {
         });
     }
 
-    // Move
-    public createProceduralTexture3(): Promise<Texture> {
+    
+    public  createProceduralTexture3(): Promise<Texture> {
         return new Promise((resolve) => {
             const texture = new Texture();
             texture.texture = new Uint32Array(256 * 256);
@@ -1357,6 +1357,7 @@ export class Scene extends AbstractScene {
             resolve(texture);
         });
     }
+
 
     // Move
     public createProceduralDisplacementMap(): Promise<Texture> {

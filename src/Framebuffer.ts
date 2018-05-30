@@ -1994,61 +1994,6 @@ export class Framebuffer {
         });
     }
 
-    public drawParticleStreams(elapsedTime: number, texture: Texture, noClear: boolean = false) {
-
-        let points: Array<Vector3f> = new Array<Vector3f>();
-        const num = 50;
-        const num2 = 10;
-        const scale = 2.1;
-
-        for (let i = 0; i < num; i++) {
-            let radius = 2.8;
-            let radius2 = 2.9 + 3 * Math.sin(Math.PI * 2 * i / num - elapsedTime * 0.002);
-
-            for (let j = 0; j < num2; j++) {
-
-                let x = ((i - num / 2) * scale - elapsedTime * 0.008) % (num * scale) + (num * scale * 0.5);
-                let y = Math.cos(Math.PI * 2 / num2 * j + i * 0.02 + elapsedTime * 0.0005) * radius + 8 + radius2;
-                let z = Math.sin(Math.PI * 2 / num2 * j + i * 0.02 + elapsedTime * 0.0005) * radius;
-
-                points.push(Matrix3f.constructXRotationMatrix(Math.PI * 2 * i / num - Math.sin(elapsedTime * 0.0003 + Math.PI * 2 * i / num)).multiply(new Vector3f(x, y, z)));
-            }
-        }
-
-        for (let i = 0; i < 3; i++) {
-            let modelViewMartrix = Matrix4f.constructTranslationMatrix(0, -0.0, -49).multiplyMatrix(
-
-                Matrix4f.constructZRotationMatrix(Math.PI * 0.17).multiplyMatrix(
-                    Matrix4f.constructYRotationMatrix(elapsedTime * 0.00015).multiplyMatrix(
-                        Matrix4f.constructXRotationMatrix(Math.PI * 2 / 3 * i + elapsedTime * 0.0006)))
-            );
-
-            let points2: Array<Vector3f> = new Array<Vector3f>(points.length);
-            points.forEach(element => {
-
-
-                let transformed = this.project(modelViewMartrix.multiply(element));
-
-                points2.push(transformed);
-            });
-
-            points2.sort(function (a, b) {
-                return a.z - b.z;
-            });
-
-            points2.forEach(element => {
-                //let size = -(2.0 * 192 / (element.z));
-                let size = -(1.3 * 192 / (element.z));
-                if (element.z < -4)
-                    this.drawParticleNoDepth(
-                        Math.round(element.x - size / 2),
-                        Math.round(element.y - size / 2),
-                        Math.round(size), Math.round(size), texture, 1 / element.z, this.interpolate(-90, -55, element.z));
-            });
-        }
-    }
-
-
     public drawWormhole(elapsedTime: number, texture: Texture, noClear: boolean = false) {
 
         let points: Array<Vector3f> = new Array<Vector3f>();
