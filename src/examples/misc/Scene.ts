@@ -160,9 +160,6 @@ export class Scene extends AbstractScene {
                     this.framebuffer.shadingSphere(time * 0.01);
                 } else if (time < 40000) {
                     this.framebuffer.wireFrameSphereClipping(time * 0.01);
-                } else if (time < 45000) {
-                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
-                    this.framebuffer.shadingTorus2(time * 0.02);
                 } else if (time < 70000) {
                     this.framebuffer.floodFill(this.texture5, time - 60000);
                 } else if (time < 80000) {
@@ -1028,8 +1025,11 @@ export class Scene extends AbstractScene {
 
         // this.framebuffer.drawRadialBlur();
 
-        framebuffer.clear();
-        framebuffer.wireFrameSphereClipping(time*0.005);
+        //framebuffer.clear();
+        //framebuffer.shadingSphereClip(time*0.005);
+        // framebuffer.scene8(time*0.02);
+        framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.texture5.texture);
+        framebuffer.shadingTorus2(time * 0.005);
         framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
 
         // TS SoftSynth Project
