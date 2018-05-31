@@ -39,15 +39,12 @@ export class FlatShadingRenderingPipeline {
 
             let normal = mesh.normals2[mesh.faces[i].normals[0]];
 
-            // if (this.isTriangleCCW(v1,v2,v3)) {
-            // 2d Backface culling is here not allowed because we did not project here!
-            // FIXME: find a robust way to cull without cracks!
             if (this.framebuffer.isInFrontOfNearPlane(v1) && this.framebuffer.isInFrontOfNearPlane(v2) && this.framebuffer.isInFrontOfNearPlane(v3)) {
                 let p1 = this.framebuffer.project(v1);
                 let p2 = this.framebuffer.project(v2);
                 let p3 = this.framebuffer.project(v3);
 
-                if (culling || this.framebuffer.isTriangleCCW(p1, p2, p3)) {
+                if (this.framebuffer.isTriangleCCW(p1, p2, p3)) {
                     const clippedPolygon = SutherlandHodgman2DClipper.clipConvexPolygon(new Array<Vector3f>(p1, p2, p3));
 
                     if (clippedPolygon.length < 3) {
@@ -58,9 +55,6 @@ export class FlatShadingRenderingPipeline {
                     let scalar = Math.min((Math.max(0.0, normal.dot(lightDirection))), 1.0);
                     scalar = scalar * 0.85 + 0.15;
                     let color = 255 << 24 | Math.min(scalar * blue, 255) << 16 | Math.min(scalar * green, 255) << 8 | Math.min(scalar * red, 255);
-                    if (noLighting) {
-                        color = 255 << 24 | red | green << 8 | blue << 16;
-                    }
 
                     // triangulate new point set
                     for (let i = 0; i < clippedPolygon.length - 2; i++) {

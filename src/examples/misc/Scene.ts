@@ -1005,10 +1005,12 @@ export class Scene extends AbstractScene {
 
         // this.framebuffer.drawRadialBlur();
 
-        //framebuffer.clear();
+        framebuffer.clear();
         //framebuffer.shadingSphereClip(time*0.005);
         // framebuffer.scene8(time*0.02);
-
+        // framebuffer.debug(time*0.003);
+        framebuffer.setCullFace(CullFace.BACK);
+       // framebuffer.shadingTorus5(time*0.02, 0);
         framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
 
         // TS SoftSynth Project
