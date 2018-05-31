@@ -80,7 +80,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
         modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -10).multiplyMatrix(modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.04)));
         modelViewMartrix = Matrix4f.constructZRotationMatrix(elapsedTime * 0.01).multiplyMatrix(finalMatrix);
 
-        framebuffer.drawObject2(this.torusKnot.getMesh(), modelViewMartrix, 221, 96, 48, false, false);
+        framebuffer.flatShadingRenderingPipeline.drawObject2(this.torusKnot.getMesh(), modelViewMartrix, 221, 96, 48, false, false);
 
         let ppoints = new Array<Vector3f>();
         const num = 40;

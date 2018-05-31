@@ -33,6 +33,7 @@ import { Torus } from './geometrical-objects/Torus';
 import { TriangleRasterizer } from './rasterizer/TriangleRasterizer';
 import { ScaleClipBlitter } from './blitter/ScaleClipBlitter';
 import { TexturedTriangleRasterizer } from './rasterizer/TexturedTriangleRasterizer';
+import { FlatShadingRenderingPipeline } from './rendering-pipelines/FlatShadingRenderingPipeline';
 
 let json = require('./assets/f16.json');
 let bunnyJson = <any>require('./assets/bunny.json');
@@ -81,9 +82,10 @@ export class Framebuffer {
     private sphereDisp2: any;
 
     private linerClipper = new CohenSutherlandLineClipper(this);
-    private triangleRasterizer = new TriangleRasterizer(this);
+    public triangleRasterizer = new TriangleRasterizer(this);
     private texturedTriangleRasterizer = new TexturedTriangleRasterizer(this);
     private scaleClipBlitter = new ScaleClipBlitter(this);
+    public flatShadingRenderingPipeline = new FlatShadingRenderingPipeline(this);
 
     public setCullFace(face: CullFace): void {
         this.cullMode = face;
@@ -1868,7 +1870,7 @@ export class Framebuffer {
             let model = this.blenderObj[j];
 
             if (frustumCuller.isPotentiallyVisible(model.boundingSphere)) {
-                this.drawObject2(model, modelViewMartrix, 144, 165, 116);
+                this.flatShadingRenderingPipeline.drawObject2(model, modelViewMartrix, 144, 165, 116);
                 let colLine = 255 << 24 | 255 << 8;
                 this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
                 count++;
@@ -1932,7 +1934,7 @@ export class Framebuffer {
 
         let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(5, 16, 5));
         let model = this.blenderObj2[0];
-        this.drawObject2(model, mv, 246, 165, 177);
+        this.flatShadingRenderingPipeline.drawObject2(model, mv, 246, 165, 177);
 
 
         mv = camera.multiplyMatrix(Matrix4f.constructZRotationMatrix(
@@ -1941,7 +1943,7 @@ export class Framebuffer {
                 Math.PI * 0.5 * this.cosineInterpolate(2000, 2600, Math.floor(elapsedTime * 0.7) % 4000)))
         );
         model = this.blenderObj2[1];
-        this.drawObject2(model, mv, 186, 165, 197);
+        this.flatShadingRenderingPipeline.drawObject2(model, mv, 186, 165, 197);
 
 
         let lensflareScreenSpace = this.project(camera.multiply(new Vector3f(16.0 * 20, 16.0 * 20, 0)));
@@ -1967,12 +1969,12 @@ export class Framebuffer {
         for (let j = 0; j < this.blenderObj4.length; j++) {
             let model = this.blenderObj4[j];
             if (j !== 0 && j !== 2)
-                this.drawObject2(model, mv, 200, 255, 216);
+                this.flatShadingRenderingPipeline.drawObject2(model, mv, 200, 255, 216);
 
             if (j === 0)
-                this.drawObject2(model, mv, 244, 200, 216);
+            this.flatShadingRenderingPipeline.drawObject2(model, mv, 244, 200, 216);
             if (j === 2)
-                this.drawObject2(model, mv, 244, 225, 216);
+            this.flatShadingRenderingPipeline.drawObject2(model, mv, 244, 225, 216);
 
         }
 
@@ -1983,7 +1985,7 @@ export class Framebuffer {
             ));
 
         let model2 = this.blenderObj5[0];
-        this.drawObject2(model2, mv, 200, 255, 216);
+        this.flatShadingRenderingPipeline.drawObject2(model2, mv, 200, 255, 216);
 
         const scale: number = 8;
         mv = camera.multiplyMatrix(
@@ -2017,7 +2019,7 @@ export class Framebuffer {
         let scal = Math.sin(elapsedTime * 0.003) * 0.5 + 0.5;
         for (let j = 0; j < this.blenderObj6.length; j++) {
             let model = this.blenderObj6[j];
-            this.drawObject2(model, mv, 244 * scal, 225 * scal, 216 * scal);
+            this.flatShadingRenderingPipeline.drawObject2(model, mv, 244 * scal, 225 * scal, 216 * scal);
         }
 
         mv = camera.multiplyMatrix(
@@ -2028,7 +2030,7 @@ export class Framebuffer {
             ));
 
         let model = this.blenderObj7[0];
-        this.drawObject2(model, mv, 244, 100, 116, false, true);
+        this.flatShadingRenderingPipeline.drawObject2(model, mv, 244, 100, 116, false, true);
 
         let points: Array<Vector3f> = new Array<Vector3f>();
         const num = 10;
@@ -2095,7 +2097,7 @@ export class Framebuffer {
                 )
             );
             let model = this.blenderObj3[0];
-            this.drawObject2(model, mv, 246, 165, 177);
+            this.flatShadingRenderingPipeline.drawObject2(model, mv, 246, 165, 177);
         }
         let lensflareScreenSpace = this.project(camera.multiply(new Vector3f(16.0 * 20, 16.0 * 20, 0)));
 
@@ -2188,81 +2190,7 @@ export class Framebuffer {
         modelViewMartrix = Matrix4f.constructZRotationMatrix(-elapsedTime * 0.02).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0, -21)
             .multiplyMatrix(modelViewMartrix));
 
-        this.drawObject2(this.torus.getMesh(), modelViewMartrix, 215, 30, 120);
-    }
-
-    /**
-     * TODO:
-     * - object with position, rotation, material, color
-     * - remove tempp matrix objects: instead store one global MV  matrix and manipulate it directly without generating temp amtrices every frame
-     * - no lighting for culled triangles
-     * - only z clip if necessary (no clip, fully visible)
-     */
-    // compare to drawObject
-    // used by blender modells
-    public drawObject2(obj: Mesh, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, culling: boolean = false) {
-
-        let normalMatrix = modelViewMartrix.computeNormalMatrix();
-
-        for (let i = 0; i < obj.normals.length; i++) {
-            normalMatrix.multiplyHomArr(obj.normals[i], obj.normals2[i]);
-        }
-
-        for (let i = 0; i < obj.points.length; i++) {
-            modelViewMartrix.multiplyHomArr(obj.points[i], obj.points2[i]);
-        }
-
-        let lightDirection = new Vector4f(0.5, 0.5, 0.3, 0.0).normalize();
-
-        for (let i = 0; i < obj.faces.length; i++) {
-            // this data structure is different as well !!!!
-            let v1 = obj.points2[obj.faces[i].vertices[0]];
-            let v2 = obj.points2[obj.faces[i].vertices[1]];
-            let v3 = obj.points2[obj.faces[i].vertices[2]];
-
-            let normal = obj.normals2[obj.faces[i].normals[0]];
-
-            // if (this.isTriangleCCW(v1,v2,v3)) {
-            // 2d Backface culling is here not allowed because we did not project here!
-            // FIXME: find a robust way to cull without cracks!
-            if (this.isInFrontOfNearPlane(v1) && this.isInFrontOfNearPlane(v2) && this.isInFrontOfNearPlane(v3)) {
-                let p1 = this.project(v1);
-                let p2 = this.project(v2);
-                let p3 = this.project(v3);
-
-                // DIFFERENCE IS cullin variable here!!!!
-                if (culling || this.isTriangleCCW(p1, p2, p3)) {
-                    // TODO: do lighting only if triangle is visible
-                    let scalar = Math.min((Math.max(0.0, normal.dot(lightDirection))), 1.0);
-                    scalar = scalar * 0.85 + 0.15;
-                    let color = 255 << 24 | Math.min(scalar * blue, 255) << 16 | Math.min(scalar * green, 255) << 8 | Math.min(scalar * red, 255);
-                    if (noLighting) {
-                        color = 255 << 24 | red | green << 8 | blue << 16;
-                    }
-
-                    const clippedPolygon = SutherlandHodgman2DClipper.clipConvexPolygon(new Array<Vector3f>(p1, p2, p3), color);
-
-                    if (clippedPolygon.length < 3) {
-                        continue;
-                    }
-
-                    // triangulate new point set
-                    for (let i = 0; i < clippedPolygon.length - 2; i++) {
-                        this.triangleRasterizer.drawTriangleDDA(clippedPolygon[0], clippedPolygon[1 + i], clippedPolygon[2 + i], color);
-                    }
-                }
-            } else if (!this.isInFrontOfNearPlane(v1) && !this.isInFrontOfNearPlane(v2) && !this.isInFrontOfNearPlane(v3)) {
-                continue;
-            } else {
-                let scalar = Math.min((Math.max(0.0, normal.dot(lightDirection))), 1.0);
-                scalar = scalar * 0.85 + 0.15;
-                let color = 255 << 24 | Math.min(scalar * blue, 255) << 16 | Math.min(scalar * green, 255) << 8 | Math.min(scalar * red, 255);
-                if (noLighting) {
-                    color = 255 << 24 | red | green << 8 | blue << 16;
-                }
-                this.zClipTriangle(new Array<Vector4f>(v1, v2, v3), color);
-            }
-        }
+            this.flatShadingRenderingPipeline.drawObject2(this.torus.getMesh(), modelViewMartrix, 215, 30, 120);
     }
 
     public drawObjectTexture(obj: any, modelViewMartrix: Matrix4f) {
@@ -2377,61 +2305,6 @@ export class Framebuffer {
 
     public isInFrontOfNearPlane(p: { x: number; y: number; z: number }): boolean {
         return p.z < this.NEAR_PLANE_Z;
-    }
-
-    public computeNearPlaneIntersection(p1: Vector4f, p2: Vector4f): Vector4f {
-        let ratio = (this.NEAR_PLANE_Z - p1.z) / (p2.z - p1.z);
-        return new Vector4f(ratio * (p2.x - p1.x) + p1.x, ratio * (p2.y - p1.y) + p1.y, this.NEAR_PLANE_Z);
-    }
-
-    public zClipTriangle(subject: Array<Vector4f>, color: number): void {
-
-        let output = subject;
-
-        let input = output;
-        output = new Array<Vector4f>();
-        let S = input[input.length - 1];
-
-        for (let i = 0; i < input.length; i++) {
-            let point = input[i];
-            if (this.isInFrontOfNearPlane(point)) {
-                if (!this.isInFrontOfNearPlane(S)) {
-                    output.push(this.computeNearPlaneIntersection(S, point));
-                }
-                output.push(point);
-            } else if (this.isInFrontOfNearPlane(S)) {
-                output.push(this.computeNearPlaneIntersection(S, point));
-            }
-            S = point;
-        }
-
-        if (output.length < 3) {
-            return;
-        }
-
-        let projected: Vector3f[] = output.map<Vector3f>((v) => {
-            return this.project(v);
-        })
-
-        if (output.length === 3 && !this.isTriangleCCW(projected[0], projected[1], projected[2])) {
-            return;
-        }
-
-        if (output.length === 4 && !this.isTriangleCCW2(projected[0], projected[1], projected[2], projected[3])) {
-            return;
-        }
-
-        const clippedPolygon = SutherlandHodgman2DClipper.clipConvexPolygon(projected, color);
-
-        if (clippedPolygon.length < 3) {
-            return;
-        }
-
-        // triangulate new point set
-        for (let i = 0; i < clippedPolygon.length - 2; i++) {
-            this.triangleRasterizer.drawTriangleDDA(clippedPolygon[0], clippedPolygon[1 + i], clippedPolygon[2 + i], color);
-        }
-        // }
     }
 
     public computeNearPlaneIntersection2(p1: Vertex, p2: Vertex): Vertex {
@@ -2633,7 +2506,7 @@ export class Framebuffer {
                         v1.y > Framebuffer.maxWindow.y ||
                         v2.y > Framebuffer.maxWindow.y ||
                         v3.y > Framebuffer.maxWindow.y) {
-                        const clippedPolygon = SutherlandHodgman2DClipper.clipConvexPolygon(new Array<Vector3f>(v1, v2, v3), color);
+                        const clippedPolygon = SutherlandHodgman2DClipper.clipConvexPolygon(new Array<Vector3f>(v1, v2, v3));
 
                         if (clippedPolygon.length < 3) {
                             continue;
@@ -2775,7 +2648,7 @@ export class Framebuffer {
                     v2.y > Framebuffer.maxWindow.y ||
                     v3.y > Framebuffer.maxWindow.y) {
 
-                    const clippedPolygon = SutherlandHodgman2DClipper.clipConvexPolygon(new Array<Vector3f>(v1, v2, v3), color);
+                    const clippedPolygon = SutherlandHodgman2DClipper.clipConvexPolygon(new Array<Vector3f>(v1, v2, v3));
 
                     if (clippedPolygon.length < 3) {
                         continue;
@@ -3377,7 +3250,6 @@ export class Framebuffer {
         this.wBuffer.fill(100);
 
         let result = this.sphere;
-
 
         for (let i = 0; i < result.points.length; i++) {
             result.points2[i].y = result.points[i].y;
@@ -4538,7 +4410,7 @@ export class Framebuffer {
         }
     }
 
-    private isTriangleCCW2(v1: { x: number, y: number, z: number }, v2: { x: number, y: number, z: number }, v3: { x: number, y: number, z: number },
+    public isTriangleCCW2(v1: { x: number, y: number, z: number }, v2: { x: number, y: number, z: number }, v3: { x: number, y: number, z: number },
         v4: { x: number, y: number, z: number }): boolean {
         let det: number = //(v2.x - v1.x) * (v3.y - v1.y) - (v2.y - v1.y) * (v3.x - v1.x) - (v3.y - v2.y) * (v4.x - v2.x);
             v1.x * v2.y - v2.x * v1.y +

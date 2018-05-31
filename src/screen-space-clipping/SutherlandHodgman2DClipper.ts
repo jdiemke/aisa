@@ -24,7 +24,7 @@ export class SutherlandHodgman2DClipper {
      * @returns {void}
      * @memberof Framebuffer
      */
-    public static clipConvexPolygon(subject: Array<Vector3f>, color: number): Array<Vector3f> {
+    public static clipConvexPolygon(subject: Array<Vector3f>): Array<Vector3f> {
 
         let output = subject;
 

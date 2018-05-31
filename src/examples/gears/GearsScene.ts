@@ -70,7 +70,7 @@ export class GearsScene extends AbstractScene {
 
             let mv = camera.multiplyMatrix(modelViewMartrix);
             let model = this.blenderObj3[0];
-            framebuffer.drawObject2(model, mv, 246, 165, 177);
+            framebuffer.flatShadingRenderingPipeline.drawObject2(model, mv, 246, 165, 177);
         }
         let lensflareScreenSpace = framebuffer.project(camera.multiply(new Vector3f(16.0 * 20, 16.0 * 20, 0)));
 

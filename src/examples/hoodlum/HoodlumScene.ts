@@ -72,7 +72,7 @@ export class HoodlumScene extends AbstractScene {
             ));
 
         let model = this.hoodlumLogoMesh[0];
-        framebuffer.drawObject2(model, mv, 244, 100, 116, false, true);
+        framebuffer.flatShadingRenderingPipeline.drawObject2(model, mv, 244, 100, 116, false, true);
 
         let points: Array<Vector3f> = new Array<Vector3f>();
         const num = 10;
