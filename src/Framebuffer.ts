@@ -1666,43 +1666,6 @@ export class Framebuffer {
         return scene;
     }
 
-    /**
-     * http://sol.gfxile.net/gp/ch17.html
-     * TODO:
-     * - better textures
-     * - precalc lookup tables
-     * - fadeout
-     * - substraction to create black holes
-     */
-    drawPlanedeformationTunnel(elapsedTime: number, texture: Texture, texture2: Texture) {
-
-        let i = 0;
-        for (let y = 0; y < 200; y++) {
-            for (let x = 0; x < 320; x++) {
-                let xdist = (x - 320 / 2);
-                let ydist = (y - 200 / 2);
-                let dist = 256 * 20 / Math.max(1.0, Math.sqrt(xdist * xdist + ydist * ydist));
-                let dist2 = dist;
-                dist += elapsedTime * 0.02;
-                dist2 += elapsedTime * 0.039;
-                let angle = (Math.atan2(xdist, ydist) / Math.PI + 1.0) * 128 + elapsedTime * 0.0069;
-
-                let color1 = texture.texture[(dist2 & 0xff) + (angle & 0xff) * 255];
-                let color2 = texture2.texture[(dist & 0xff) + (angle & 0xff) * 255];
-
-                let alpha = 0.4;
-                let inverseAlpha = 1 - alpha;
-
-                let r = (((color1 >> 0) & 0xff) * (inverseAlpha) + (((color2) >> 0) & 0xff) * (alpha)) | 0;
-                let g = (((color1 >> 8) & 0xff) * (inverseAlpha) + (((color2) >> 8) & 0xff) * (alpha)) | 0;
-                let b = (((color1 >> 16) & 0xff) * (inverseAlpha) + ((color2 >> 16) & 0xff) * (alpha)) | 0;
-
-                this.framebuffer[i++] = r | g << 8 | b << 16 | 255 << 24;
-            }
-        }
-    }
-
-
     drawPlanedeformationTunnelAnim(elapsedTime: number, texture: Texture) {
 
         let i = 0;
@@ -3318,8 +3281,6 @@ export class Framebuffer {
         }
     }
 
-
-
     public createCylinder() {
         let k = {
             points: []
@@ -3381,7 +3342,6 @@ export class Framebuffer {
             texture
         }
     }
-
 
     public createSphereDistplaced(texture: Texture) {
         let sphere: {
@@ -3476,8 +3436,6 @@ export class Framebuffer {
             index
         }
     }
-
-
 
     public shadingSphereEnv(elapsedTime: number): void {
 
@@ -3618,7 +3576,6 @@ export class Framebuffer {
             }
         }
     }
-
 
     public shadingPlaneEnv(elapsedTime: number): void {
 
@@ -3768,7 +3725,6 @@ export class Framebuffer {
             }
         }
     }
-
 
     public shadingCylinderEnv(elapsedTime: number): void {
         this.wBuffer.fill(100);
@@ -4062,9 +4018,7 @@ export class Framebuffer {
         }
     }
 
-
     public shadingSphereEnvDisp(elapsedTime: number): void {
-
         this.wBuffer.fill(100);
 
         let result = this.sphereDisp;
@@ -4210,12 +4164,7 @@ export class Framebuffer {
         }
     }
 
-
-
     public shadingSphereEnvDisp2(elapsedTime: number, modelViewMartrix: Matrix4f): void {
-
-        // this.wBuffer.fill(100);
-
         let result = this.sphereDisp2;
 
         let scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
@@ -4350,7 +4299,6 @@ export class Framebuffer {
         }
     }
 
-
     /**
      * Optimization:
      * - no shading / only texture mapping (use function pointers to set correct rasterization function)
@@ -4358,7 +4306,6 @@ export class Framebuffer {
      * - generate object only once
      * - dont use temp arrays / instead use always the same array preallocated
      */
-
     public createBunny(): any {
         let points: Array<Vector3f> = new Array<Vector3f>();
 
@@ -4670,9 +4617,7 @@ export class Framebuffer {
         }
     }
 
-    
     fillLongRightTriangle2(v1: Vertex, v2: Vertex, v3: Vertex, color: number): void {
-
         let yDistanceLeft = v2.position.y - v1.position.y;
         let yDistanceRight = v3.position.y - v1.position.y;
 
@@ -4967,7 +4912,6 @@ export class Framebuffer {
         }
     }
 
-    
     public drawTriangleDDA2(p1: Vertex, p2: Vertex, p3: Vertex, color: number): void {
 
         let temp: Vertex;

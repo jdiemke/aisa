@@ -25,6 +25,7 @@ module.exports = {
         'particle-streams': './src/examples/particle-streams/Application.ts',
         'moving-torus': './src/examples/moving-torus/Application.ts',
         'torus-knot-tunnel': './src/examples/torus-knot-tunnel/Application.ts',
+        'planedeformation-tunnel': './src/examples/planedeformation-tunnel/Application.ts',
     },
     output: {
         filename: '[name].bundle.js',
@@ -161,6 +162,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['torus-knot-tunnel'],
             filename: 'torus-knot-tunnel.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['planedeformation-tunnel'],
+            filename: 'planedeformation-tunnel.html'
         })
     ]
 }

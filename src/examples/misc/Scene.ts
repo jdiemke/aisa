@@ -233,17 +233,6 @@ export class Scene extends AbstractScene {
                     this.framebuffer.drawParticleTorus(time, this.particleTexture);
                     this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
                 } else if (time < 380000) {
-                    this.framebuffer.drawPlanedeformationTunnel(time, this.heightmap, this.metal);
-                    const ukBasslineBpm = 140;
-                    const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
-                    const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
-                    const smash = (this.framebuffer.cosineInterpolate(0, 15, smashTime) -
-                        this.framebuffer.cosineInterpolate(15, 200, smashTime) +
-                        0.4 * this.framebuffer.cosineInterpolate(200, 300, smashTime) -
-                        0.4 * this.framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
-                    this.framebuffer.drawScaledTextureClipBi((320 / 2 - (this.hoodlumLogo.width + smash) / 2) | 0,
-                        (200 / 2 - (this.hoodlumLogo.height - smash) / 2) | 0, this.hoodlumLogo.width + smash, (this.hoodlumLogo.height - smash) | 0, this.hoodlumLogo, 1.0);
-                } else if (time < 400000) {
                     // THE NEXT LINE IS THE BOTTLENECK NOT THE SPHERE!
                     this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
                     this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
