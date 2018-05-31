@@ -4,6 +4,7 @@ import { Framebuffer } from '../../Framebuffer';
 import { Vector3f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
+import { ScaleClipBlitter } from '../../blitter/ScaleClipBlitter';
 
 /**
  * TODO: extract lens into effect class
@@ -14,7 +15,11 @@ export class PlanedeformationTunnelScene extends AbstractScene {
     private metall: Texture;
     private hoodlumLogo: Texture;
 
+    private scaleClipBlitter: ScaleClipBlitter;
+
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.scaleClipBlitter = new ScaleClipBlitter(framebuffer);
+
         return Promise.all([
             TextureUtils.load(require('../../assets/heightmap.png'), false).then(
                 (texture: Texture) => this.heightmap = texture
@@ -37,7 +42,7 @@ export class PlanedeformationTunnelScene extends AbstractScene {
             framebuffer.cosineInterpolate(15, 200, smashTime) +
             0.4 * framebuffer.cosineInterpolate(200, 300, smashTime) -
             0.4 * framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
-        framebuffer.drawScaledTextureClip((320 / 2 - (this.hoodlumLogo.width + smash) / 2) | 0,
+        this.scaleClipBlitter.drawScaledTextureClip((320 / 2 - (this.hoodlumLogo.width + smash) / 2) | 0,
             (200 / 2 - (this.hoodlumLogo.height - smash) / 2) | 0, this.hoodlumLogo.width + smash, (this.hoodlumLogo.height - smash) | 0, this.hoodlumLogo, 1.0);
     }
 
