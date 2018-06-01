@@ -21,7 +21,7 @@ export class HoodlumScene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.spaceLabMesh = framebuffer.getBlenderScene(require('../../assets/lab2.json'), false);
-        this.hoodlumLogoMesh = framebuffer.getBlenderScene(require('../../assets/hoodlum2018.json'), false);
+        this.hoodlumLogoMesh = framebuffer.getBlenderScene2(require('../../assets/hoodlum2018.json'), false);
         return Promise.all([
             TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(texture => this.blurred = texture),
             TextureUtils.load(require('../../assets/lab2.png'), false).then(texture => this.lab2 = texture),

@@ -16,7 +16,8 @@ export class GearsScene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         framebuffer.setCullFace(CullFace.FRONT);
-        this.blenderObj3 = framebuffer.getBlenderScene(require('../../assets/gear.json'), false);
+        this.blenderObj3 = framebuffer.getBlenderScene2(require('../../assets/gear.json'), false);
+        console.log(JSON.stringify(this.blenderObj3));
         return Promise.all([
             TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
@@ -69,8 +70,8 @@ export class GearsScene extends AbstractScene {
             modelViewMartrix = Matrix4f.constructXRotationMatrix(elapsedTime * 0.0006 + dampFactor * 0.7 * (4 - i)).multiplyMatrix(modelViewMartrix);
 
             let mv = camera.multiplyMatrix(modelViewMartrix);
-            let model = this.blenderObj3[0];
-            framebuffer.flatShadingRenderingPipeline.drawObject2(model, mv, 246, 165, 177);
+            let model = this.blenderObj3[0]; 
+           framebuffer.flatShadingRenderingPipeline.drawObject2(model, mv, 246, 165, 177);
         }
         let lensflareScreenSpace = framebuffer.project(camera.multiply(new Vector3f(16.0 * 20, 16.0 * 20, 0)));
 

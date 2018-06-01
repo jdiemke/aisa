@@ -27,13 +27,14 @@ import { LeftClipEdge } from './screen-space-clipping/LeftClipEdge';
 import { TopClipEdge } from './screen-space-clipping/TopClipEdge';
 import { BottomClipEdge } from './screen-space-clipping/BottomClipEdge';
 import { SutherlandHodgman2DClipper } from './screen-space-clipping/SutherlandHodgman2DClipper';
-import { Mesh } from './geometrical-objects/Mesh';
+import { Mesh, FlatshadedMesh } from './geometrical-objects/Mesh';
 import { CohenSutherlandLineClipper } from './screen-space-clipping/CohenSutherlandLineClipper';
 import { Torus } from './geometrical-objects/Torus';
 import { TriangleRasterizer } from './rasterizer/TriangleRasterizer';
 import { ScaleClipBlitter } from './blitter/ScaleClipBlitter';
 import { TexturedTriangleRasterizer } from './rasterizer/TexturedTriangleRasterizer';
 import { FlatShadingRenderingPipeline } from './rendering-pipelines/FlatShadingRenderingPipeline';
+import { FlatShadedFace } from './geometrical-objects/Face';
 
 let json = require('./assets/f16.json');
 let bunnyJson = <any>require('./assets/bunny.json');
@@ -1553,7 +1554,7 @@ export class Framebuffer {
         }
     }
 
-    // TODO: if flat shaded, then store only one normal per face!
+   
     public getBlenderScene(file: any, disp: boolean = true, flat: boolean = false): any {
         let scene = [];
 
@@ -1598,6 +1599,47 @@ export class Framebuffer {
                 normals2: normals.map(() => new Vector4f(0, 0, 0, 0)),
                 boundingSphere: sphere, // NO!!!
                 name: object.name /// NO!
+            };
+            scene.push(obj);
+        });
+
+        return scene;
+    }
+
+   
+    // TODO: if flat shaded, then store only one normal per face!
+    public getBlenderScene2(file: any, disp: boolean = true, flat: boolean = false): any {
+        let scene: Array<FlatshadedMesh> = [];
+
+        file.forEach(object => {
+            let points: Array<Vector4f> = new Array<Vector4f>();
+            let normals: Array<Vector4f> = new Array<Vector4f>();
+
+            object.vertices.forEach((v) => {
+                    points.push(new Vector4f(v.x, v.y, v.z).mul(2));
+            });
+
+            object.normals.forEach((v) => {
+                normals.push(new Vector4f(v.x, v.y, v.z));
+            });
+
+            let faces: Array<FlatShadedFace> = [];
+            object.faces.forEach(f => {
+                faces.push({
+                    v1: f.vertices[0],
+                    v2: f.vertices[1],
+                    v3: f.vertices[2],
+                    normal: f.normals[0]
+                })
+            });
+
+            // Create class for objects
+            let obj: FlatshadedMesh = {
+                points: points,
+                normals: normals,
+                faces: faces, // NOO!!!
+                transformedPoints: points.map(() => new Vector4f(0, 0, 0, 0)),
+                transformedNormals: normals.map(() => new Vector4f(0, 0, 0, 0))
             };
             scene.push(obj);
         });

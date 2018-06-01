@@ -1,5 +1,5 @@
 import { Framebuffer } from '../Framebuffer';
-import { Mesh } from '../geometrical-objects/Mesh';
+import { Mesh, FlatshadedMesh } from '../geometrical-objects/Mesh';
 import { Vector3f, Vector4f } from '../math';
 import { Matrix4f } from '../math/Matrix4f';
 import { SutherlandHodgman2DClipper } from '../screen-space-clipping/SutherlandHodgman2DClipper';
@@ -16,28 +16,30 @@ export class FlatShadingRenderingPipeline {
 
     constructor(private framebuffer: Framebuffer) { }
 
-    public drawObject2(mesh: Mesh, modelViewMartrix: Matrix4f,
+    public drawObject2(mesh: FlatshadedMesh, modelViewMartrix: Matrix4f,
                        red: number, green: number, blue: number,
                        noLighting: boolean = false, culling: boolean = false): void {
 
         const normalMatrix: Matrix4f = modelViewMartrix.computeNormalMatrix();
-
+        console.log('norm succ');
         for (let i: number = 0; i < mesh.normals.length; i++) {
-            normalMatrix.multiplyHomArr(mesh.normals[i], mesh.normals2[i]);
+            normalMatrix.multiplyHomArr(mesh.normals[i], mesh.transformedNormals[i]);
         }
+        console.log('poins succ');
 
         for (let i: number = 0; i < mesh.points.length; i++) {
-            modelViewMartrix.multiplyHomArr(mesh.points[i], mesh.points2[i]);
+            modelViewMartrix.multiplyHomArr(mesh.points[i], mesh.transformedPoints[i]);
         }
 
+        console.log('trans succ');
         let lightDirection = new Vector4f(0.5, 0.5, 0.3, 0.0).normalize();
 
         for (let i = 0; i < mesh.faces.length; i++) {
-            let v1 = mesh.points2[mesh.faces[i].vertices[0]];
-            let v2 = mesh.points2[mesh.faces[i].vertices[1]];
-            let v3 = mesh.points2[mesh.faces[i].vertices[2]];
+            let v1 = mesh.transformedPoints[mesh.faces[i].v1];
+            let v2 = mesh.transformedPoints[mesh.faces[i].v2];
+            let v3 = mesh.transformedPoints[mesh.faces[i].v3];
 
-            let normal = mesh.normals2[mesh.faces[i].normals[0]];
+            let normal = mesh.transformedNormals[mesh.faces[i].normal];
 
             if (this.framebuffer.isInFrontOfNearPlane(v1) && this.framebuffer.isInFrontOfNearPlane(v2) && this.framebuffer.isInFrontOfNearPlane(v3)) {
                 let p1 = this.framebuffer.project(v1);
