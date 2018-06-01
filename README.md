@@ -1,4 +1,10 @@
 # AISA
+[![GitHub stars](https://img.shields.io/github/stars/jdiemke/aisa.svg)](https://github.com/jdiemke/aisa/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/jdiemke/aisa.svg)](https://github.com/jdiemke/aisa/network)
+[![GitHub issues](https://img.shields.io/github/issues/jdiemke/aisa.svg)](https://github.com/jdiemke/aisa/issues)
+[![GitHub license](https://img.shields.io/github/license/jdiemke/aisa.svg)](https://github.com/jdiemke/aisa/blob/master/LICENSE)
+[![Twitter](https://img.shields.io/twitter/url/https/github.com/jdiemke/aisa.svg?style=social)](https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Fgithub.com%2Fjdiemke%2Faisa)
+
 AISA is a Software 3D Engine written in TypeScript. The
 only prerequisite for AISA to run properly is a HTML5 compatible web browser and a fast CPU (as you can guess JavaScript is not as fast as native code still it is running with a decent frame rate on my mobile phone). No WebGL is required.
 AISA does all the computations needed to rasterize a 3D scene
