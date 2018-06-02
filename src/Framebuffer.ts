@@ -1287,62 +1287,6 @@ export class Framebuffer {
         this.wBuffer.fill(-1 / 900);
     }
 
-    public debug(elapsedTime: number): void {
-        this.clearDepthBuffer();
-
-        let index: Array<number> = [
-            1, 2, 3, 3, 4, 1,
-            1 + 8, 2 + 8, 3 + 8, 3 + 8, 4 + 8, 1 + 8,
-        ];
-
-        let points: Array<Vector3f> = [
-            new Vector3f(-1.0, -1.0, 1.0), new Vector3f(1.0, -1.0, 1.0),
-            new Vector3f(1.0, 1.0, 1.0), new Vector3f(-1.0, 1.0, 1.0),
-            new Vector3f(-1.0, -1.0, -1.0), new Vector3f(1.0, -1.0, -1.0),
-            new Vector3f(1.0, 1.0, -1.0), new Vector3f(-1.0, 1.0, -1.0),
-
-            new Vector3f(-1.0, -1.0, 1.0).add(new Vector3f(2.0, 0.0, 0.0)), new Vector3f(1.0, -1.0, 1.0).add(new Vector3f(2.0, 0.0, 0.0)),
-            new Vector3f(1.0, 1.0, 1.0).add(new Vector3f(2.0, 0.0, 0.0)), new Vector3f(-1.0, 1.0, 1.0).add(new Vector3f(2.0, 0.0, 0.0)),
-            new Vector3f(-1.0, -1.0, -1.0).add(new Vector3f(2.0, 0.0, 0.0)), new Vector3f(1.0, -1.0, -1.0).add(new Vector3f(2.0, 0.0, 0.0)),
-            new Vector3f(1.0, 1.0, -1.0).add(new Vector3f(2.0, 0.0, 0.0)), new Vector3f(-1.0, 1.0, -1.0).add(new Vector3f(2.0, 0.0, 0.0)),
-        ];
-
-        let colorAr: Array<number> = [
-            255 << 24 | 255 << 0,
-            255 << 24 | 255 << 8,
-            255 << 24 | 255 << 16,
-            255 << 24 | 255 << 16 | 255,
-            255 << 24 | 255 << 16 | 255 << 8,
-            255 << 24 | 255 << 8 | 128,
-        ];
-
-        let scale = 3.2;
-
-        let modelViewMartrix = Matrix3f.constructScaleMatrix(scale, scale, scale);
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3f.constructZRotationMatrix(elapsedTime * 0.08));
-
-        let points2: Array<Vector3f> = new Array<Vector3f>();
-        points.forEach(element => {
-            let transformed = modelViewMartrix.multiply(element);
-
-            let x = transformed.x;
-            let y = transformed.y;
-            let z = transformed.z - 9; // TODO: use translation matrix!
-
-            let xx = (320 * 0.5) + (x / (-z * 0.0078));
-            let yy = (200 * 0.5) - (y / (-z * 0.0078));
-            points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
-        });
-
-        for (let i = 0; i < index.length; i += 3) {
-            // TODO: use eye space triangles for backface culling
-            let col = 255 << 24 | 255 << 16;
-            let col2 = 255 << 24 | 255;
-
-            this.triangleRasterizer.drawTriangleDDA(points2[index[i] - 1], points2[index[i + 1] - 1], points2[index[i + 2] - 1], colorAr[(((i) / 3) | 0) % 6]);
-        }
-    }
-
     private sphereFunction2(theta: number, phi: number): Vector4f {
 
         let pos = new Vector4f(Math.cos(theta) * Math.cos(phi),
@@ -1602,47 +1546,6 @@ export class Framebuffer {
                 normals2: normals.map(() => new Vector4f(0, 0, 0, 0)),
                 boundingSphere: sphere, // NO!!!
                 name: object.name /// NO!
-            };
-            scene.push(obj);
-        });
-
-        return scene;
-    }
-
-   
-    // TODO: if flat shaded, then store only one normal per face!
-    public getBlenderScene2(file: any, disp: boolean = true, flat: boolean = false): any {
-        let scene: Array<FlatshadedMesh> = [];
-
-        file.forEach(object => {
-            let points: Array<Vector4f> = new Array<Vector4f>();
-            let normals: Array<Vector4f> = new Array<Vector4f>();
-
-            object.vertices.forEach((v) => {
-                    points.push(new Vector4f(v.x, v.y, v.z).mul(2));
-            });
-
-            object.normals.forEach((v) => {
-                normals.push(new Vector4f(v.x, v.y, v.z));
-            });
-
-            let faces: Array<FlatShadedFace> = [];
-            object.faces.forEach(f => {
-                faces.push({
-                    v1: f.vertices[0],
-                    v2: f.vertices[1],
-                    v3: f.vertices[2],
-                    normal: f.normals[0]
-                })
-            });
-
-            // Create class for objects
-            let obj: FlatshadedMesh = {
-                points: points,
-                normals: normals,
-                faces: faces, // NOO!!!
-                transformedPoints: points.map(() => new Vector4f(0, 0, 0, 0)),
-                transformedNormals: normals.map(() => new Vector4f(0, 0, 0, 0))
             };
             scene.push(obj);
         });

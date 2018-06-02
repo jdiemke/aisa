@@ -6,6 +6,7 @@ import { Matrix4f, Vector3f } from '../../math';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
+import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
 
 export class HoodlumScene extends AbstractScene {
 
@@ -21,7 +22,7 @@ export class HoodlumScene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.spaceLabMesh = framebuffer.getBlenderScene(require('../../assets/lab2.json'), false);
-        this.hoodlumLogoMesh = framebuffer.getBlenderScene2(require('../../assets/hoodlum2018.json'), false);
+        this.hoodlumLogoMesh = BlenderJsonParser.parse(require('../../assets/hoodlum2018.json'), false);
         return Promise.all([
             TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(texture => this.blurred = texture),
             TextureUtils.load(require('../../assets/lab2.png'), false).then(texture => this.lab2 = texture),

@@ -10,7 +10,6 @@ export class Texture {
         this.height = height;
     }
 
-    
     getPixel(texture: Texture, x: number, y: number) {
         return texture.texture[(x & 0xff) + (y & 0xff) * 256];
     }

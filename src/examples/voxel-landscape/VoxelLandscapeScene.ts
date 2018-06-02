@@ -10,6 +10,7 @@ import { Texture, TextureUtils } from '../../texture';
 export class VoxelLandscapeScene extends AbstractScene {
 
     private heightmap: Texture;
+    private abstract: Texture;
     private texture2: Texture;
 
     public init(framebuffer: Framebuffer): Promise<any> {
@@ -20,13 +21,16 @@ export class VoxelLandscapeScene extends AbstractScene {
             TextureUtils.load(require('../../assets/heightmap.png'), false).then(
                 (texture: Texture) => this.heightmap = texture
             ),
+            TextureUtils.load(require('../../assets/abstract.png'), false).then(
+                (texture: Texture) => this.abstract = texture
+            ),
         ]);
     }
 
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
 
-        this.drawVoxelLandscape2(framebuffer, this.heightmap, time);
+        this.drawVoxelLandscape3(framebuffer, this.heightmap, time);
         framebuffer.drawTexture(32, 1, this.texture2, 1.0);
     }
 
@@ -57,7 +61,7 @@ export class VoxelLandscapeScene extends AbstractScene {
 
         const focus = 125.7;
         const center = 300;
-        const eye = 250;
+        const eye = 260;
 
         for (let x = 0; x < 320; x++) {
             let dirX = Math.cos(time * 0.0005 + x * 0.005) * 0.4;
@@ -86,6 +90,58 @@ export class VoxelLandscapeScene extends AbstractScene {
                     }
 
                     if (max == 200) {
+                        break;
+                    }
+
+                    highestPoint = projHeight;
+                }
+
+                rayX += dirX;
+                rayY += dirY;
+            }
+        }
+    }
+
+    drawVoxelLandscape3(framebuffer: Framebuffer, texture: Texture, time: number) {
+        framebuffer.clearColorBuffer(255 << 24);
+
+        const MIN_DIST = 35;
+        const MAX_DIST = 300;
+
+        let camX = time * 0.008;
+        let camY = 0;
+
+        const focus = 45;
+        const center = 300;
+        const eye = 480;
+
+        for (let x = 0; x < 320; x++) {
+            let dirX = Math.cos(time * 0.0005 + x * 0.0018) * 0.4;
+            let dirY = Math.sin(time * 0.0005 + x * 0.0018) * 0.4;
+
+
+            let highestPoint = 0;
+
+            let rayX = camX + dirX * MIN_DIST;
+            let rayY = camY + dirY * MIN_DIST;
+
+            for (let dist = MIN_DIST; dist < MAX_DIST; dist++) {
+
+                let height = texture.getPixel(texture, rayX, rayY) & 0xff;
+                let projHeight = Math.round((height - eye) * focus / dist + center);
+                let color = Math.round(height) * Math.min(1.0, (1 - (dist - MIN_DIST) / (MAX_DIST - MIN_DIST)) * 10);
+                let packedRGB = texture.getPixel(this.abstract, rayX, rayY) | 255 << 24;
+
+                if (projHeight > highestPoint) {
+                    let index = x + (199 - highestPoint) * 320;
+                    const max: number = Math.min(projHeight, 200);
+
+                    for (let i: number = highestPoint; i < max; i++) {
+                        framebuffer.framebuffer[index] = packedRGB;
+                        index -= 320;
+                    }
+
+                    if (max === 200) {
                         break;
                     }
 
