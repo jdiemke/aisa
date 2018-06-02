@@ -86,7 +86,7 @@ export class BakedLighting extends AbstractScene {
 
         for (let j = 0; j < this.blenderObj8.length; j++) {
             let model = this.blenderObj8[j];
-            framebuffer.drawObjectTexture(model, mv);
+            framebuffer.texturedRenderingPipeline.draw(model, mv);
         }
 
         let scale = 20;

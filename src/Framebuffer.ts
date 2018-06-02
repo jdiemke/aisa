@@ -35,6 +35,7 @@ import { ScaleClipBlitter } from './blitter/ScaleClipBlitter';
 import { TexturedTriangleRasterizer } from './rasterizer/TexturedTriangleRasterizer';
 import { FlatShadingRenderingPipeline } from './rendering-pipelines/FlatShadingRenderingPipeline';
 import { FlatShadedFace } from './geometrical-objects/Face';
+import { TexturingRenderingPipeline } from './rendering-pipelines/TexturingRenderingPipeline';
 
 let json = require('./assets/f16.json');
 let bunnyJson = <any>require('./assets/bunny.json');
@@ -84,9 +85,11 @@ export class Framebuffer {
 
     private linerClipper = new CohenSutherlandLineClipper(this);
     public triangleRasterizer = new TriangleRasterizer(this);
-    private texturedTriangleRasterizer = new TexturedTriangleRasterizer(this);
+    public texturedTriangleRasterizer = new TexturedTriangleRasterizer(this);
+
     private scaleClipBlitter = new ScaleClipBlitter(this);
     public renderingPipeline = new FlatShadingRenderingPipeline(this);
+    public texturedRenderingPipeline = new TexturingRenderingPipeline(this);
 
     public setCullFace(face: CullFace): void {
         this.cullMode = face;
@@ -2235,114 +2238,6 @@ export class Framebuffer {
             this.renderingPipeline.draw(this.torus.getMesh(), modelViewMartrix, 215, 30, 120);
     }
 
-    public drawObjectTexture(obj: any, modelViewMartrix: Matrix4f) {
-
-        let normalMatrix = modelViewMartrix.computeNormalMatrix();
-
-        for (let i = 0; i < obj.normals.length; i++) {
-            normalMatrix.multiplyHomArr(obj.normals[i], obj.normals2[i]);
-        }
-
-        for (let i = 0; i < obj.points.length; i++) {
-            modelViewMartrix.multiplyHomArr(obj.points[i], obj.points2[i]);
-            obj.points2[i] = this.project(obj.points2[i]);
-        }
-
-        let vertexArray = new Array<Vertex>(new Vertex(), new Vertex(), new Vertex());
-        for (let i = 0; i < obj.faces.length; i++) {
-            let v1 = obj.points2[obj.faces[i].vertices[0]];
-            let v2 = obj.points2[obj.faces[i].vertices[1]];
-            let v3 = obj.points2[obj.faces[i].vertices[2]];
-
-            if (this.isTriangleCCW(v1, v2, v3)) {
-                let color = 255;
-
-                vertexArray[0].position = v1;
-                vertexArray[0].textureCoordinate = obj.uv[obj.faces[i].uv[0]];
-
-                vertexArray[1].position = v2;
-                vertexArray[1].textureCoordinate = obj.uv[obj.faces[i].uv[1]];
-
-                vertexArray[2].position = v3;
-                vertexArray[2].textureCoordinate = obj.uv[obj.faces[i].uv[2]];
-
-                if (v1.x < Framebuffer.minWindow.x ||
-                    v2.x < Framebuffer.minWindow.x ||
-                    v3.x < Framebuffer.minWindow.x ||
-                    v1.x > Framebuffer.maxWindow.x ||
-                    v2.x > Framebuffer.maxWindow.x ||
-                    v3.x > Framebuffer.maxWindow.x ||
-                    v1.y < Framebuffer.minWindow.y ||
-                    v2.y < Framebuffer.minWindow.y ||
-                    v3.y < Framebuffer.minWindow.y ||
-                    v1.y > Framebuffer.maxWindow.y ||
-                    v2.y > Framebuffer.maxWindow.y ||
-                    v3.y > Framebuffer.maxWindow.y) {
-                    this.clipConvexPolygon2(vertexArray, color);
-                } else {
-                    this.texturedTriangleRasterizer.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], color);
-                }
-            }
-        }
-    }
-
-    public drawObjectTexture2(obj: any, modelViewMartrix: Matrix4f, red: number, green: number, blue: number, noLighting: boolean = false, culling: boolean = false) {
-
-        let normalMatrix = modelViewMartrix.computeNormalMatrix();
-
-        for (let i = 0; i < obj.normals.length; i++) {
-            normalMatrix.multiplyHomArr(obj.normals[i], obj.normals2[i]);
-        }
-
-        for (let i = 0; i < obj.points.length; i++) {
-            modelViewMartrix.multiplyHomArr(obj.points[i], obj.points2[i]);
-        }
-
-        let vertexArray = new Array<Vertex>(new Vertex(), new Vertex(), new Vertex());
-
-        for (let i = 0; i < obj.faces.length; i++) {
-            let v1 = obj.points2[obj.faces[i].vertices[0]];
-            let v2 = obj.points2[obj.faces[i].vertices[1]];
-            let v3 = obj.points2[obj.faces[i].vertices[2]];
-
-            if (this.isInFrontOfNearPlane(v1) && this.isInFrontOfNearPlane(v2) && this.isInFrontOfNearPlane(v3)) {
-                let p1 = this.project(v1);
-                let p2 = this.project(v2);
-                let p3 = this.project(v3);
-
-                if (this.isTriangleCCW(p1, p2, p3)) {
-                    let color = 255;
-
-                    vertexArray[0].position = p1;
-                    vertexArray[0].textureCoordinate = obj.uv[obj.faces[i].uv[0]];
-
-                    vertexArray[1].position = p2;
-                    vertexArray[1].textureCoordinate = obj.uv[obj.faces[i].uv[1]];
-
-                    vertexArray[2].position = p3;
-                    vertexArray[2].textureCoordinate = obj.uv[obj.faces[i].uv[2]];
-
-                    this.clipConvexPolygon2(vertexArray, color);
-                }
-            } else if (!this.isInFrontOfNearPlane(v1) && !this.isInFrontOfNearPlane(v2) && !this.isInFrontOfNearPlane(v3)) {
-                continue;
-            } else {
-                let color = 255;
-
-                vertexArray[0].position = v1;
-                vertexArray[0].textureCoordinate = obj.uv[obj.faces[i].uv[0]];
-
-                vertexArray[1].position = v2;
-                vertexArray[1].textureCoordinate = obj.uv[obj.faces[i].uv[1]];
-
-                vertexArray[2].position = v3;
-                vertexArray[2].textureCoordinate = obj.uv[obj.faces[i].uv[2]];
-
-                this.zClipTriangle2(vertexArray, color);
-            }
-        }
-    }
-
     NEAR_PLANE_Z = -1.7;
 
     public isInFrontOfNearPlane(p: { x: number; y: number; z: number }): boolean {
@@ -2360,49 +2255,6 @@ export class Framebuffer {
         vertex.textureCoordinate = tex;
 
         return vertex;
-    }
-
-    public zClipTriangle2(subject: Array<Vertex>, color: number): void {
-
-        let output = subject;
-
-        let input = output;
-        output = new Array<Vertex>();
-        let S = input[input.length - 1];
-
-        for (let i = 0; i < input.length; i++) {
-            let point = input[i];
-            if (this.isInFrontOfNearPlane(point.position)) {
-                if (!this.isInFrontOfNearPlane(S.position)) {
-                    output.push(this.computeNearPlaneIntersection2(S, point));
-                }
-                output.push(point);
-            } else if (this.isInFrontOfNearPlane(S.position)) {
-                output.push(this.computeNearPlaneIntersection2(S, point));
-            }
-            S = point;
-        }
-
-        if (output.length < 3) {
-            return;
-        }
-
-        let projected: Vertex[] = output.map<Vertex>((v) => {
-            v.position = this.project(v.position);
-            return v;
-        })
-
-        if (output.length === 3 && !this.isTriangleCCW(projected[0].position, projected[1].position, projected[2].position)) {
-            return;
-        }
-
-        if (output.length === 4 && !this.isTriangleCCW2(projected[0].position, projected[1].position, projected[2].position, projected[3].position)) {
-            return;
-        }
-        //if (this.isTriangleCCW(projected[0], projected[1], projected[2])) {
-        //this.clipConvexPolygon(projected, color, true);
-        this.clipConvexPolygon2(projected, color);
-        // }
     }
 
     public torusFunction(alpha: number): Vector3f {
@@ -2427,7 +2279,7 @@ export class Framebuffer {
 
     public shadingTorus4(elapsedTime: number): void {
 
-        this.wBuffer.fill(100);
+        this.clearDepthBuffer();
         let points: Array<Vector3f> = [];
         let textCoords: Array<TextureCoordinate> = [];
 

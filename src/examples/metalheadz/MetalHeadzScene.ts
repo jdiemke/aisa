@@ -62,7 +62,7 @@ export class MetalHeadzScene extends AbstractScene {
         framebuffer.setTexture(this.metalheadz);
         const scal: number = 1.0;
         for (let j: number = 0; j < this.blenderObjMetal.length; j++) {
-            framebuffer.drawObjectTexture(this.blenderObjMetal[j], mv);
+            framebuffer.texturedRenderingPipeline.draw(this.blenderObjMetal[j], mv);
         }
 
         const scale: number = 20;

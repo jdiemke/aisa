@@ -61,7 +61,7 @@ export class HoodlumScene extends AbstractScene {
 
         for (let j = 0; j < this.spaceLabMesh.length; j++) {
             let model = this.spaceLabMesh[j];
-            framebuffer.drawObjectTexture2(model, mv, 244 * scal, 225 * scal, 216 * scal);
+            framebuffer.texturedRenderingPipeline.draw(model, mv);
         }
 
         mv = camera.multiplyMatrix(

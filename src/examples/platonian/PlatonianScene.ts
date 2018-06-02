@@ -65,7 +65,7 @@ export class PlatonianScene extends AbstractScene {
         // FIXME: move looping code into utils method or helper class!
         for (let j = 0; j < this.platonianMesh.length; j++) {
             let model = this.platonianMesh[j];
-            framebuffer.drawObjectTexture(model, mv);
+            framebuffer.texturedRenderingPipeline.draw(model, mv);
         }
     }
 
