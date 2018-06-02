@@ -86,7 +86,7 @@ export class Framebuffer {
     public triangleRasterizer = new TriangleRasterizer(this);
     private texturedTriangleRasterizer = new TexturedTriangleRasterizer(this);
     private scaleClipBlitter = new ScaleClipBlitter(this);
-    public flatShadingRenderingPipeline = new FlatShadingRenderingPipeline(this);
+    public renderingPipeline = new FlatShadingRenderingPipeline(this);
 
     public setCullFace(face: CullFace): void {
         this.cullMode = face;
@@ -1912,7 +1912,7 @@ export class Framebuffer {
             let model = this.blenderObj[j];
 
             if (frustumCuller.isPotentiallyVisible(model.boundingSphere)) {
-                this.flatShadingRenderingPipeline.drawObject2(model, modelViewMartrix, 144, 165, 116);
+                this.renderingPipeline.draw(model, modelViewMartrix, 144, 165, 116);
                 let colLine = 255 << 24 | 255 << 8;
                 this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
                 count++;
@@ -1976,7 +1976,7 @@ export class Framebuffer {
 
         let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(5, 16, 5));
         let model = this.blenderObj2[0];
-        this.flatShadingRenderingPipeline.drawObject2(model, mv, 246, 165, 177);
+        this.renderingPipeline.draw(model, mv, 246, 165, 177);
 
 
         mv = camera.multiplyMatrix(Matrix4f.constructZRotationMatrix(
@@ -1985,7 +1985,7 @@ export class Framebuffer {
                 Math.PI * 0.5 * this.cosineInterpolate(2000, 2600, Math.floor(elapsedTime * 0.7) % 4000)))
         );
         model = this.blenderObj2[1];
-        this.flatShadingRenderingPipeline.drawObject2(model, mv, 186, 165, 197);
+        this.renderingPipeline.draw(model, mv, 186, 165, 197);
 
 
         let lensflareScreenSpace = this.project(camera.multiply(new Vector3f(16.0 * 20, 16.0 * 20, 0)));
@@ -2011,12 +2011,12 @@ export class Framebuffer {
         for (let j = 0; j < this.blenderObj4.length; j++) {
             let model = this.blenderObj4[j];
             if (j !== 0 && j !== 2)
-                this.flatShadingRenderingPipeline.drawObject2(model, mv, 200, 255, 216);
+                this.renderingPipeline.draw(model, mv, 200, 255, 216);
 
             if (j === 0)
-            this.flatShadingRenderingPipeline.drawObject2(model, mv, 244, 200, 216);
+            this.renderingPipeline.draw(model, mv, 244, 200, 216);
             if (j === 2)
-            this.flatShadingRenderingPipeline.drawObject2(model, mv, 244, 225, 216);
+            this.renderingPipeline.draw(model, mv, 244, 225, 216);
 
         }
 
@@ -2027,7 +2027,7 @@ export class Framebuffer {
             ));
 
         let model2 = this.blenderObj5[0];
-        this.flatShadingRenderingPipeline.drawObject2(model2, mv, 200, 255, 216);
+        this.renderingPipeline.draw(model2, mv, 200, 255, 216);
 
         const scale: number = 8;
         mv = camera.multiplyMatrix(
@@ -2061,7 +2061,7 @@ export class Framebuffer {
         let scal = Math.sin(elapsedTime * 0.003) * 0.5 + 0.5;
         for (let j = 0; j < this.blenderObj6.length; j++) {
             let model = this.blenderObj6[j];
-            this.flatShadingRenderingPipeline.drawObject2(model, mv, 244 * scal, 225 * scal, 216 * scal);
+            this.renderingPipeline.draw(model, mv, 244 * scal, 225 * scal, 216 * scal);
         }
 
         mv = camera.multiplyMatrix(
@@ -2072,7 +2072,7 @@ export class Framebuffer {
             ));
 
         let model = this.blenderObj7[0];
-        this.flatShadingRenderingPipeline.drawObject2(model, mv, 244, 100, 116);
+        this.renderingPipeline.draw(model, mv, 244, 100, 116);
 
         let points: Array<Vector3f> = new Array<Vector3f>();
         const num = 10;
@@ -2139,7 +2139,7 @@ export class Framebuffer {
                 )
             );
             let model = this.blenderObj3[0];
-            this.flatShadingRenderingPipeline.drawObject2(model, mv, 246, 165, 177);
+            this.renderingPipeline.draw(model, mv, 246, 165, 177);
         }
         let lensflareScreenSpace = this.project(camera.multiply(new Vector3f(16.0 * 20, 16.0 * 20, 0)));
 
@@ -2232,7 +2232,7 @@ export class Framebuffer {
         modelViewMartrix = Matrix4f.constructZRotationMatrix(-elapsedTime * 0.02).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0, -21)
             .multiplyMatrix(modelViewMartrix));
 
-            this.flatShadingRenderingPipeline.drawObject2(this.torus.getMesh(), modelViewMartrix, 215, 30, 120);
+            this.renderingPipeline.draw(this.torus.getMesh(), modelViewMartrix, 215, 30, 120);
     }
 
     public drawObjectTexture(obj: any, modelViewMartrix: Matrix4f) {

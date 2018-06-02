@@ -18,7 +18,7 @@ export class FlatShadingRenderingPipeline {
 
     constructor(private framebuffer: Framebuffer) { }
 
-    public drawObject2(mesh: FlatshadedMesh, modelViewMartrix: Matrix4f,
+    public draw(mesh: FlatshadedMesh, modelViewMartrix: Matrix4f,
         red: number, green: number, blue: number): void {
 
         const normalMatrix: Matrix4f = modelViewMartrix.computeNormalMatrix();

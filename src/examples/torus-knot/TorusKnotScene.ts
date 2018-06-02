@@ -42,7 +42,7 @@ export class TorusKnotScene extends AbstractScene {
         modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.04) * 20,
             Math.sin(elapsedTime * 0.05) * 8 - smash, -28).multiplyMatrix(modelViewMartrix);
 
-            framebuffer.flatShadingRenderingPipeline.drawObject2(this.torus.getMesh(),modelViewMartrix, 200,100,100);
+            framebuffer.renderingPipeline.draw(this.torus.getMesh(),modelViewMartrix, 200,100,100);
     }
 
 }

@@ -6,8 +6,6 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { SkyBox } from '../../SkyBox';
 import { Texture, TextureUtils } from '../../texture';
 
-const metalJson = require('../../assets/metalheadz.json');
-
 export class MetalHeadzScene extends AbstractScene {
 
     private metalheadz: Texture;
@@ -23,11 +21,11 @@ export class MetalHeadzScene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         framebuffer.setCullFace(CullFace.BACK);
-        this.blenderObjMetal = framebuffer.getBlenderScene(metalJson, false);
+        this.blenderObjMetal = framebuffer.getBlenderScene(require('../../assets/metalheadz.json'), false);
         this.skyBox = new SkyBox();
         // TODO:
         // make classes for assets
-        // skybox, lens flare, 3d modell
+        // lens flare, 3d modell
 
         return Promise.all([
             this.skyBox.init(),
@@ -51,26 +49,25 @@ export class MetalHeadzScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
-        let elapsedTime = 0.2 * time;
+        const elapsedTime: number = 0.2 * time;
 
         framebuffer.clearDepthBuffer();
 
         const camera: Matrix4f = this.computeCameraMovement(elapsedTime);
         const mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(7, 7, 7));
 
-        // put skybox here
         this.skyBox.draw(framebuffer, mv);
 
         framebuffer.clearDepthBuffer();
         framebuffer.setTexture(this.metalheadz);
         const scal: number = 1.0;
         for (let j: number = 0; j < this.blenderObjMetal.length; j++) {
-            let model: any = this.blenderObjMetal[j];
-            framebuffer.drawObjectTexture(model, mv);
+            framebuffer.drawObjectTexture(this.blenderObjMetal[j], mv);
         }
 
-        let scale = 20;
-        let lensflareScreenSpace = framebuffer.project(camera.getRotation().multiply(new Vector3f(1.1 * scale, 2 * scale, -0.9 * scale)));
+        const scale: number = 20;
+        const lensflareScreenSpace: Vector3f =
+            framebuffer.project(camera.getRotation().multiply(new Vector3f(1.1 * scale, 2 * scale, -0.9 * scale)));
 
         framebuffer.drawLensFlare(lensflareScreenSpace, elapsedTime * 1.2, [
             { tex: this.texture11, scale: 2.3, alpha: 0.5 },
