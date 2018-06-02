@@ -4,13 +4,13 @@ import { Mesh } from './Mesh';
 
 export class Sphere extends AbstractGeometricObject {
 
-    public constructor() {
+    public constructor(xSteps: number = 16, ySteps: number = 16) {
         super();
 
         const points: Array<Vector4f> =  [];
 
-        const STEPS = 16;
-        const STEPS2 = 16;
+        const STEPS = xSteps;
+        const STEPS2 = ySteps;
         for (let i = 0; i <= STEPS; i++) {
             for (let r = 0; r < STEPS2; r++) {
                 points.push(this.sphereFunction(-i * Math.PI / STEPS - Math.PI / 2, -r * 2 * Math.PI / STEPS2));
