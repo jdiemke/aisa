@@ -8,11 +8,11 @@ export class TexturingRenderingPipeline {
 
     public draw(obj: any, modelViewMartrix: Matrix4f) {
 
-        let normalMatrix = modelViewMartrix.computeNormalMatrix();
+        // let normalMatrix = modelViewMartrix.computeNormalMatrix();
 
-        for (let i = 0; i < obj.normals.length; i++) {
-            normalMatrix.multiplyHomArr(obj.normals[i], obj.normals2[i]);
-        }
+        // for (let i = 0; i < obj.normals.length; i++) {
+        //     normalMatrix.multiplyHomArr(obj.normals[i], obj.normals2[i]);
+        // }
 
         for (let i = 0; i < obj.points.length; i++) {
             modelViewMartrix.multiplyHomArr(obj.points[i], obj.points2[i]);

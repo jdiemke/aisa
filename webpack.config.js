@@ -27,6 +27,7 @@ module.exports = {
         'torus-knot-tunnel': './src/examples/torus-knot-tunnel/Application.ts',
         'planedeformation-tunnel': './src/examples/planedeformation-tunnel/Application.ts',
         'torus-knot': './src/examples/torus-knot/Application.ts',
+        'textured-torus': './src/examples/textured-torus/Application.ts',
     },
     output: {
         filename: '[name].bundle.js',
@@ -173,6 +174,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['torus-knot'],
             filename: 'torus-knot.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['textured-torus'],
+            filename: 'textured-torus.html'
         })
     ]
 }

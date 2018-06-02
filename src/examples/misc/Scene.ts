@@ -1009,15 +1009,10 @@ export class Scene extends AbstractScene {
         //framebuffer.shadingSphereClip(time*0.005);
      // framebuffer.scene8(time*0.02);
         // framebuffer.debug(time*0.003);
-        framebuffer.setTexture(this.abstract);
-        framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.texture5.texture);
-        framebuffer.shadingTorus4(time * 0.001);
-       /* framebuffer.drawLensFlare(time - 185000, [
-            { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-            { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-            { tex: this.texture13, scale: 1.6, alpha: 0.25 }
-        ], null, null);*/
-        framebuffer.cinematicScroller(this.texture4, time);
+      
+        framebuffer.blur();
+        framebuffer.shadingTorus3(time*0.003);
+        framebuffer.drawTexture(32, 70, this.texture2, 1.0);
 
         framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
 
