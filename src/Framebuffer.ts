@@ -333,20 +333,6 @@ export class Framebuffer {
         this.fastFramebufferCopyOffset(this.framebuffer, texture.texture, offset);
     }
 
-    public drawRaster() {
-        let colorLUT = new Array<number>();
-        for (let i = 0; i < 16; i++) {
-            let shade = (Math.sin(Math.PI * i / 15) * 255) | 0;
-            let color = shade << 16 | shade << 8 | shade | 255 << 24;
-            colorLUT.push(color);
-        }
-
-        let pos = ((Math.sin(Date.now() * 0.002) + 1) / 2 * (200 - 16)) | 0;
-        for (let i = 0; i < 16; i++) {
-            this.framebuffer.fill(colorLUT[i], 320 * (pos + i), 320 * (pos + i) + 320);
-        }
-    }
-
     public blockFace(texture: Texture, time: number, startTime: number) {
         let fadeArray = new Array<number>(16 * 10);
         let rng = new RandomNumberGenerator();
@@ -399,10 +385,6 @@ export class Framebuffer {
     }
 
     tmpGlitch = new Uint32Array(320 * 200);
-
-    public raveMoview(elapsedTime: number, texture: Texture): void {
-        this.fastFramebufferCopyOffset(this.framebuffer, texture.texture, -(((elapsedTime / 200) | 0) % 11) * 200);
-    }
 
     public drawPolarDistotion(elapsedTime: number, texture: Texture): void {
         let i = 0;
@@ -462,71 +444,8 @@ export class Framebuffer {
         }
     }
 
-    public glitchScreen(elapsedTime: number, texture: Texture, noise: boolean = true): void {
-
-        const glitchFactor = (Math.sin(elapsedTime * 0.0003) * 0.5 + 0.5);
-        let rng = new RandomNumberGenerator();
-        rng.setSeed((elapsedTime / 250) | 0);
-        let texture2 = new Texture();
-        texture2.height = 200;
-        texture2.width = 320;
-        texture2.texture = this.framebuffer;
-        for (let x = 0; x < 16; x++) {
-            for (let y = 0; y < 10; y++) {
-                if (rng.getFloat() > 0.25) {
-                    continue;
-                }
-
-                this.drawTextureRect(20 * (16 - x), 20 * ((16 * rng.getFloat()) | 0), 20 * x, 20 * y, 20, 20, texture2, 0.1 + 0.35 * glitchFactor);
-            }
-        }
-
-        if (noise) {
-            for (let x = 0; x < 16; x++) {
-                for (let y = 0; y < 10; y++) {
-                    this.drawTextureRect(x * 20, y * 20, 20 * (Math.round(elapsedTime / 100 + x + y) % 12), 0, 20, 20, texture, 0.1 + 0.3 * glitchFactor);
-                }
-            }
-        }
-
-        this.fastFramebufferCopy(this.tmpGlitch, this.framebuffer);
-
-        // now distort the tmpGlitch buffer and render to framebuffer again
-
-        let rng2 = new RandomNumberGenerator();
-
-        for (let k = 0; k < 8; k++) {
-            let yStart = Math.round(rng.getFloat() * 180);
-            const size = 3 + Math.round(rng.getFloat() * 20);
-            rng2.setSeed((elapsedTime / 250) | 0);
-            let scale = rng2.getFloat() * glitchFactor;
-            let off = rng.getFloat() * glitchFactor;
-            for (let y = 0; y < size; y++) {
-                const offset = Math.abs(Math.round(off * 25) + Math.round(rng2.getFloat() * 3)
-                    + Math.round(Math.cos(y * 0.01 + elapsedTime * 0.002 + off) * scale * 5));
-
-                let index = yStart * 320;
-                let glIndex = yStart * 320 + 320 - offset;
-
-                for (let i = 0; i < Math.max(0, offset); i++) {
-                    this.framebuffer[index++] = this.tmpGlitch[glIndex++];
-                }
-
-                glIndex = yStart * 320;
-                let count = 320 - offset;
-
-                for (let i = 0; i < count; i++) {
-                    this.framebuffer[index++] = this.tmpGlitch[glIndex++];
-                }
-                yStart++;
-            }
-        }
-    }
-
     public floodFill(texture: Texture, time: number) {
-
         let pos = ((time * 0.02) | 0) % 200;
-
         let index = 320 * 200;
 
         for (let y = 0; y < pos; y++) {
@@ -1336,7 +1255,6 @@ export class Framebuffer {
             }
         }
 
-
         let modelViewMartrix = matrix;
 
         let points2: Array<Vector3f> = new Array<Vector3f>();
@@ -1358,7 +1276,6 @@ export class Framebuffer {
 
         }
     }
-
    
     public getBlenderScene(file: any, disp: boolean = true, flat: boolean = false): any {
         let scene = [];

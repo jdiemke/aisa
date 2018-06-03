@@ -980,6 +980,7 @@ export class Scene extends AbstractScene {
      // framebuffer.scene8(time*0.02);
         // framebuffer.debug(time*0.003);
       
+ 
      
 
         framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
