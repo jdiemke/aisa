@@ -444,29 +444,6 @@ export class Framebuffer {
         }
     }
 
-    public floodFill(texture: Texture, time: number) {
-        let pos = ((time * 0.02) | 0) % 200;
-        let index = 320 * 200;
-
-        for (let y = 0; y < pos; y++) {
-            for (let x = 0; x < 320; x++) {
-                this.framebuffer[index] = texture.texture[index];
-                index--;
-            }
-        }
-
-        let index2 = index;
-        for (let y = 0; y < 200 - pos; y++) {
-            for (let x = 0; x < 320; x++) {
-                this.framebuffer[index] = texture.texture[index2];
-                index--;
-                index2--;
-            }
-            index2 += 320;
-        }
-    }
-
-
     public drawTexturedBillboard(xp: number, yp: number, width: number, height: number, texture: Texture, z: number): void {
         let xStep = texture.width / width;
         let yStep = texture.height / height;

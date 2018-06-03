@@ -30,6 +30,7 @@ module.exports = {
         'textured-torus': './src/examples/textured-torus/Application.ts',
         'particle-torus': './src/examples/particle-torus/Application.ts',
         'toxic-dots': './src/examples/toxic-dots/Application.ts',
+        'flood-fill': './src/examples/flood-fill/Application.ts',
     },
     output: {
         filename: '[name].bundle.js',
@@ -191,6 +192,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['toxic-dots'],
             filename: 'toxic-dots.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['flood-fill'],
+            filename: 'flood-fill.html'
         })
     ]
 }

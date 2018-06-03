@@ -160,8 +160,6 @@ export class Scene extends AbstractScene {
                     this.framebuffer.shadingSphere(time * 0.01);
                 } else if (time < 40000) {
                     this.framebuffer.wireFrameSphereClipping(time * 0.01);
-                } else if (time < 70000) {
-                    this.framebuffer.floodFill(this.texture5, time - 60000);
                 } else if (time < 80000) {
                     this.framebuffer.blockFace(this.texture5, time, 80000);
                 } else if (time < 140000) {
