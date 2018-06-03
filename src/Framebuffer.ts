@@ -142,14 +142,6 @@ export class Framebuffer {
         }
     }
 
-    public clearH(col: number, h: number) {
-        let color: number = col;
-        let count: number = this.width * h;
-        for (let i = 0; i < count; i++) {
-            this.framebuffer[i] = color;
-        }
-    }
-
     public clearColorBuffer(color: number) {
         this.framebuffer.fill(color);
     }
@@ -160,10 +152,6 @@ export class Framebuffer {
 
     public readPixel(x: number, y: number, color: number): number {
         return this.framebuffer[x + y * this.width];
-    }
-
-    public readPixel2(fb: Uint32Array, x: number, y: number, color: number): number {
-        return fb[x + y * this.width];
     }
 
     public toColor(red: number): number {
@@ -389,22 +377,6 @@ export class Framebuffer {
             index += -198 * 320 + 1;
         }
 
-        /*
-                for (let y = 1; y < 200 - 1; y++) {
-                    for (let x = 1; x < 320 - 1; x++) {
-                        r = g = b = 0;
-                        for (let i = -1; i <= 1; i++) {
-                            let color = this.readPixel2(this.tmp, x, y + i, 0);
-                            r += color & 0xff;
-                            g += color >> 8 & 0xff;
-                            b += color >> 16 & 0xff;
-                        }
-                        r *= scale;
-                        g *= scale;
-                        b *= scale;
-                        this.tmp2[x + y * 320] = r | g << 8 | b << 16 | 255 << 24;
-                    }
-                }*/
         this.fastFramebufferCopy(this.framebuffer, this.tmp2);
     }
 
@@ -1641,111 +1613,7 @@ export class Framebuffer {
                 Math.round(size), Math.round(size), texture, 1 / element.z, this.interpolate(-60, -25, element.z));
         });
     }
-
-    public drawWormhole(elapsedTime: number, texture: Texture, noClear: boolean = false) {
-
-        let points: Array<Vector3f> = new Array<Vector3f>();
-        const num = 50;
-        const num2 = 10;
-        const scale = 2.1;
-
-        for (let i = 0; i < num; i++) {
-            let radius = 5.8;
-
-            for (let j = 0; j < num2; j++) {
-
-                let x = ((i - num / 2) * scale - elapsedTime * 0.008) % (num * scale) + (num * scale * 0.5);
-                let y = Math.cos(Math.PI * 2 / num2 * j) * radius + Math.cos(Math.PI * 2 / num * i) * 10;
-                let z = Math.sin(Math.PI * 2 / num2 * j) * radius + Math.sin(Math.PI * 2 / num * i) * 10;
-
-                points.push(new Vector3f(x, y, z));
-            }
-        }
-
-
-        let modelViewMartrix = Matrix4f.constructTranslationMatrix(
-            Math.sin(-Math.PI * 0.5 + Math.PI * 2 / num * (elapsedTime * 0.004 * scale)) * 10,
-            Math.cos(-Math.PI * 0.5 + Math.PI * 2 / num * (elapsedTime * 0.004 * scale)) * 10
-            , -49).multiplyMatrix(
-
-                Matrix4f.constructYRotationMatrix(Math.PI * 0.5));
-
-        let points2: Array<Vector3f> = new Array<Vector3f>(points.length);
-        points.forEach(element => {
-
-
-            let transformed = this.project(modelViewMartrix.multiply(element));
-
-            points2.push(transformed);
-        });
-
-        points2.sort(function (a, b) {
-            return a.z - b.z;
-        });
-
-        points2.forEach(element => {
-            //let size = -(2.0 * 192 / (element.z));
-            let size = -(1.3 * 192 / (element.z));
-            if (element.z < -4)
-                this.drawParticleNoDepth(
-                    Math.round(element.x - size / 2),
-                    Math.round(element.y - size / 2),
-                    Math.round(size), Math.round(size), texture, 1 / element.z, this.interpolate(-90, -55, element.z));
-        });
-    }
-
-    drawParticleTorus(elapsedTime: number, texture: Texture, noClear: boolean = false) {
-        if (!noClear) this.clearColorBuffer(72 | 56 << 8 | 48 << 16 | 255 << 24);
-        this.clearDepthBuffer();
-
-        let points: Array<Vector3f> = new Array<Vector3f>();
-        const num = 300;
-        for (let i = 0; i < num; i++) {
-            let radi = 3.4 * (2 + Math.sin((i * Math.PI / (num / 2)) * 2 + elapsedTime * 0.0004));//*sinf(Time*0.0008f)));
-            let move = elapsedTime * 0.0015;
-            let x = radi * Math.cos(((move + i) * Math.PI / (num / 2)) * 7);
-            let y = radi * Math.cos(((move + i) * Math.PI / (num / 2)) * 4);
-            let z = radi * Math.sin(((move + i) * Math.PI / (num / 2)) * 7);
-
-            points.push(new Vector3f(x, y, z));
-        }
-
-
-        let modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -20)
-            .multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.0003)
-                .multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.0003)));
-
-        let points2: Array<Vector3f> = new Array<Vector3f>(points.length);
-        points.forEach(element => {
-
-
-            let transformed = this.project(modelViewMartrix.multiply(element));
-
-            points2.push(transformed);
-        });
-
-        points2.sort(function (a, b) {
-            return a.z - b.z;
-        });
-
-        points2.forEach(element => {
-            let size = -(2.2 * 192 / (element.z));
-            this.drawParticle(
-                Math.round(element.x) - Math.round(size / 2),
-                Math.round(element.y) - Math.round(size / 2),
-                Math.round(size), Math.round(size), texture, 1 / element.z, 1.0);
-        });
-    }
-
-    /**
-     * todo:
-     * - create material class
-     * 
-     * @param {number} elapsedTime 
-     * @memberof Framebuffer
     
-     * 
-     */
     public drawBlenderScene(elapsedTime: number, texture: Texture, texture2?: Texture): void {
         // camerea:
         // http://graphicsrunner.blogspot.de/search/label/Water
@@ -3621,11 +3489,7 @@ export class Framebuffer {
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.09));
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.08));
 
-        /**
-         * Vertex Shader Stage
-         */
         let points2: Array<Vector3f> = new Array<Vector3f>();
-
 
         modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.04) * 25,
             Math.sin(elapsedTime * 0.05) * 9, -34).multiplyMatrix(modelViewMartrix);
@@ -3639,20 +3503,10 @@ export class Framebuffer {
 
             let xx = (320 * 0.5) + (x / (-z * 0.0078));
             let yy = (200 * 0.5) + (y / (-z * 0.0078));
-            // commented out because it breaks the winding. inversion
-            // of y has to be done after back-face culling in the
-            // viewport transform
-            // yy =(200 * 0.5) - (y / (-z * 0.0078));
 
             points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
         }
 
-        /**
-         * Primitive Assembly and Rasterization Stage:
-         * 1. back-face culling
-         * 2. viewport transform
-         * 3. scan conversion (rasterization)
-         */
         for (let i = 0; i < points2.length; i++) {
             let v1 = points2[i];
             let color = 0xffbbffbb;
