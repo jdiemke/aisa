@@ -4,10 +4,9 @@ import { Vector3f } from "../math/Vector3f";
 export class TriangleRasterizer {
 
     constructor(private framebuffer: Framebuffer) {
-        
+
     }
 
-    
     /**
      * Triangle rasterization using edge-walking strategy for scan-conversion.
      * Internally DDA is used for edge-walking.
@@ -59,7 +58,7 @@ export class TriangleRasterizer {
     }
 
 
-    
+
     fillBottomFlatTriangle(v1: Vector3f, v2: Vector3f, v3: Vector3f, color: number): void {
 
         let yDistance = v3.y - v1.y;

@@ -20,7 +20,8 @@ export class GearsScene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
-        framebuffer.setCullFace(CullFace.FRONT);
+        this.renderingPipeline.setCullFace(CullFace.FRONT);
+
         this.gearsMesh = BlenderJsonParser.parse(require('../../assets/gear.json'), false)[0];
 
         return Promise.all([
@@ -53,7 +54,7 @@ export class GearsScene extends AbstractScene {
     }
 
     public drawBlenderScene4(framebuffer: Framebuffer, elapsedTime: number,
-                             texture: Array<{ tex: Texture, scale: number, alpha: number }>, dirt: Texture): void {
+        texture: Array<{ tex: Texture, scale: number, alpha: number }>, dirt: Texture): void {
         framebuffer.clearDepthBuffer();
 
         const camera: Matrix4f = Matrix4f.constructTranslationMatrix(0, 0, -21).multiplyMatrix(
@@ -80,7 +81,7 @@ export class GearsScene extends AbstractScene {
     }
 
     private getModelViewMatrix(camera: Matrix4f, dampFactor: number, scale: number, i: number,
-                               elapsedTime: number): Matrix4f {
+        elapsedTime: number): Matrix4f {
         const modelViewMartrix: Matrix4f =
             Matrix4f.constructXRotationMatrix(elapsedTime * 0.0006 + dampFactor * 0.7 * (4 - i)).multiplyMatrix(
                 Matrix4f.constructYRotationMatrix(elapsedTime * 0.0005 + dampFactor * 0.7 * (4 - i)).multiplyMatrix(

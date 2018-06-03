@@ -1068,7 +1068,7 @@ export class Framebuffer {
             index += 320
         }
     }
-
+/*
     public wireFrameSphereClipping(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
@@ -1142,10 +1142,10 @@ export class Framebuffer {
             }
         }
     }
-
+*/
     public static minWindow: Vector3f = new Vector3f(0, 0, 0);
     public static maxWindow: Vector3f = new Vector3f(319, 199, 0);
-
+/*
     public wireFrameTerrain(elapsedTime: number, heightmap: Texture): void {
 
         this.clearDepthBuffer();
@@ -1200,7 +1200,7 @@ export class Framebuffer {
             this.nearPlaneClipping(points2[index[i]], points2[index[i + 1]], color);
         }
     }
-
+*/
     public drawBoundingSphere(sphere: Sphere, matrix: Matrix4f, color: number): void {
         let points: Array<Vector4f> = [];
 
@@ -1789,25 +1789,6 @@ export class Framebuffer {
             this.renderingPipeline.draw(this.torus.getMesh(), modelViewMartrix, 215, 30, 120);
     }
 
-    NEAR_PLANE_Z = -1.7;
-
-    public isInFrontOfNearPlane(p: { x: number; y: number; z: number }): boolean {
-        return p.z < this.NEAR_PLANE_Z;
-    }
-
-    public computeNearPlaneIntersection2(p1: Vertex, p2: Vertex): Vertex {
-        let ratio = (this.NEAR_PLANE_Z - p1.position.z) / (p2.position.z - p1.position.z);
-        let vertex = new Vertex();
-        vertex.position = new Vector4f(ratio * (p2.position.x - p1.position.x) + p1.position.x, ratio * (p2.position.y - p1.position.y) + p1.position.y, this.NEAR_PLANE_Z);
-
-        let tex = new TextureCoordinate();
-        tex.u = ratio * (p2.textureCoordinate.u - p1.textureCoordinate.u) + p1.textureCoordinate.u;
-        tex.v = ratio * (p2.textureCoordinate.v - p1.textureCoordinate.v) + p1.textureCoordinate.v;
-        vertex.textureCoordinate = tex;
-
-        return vertex;
-    }
-
     public torusFunction(alpha: number): Vector3f {
         return new Vector3f(Math.sin(alpha) * 10, 0, Math.cos(alpha) * 10);
     }
@@ -1827,6 +1808,8 @@ export class Framebuffer {
         mu2 = (mu - y1) / (y2 - y1);
         return (1 - Math.cos(mu2 * Math.PI)) / 2;
     }
+
+    /*
 
     public shadingTorusENvironment(elapsedTime: number): void {
 
@@ -1875,9 +1858,6 @@ export class Framebuffer {
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.25));
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3));
 
-        /**
-         * Vertex Shader Stage
-         */
         let points2: Array<Vector4f> = new Array<Vector4f>();
 
         let normals2: Array<Vector4f> = new Array<Vector4f>();
@@ -1906,13 +1886,7 @@ export class Framebuffer {
             points2.push(new Vector4f(Math.round(xx), Math.round(yy), z));
         }
 
-        /**
-         * Primitive Assembly and Rasterization Stage:
-         * 1. back-face culling
-         * 2. viewport transform
-         * 3. scan conversion (rasterization)
-         */
-
+      
         let vertex1 = new Vertex();
         vertex1.textureCoordinate = new TextureCoordinate();
         let vertex2 = new Vertex();
@@ -1976,7 +1950,7 @@ export class Framebuffer {
             }
         }
     }
-
+*/
     public divideSphere(points: Array<Vector3f>, index: Array<number>, steps: number) {
 
         let points2: Array<Vector3f> = [];
@@ -3272,47 +3246,6 @@ export class Framebuffer {
         }
 
         this.drawTextureRectAdd(0, 0, 0, 0, 320, 200, dirt, 0.03 + 0.15 * scale);
-    }
-
-    /**
-     * based on signed polygon area computation:
-     * http://www.faqs.org/faqs/graphics/algorithms-faq/
-     * https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order
-     * http://csharphelper.com/blog/2014/07/calculate-the-area-of-a-polygon-in-c/
-     * http://mathworld.wolfram.com/PolygonArea.html
-     * 
-     * @private
-     * @param {{ x: number, y: number, z: number }} v1 
-     * @param {{ x: number, y: number, z: number }} v2 
-     * @param {{ x: number, y: number, z: number }} v3 
-     * @returns {boolean} 
-     * @memberof Framebuffer
-     * 
-     */
-    public isTriangleCCW(v1: { x: number, y: number, z: number }, v2: { x: number, y: number, z: number }, v3: { x: number, y: number, z: number }): boolean {
-        let det: number =  //(v2.x - v1.x) * (v3.y - v1.y) - (v2.y - v1.y) * (v3.x - v1.x);
-            v1.x * v2.y - v2.x * v1.y +
-            v2.x * v3.y - v3.x * v2.y +
-            v3.x * v1.y - v1.x * v3.y;
-        if (this.cullMode == CullFace.BACK) {
-            return det < 0.0;
-        } else {
-            return det > 0.0;
-        }
-    }
-
-    public isTriangleCCW2(v1: { x: number, y: number, z: number }, v2: { x: number, y: number, z: number }, v3: { x: number, y: number, z: number },
-        v4: { x: number, y: number, z: number }): boolean {
-        let det: number = //(v2.x - v1.x) * (v3.y - v1.y) - (v2.y - v1.y) * (v3.x - v1.x) - (v3.y - v2.y) * (v4.x - v2.x);
-            v1.x * v2.y - v2.x * v1.y +
-            v2.x * v3.y - v3.x * v2.y +
-            v3.x * v4.y - v4.x * v3.y +
-            v4.x * v1.y - v1.x * v4.y;
-        if (this.cullMode == CullFace.BACK) {
-            return det < 0.0;
-        } else {
-            return det > 0.0;
-        }
     }
 
     /**
