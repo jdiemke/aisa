@@ -22,6 +22,7 @@ import { AbstractRenderingPipeline } from './AbstractRenderingPipeline';
 export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
 
     public flatShading: boolean = false;
+    private lightDirection: Vector4f = new Vector4f(0.5, 0.5, 0.3, 0.0).normalize();
 
     public draw(mesh: FlatshadedMesh, modelViewMartrix: Matrix4f,
                 red: number, green: number, blue: number): void {
@@ -36,8 +37,6 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
             modelViewMartrix.multiplyHomArr(mesh.points[i], mesh.transformedPoints[i]);
         }
 
-        const lightDirection: Vector4f = new Vector4f(0.5, 0.5, 0.3, 0.0).normalize();
-
         for (let i: number = 0; i < mesh.faces.length; i++) {
             const v1: Vector4f = mesh.transformedPoints[mesh.faces[i].v1];
             const v2: Vector4f = mesh.transformedPoints[mesh.faces[i].v2];
@@ -46,29 +45,13 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
             const normal: Vector4f = mesh.transformedNormals[mesh.faces[i].normal];
 
             if (this.isInFrontOfNearPlane(v1) && this.isInFrontOfNearPlane(v2) && this.isInFrontOfNearPlane(v3)) {
-                const p1: Vector3f = this.framebuffer.project(v1);
-                const p2: Vector3f = this.framebuffer.project(v2);
-                const p3: Vector3f = this.framebuffer.project(v3);
+                const projected: Array<Vector3f> = [
+                    this.framebuffer.project(v1),
+                    this.framebuffer.project(v2),
+                    this.framebuffer.project(v3)
+                ];
 
-                if (this.isTriangleCCW(p1, p2, p3)) {
-                    const clippedPolygon: Array<Vector3f> =
-                        SutherlandHodgman2DClipper.clipConvexPolygon(new Array<Vector3f>(p1, p2, p3));
-
-                    if (clippedPolygon.length < 3) {
-                        continue;
-                    }
-
-                    const color: number = this.computeColor(normal, lightDirection, red, green, blue);
-
-                    // triangulate new point set
-                    for (let j: number = 0; j < clippedPolygon.length - 2; j++) {
-                        this.framebuffer.triangleRasterizer.drawTriangleDDA(
-                            clippedPolygon[0],
-                            clippedPolygon[1 + j],
-                            clippedPolygon[2 + j], color
-                        );
-                    }
-                }
+                this.renderConvexPolygon(projected, normal, red, green, blue);
             } else if (!this.isInFrontOfNearPlane(v1) &&
                 !this.isInFrontOfNearPlane(v2) &&
                 !this.isInFrontOfNearPlane(v3)) {
@@ -84,38 +67,7 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
                     return this.framebuffer.project(v);
                 });
 
-                if (output.length === 3 &&
-                    !this.isTriangleCCW(projected[0], projected[1], projected[2])) {
-                    return;
-                }
-
-                if (output.length === 4 &&
-                    !this.isTriangleCCW2(
-                        projected[0],
-                        projected[1],
-                        projected[2],
-                        projected[3])
-                ) {
-                    return;
-                }
-
-                const clippedPolygon: Array<Vector3f> = SutherlandHodgman2DClipper.clipConvexPolygon(projected);
-
-                if (clippedPolygon.length < 3) {
-                    return;
-                }
-
-                const color: number = this.computeColor(normal, lightDirection, red, green, blue);
-
-                // triangulate new point set
-                for (let j: number = 0; j < clippedPolygon.length - 2; j++) {
-                    this.framebuffer.triangleRasterizer.drawTriangleDDA(
-                        clippedPolygon[0],
-                        clippedPolygon[1 + j],
-                        clippedPolygon[2 + j],
-                        color
-                    );
-                }
+                this.renderConvexPolygon(projected, normal, red, green, blue);
             }
         }
     }
@@ -148,6 +100,44 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
         }
 
         return output;
+    }
+
+    private renderConvexPolygon(projected: Array<Vector3f>, normal: Vector4f, red: number, green: number, blue: number): void {
+        if (projected.length === 3 &&
+            !this.isTriangleCCW(projected[0], projected[1], projected[2])) {
+            return;
+        }
+
+        if (projected.length === 4 &&
+            !this.isTriangleCCW2(
+                projected[0],
+                projected[1],
+                projected[2],
+                projected[3])
+        ) {
+            return;
+        }
+
+        const clippedPolygon: Array<Vector3f> = SutherlandHodgman2DClipper.clipConvexPolygon(projected);
+
+        if (clippedPolygon.length < 3) {
+            return;
+        }
+
+        const color: number = this.computeColor(normal, this.lightDirection, red, green, blue);
+
+        this.triangulateConvexPolygon(clippedPolygon, color);
+    }
+
+    private triangulateConvexPolygon(clippedPolygon: Array<Vector3f>, color: number): void {
+        for (let j: number = 0; j < clippedPolygon.length - 2; j++) {
+            this.framebuffer.triangleRasterizer.drawTriangleDDA(
+                clippedPolygon[0],
+                clippedPolygon[1 + j],
+                clippedPolygon[2 + j],
+                color
+            );
+        }
     }
 
     private computeColor(normal: Vector4f, lightDirection: Vector4f, red: number, green: number, blue: number): number {
