@@ -1,5 +1,5 @@
 import { Framebuffer } from '../Framebuffer';
-import { Mesh, FlatshadedMesh } from '../geometrical-objects/Mesh';
+import { FlatshadedMesh, Mesh } from '../geometrical-objects/Mesh';
 import { Vector3f, Vector4f } from '../math';
 import { Matrix4f } from '../math/Matrix4f';
 import { SutherlandHodgman2DClipper } from '../screen-space-clipping/SutherlandHodgman2DClipper';
@@ -11,6 +11,11 @@ import { SutherlandHodgman2DClipper } from '../screen-space-clipping/SutherlandH
  *   it directly without generating temp amtrices every frame
  * - no lighting for culled triangles
  * - only z clip if necessary (no clip, fully visible)
+ * Optimization:
+ * - no shading / only texture mapping (use function pointers to set correct rasterization function)
+ * - use delta step method from black art of 3d programming
+ * - generate object only once
+ * - dont use temp arrays / instead use always the same array preallocated
  */
 export class FlatShadingRenderingPipeline {
 

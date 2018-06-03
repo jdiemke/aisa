@@ -1,12 +1,14 @@
-import { Framebuffer } from "../Framebuffer";
-import { Matrix4f } from "../math/Matrix4f";
-import { Vertex } from "../Vertex";
+import { Framebuffer } from '../Framebuffer';
+import { Vector3f, Vector4f } from '../math';
+import { Matrix4f } from '../math/Matrix4f';
+import { Vertex } from '../Vertex';
+import { TexturedMesh } from './TexturedMesh';
 
 export class TexturingRenderingPipeline {
 
     constructor(private framebuffer: Framebuffer) { }
 
-    public draw(obj: any, modelViewMartrix: Matrix4f) {
+    public draw(mesh: TexturedMesh, modelViewMartrix: Matrix4f): void {
 
         // let normalMatrix = modelViewMartrix.computeNormalMatrix();
 
@@ -14,56 +16,63 @@ export class TexturingRenderingPipeline {
         //     normalMatrix.multiplyHomArr(obj.normals[i], obj.normals2[i]);
         // }
 
-        for (let i = 0; i < obj.points.length; i++) {
-            modelViewMartrix.multiplyHomArr(obj.points[i], obj.points2[i]);
+        for (let i: number = 0; i < mesh.points.length; i++) {
+            modelViewMartrix.multiplyHomArr(mesh.points[i], mesh.points2[i]);
         }
 
-        let vertexArray = new Array<Vertex>(new Vertex(), new Vertex(), new Vertex());
+        const vertexArray: Array<Vertex> = new Array<Vertex>(new Vertex(), new Vertex(), new Vertex());
 
-        for (let i = 0; i < obj.faces.length; i++) {
-            let v1 = obj.points2[obj.faces[i].vertices[0]];
-            let v2 = obj.points2[obj.faces[i].vertices[1]];
-            let v3 = obj.points2[obj.faces[i].vertices[2]];
+        for (let i: number = 0; i < mesh.faces.length; i++) {
+            const v1: Vector4f = mesh.points2[mesh.faces[i].vertices[0]];
+            const v2: Vector4f = mesh.points2[mesh.faces[i].vertices[1]];
+            const v3: Vector4f = mesh.points2[mesh.faces[i].vertices[2]];
 
-            if (this.framebuffer.isInFrontOfNearPlane(v1) && this.framebuffer.isInFrontOfNearPlane(v2) && this.framebuffer.isInFrontOfNearPlane(v3)) {
-                let p1 = this.framebuffer.project(v1);
-                let p2 = this.framebuffer.project(v2);
-                let p3 = this.framebuffer.project(v3);
+            if (this.framebuffer.isInFrontOfNearPlane(v1) &&
+                this.framebuffer.isInFrontOfNearPlane(v2) &&
+                this.framebuffer.isInFrontOfNearPlane(v3)) {
+
+                const p1: Vector4f = this.project(v1);
+                const p2: Vector4f = this.project(v2);
+                const p3: Vector4f = this.project(v3);
 
                 if (this.framebuffer.isTriangleCCW(p1, p2, p3)) {
-                    let color = 255;
-
-                    vertexArray[0].position = p1;
-                    vertexArray[0].textureCoordinate = obj.uv[obj.faces[i].uv[0]];
+                    vertexArray[0].position = p1; // p1 is Vector3f
+                    vertexArray[0].textureCoordinate = mesh.uv[mesh.faces[i].uv[0]];
 
                     vertexArray[1].position = p2;
-                    vertexArray[1].textureCoordinate = obj.uv[obj.faces[i].uv[1]];
+                    vertexArray[1].textureCoordinate = mesh.uv[mesh.faces[i].uv[1]];
 
                     vertexArray[2].position = p3;
-                    vertexArray[2].textureCoordinate = obj.uv[obj.faces[i].uv[2]];
+                    vertexArray[2].textureCoordinate = mesh.uv[mesh.faces[i].uv[2]];
 
-                    this.framebuffer.clipConvexPolygon2(vertexArray, color);
+                    this.framebuffer.clipConvexPolygon2(vertexArray);
                 }
-            } else if (!this.framebuffer.isInFrontOfNearPlane(v1) && !this.framebuffer.isInFrontOfNearPlane(v2) && !this.framebuffer.isInFrontOfNearPlane(v3)) {
+            } else if (!this.framebuffer.isInFrontOfNearPlane(v1) &&
+                !this.framebuffer.isInFrontOfNearPlane(v2) &&
+                !this.framebuffer.isInFrontOfNearPlane(v3)) {
                 continue;
             } else {
-                let color = 255;
-
-                vertexArray[0].position = v1;
-                vertexArray[0].textureCoordinate = obj.uv[obj.faces[i].uv[0]];
+                vertexArray[0].position = v1; // v1 is Vector4f
+                vertexArray[0].textureCoordinate = mesh.uv[mesh.faces[i].uv[0]];
 
                 vertexArray[1].position = v2;
-                vertexArray[1].textureCoordinate = obj.uv[obj.faces[i].uv[1]];
+                vertexArray[1].textureCoordinate = mesh.uv[mesh.faces[i].uv[1]];
 
                 vertexArray[2].position = v3;
-                vertexArray[2].textureCoordinate = obj.uv[obj.faces[i].uv[2]];
+                vertexArray[2].textureCoordinate = mesh.uv[mesh.faces[i].uv[2]];
 
-                this.zClipTriangle2(vertexArray, color);
+                this.zClipTriangle2(vertexArray);
             }
         }
     }
 
-    public zClipTriangle2(subject: Array<Vertex>, color: number): void {
+    public project(t1: { x: number, y: number, z: number }): Vector4f {
+        return new Vector4f(Math.round((320 / 2) + (292 * t1.x / (-t1.z))),
+            Math.round((200 / 2) - (t1.y * 292 / (-t1.z))),
+            t1.z);
+    }
+
+    public zClipTriangle2(subject: Array<Vertex>): void {
 
         let output = subject;
 
@@ -89,7 +98,7 @@ export class TexturingRenderingPipeline {
         }
 
         let projected: Vertex[] = output.map<Vertex>((v) => {
-            v.position = this.framebuffer.project(v.position);
+            v.position = this.project(v.position);
             return v;
         })
 
@@ -100,10 +109,8 @@ export class TexturingRenderingPipeline {
         if (output.length === 4 && !this.framebuffer.isTriangleCCW2(projected[0].position, projected[1].position, projected[2].position, projected[3].position)) {
             return;
         }
-        //if (this.isTriangleCCW(projected[0], projected[1], projected[2])) {
-        //this.clipConvexPolygon(projected, color, true);
-        this.framebuffer.clipConvexPolygon2(projected, color);
-        // }
+
+        this.framebuffer.clipConvexPolygon2(projected);
     }
 
 }

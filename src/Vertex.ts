@@ -1,4 +1,4 @@
-import { Vector3f } from './math';
+import { Vector3f, Vector4f } from './math';
 
 export class TextureCoordinate {
     public u: number;
@@ -11,6 +11,6 @@ export class TextureCoordinate {
 }
 
 export class Vertex {
-    public position: Vector3f;
+    public position: Vector4f;
     public textureCoordinate: TextureCoordinate;
 }

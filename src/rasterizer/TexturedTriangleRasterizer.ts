@@ -1,6 +1,7 @@
-import { Framebuffer } from "../Framebuffer";
-import { Vertex } from "../Vertex";
-import { Vector3f } from "../math/Vector3f";
+import { Framebuffer } from '../Framebuffer';
+import { Vector3f } from '../math/Vector3f';
+import { Vertex } from '../Vertex';
+import { Vector4f } from '../math/Vector4f';
 
 export class TexturedTriangleRasterizer {
 
@@ -8,7 +9,7 @@ export class TexturedTriangleRasterizer {
     // bob und wbuffer
     constructor(private framebuffer: Framebuffer) { }
 
-    public drawTriangleDDA2(p1: Vertex, p2: Vertex, p3: Vertex, color: number): void {
+    public drawTriangleDDA2(p1: Vertex, p2: Vertex, p3: Vertex): void {
 
         let temp: Vertex;
 
@@ -30,7 +31,7 @@ export class TexturedTriangleRasterizer {
             p3 = temp;
         }
 
-        if (p1.position.y == p3.position.y) {
+        if (p1.position.y === p3.position.y) {
             return;
         } /*else if (p2.y == p3.y) {
             if (p2.x > p3.x) {
@@ -49,17 +50,17 @@ export class TexturedTriangleRasterizer {
         } */else {
             let x = (p3.position.x - p1.position.x) * (p2.position.y - p1.position.y) / (p3.position.y - p1.position.y) + p1.position.x;
             if (x > p2.position.x) {
-                this.fillLongRightTriangle2(p1, p2, p3, color);
+                this.fillLongRightTriangle2(p1, p2, p3);
             } else {
                 let tex = p1.textureCoordinate;
                 let tex2 = p2.textureCoordinate;
                 let tex3 = p3.textureCoordinate;
-                this.fillLongLeftTriangle2(p1.position, p2.position, p3.position, new Vector3f(tex.u, tex.v, 0), new Vector3f(tex2.u, tex2.v, 0), new Vector3f(tex3.u, tex3.v, 0), color);
+                this.fillLongLeftTriangle2(p1.position, p2.position, p3.position, new Vector3f(tex.u, tex.v, 0), new Vector3f(tex2.u, tex2.v, 0), new Vector3f(tex3.u, tex3.v, 0));
             }
         }
     }
 
-    fillLongRightTriangle2(v1: Vertex, v2: Vertex, v3: Vertex, color: number): void {
+    fillLongRightTriangle2(v1: Vertex, v2: Vertex, v3: Vertex): void {
         let yDistanceLeft = v2.position.y - v1.position.y;
         let yDistanceRight = v3.position.y - v1.position.y;
 
@@ -206,7 +207,7 @@ export class TexturedTriangleRasterizer {
     }
 
     
-    fillLongLeftTriangle2(v1: Vector3f, v2: Vector3f, v3: Vector3f, t1: Vector3f, t2: Vector3f, t3: Vector3f, color: number): void {
+    fillLongLeftTriangle2(v1: Vector4f, v2: Vector4f, v3: Vector4f, t1: Vector3f, t2: Vector3f, t3: Vector3f): void {
 
         let yDistanceRight = v2.y - v1.y;
         let yDistanceLeft = v3.y - v1.y;

@@ -1,5 +1,5 @@
 import { Framebuffer } from '../Framebuffer';
-import { Vector3f } from '../math';
+import { Vector3f, Vector4f } from '../math';
 import { TextureCoordinate, Vertex } from '../Vertex';
 import { AbstractClipEdge } from './AbstractClipEdge';
 
@@ -23,7 +23,7 @@ export class BottomClipEdge extends AbstractClipEdge {
     public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {
         const vertex: Vertex = new Vertex();
         vertex.position =
-            new Vector3f(
+            new Vector4f(
                 Math.round(p1.position.x + (p2.position.x - p1.position.x) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y)),
                 Framebuffer.minWindow.y,
                 1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.minWindow.y - p1.position.y) / (p2.position.y - p1.position.y)));

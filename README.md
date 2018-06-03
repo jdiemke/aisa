@@ -210,3 +210,5 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - https://www.ntu.edu.sg/home/ehchua/programming/opengl/CG_BasicsTheory.html
 - http://www.gamasutra.com/blogs/MichaelKissner/20160112/263097/Writing_a_Game_Engine_from_Scratch__Part_4_Graphics_Library.php
 - https://developer.tizen.org/development/guides/native-application/graphics/opengl-es/primitive-assembly-and-rasterization
+- http://www.sunshine2k.de/coding/java/SutherlandHodgman/SutherlandHodgman.html
+- http://www.cubic.org/docs/3dclip.htm

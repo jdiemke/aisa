@@ -2,6 +2,7 @@ import { AbstractClipEdge } from "./AbstractClipEdge";
 import { Vector3f } from "../math/Vector3f";
 import { Vertex, TextureCoordinate } from "../Vertex";
 import { Framebuffer } from "../Framebuffer";
+import { Vector4f } from "../math/Vector4f";
 
 export class LeftClipEdge extends AbstractClipEdge {
 
@@ -22,7 +23,7 @@ export class LeftClipEdge extends AbstractClipEdge {
     public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {
         let vertex = new Vertex();
         vertex.position =
-            new Vector3f(Framebuffer.minWindow.x,
+            new Vector4f(Framebuffer.minWindow.x,
                 Math.round(p1.position.y + (p2.position.y - p1.position.y) * (Framebuffer.minWindow.x - p1.position.x) / (p2.position.x - p1.position.x)),
                 1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (Framebuffer.minWindow.x - p1.position.x) / (p2.position.x - p1.position.x)));
 

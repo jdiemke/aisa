@@ -1798,7 +1798,7 @@ export class Framebuffer {
     public computeNearPlaneIntersection2(p1: Vertex, p2: Vertex): Vertex {
         let ratio = (this.NEAR_PLANE_Z - p1.position.z) / (p2.position.z - p1.position.z);
         let vertex = new Vertex();
-        vertex.position = new Vector3f(ratio * (p2.position.x - p1.position.x) + p1.position.x, ratio * (p2.position.y - p1.position.y) + p1.position.y, this.NEAR_PLANE_Z);
+        vertex.position = new Vector4f(ratio * (p2.position.x - p1.position.x) + p1.position.x, ratio * (p2.position.y - p1.position.y) + p1.position.y, this.NEAR_PLANE_Z);
 
         let tex = new TextureCoordinate();
         tex.u = ratio * (p2.textureCoordinate.u - p1.textureCoordinate.u) + p1.textureCoordinate.u;
@@ -1831,11 +1831,11 @@ export class Framebuffer {
     public shadingTorusENvironment(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
-        let points: Array<Vector3f> = [];
+        let points: Array<Vector4f> = [];
         let textCoords: Array<TextureCoordinate> = [];
 
         // compute normals
-        let normals: Array<Vector3f> = new Array<Vector3f>();
+        let normals: Array<Vector4f> = new Array<Vector4f>();
         const STEPS = 15 * 2;
         const STEPS2 = 8 * 2;
         for (let i = 0; i < STEPS + 1; i++) {
@@ -1846,8 +1846,9 @@ export class Framebuffer {
 
             for (let r = 0; r < STEPS2 + 1; r++) {
                 let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
-                points.push(pos);
-                normals.push(frame.sub(pos).normalize());
+                points.push(new Vector4f(pos.x, pos.y, pos.z));
+                let normal = frame.sub(pos).normalize();
+                normals.push(new Vector4f(normal.x, normal.y, normal.z, 0));
                 let t = new TextureCoordinate();
                 t.u = 1 / (STEPS2) * r;
                 t.v = 1 / (STEPS) * i;
@@ -1869,9 +1870,6 @@ export class Framebuffer {
             }
         }
 
-
-
-
         let scale = 2.1;
 
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.25));
@@ -1880,11 +1878,11 @@ export class Framebuffer {
         /**
          * Vertex Shader Stage
          */
-        let points2: Array<Vector3f> = new Array<Vector3f>();
+        let points2: Array<Vector4f> = new Array<Vector4f>();
 
-        let normals2: Array<Vector3f> = new Array<Vector3f>();
+        let normals2: Array<Vector4f> = new Array<Vector4f>();
         for (let n = 0; n < normals.length; n++) {
-            normals2.push(modelViewMartrix.multiply(normals[n]));
+            normals2.push(modelViewMartrix.multiplyHom(normals[n]));
         }
 
         modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.3) * 26, Math.sin(elapsedTime * 0.2) * 10
@@ -1892,7 +1890,7 @@ export class Framebuffer {
             .multiplyMatrix(modelViewMartrix);
 
         for (let p = 0; p < points.length; p++) {
-            let transformed = modelViewMartrix.multiply(points[p]);
+            let transformed = modelViewMartrix.multiplyHom(points[p]);
 
             let x = transformed.x;
             let y = transformed.y;
@@ -1905,7 +1903,7 @@ export class Framebuffer {
             // viewport transform
             // yy =(200 * 0.5) - (y / (-z * 0.0078));
 
-            points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
+            points2.push(new Vector4f(Math.round(xx), Math.round(yy), z));
         }
 
         /**
@@ -1943,7 +1941,7 @@ export class Framebuffer {
             if (this.isTriangleCCW(v1, v2, v3)) {
 
                 let normal = n3;
-                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector3f(0.1, 0.1, -1).normalize())) * 205 + 50), 255);
+                let scalar = Math.min((Math.max(0.0, normal.normalize().dot(new Vector4f(0.1, 0.1, -1).normalize())) * 205 + 50), 255);
                 let color = 255 << 24 | scalar << 16 | scalar << 8 | scalar;
 
                 //let color = 255 << 24 | 255 << 16 | 150 << 8 | 255;
@@ -1971,9 +1969,9 @@ export class Framebuffer {
                     v3.y > Framebuffer.maxWindow.y) {
 
 
-                    this.clipConvexPolygon2(vertexArray, color);
+                    this.clipConvexPolygon2(vertexArray);
                 } else {
-                    this.texturedTriangleRasterizer.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], color);
+                    this.texturedTriangleRasterizer.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2]);
                 }
             }
         }
@@ -2293,6 +2291,7 @@ export class Framebuffer {
         }
     }
 
+    /*
     public shadingSphereEnv(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
@@ -2345,9 +2344,7 @@ export class Framebuffer {
             , -85)
             .multiplyMatrix(modelViewMartrix);
 
-        /**
-         * Vertex Shader Stage
-         */
+
         let points2: Array<Vector3f> = result.points2;
         let normals2: Array<Vector3f> = result.normals2;
 
@@ -2364,13 +2361,6 @@ export class Framebuffer {
             points2[p].y = Math.round((200 * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
             points2[p].z = transformed.z;
         }
-
-        /**
-         * Primitive Assembly and Rasterization Stage:
-         * 1. back-face culling
-         * 2. viewport transform
-         * 3. scan conversion (rasterization)
-         */
 
         let vertex1 = new Vertex();
         vertex1.textureCoordinate = new TextureCoordinate();
@@ -2431,7 +2421,9 @@ export class Framebuffer {
             }
         }
     }
+    */
 
+    /*
     public shadingPlaneEnv(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
@@ -2494,9 +2486,7 @@ export class Framebuffer {
             -205 + Math.sin(elapsedTime * 1.9) * 50)
             .multiplyMatrix(modelViewMartrix);
 
-        /**
-         * Vertex Shader Stage
-         */
+
         let points2: Array<Vector3f> = result.points2;
         let normals2: Array<Vector3f> = result.normals2;
 
@@ -2514,12 +2504,7 @@ export class Framebuffer {
             points2[p].z = transformed.z;
         }
 
-        /**
-         * Primitive Assembly and Rasterization Stage:
-         * 1. back-face culling
-         * 2. viewport transform
-         * 3. scan conversion (rasterization)
-         */
+
 
         let vertex1 = new Vertex();
         vertex1.textureCoordinate = new TextureCoordinate();
@@ -2580,7 +2565,9 @@ export class Framebuffer {
             }
         }
     }
+    */
 
+    /*
     public shadingCylinderEnv(elapsedTime: number): void {
         this.wBuffer.fill(100);
         let result = this.cylinder;
@@ -2637,9 +2624,6 @@ export class Framebuffer {
             -290)
             .multiplyMatrix(modelViewMartrix);
 
-        /**
-         * Vertex Shader Stage
-         */
         let points2: Array<Vector3f> = result.points2;
         let normals2: Array<Vector3f> = result.normals2;
 
@@ -2658,13 +2642,6 @@ export class Framebuffer {
             points2[p].y = Math.round((200 * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
             points2[p].z = transformed.z;
         }
-
-        /**
-         * Primitive Assembly and Rasterization Stage:
-         * 1. back-face culling
-         * 2. viewport transform
-         * 3. scan conversion (rasterization)
-         */
 
         let vertex1 = new Vertex();
         vertex1.textureCoordinate = new TextureCoordinate();
@@ -2725,7 +2702,9 @@ export class Framebuffer {
             }
         }
     }
+    */
 
+    /*
     public shadingCylinderEnvDisp(elapsedTime: number): void {
 
         this.wBuffer.fill(100);
@@ -2767,11 +2746,6 @@ export class Framebuffer {
             normals[index[i + 2]].add2(normals[index[i + 2]], normal);
         }
 
-        // FIXME: speed up
-        // - remove normalie from lighting
-        // - remove normalize after normal transformation!
-        // - precreate array for transformed vertices and normals
-
         for (let i = 0; i < normals.length; i++) {
             normals[i].normalize2();
         }
@@ -2786,9 +2760,6 @@ export class Framebuffer {
             -290)
             .multiplyMatrix(modelViewMartrix);
 
-        /**
-         * Vertex Shader Stage
-         */
         let points2: Array<Vector3f> = result.points2;
         let normals2: Array<Vector3f> = result.normals2;
 
@@ -2806,13 +2777,6 @@ export class Framebuffer {
             points2[p].z = transformed.z;
         }
 
-        /**
-         * Primitive Assembly and Rasterization Stage:
-         * 1. back-face culling
-         * 2. viewport transform
-         * 3. scan conversion (rasterization)
-         */
-
         let vertex1 = new Vertex();
         vertex1.textureCoordinate = new TextureCoordinate();
         let vertex2 = new Vertex();
@@ -2822,13 +2786,6 @@ export class Framebuffer {
         let vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
         for (let i = 0; i < index.length; i += 3) {
 
-            // Only render triangles with CCW-ordered vertices
-            // 
-            // Reference:
-            // David H. Eberly (2006).
-            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
-            // p. 69. Morgan Kaufmann Publishers, United States.
-            //
             let v1 = points2[index[i]];
             let n1 = normals2[index[i]];
 
@@ -2872,7 +2829,9 @@ export class Framebuffer {
             }
         }
     }
+    */
 
+    /*
     public shadingSphereEnvDisp(elapsedTime: number): void {
         this.wBuffer.fill(100);
 
@@ -2913,11 +2872,6 @@ export class Framebuffer {
             normals[index[i + 2]].add2(normals[index[i + 2]], normal);
         }
 
-        // FIXME: speed up
-        // - remove normalie from lighting
-        // - remove normalize after normal transformation!
-        // - precreate array for transformed vertices and normals
-
         for (let i = 0; i < normals.length; i++) {
             normals[i].normalize2();
         }
@@ -2932,10 +2886,7 @@ export class Framebuffer {
             -10)
             .multiplyMatrix(modelViewMartrix);
 
-        /**
-         * Vertex Shader Stage
-         */
-        let points2: Array<Vector3f> = result.points2;
+            let points2: Array<Vector3f> = result.points2;
         let normals2: Array<Vector3f> = result.normals2;
 
         let normalMatrix = modelViewMartrix.computeNormalMatrix();
@@ -2952,13 +2903,6 @@ export class Framebuffer {
             points2[p].z = transformed.z;
         }
 
-        /**
-         * Primitive Assembly and Rasterization Stage:
-         * 1. back-face culling
-         * 2. viewport transform
-         * 3. scan conversion (rasterization)
-         */
-
         let vertex1 = new Vertex();
         vertex1.textureCoordinate = new TextureCoordinate();
         let vertex2 = new Vertex();
@@ -2968,13 +2912,6 @@ export class Framebuffer {
         let vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
         for (let i = 0; i < index.length; i += 3) {
 
-            // Only render triangles with CCW-ordered vertices
-            // 
-            // Reference:
-            // David H. Eberly (2006).
-            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
-            // p. 69. Morgan Kaufmann Publishers, United States.
-            //
             let v1 = points2[index[i]];
             let n1 = normals2[index[i]];
 
@@ -3018,7 +2955,8 @@ export class Framebuffer {
             }
         }
     }
-
+*/
+/*
     public shadingSphereEnvDisp2(elapsedTime: number, modelViewMartrix: Matrix4f): void {
         let result = this.sphereDisp2;
 
@@ -3058,18 +2996,10 @@ export class Framebuffer {
             normals[index[i + 2]].add2(normals[index[i + 2]], normal);
         }
 
-        // FIXME: speed up
-        // - remove normalie from lighting
-        // - remove normalize after normal transformation!
-        // - precreate array for transformed vertices and normals
-
         for (let i = 0; i < normals.length; i++) {
             normals[i].normalize2();
         }
 
-        /**
-         * Vertex Shader Stage
-         */
         let points2: Array<Vector3f> = result.points2;
         let normals2: Array<Vector3f> = result.normals2;
 
@@ -3087,13 +3017,6 @@ export class Framebuffer {
             points2[p].z = transformed.z;
         }
 
-        /**
-         * Primitive Assembly and Rasterization Stage:
-         * 1. back-face culling
-         * 2. viewport transform
-         * 3. scan conversion (rasterization)
-         */
-
         let vertex1 = new Vertex();
         vertex1.textureCoordinate = new TextureCoordinate();
         let vertex2 = new Vertex();
@@ -3103,13 +3026,6 @@ export class Framebuffer {
         let vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
         for (let i = 0; i < index.length; i += 3) {
 
-            // Only render triangles with CCW-ordered vertices
-            // 
-            // Reference:
-            // David H. Eberly (2006).
-            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
-            // p. 69. Morgan Kaufmann Publishers, United States.
-            //
             let v1 = points2[index[i]];
             let n1 = normals2[index[i]];
 
@@ -3153,14 +3069,7 @@ export class Framebuffer {
             }
         }
     }
-
-    /**
-     * Optimization:
-     * - no shading / only texture mapping (use function pointers to set correct rasterization function)
-     * - use delta step method from black art of 3d programming
-     * - generate object only once
-     * - dont use temp arrays / instead use always the same array preallocated
-     */
+*/
     public createBunny(): any {
         let points: Array<Vector3f> = new Array<Vector3f>();
 
@@ -3197,6 +3106,8 @@ export class Framebuffer {
 
         return object;
     }
+
+    /*
     public reflectionBunny(elapsedTime: number): void {
         this.clearDepthBuffer();
 
@@ -3263,8 +3174,6 @@ export class Framebuffer {
                     v1.y > Framebuffer.maxWindow.y ||
                     v2.y > Framebuffer.maxWindow.y ||
                     v3.y > Framebuffer.maxWindow.y) {
-
-
                     this.clipConvexPolygon2(vertexArray, 0);
                 } else {
                     this.texturedTriangleRasterizer.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], 0);
@@ -3272,8 +3181,8 @@ export class Framebuffer {
             }
         }
     }
-
-    public fakeSphere(normal: Vector3f, vertex: Vertex): void {
+*/
+    public fakeSphere(normal: Vector4f, vertex: Vertex): void {
         // https://www.mvps.org/directx/articles/spheremap.htm
         //vertex.textureCoordinate.u = 0.5 + normal.x * 0.5;
         //vertex.textureCoordinate.v = 0.5 - normal.y * 0.5;
@@ -3285,10 +3194,6 @@ export class Framebuffer {
         tex.u = 0.5 + Math.asin(normal.x) / Math.PI;
         tex.v = 0.5 - Math.asin(normal.y) / Math.PI;
     }
-    
-    // Sutherland-Hodgman
-    // http://www.sunshine2k.de/coding/java/SutherlandHodgman/SutherlandHodgman.html
-    // http://www.cubic.org/docs/3dclip.htm
 
     private static clipRegion = new Array<AbstractClipEdge>(
         new RightClipEdge(),
@@ -3297,7 +3202,7 @@ export class Framebuffer {
         new TopClipEdge()
     );
 
-    public clipConvexPolygon2(subject: Array<Vertex>, color: number): void {
+    public clipConvexPolygon2(subject: Array<Vertex>): void {
 
         let output = subject;
 
@@ -3327,7 +3232,7 @@ export class Framebuffer {
 
         // triangulate new point set
         for (let i = 0; i < output.length - 2; i++) {
-            this.texturedTriangleRasterizer.drawTriangleDDA2(output[0], output[1 + i], output[2 + i], color);
+            this.texturedTriangleRasterizer.drawTriangleDDA2(output[0], output[1 + i], output[2 + i]);
         }
     }
 
