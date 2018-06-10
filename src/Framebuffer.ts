@@ -36,6 +36,7 @@ import { TexturedTriangleRasterizer } from './rasterizer/TexturedTriangleRasteri
 import { FlatShadingRenderingPipeline } from './rendering-pipelines/FlatShadingRenderingPipeline';
 import { FlatShadedFace } from './geometrical-objects/Face';
 import { TexturingRenderingPipeline } from './rendering-pipelines/TexturingRenderingPipeline';
+import { BlenderJsonParser } from './blender/BlenderJsonParser';
 
 let json = require('./assets/f16.json');
 let bunnyJson = <any>require('./assets/bunny.json');
@@ -70,7 +71,6 @@ export class Framebuffer {
     private bunnyObj: any;
     private blenderObj: any;
     private blenderObj2: any;
-    private blenderObj3: any;
     private blenderObj4: any;
     private blenderObj5: any;
     private blenderObj6: any;
@@ -114,7 +114,6 @@ export class Framebuffer {
         this.bunnyObj = this.createBunny();
         this.blenderObj = this.getBlenderScene(worldJson);
         this.blenderObj2 = this.getBlenderScene(torusJson, false);
-        this.blenderObj3 = this.getBlenderScene(gearJson, false);
         this.blenderObj4 = this.getBlenderScene(roomJson, false);
         this.blenderObj5 = this.getBlenderScene(hoodlumJson, false);
         this.blenderObj6 = this.getBlenderScene(labJson, false);
@@ -1513,11 +1512,6 @@ export class Framebuffer {
         this.drawText(8, 18 + 8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
     }
 
-    /**
-     * Requirements for blender export:
-     * - Wavefront OBJ
-     * - 
-     */
     public drawBlenderScene2(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
         this.clearDepthBuffer();
 
@@ -1670,34 +1664,6 @@ export class Framebuffer {
                 Math.round(element.y - size / 2),
                 Math.round(size), Math.round(size), texture3, 1 / element.z, 0.7);
         });
-    }
-
-    public drawBlenderScene3(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
-
-        this.clearDepthBuffer();
-
-        let camera: Matrix4f = Matrix4f.constructTranslationMatrix(0, 0, -5).multiplyMatrix(
-            Matrix4f.constructYRotationMatrix(elapsedTime * 0.0002)
-                .multiplyMatrix(
-                    Matrix4f.constructXRotationMatrix(elapsedTime * 0.0002)
-                )
-        );
-
-        for (let i: number = 0; i < 10; i++) {
-            const scale = Math.sin(Math.PI * 2 / 10 * i + elapsedTime * 0.002) * 0.2 + 0.2 + 0.3;
-            let mv: Matrix4f = camera.multiplyMatrix(
-                Matrix4f.constructTranslationMatrix(0, ((i + elapsedTime * 0.0008) % 10) - 5, 0).multiplyMatrix(
-                    Matrix4f.constructYRotationMatrix((i * 0.36 + elapsedTime * 0.0016)).multiplyMatrix(
-                        Matrix4f.constructScaleMatrix(scale, 1, scale)
-                    )
-                )
-            );
-            let model = this.blenderObj3[0];
-            this.renderingPipeline.draw(model, mv, 246, 165, 177);
-        }
-        let lensflareScreenSpace = this.project(camera.multiply(new Vector3f(16.0 * 20, 16.0 * 20, 0)));
-
-        this.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.3, texture, dirt);
     }
 
     public drawPlaneDeformation(elapsedTime: number, texture: Texture): void {

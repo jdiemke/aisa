@@ -855,24 +855,6 @@ export class Scene extends AbstractScene {
                     this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
         
                     this.framebuffer.noise(time, this.noise);
-                } else if (time < 800000) {
-                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-                    this.framebuffer.setCullFace(CullFace.FRONT);
-                    this.framebuffer.drawBlenderScene3(time, this.texture4,
-                        [
-                            { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                            { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                            { tex: this.texture13, scale: 1.6, alpha: 0.25 },
-                            { tex: this.texture13, scale: 0.7, alpha: 0.22 },
-                            { tex: this.texture13, scale: -0.4, alpha: 0.22 },
-                        ], this.dirt);
-                    this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, 0.6);
-        
-                    const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-                    this.framebuffer.drawTexture(0, 0, texture3, 0.75);
-                    this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-        
-                    this.framebuffer.noise(time, this.noise);
                 } 
                 } else if (time < 900000) {
         
@@ -895,25 +877,7 @@ export class Scene extends AbstractScene {
                     this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
                     this.framebuffer.glitchScreen(time * 0.9, this.noise);
                 } else if (time < 950000) {
-                    this.framebuffer.setCullFace(CullFace.BACK);
-                    this.framebuffer.setBob(this.envmap);
-        
-                    this.framebuffer.drawBlenderScene6(time, this.particleTexture2,
-                        [
-                            { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                            { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                            { tex: this.texture13, scale: 1.6, alpha: 0.25 },
-                            { tex: this.texture13, scale: 0.7, alpha: 0.22 },
-                            { tex: this.texture13, scale: -0.4, alpha: 0.22 },
-                        ], this.dirt);
-        
-                    const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-                    this.framebuffer.drawTexture(0, 0, texture3, 0.85);
-                    this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-        
-                    this.framebuffer.noise(time, this.noise);
-                } else if (time < 1000000) {
-        
+                           
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
                     this.framebuffer.setCullFace(CullFace.BACK);
                     this.framebuffer.setBob(this.baked);
@@ -973,13 +937,29 @@ export class Scene extends AbstractScene {
 
         // this.framebuffer.drawRadialBlur();
 
-       
+
         //framebuffer.shadingSphereClip(time*0.005);
-     // framebuffer.scene8(time*0.02);
+        // framebuffer.scene8(time*0.02);
         // framebuffer.debug(time*0.003);
-      
- 
-     
+        /*
+          framebuffer.setCullFace(CullFace.BACK);
+          framebuffer.setTexture(this.envmap);
+  
+          framebuffer.drawBlenderScene6(time, this.particleTexture2,
+              [
+                  { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+                  { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+                  { tex: this.texture13, scale: 1.6, alpha: 0.25 },
+                  { tex: this.texture13, scale: 0.7, alpha: 0.22 },
+                  { tex: this.texture13, scale: -0.4, alpha: 0.22 },
+              ], this.dirt);
+  
+          const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+          framebuffer.drawTexture(0, 0, texture3, 0.85);
+          framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
+  
+          framebuffer.noise(time, this.noise);
+  */
 
         framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
 

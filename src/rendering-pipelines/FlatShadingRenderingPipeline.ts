@@ -102,7 +102,8 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
         return output;
     }
 
-    private renderConvexPolygon(projected: Array<Vector3f>, normal: Vector4f, red: number, green: number, blue: number): void {
+    private renderConvexPolygon(projected: Array<Vector3f>, normal: Vector4f,
+                                red: number, green: number, blue: number): void {
         if (projected.length === 3 &&
             !this.isTriangleCCW(projected[0], projected[1], projected[2])) {
             return;
