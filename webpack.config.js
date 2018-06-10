@@ -32,6 +32,7 @@ module.exports = {
         'toxic-dots': './src/examples/toxic-dots/Application.ts',
         'flood-fill': './src/examples/flood-fill/Application.ts',
         'rotating-gears': './src/examples/rotating-gears/Application.ts',
+        'abstract-cube': './src/examples/abstract-cube/Application.ts',
     },
     output: {
         filename: '[name].bundle.js',
@@ -203,6 +204,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['rotating-gears'],
             filename: 'rotating-gears.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['abstract-cube'],
+            filename: 'abstract-cube.html'
         })
     ]
 }

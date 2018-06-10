@@ -41,9 +41,6 @@ import { BlenderJsonParser } from './blender/BlenderJsonParser';
 let json = require('./assets/f16.json');
 let bunnyJson = <any>require('./assets/bunny.json');
 let worldJson = <any>require('./assets/world2.json');
-
-let torusJson = <any>require('./assets/stravaganza.json');
-let gearJson = <any>require('./assets/gear.json');
 let roomJson = <any>require('./assets/room.json');
 let hoodlumJson = <any>require('./assets/hoodlum.json');
 let labJson = <any>require('./assets/lab.json');
@@ -70,7 +67,6 @@ export class Framebuffer {
     private torus = new Torus();
     private bunnyObj: any;
     private blenderObj: any;
-    private blenderObj2: any;
     private blenderObj4: any;
     private blenderObj5: any;
     private blenderObj6: any;
@@ -113,7 +109,6 @@ export class Framebuffer {
     public precompute(texture: Texture, texture2: Texture): void {
         this.bunnyObj = this.createBunny();
         this.blenderObj = this.getBlenderScene(worldJson);
-        this.blenderObj2 = this.getBlenderScene(torusJson, false);
         this.blenderObj4 = this.getBlenderScene(roomJson, false);
         this.blenderObj5 = this.getBlenderScene(hoodlumJson, false);
         this.blenderObj6 = this.getBlenderScene(labJson, false);
@@ -1510,35 +1505,6 @@ export class Framebuffer {
             });
         }
         this.drawText(8, 18 + 8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
-    }
-
-    public drawBlenderScene2(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
-        this.clearDepthBuffer();
-
-        let camera: Matrix4f = Matrix4f.constructTranslationMatrix(0, 0, -12).multiplyMatrix(
-            Matrix4f.constructYRotationMatrix(elapsedTime * 0.0002)
-                .multiplyMatrix(
-                    Matrix4f.constructXRotationMatrix(elapsedTime * 0.0002)
-                )
-        );
-
-        let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(5, 16, 5));
-        let model = this.blenderObj2[0];
-        this.renderingPipeline.draw(model, mv, 246, 165, 177);
-
-
-        mv = camera.multiplyMatrix(Matrix4f.constructZRotationMatrix(
-            Math.PI * 0.5 * this.cosineInterpolate(0, 600, Math.floor(elapsedTime * 0.7) % 4000))
-            .multiplyMatrix(Matrix4f.constructXRotationMatrix(
-                Math.PI * 0.5 * this.cosineInterpolate(2000, 2600, Math.floor(elapsedTime * 0.7) % 4000)))
-        );
-        model = this.blenderObj2[1];
-        this.renderingPipeline.draw(model, mv, 186, 165, 197);
-
-
-        let lensflareScreenSpace = this.project(camera.multiply(new Vector3f(16.0 * 20, 16.0 * 20, 0)));
-
-        this.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.3, texture, dirt);
     }
 
     public drawBlenderScene5(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
