@@ -1,5 +1,8 @@
+import { CameraAnimator } from '../../animation/CameraAnimator';
+import { CameraKeyFrame } from '../../animation/CameraKeyFrame';
 import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
 import { Canvas } from '../../Canvas';
+import { FrustumCuller } from '../../clustered-culling/FrustumCuller';
 import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
@@ -9,16 +12,11 @@ import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
-import { CameraKeyFrame } from '../../animation/CameraKeyFrame';
-import { CameraAnimator } from '../../animation/CameraAnimator';
-import { FrustumCuller } from '../../clustered-culling/FrustumCuller';
 
 export class FrustumCullingScene extends AbstractScene {
 
-    private blurred: Texture;
-    private noise: Texture;
-    private gearsMesh: FlatshadedMesh;
     private world: Array<FlatshadedMesh>;
+
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
     private renderingPipeline: FlatShadingRenderingPipeline;
 
@@ -26,16 +24,9 @@ export class FrustumCullingScene extends AbstractScene {
         this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.BACK);
 
-        this.gearsMesh = BlenderJsonParser.parse(require('../../assets/gear.json'), false)[0];
         this.world =  BlenderJsonParser.parse(require('../../assets/world2.json'));
 
         return Promise.all([
-            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
-                (texture: Texture) => this.blurred = texture
-            ),
-            TextureUtils.generateProceduralNoise().then(
-                (texture: Texture) => this.noise = texture
-            )
         ]);
     }
 

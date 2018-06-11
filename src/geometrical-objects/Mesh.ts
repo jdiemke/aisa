@@ -24,6 +24,6 @@ export class FlatshadedMesh {
     public transformedNormals: Array<Vector4f>;
 
     public faces: Array<FlatShadedFace>;
-    public boundingSphere?: Sphere;
+    public boundingSphere?: Sphere; // remove here and create new data scruture that has mesh and bounding volume
 
 }
