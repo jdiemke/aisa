@@ -33,6 +33,7 @@ module.exports = {
         'flood-fill': './src/examples/flood-fill/Application.ts',
         'rotating-gears': './src/examples/rotating-gears/Application.ts',
         'abstract-cube': './src/examples/abstract-cube/Application.ts',
+        'frustum-culling': './src/examples/frustum-culling/Application.ts',
     },
     output: {
         filename: '[name].bundle.js',
@@ -209,6 +210,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['abstract-cube'],
             filename: 'abstract-cube.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['frustum-culling'],
+            filename: 'frustum-culling.html'
         })
     ]
 }

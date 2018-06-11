@@ -210,9 +210,6 @@ export class Scene extends AbstractScene {
                     this.framebuffer.setBob(this.spheremap);
                     this.framebuffer.led(time, this.texture14);
                     this.framebuffer.reflectionBunny(time * 0.002);
-                } else if (time < 270000) {
-                    this.framebuffer.setCullFace(CullFace.BACK);
-                    this.framebuffer.drawBlenderScene(time - 260000, this.texture4);
                 } else if (time < 280000) {
                     this.framebuffer.drawStarField(time * 0.9);
                     this.framebuffer.setBob(this.spheremap);

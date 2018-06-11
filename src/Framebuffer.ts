@@ -40,13 +40,11 @@ import { BlenderJsonParser } from './blender/BlenderJsonParser';
 
 let json = require('./assets/f16.json');
 let bunnyJson = <any>require('./assets/bunny.json');
-let worldJson = <any>require('./assets/world2.json');
 let roomJson = <any>require('./assets/room.json');
 let hoodlumJson = <any>require('./assets/hoodlum.json');
 let labJson = <any>require('./assets/lab.json');
 let labJson2 = <any>require('./assets/lab2.json');
 let bakedJson = <any>require('./assets/abstract.json');
-let platonian = <any>require('./assets/platonian_backed.json');
 let hlm2018Json = <any>require('./assets/hoodlum2018.json');
 
 export class Framebuffer {
@@ -108,7 +106,6 @@ export class Framebuffer {
 
     public precompute(texture: Texture, texture2: Texture): void {
         this.bunnyObj = this.createBunny();
-        this.blenderObj = this.getBlenderScene(worldJson);
         this.blenderObj4 = this.getBlenderScene(roomJson, false);
         this.blenderObj5 = this.getBlenderScene(hoodlumJson, false);
         this.blenderObj6 = this.getBlenderScene(labJson, false);
@@ -1425,87 +1422,36 @@ export class Framebuffer {
         });
     }
     
-    public drawBlenderScene(elapsedTime: number, texture: Texture, texture2?: Texture): void {
-        // camerea:
-        // http://graphicsrunner.blogspot.de/search/label/Water
-        this.clearColorBuffer(72 | 56 << 8 | 48 << 16 | 255 << 24);
-        this.clearDepthBuffer();
+    public drawScreenBounds(framebuffer: Framebuffer): void {
+        const color: number = Color.WHITE.toPackedFormat();
+        const width: number = 320 / 2;
+        const height: number = 200 / 2;
 
-        let keyFrames: Array<CameraKeyFrame> = [
-            new CameraKeyFrame(new Vector3f(-5, 3, 10), new Vector3f(0, 0, 0)),
-            new CameraKeyFrame(new Vector3f(5, 10, 10), new Vector3f(0, 0, 0.1)),
-            new CameraKeyFrame(new Vector3f(5, 10, 0), new Vector3f(1.5, -1, -0.2)),
-            new CameraKeyFrame(new Vector3f(5, 3, -10), new Vector3f(2.5, 0, -0.09)),
-            new CameraKeyFrame(new Vector3f(-5, 7, -10), new Vector3f(3.5, 0, 1)),
-            new CameraKeyFrame(new Vector3f(-5, 3, 10), new Vector3f(4, 0, 0.)),
-            new CameraKeyFrame(new Vector3f(5, 3, -2), new Vector3f(3, -0.2, 0.)),
-            new CameraKeyFrame(new Vector3f(18, 2, -0), new Vector3f(2, -0.4, 0.)),
-            new CameraKeyFrame(new Vector3f(15, 4, -0), new Vector3f(2, -0.5, 0.)),
-            new CameraKeyFrame(new Vector3f(5, 7, -10), new Vector3f(2.5, 0, -0.09)),
-        ];
+        framebuffer.drawLineDDANoZ(
+            new Vector3f(width / 2, height / 2, 0),
+            new Vector3f(width / 2 + width, height / 2, -100),
+            color
+        );
 
-        let cameraAnimator = new CameraAnimator();
-        cameraAnimator.setKeyFrames(keyFrames);
+        framebuffer.drawLineDDANoZ(
+            new Vector3f(width / 2, height / 2, 0),
+            new Vector3f(width / 2, height / 2 + height, -100),
+            color
+        );
 
-        let modelViewMartrix: Matrix4f = cameraAnimator.getViewMatrix(elapsedTime);
+        framebuffer.drawLineDDANoZ(
+            new Vector3f(width / 2 + width, height / 2, 0),
+            new Vector3f(width / 2 + width, height / 2 + height, -100),
+            color
+        );
 
-        let count = 0;
-
-        let frustumCuller = new FrustumCuller();
-        frustumCuller.updateFrustum(modelViewMartrix, cameraAnimator.pos);
-        let i = 0;
-
-        for (let j = 0; j < this.blenderObj.length; j++) {
-
-            let model = this.blenderObj[j];
-
-            if (frustumCuller.isPotentiallyVisible(model.boundingSphere)) {
-                this.renderingPipeline.draw(model, modelViewMartrix, 144, 165, 116);
-                let colLine = 255 << 24 | 255 << 8;
-                this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
-                count++;
-            } else {
-                let colLine = 255 << 24 | 255;
-                this.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
-            }
-        }
-
-        if (texture2) {
-            let points: Array<Vector3f> = new Array<Vector3f>();
-
-            let rng = new RandomNumberGenerator();
-            rng.setSeed(66);
-            for (let i = 0; i < 640; i++) {
-                //points.push(new Vector3f(rng.getFloat() * 30 - 15, rng.getFloat() * 10 - 1, rng.getFloat() * 30 - 15));
-                let x = rng.getFloat() * 30 - 15;
-                x += Math.sin(elapsedTime * 0.0008 + x) * 2;
-                let y = rng.getFloat() * 30 - 15;
-                y += Math.sin(elapsedTime * 0.0009 + y) * 2;
-                let z = rng.getFloat() * 30 - 15;
-                z += Math.sin(elapsedTime * 0.0011 + z) * 2;
-                points.push(new Vector3f(x, y, z));
-            }
-
-            let points2: Array<Vector3f> = new Array<Vector3f>(points.length);
-            points.forEach(element => {
-                let transformed = this.project(modelViewMartrix.multiply(element));
-                points2.push(transformed);
-            });
-
-            points2.sort(function (a, b) {
-                return a.z - b.z;
-            });
-
-            points2.forEach(element => {
-                let size = -(3.1 * 192 / (element.z));
-                this.drawSoftParticle(
-                    Math.round(element.x - size * 0.5),
-                    Math.round(element.y - size * 0.5),
-                    Math.round(size), Math.round(size), texture2, 1 / element.z, 1.0);
-            });
-        }
-        this.drawText(8, 18 + 8, 'RENDERED OBJECTS: ' + count + '/' + this.blenderObj.length, texture);
+        framebuffer.drawLineDDANoZ(
+            new Vector3f(width / 2, height / 2 + height, 0),
+            new Vector3f(width / 2 + width, height / 2 + height, -100),
+            color
+        );
     }
+
 
     public drawBlenderScene5(elapsedTime: number, texture3: Texture, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
 

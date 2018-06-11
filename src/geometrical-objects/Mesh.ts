@@ -1,5 +1,6 @@
 import { Vector4f } from '../math';
 import { Face, FlatShadedFace } from './Face';
+import { Sphere } from '../math/Sphere';
 
 /**
  * Flatshader Mesh
@@ -23,5 +24,6 @@ export class FlatshadedMesh {
     public transformedNormals: Array<Vector4f>;
 
     public faces: Array<FlatShadedFace>;
+    public boundingSphere?: Sphere;
 
 }
