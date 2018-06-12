@@ -1,5 +1,5 @@
 import { FlatShadedFace } from '../geometrical-objects/Face';
-import { FlatshadedMesh } from '../geometrical-objects/Mesh';
+import { FlatshadedMesh } from '../geometrical-objects/FlatshadedMesh';
 import { Vector4f } from '../math';
 import { ComputationalGeometryUtils } from '../math/Geometry';
 
@@ -30,9 +30,8 @@ export class BlenderJsonParser {
                 })
             });
 
-            let sphere = new ComputationalGeometryUtils().computeBoundingSphere(points);
-            sphere.getCenter().w = 1;
-
+            // let sphere = new ComputationalGeometryUtils().computeBoundingSphere(points);
+            // sphere.getCenter().w = 1;
 
             // Create class for objects
             let obj: FlatshadedMesh = {
@@ -41,7 +40,7 @@ export class BlenderJsonParser {
                 faces, // NOO!!!
                 transformedPoints: points.map(() => new Vector4f(0, 0, 0, 0)),
                 transformedNormals: normals.map(() => new Vector4f(0, 0, 0, 0)),
-                boundingSphere: sphere,
+                // boundingSphere: sphere,
             };
             scene.push(obj);
         });

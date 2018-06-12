@@ -27,7 +27,7 @@ import { LeftClipEdge } from './screen-space-clipping/LeftClipEdge';
 import { TopClipEdge } from './screen-space-clipping/TopClipEdge';
 import { BottomClipEdge } from './screen-space-clipping/BottomClipEdge';
 import { SutherlandHodgman2DClipper } from './screen-space-clipping/SutherlandHodgman2DClipper';
-import { Mesh, FlatshadedMesh } from './geometrical-objects/Mesh';
+import { Mesh } from './geometrical-objects/Mesh';
 import { CohenSutherlandLineClipper } from './screen-space-clipping/CohenSutherlandLineClipper';
 import { Torus } from './geometrical-objects/Torus';
 import { TriangleRasterizer } from './rasterizer/TriangleRasterizer';

@@ -1,12 +1,12 @@
-import { Mesh, FlatshadedMesh } from "./Mesh";
-import { Vector4f } from "../math";
-import { FlatShadedFace } from "./Face";
+import { Vector4f } from '../math';
+import { FlatShadedFace } from './Face';
+import { FlatshadedMesh } from './FlatshadedMesh';
+import { Mesh } from './Mesh';
 
 export class AbstractGeometricObject {
-    
+
     protected mesh: FlatshadedMesh;
     protected inverse: boolean;
-
 
     protected buildMesh(points: Array<Vector4f>, index: Array<number>): void {
         const normals: Array<Vector4f> = new Array<Vector4f>();

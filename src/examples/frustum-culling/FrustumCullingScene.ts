@@ -2,12 +2,14 @@ import { CameraAnimator } from '../../animation/CameraAnimator';
 import { CameraKeyFrame } from '../../animation/CameraKeyFrame';
 import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
 import { Canvas } from '../../Canvas';
+import { BoundingVolumeExpander } from '../../clustered-culling/BoundingVolumeExpander';
 import { FrustumCuller } from '../../clustered-culling/FrustumCuller';
 import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { FlatshadedMesh } from '../../geometrical-objects/Mesh';
+import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { Matrix4f, Vector3f } from '../../math';
+import { Sphere } from '../../math/Sphere';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
@@ -15,7 +17,7 @@ import { Texture, TextureUtils } from '../../texture';
 
 export class FrustumCullingScene extends AbstractScene {
 
-    private world: Array<FlatshadedMesh>;
+    private world: Array<[FlatshadedMesh, Sphere]>;
 
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
     private renderingPipeline: FlatShadingRenderingPipeline;
@@ -24,7 +26,7 @@ export class FrustumCullingScene extends AbstractScene {
         this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.BACK);
 
-        this.world =  BlenderJsonParser.parse(require('../../assets/world2.json'));
+        this.world = BoundingVolumeExpander.expand(BlenderJsonParser.parse(require('../../assets/world2.json')));
 
         return Promise.all([
         ]);
@@ -68,16 +70,16 @@ export class FrustumCullingScene extends AbstractScene {
 
         for (let j = 0; j <  this.world.length; j++) {
 
-            let model =  this.world[j];
+            const model: [FlatshadedMesh, Sphere] =  this.world[j];
 
-            if (frustumCuller.isPotentiallyVisible(model.boundingSphere)) {
-                this.renderingPipeline.draw(model, modelViewMartrix, 144, 165, 116);
+            if (frustumCuller.isPotentiallyVisible(model[1])) {
+                this.renderingPipeline.draw(model[0], modelViewMartrix, 144, 165, 116);
                 let colLine = 255 << 24 | 255 << 8;
-                framebuffer.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
+                framebuffer.drawBoundingSphere(model[1], modelViewMartrix, colLine);
                 count++;
             } else {
                 let colLine = 255 << 24 | 255;
-                framebuffer.drawBoundingSphere(model.boundingSphere, modelViewMartrix, colLine);
+                framebuffer.drawBoundingSphere(model[1], modelViewMartrix, colLine);
             }
         }
 
