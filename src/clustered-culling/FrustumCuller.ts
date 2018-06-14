@@ -1,4 +1,3 @@
-import { BoundingVolume } from '../math/BoundingVolume';
 import { Vector4f } from '../math/index';
 import { Matrix4f } from '../math/Matrix4f';
 import { Plane } from '../math/Plane';
@@ -10,8 +9,6 @@ export class FrustumCuller {
     private planes: Array<Plane>;
     private pos: Vector4f;
     private normals: Array<Vector4f>;
-    private near: number;
-    private far: number;
 
     public constructor() {
         this.planes = new Array<Plane>();
@@ -21,28 +18,6 @@ export class FrustumCuller {
         }
 
         this.pos = new Vector4f(0, 0, 0, 0);
-
-        const DISTANCE: number = 292;
-
-        const SCREEN_HEIGHT: number = 160 / 2;
-        let SCREEN_WIDTH = 100 / 2;
-
-        //let HORIZONTAL_FIELD_OF_VIEW = 2.0 * Math.atan((4.0 * DISTANCE) / 310);
-        //let VERTICAL_FIELD_OF_VIEW = 2.0 * Math.atan((4.0 * DISTANCE) / 190);
-
-        // FIXME: for some reason frustum planes are off by some degree :(
-
-        let HORIZONTAL_FIELD_OF_VIEW = 2.0 * Math.atan((DISTANCE) / 295 * 4);
-        let VERTICAL_FIELD_OF_VIEW = 2.0 * Math.atan((DISTANCE) / 190 * 4);
-
-        let HALF_HORIZONTAL_FOV = HORIZONTAL_FIELD_OF_VIEW;
-        let HALF_VERTICAL_FOV = VERTICAL_FIELD_OF_VIEW;
-
-        const NEAR_DISTANCE: number = 1.7;
-        const FAR_DISTANCE: number = 30.0;
-
-        this.near = NEAR_DISTANCE;
-        this.far = FAR_DISTANCE;
 
         // for some reason this is fucked up
         // READ: http://www.cubic.org/docs/3dclip.htm

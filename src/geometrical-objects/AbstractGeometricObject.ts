@@ -1,7 +1,6 @@
 import { Vector4f } from '../math';
 import { FlatShadedFace } from './Face';
 import { FlatshadedMesh } from './FlatshadedMesh';
-import { Mesh } from './Mesh';
 
 export class AbstractGeometricObject {
 

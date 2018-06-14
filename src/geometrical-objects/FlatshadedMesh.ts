@@ -1,4 +1,3 @@
-import { Sphere } from '../math/Sphere';
 import { Vector4f } from '../math/Vector4f';
 import { FlatShadedFace } from './Face';
 

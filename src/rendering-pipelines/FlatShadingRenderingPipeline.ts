@@ -1,7 +1,5 @@
 import { Color } from '../core/Color';
-import { Framebuffer } from '../Framebuffer';
 import { FlatshadedMesh } from '../geometrical-objects/FlatshadedMesh';
-import { Mesh } from '../geometrical-objects/Mesh';
 import { Vector3f, Vector4f } from '../math';
 import { Matrix4f } from '../math/Matrix4f';
 import { SutherlandHodgman2DClipper } from '../screen-space-clipping/SutherlandHodgman2DClipper';

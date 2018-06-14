@@ -1,5 +1,5 @@
 import { Framebuffer } from './Framebuffer';
-import { Matrix4f, Vector3f, Vector4f } from './math';
+import { Matrix4f, Vector4f } from './math';
 import { Texture, TextureUtils } from './texture';
 import { TextureCoordinate } from './Vertex';
 
