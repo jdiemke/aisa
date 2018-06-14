@@ -6,7 +6,7 @@
     "build": "webpack --mode production",
     "serve": "webpack-dev-server --no-inline --mode development",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
-    "obj2json": "ts-node utils/obj2json.ts"
+    "obj2json": "ts-node src/blender/obj2json.ts"
   },
   "repository": {
     "type": "git",

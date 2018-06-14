@@ -1,44 +1,26 @@
 
-import { FrustumCuller } from './clustered-culling/FrustumCuller';
 import { ComputationalGeometryUtils } from './math/Geometry';
-
 import { Sphere } from './math/Sphere';
-import { CameraKeyFrame } from './animation/CameraKeyFrame';
-import { CameraAnimator } from './animation/CameraAnimator';
-
 import { CullFace } from './CullFace';
 import { TextureCoordinate, Vertex } from './Vertex';
-
-import { Texture, TextureUtils } from './texture';
-import Point from './Point';
-
+import { Texture } from './texture';
 import { Matrix3f, Matrix4f, Vector3f, Vector4f } from './math';
-import { BasicCamera, ControllableCamera } from './camera';
-
+import { ControllableCamera } from './camera';
 import RandomNumberGenerator from './RandomNumberGenerator';
-import { Portal } from './portal-system/Portal';
-import { Polygon } from './portal-system/Polygon';
-import { Plane } from './math/Plane';
-import { SutherlandHodgmanClipper } from './portal-system/SutherlandHodgmanClipper';
 import { Color } from './core/Color';
 import { AbstractClipEdge } from './screen-space-clipping/AbstractClipEdge';
 import { RightClipEdge } from './screen-space-clipping/RightClipEdge';
 import { LeftClipEdge } from './screen-space-clipping/LeftClipEdge';
 import { TopClipEdge } from './screen-space-clipping/TopClipEdge';
 import { BottomClipEdge } from './screen-space-clipping/BottomClipEdge';
-import { SutherlandHodgman2DClipper } from './screen-space-clipping/SutherlandHodgman2DClipper';
-import { Mesh } from './geometrical-objects/Mesh';
 import { CohenSutherlandLineClipper } from './screen-space-clipping/CohenSutherlandLineClipper';
 import { Torus } from './geometrical-objects/Torus';
 import { TriangleRasterizer } from './rasterizer/TriangleRasterizer';
 import { ScaleClipBlitter } from './blitter/ScaleClipBlitter';
 import { TexturedTriangleRasterizer } from './rasterizer/TexturedTriangleRasterizer';
 import { FlatShadingRenderingPipeline } from './rendering-pipelines/FlatShadingRenderingPipeline';
-import { FlatShadedFace } from './geometrical-objects/Face';
 import { TexturingRenderingPipeline } from './rendering-pipelines/TexturingRenderingPipeline';
-import { BlenderJsonParser } from './blender/BlenderJsonParser';
 
-let json = require('./assets/f16.json');
 let bunnyJson = <any>require('./assets/bunny.json');
 let roomJson = <any>require('./assets/room.json');
 let hoodlumJson = <any>require('./assets/hoodlum.json');

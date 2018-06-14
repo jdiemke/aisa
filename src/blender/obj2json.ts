@@ -10,18 +10,10 @@
  * @since 2017-04-09
  */
 import * as fs from 'fs';
-
 import { Face } from './face';
 import { Mesh } from './mesh';
 import { TexCoord } from './tex-coord';
 import { Vector } from './vector';
-
-class PortalData {
-
-    public vertices: Array<Vector>;
-    public name: string;
-
-}
 
 const args: Array<string> = process.argv.slice(2);
 
