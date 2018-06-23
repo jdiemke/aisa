@@ -1,0 +1,24 @@
+dist: trusty
+sudo: required
+language: node_js
+
+addons:
+  chrome: stable
+
+node_js:
+    - node
+
+script:
+    - npm run lint
+    - npm run karma-travis-ci
+    - npm run build
+
+deploy:
+    provider: pages
+    skip-cleanup: true
+    github-token: $GITHUB_TOKEN
+    keep-history: true
+    local_dir: build
+    verbose: true
+    on:
+        branch: master
