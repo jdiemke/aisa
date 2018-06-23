@@ -1,4 +1,5 @@
 # AISA
+[![Build Status](https://travis-ci.org/jdiemke/aisa.svg?branch=master)](https://travis-ci.org/jdiemke/aisa)
 [![GitHub stars](https://img.shields.io/github/stars/jdiemke/aisa.svg)](https://github.com/jdiemke/aisa/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/jdiemke/aisa.svg)](https://github.com/jdiemke/aisa/network)
 [![GitHub issues](https://img.shields.io/github/issues/jdiemke/aisa.svg)](https://github.com/jdiemke/aisa/issues)
@@ -165,7 +166,7 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - http://codeincomplete.com/posts/javascript-racer-v1-straight/
 - http://www.extentofthejam.com/pseudo/
 - http://hugi.scene.org/online/hugi24/coding%20graphics%20bonz%20sines%20and%20cosines%20for%20fun%20and%20profit.htm
-- https://www.phatcode.net/res/224/files/html/ch65/65-03.html#Heading6  
+- https://www.phatcode.net/res/224/files/html/ch65/65-03.html#Heading6
 - https://mikro.naprvyraz.sk/docs/
 - http://simonstechblog.blogspot.de/2012/04/software-rasterizer-part-1.html
 - http://www.lysator.liu.se/~mikaelk/doc/perspectivetexture/
