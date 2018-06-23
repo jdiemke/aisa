@@ -35,12 +35,13 @@ module.exports = {
         'abstract-cube': './src/examples/abstract-cube/Application.ts',
         'frustum-culling': './src/examples/frustum-culling/Application.ts',
     },
+    mode: 'development',
     output: {
         filename: '[name].bundle.js',
         path: path.join(__dirname, 'dist')
     },
     resolve: {
-        extensions: ['.ts']
+        extensions: ['.ts', '.js']
     },
     module: {
         rules: [

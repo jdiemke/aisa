@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "A Software 3D Engine written in TypeScript",
   "scripts": {
-    "build": "webpack --mode production",
-    "serve": "webpack-dev-server --no-inline --mode development",
+    "build": "webpack-cli",
+    "serve": "webpack-dev-server --no-inline --open",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
+    "karma": "karma start",
     "obj2json": "ts-node src/blender/obj2json.ts"
   },
   "repository": {
@@ -22,11 +23,19 @@
   "author": "Johannes Diemke",
   "license": "MIT",
   "devDependencies": {
+    "@types/jasmine": "2.8.8",
     "@types/node": "10.3.4",
     "babel-minify-webpack-plugin": "0.3.1",
     "file-loader": "1.1.11",
     "html-loader": "0.5.5",
     "html-webpack-plugin": "3.2.0",
+    "jasmine": "3.1.0",
+    "karma": "2.0.4",
+    "karma-chrome-launcher": "2.2.0",
+    "karma-jasmine": "1.1.2",
+    "karma-jasmine-html-reporter": "1.1.0",
+    "karma-spec-reporter": "0.0.32",
+    "karma-webpack": "3.0.0",
     "ts-loader": "4.4.1",
     "ts-node": "6.1.2",
     "tslint": "5.10.0",
