@@ -21,13 +21,13 @@ import { TexturedTriangleRasterizer } from './rasterizer/TexturedTriangleRasteri
 import { FlatShadingRenderingPipeline } from './rendering-pipelines/FlatShadingRenderingPipeline';
 import { TexturingRenderingPipeline } from './rendering-pipelines/TexturingRenderingPipeline';
 
-let bunnyJson = <any>require('./assets/bunny.json');
-let roomJson = <any>require('./assets/room.json');
-let hoodlumJson = <any>require('./assets/hoodlum.json');
-let labJson = <any>require('./assets/lab.json');
-let labJson2 = <any>require('./assets/lab2.json');
-let bakedJson = <any>require('./assets/abstract.json');
-let hlm2018Json = <any>require('./assets/hoodlum2018.json');
+//let bunnyJson = <any>require('./assets/bunny.json');
+// let roomJson = <any>require('./assets/room.json');
+// let hoodlumJson = <any>require('./assets/hoodlum.json');
+//let labJson = <any>require('./assets/lab.json');
+// let labJson2 = <any>require('./assets/lab2.json');
+// let bakedJson = <any>require('./assets/abstract.json');
+//let hlm2018Json = <any>require('./assets/hoodlum2018.json');
 
 export class Framebuffer {
 
@@ -87,19 +87,19 @@ export class Framebuffer {
     }
 
     public precompute(texture: Texture, texture2: Texture): void {
-        this.bunnyObj = this.createBunny();
-        this.blenderObj4 = this.getBlenderScene(roomJson, false);
-        this.blenderObj5 = this.getBlenderScene(hoodlumJson, false);
-        this.blenderObj6 = this.getBlenderScene(labJson, false);
-        this.blenderObj7 = this.getBlenderScene(hlm2018Json, false);
+        //this.bunnyObj = this.createBunny();
+        //this.blenderObj4 = this.getBlenderScene(roomJson, false);
+        //this.blenderObj5 = this.getBlenderScene(hoodlumJson, false);
+        //this.blenderObj6 = this.getBlenderScene(labJson, false);
+        //this.blenderObj7 = this.getBlenderScene(hlm2018Json, false);
 
-        this.sphere = this.createSphere();
+        //this.sphere = this.createSphere();
 
-        this.plane = this.createPlane();
-        this.cylinder = this.createCylinder();
-        this.cylinder2 = this.createCylinder2(texture);
-        this.sphereDisp = this.createSphereDistplaced(texture);
-        this.sphereDisp2 = this.createSphereDistplaced(texture2);
+        //this.plane = this.createPlane();
+        //this.cylinder = this.createCylinder();
+        //this.cylinder2 = this.createCylinder2(texture);
+        //this.sphereDisp = this.createSphereDistplaced(texture);
+        //this.sphereDisp2 = this.createSphereDistplaced(texture2);
     }
 
     public getImageData(): ImageData {
@@ -1226,7 +1226,7 @@ export class Framebuffer {
 
         }
     }
-   
+
     public getBlenderScene(file: any, disp: boolean = true, flat: boolean = false): any {
         let scene = [];
 
@@ -1403,7 +1403,7 @@ export class Framebuffer {
                 Math.round(size), Math.round(size), texture, 1 / element.z, this.interpolate(-60, -25, element.z));
         });
     }
-    
+
     public drawScreenBounds(framebuffer: Framebuffer): void {
         const color: number = Color.WHITE.toPackedFormat();
         const width: number = 320 / 2;
@@ -1746,7 +1746,7 @@ export class Framebuffer {
             points2.push(new Vector4f(Math.round(xx), Math.round(yy), z));
         }
 
-      
+
         let vertex1 = new Vertex();
         vertex1.textureCoordinate = new TextureCoordinate();
         let vertex2 = new Vertex();
@@ -1757,7 +1757,7 @@ export class Framebuffer {
         for (let i = 0; i < index.length; i += 3) {
 
             // Only render triangles with CCW-ordered vertices
-            // 
+            //
             // Reference:
             // David H. Eberly (2006).
             // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
@@ -2206,7 +2206,7 @@ export class Framebuffer {
         for (let i = 0; i < index.length; i += 3) {
 
             // Only render triangles with CCW-ordered vertices
-            // 
+            //
             // Reference:
             // David H. Eberly (2006).
             // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
@@ -2350,7 +2350,7 @@ export class Framebuffer {
         for (let i = 0; i < index.length; i += 3) {
 
             // Only render triangles with CCW-ordered vertices
-            // 
+            //
             // Reference:
             // David H. Eberly (2006).
             // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
@@ -2487,7 +2487,7 @@ export class Framebuffer {
         for (let i = 0; i < index.length; i += 3) {
 
             // Only render triangles with CCW-ordered vertices
-            // 
+            //
             // Reference:
             // David H. Eberly (2006).
             // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
@@ -2904,6 +2904,7 @@ export class Framebuffer {
         }
     }
 */
+/*
     public createBunny(): any {
         let points: Array<Vector3f> = new Array<Vector3f>();
 
@@ -2940,7 +2941,7 @@ export class Framebuffer {
 
         return object;
     }
-
+*/
     /*
     public reflectionBunny(elapsedTime: number): void {
         this.clearDepthBuffer();
