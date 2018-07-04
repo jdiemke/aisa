@@ -21,8 +21,37 @@ I love computer graphics and always wanted to write my own 3D
 Engine from scratch I used this opportunity. Hence this
 project contains a lot of elementary algorithms from then
 field of computer graphics including clipping, triangle rasterization, geometric transformations and so forth.
-### Demo
-https://jdiemke.github.io/AISA/
+### Demos
+* [Cube](https://jdiemke.github.io/aisa/cube.html)
+* [Twiester](https://jdiemke.github.io/aisa/twister.html)
+* [Plasma](https://jdiemke.github.io/aisa/plasma.html)
+* [Metaballs](https://jdiemke.github.io/aisa/metaballs.html)
+* [Moving Torus](https://jdiemke.github.io/aisa/moving-torus.html)
+* [Metalheadz](https://jdiemke.github.io/aisa/metalheadz.html)
+* [Rotating Gears](https://jdiemke.github.io/aisa/rotating-gears.html)
+* [Frustum Culling](https://jdiemke.github.io/aisa/frustum-culling.html)
+* [Abstract Cube](https://jdiemke.github.io/aisa/abstract-cube.html)
+* [Toxic Dots](https://jdiemke.github.io/aisa/toxic-dots.html)
+* [Gears](https://jdiemke.github.io/aisa/gears.html)
+* [Baked Lighting](https://jdiemke.github.io/aisa/baked-lighting.html)
+* [Platonian](https://jdiemke.github.io/aisa/platonian.html)
+* [Textured Torus](https://jdiemke.github.io/aisa/textured-torus.html)
+* [Razor Scene](https://jdiemke.github.io/aisa/razor.html)
+* [Roto Zoomer](https://jdiemke.github.io/aisa/roto-zoomer.html)
+* [LED Plasma](https://jdiemke.github.io/aisa/led-plasma.html)
+* [Hoodlum](https://jdiemke.github.io/aisa/hoodlum.html)
+* [Planedeformation Tunnel](https://jdiemke.github.io/aisa/planedeformation-tunnel.html)
+* [Particle Torus](https://jdiemke.github.io/aisa/particle-torus.html)
+* [Flood Fill](https://jdiemke.github.io/aisa/flood-fill.html)
+* [Portals Engine](https://jdiemke.github.io/aisa/portals.html)
+* [Torus](https://jdiemke.github.io/aisa/torus.html)
+* [Voxel Landscape](https://jdiemke.github.io/aisa/voxel-landscape.html)
+* [Starfield](https://jdiemke.github.io/aisa/starfield.html)
+* [Particle Streams](https://jdiemke.github.io/aisa/particle-streams.html)
+* [Torus Knot](https://jdiemke.github.io/aisa/torus-knot.html)
+* [Bobs](https://jdiemke.github.io/aisa/bobs.html)
+* [Torus Knot Tunnel](https://jdiemke.github.io/aisa/torus-knot-tunnel.html)
+
 ### How to get
 Type the following command into your shell:
 ```bash
