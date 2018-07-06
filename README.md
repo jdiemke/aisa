@@ -23,7 +23,7 @@ project contains a lot of elementary algorithms from then
 field of computer graphics including clipping, triangle rasterization, geometric transformations and so forth.
 ### Demos
 * [Cube](https://jdiemke.github.io/aisa/cube.html)
-* [Twiester](https://jdiemke.github.io/aisa/twister.html)
+* [Twister](https://jdiemke.github.io/aisa/twister.html)
 * [Plasma](https://jdiemke.github.io/aisa/plasma.html)
 * [Metaballs](https://jdiemke.github.io/aisa/metaballs.html)
 * [Moving Torus](https://jdiemke.github.io/aisa/moving-torus.html)
@@ -43,7 +43,7 @@ field of computer graphics including clipping, triangle rasterization, geometric
 * [Planedeformation Tunnel](https://jdiemke.github.io/aisa/planedeformation-tunnel.html)
 * [Particle Torus](https://jdiemke.github.io/aisa/particle-torus.html)
 * [Flood Fill](https://jdiemke.github.io/aisa/flood-fill.html)
-* [Portals Engine](https://jdiemke.github.io/aisa/portals.html)
+* [Portal Engine](https://jdiemke.github.io/aisa/portals.html)
 * [Torus](https://jdiemke.github.io/aisa/torus.html)
 * [Voxel Landscape](https://jdiemke.github.io/aisa/voxel-landscape.html)
 * [Starfield](https://jdiemke.github.io/aisa/starfield.html)

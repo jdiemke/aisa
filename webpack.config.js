@@ -120,7 +120,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: './src/index.html',
             chunks: ['bobs'],
-            filename: 'bob.html'
+            filename: 'bobs.html'
         }),
         new HtmlWebpackPlugin({
             template: './src/index.html',
