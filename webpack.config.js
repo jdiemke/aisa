@@ -34,6 +34,7 @@ module.exports = {
         'rotating-gears': './src/examples/rotating-gears/Application.ts',
         'abstract-cube': './src/examples/abstract-cube/Application.ts',
         'frustum-culling': './src/examples/frustum-culling/Application.ts',
+        'titan-effect': './src/examples/titan-effect/Application.ts',
     },
     mode: 'development',
     output: {
@@ -216,6 +217,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['frustum-culling'],
             filename: 'frustum-culling.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['titan-effect'],
+            filename: 'titan-effect.html'
         })
     ]
 }
