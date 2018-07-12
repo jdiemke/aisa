@@ -41,40 +41,37 @@ export class WobbleScene extends AbstractScene {
             );
         }*/
 
-        
         for (let i: number = 0; i < this.hoodlumLogo.width; i++) {
             this.drawVerticalSpan(framebuffer, this.hoodlumLogo, i,
-                Math.round(Math.sin(i * 0.009 + elapsedTime *0.9 + Math.PI * 2 / 4) * 60+100),
-                Math.round(Math.sin(i * 0.009 + elapsedTime *0.9 + Math.PI * 2 / 4 * 2) * 60+100),
-                Math.max(0,Math.sin(i * 0.009 + elapsedTime *0.9 + Math.PI * 2 / 4 * 2.5))*0.85+0.15
+                Math.round(Math.sin(i * 0.009 + elapsedTime * 0.9 + Math.PI * 2 / 4) * 60 + 100),
+                Math.round(Math.sin(i * 0.009 + elapsedTime * 0.9 + Math.PI * 2 / 4 * 2) * 60 + 100),
+                Math.max(0, Math.sin(i * 0.009 + elapsedTime * 0.9 + Math.PI * 2 / 4 * 2.5)) * 0.85 + 0.15
             );
         }
 
         const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
         framebuffer.drawTexture(0, 0, texture3, 0.65);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
-
-        // framebuffer.noise(time, this.noise);
     }
 
-    public drawVerticalSpan(framebuffer: Framebuffer, texture: Texture, x: number, y1: number, y2: number, scale: number =1.0): void {
+    public drawVerticalSpan(framebuffer: Framebuffer, texture: Texture, x: number, y1: number,
+                            y2: number, scale: number = 1.0): void {
         const delta: number = Math.abs(y2 - y1);
         const textureStep: number = texture.height / delta;
-        const alpha: number = 1.0;
         let texpos: number = 0;
         const pixelStep: number = y2 > y1 ? 320 : -320;
         let index: number = x + y1 * 320;
-        let shiny= Math.pow(scale,20);
+        const shiny: number = Math.pow(scale, 20);
         for (let i: number = 0; i < delta; i++) {
-            let texel = texture.texture[x + Math.round(texpos) * texture.width];
-            let alpha = ((texel >> 24) & 0xff) / 255 ;
-            let inverseAlpha = 1 - alpha;
-            alpha*= scale;
-            let fbColor = framebuffer.framebuffer[index];
-           
-            let r = (((fbColor >> 0) & 0xff) * (inverseAlpha) + ((Math.min(255,((texel >> 0)& 0xff)+shiny*180)))  * (alpha)) | 0;
-            let g = (((fbColor >> 8) & 0xff) * (inverseAlpha) + ((Math.min(255,((texel >> 8)& 0xff)+shiny*100))) * (alpha)) | 0;
-            let b = (((fbColor >> 16) & 0xff) * (inverseAlpha) + ((Math.min(255,((texel >> 16)& 0xff)+shiny*100)))  * (alpha)) | 0;
+            const texel: number = texture.texture[x + Math.round(texpos) * texture.width];
+            let alpha: number = ((texel >> 24) & 0xff) / 255;
+            const inverseAlpha: number = 1 - alpha;
+            alpha *= scale;
+            const fbColor: number = framebuffer.framebuffer[index];
+
+            let r = (((fbColor >> 0) & 0xff) * (inverseAlpha) + ((Math.min(255, ((texel >> 0) & 0xff) + shiny * 180))) * (alpha)) | 0;
+            let g = (((fbColor >> 8) & 0xff) * (inverseAlpha) + ((Math.min(255, ((texel >> 8) & 0xff) + shiny * 100))) * (alpha)) | 0;
+            let b = (((fbColor >> 16) & 0xff) * (inverseAlpha) + ((Math.min(255, ((texel >> 16) & 0xff) + shiny * 100))) * (alpha)) | 0;
 
             framebuffer.framebuffer[index] = r | (g << 8) | (b << 16) | (255 << 24);
 
