@@ -69,9 +69,12 @@ export class WobbleScene extends AbstractScene {
             alpha *= scale;
             const fbColor: number = framebuffer.framebuffer[index];
 
-            let r = (((fbColor >> 0) & 0xff) * (inverseAlpha) + ((Math.min(255, ((texel >> 0) & 0xff) + shiny * 180))) * (alpha)) | 0;
-            let g = (((fbColor >> 8) & 0xff) * (inverseAlpha) + ((Math.min(255, ((texel >> 8) & 0xff) + shiny * 100))) * (alpha)) | 0;
-            let b = (((fbColor >> 16) & 0xff) * (inverseAlpha) + ((Math.min(255, ((texel >> 16) & 0xff) + shiny * 100))) * (alpha)) | 0;
+            const r: number = (((fbColor >> 0) & 0xff) * (inverseAlpha) +
+                ((Math.min(255, ((texel >> 0) & 0xff) + shiny * 180))) * (alpha)) | 0;
+            const g: number = (((fbColor >> 8) & 0xff) * (inverseAlpha) +
+                ((Math.min(255, ((texel >> 8) & 0xff) + shiny * 100))) * (alpha)) | 0;
+            const b: number = (((fbColor >> 16) & 0xff) * (inverseAlpha) +
+                ((Math.min(255, ((texel >> 16) & 0xff) + shiny * 100))) * (alpha)) | 0;
 
             framebuffer.framebuffer[index] = r | (g << 8) | (b << 16) | (255 << 24);
 
