@@ -23,6 +23,7 @@ project contains a lot of elementary algorithms from then
 field of computer graphics including clipping, triangle rasterization, geometric transformations and so forth.
 ### Demos
 * [Wobble](https://jdiemke.github.io/aisa/titan-effect.html)
+* [Sine Scroller](https://jdiemke.github.io/aisa/sine-scroller.html)
 * [Cube](https://jdiemke.github.io/aisa/cube.html)
 * [Twister](https://jdiemke.github.io/aisa/twister.html)
 * [Plasma](https://jdiemke.github.io/aisa/plasma.html)

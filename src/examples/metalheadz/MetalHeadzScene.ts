@@ -1,7 +1,6 @@
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f, Vector3f } from '../../math';
-import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { SkyBox } from '../../SkyBox';
 import { Texture, TextureUtils } from '../../texture';
