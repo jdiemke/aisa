@@ -217,7 +217,7 @@ export class Framebuffer {
 
         for (let h = 0; h < height; h++) {
             for (let w = 0; w < width; w++) {
-                let color = texture.texture[texIndex];
+                const color = texture.texture[texIndex];
                 if (color & 0xff000000) {
                     this.framebuffer[frIndex] = color;
                 }

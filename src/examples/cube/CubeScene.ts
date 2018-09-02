@@ -1,13 +1,10 @@
-import { Canvas } from '../../Canvas';
 import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { Matrix3f, Vector3f, Matrix4f } from '../../math';
-import { TriangleRasterizer } from '../../rasterizer/TriangleRasterizer';
-import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
 import { Cube } from '../../geometrical-objects/Cube';
+import { Matrix4f } from '../../math';
 import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
+import { AbstractScene } from '../../scenes/AbstractScene';
 
 /**
  * TODO: use cube mesh and draw using drawObject2
