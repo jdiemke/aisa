@@ -40,7 +40,7 @@ module.exports = {
     mode: 'development',
     output: {
         filename: '[name].bundle.js',
-        path: path.join(__dirname, 'dist')
+        path: path.resolve(__dirname, './dist')
     },
     resolve: {
         extensions: ['.ts', '.js']
@@ -49,8 +49,7 @@ module.exports = {
         rules: [
             {
                 test: /\.ts$/,
-                use: 'ts-loader',
-                exclude: /node_modules/
+                use: 'ts-loader'
             },
             {
                 test: /\.html$/,
@@ -62,7 +61,6 @@ module.exports = {
             }
         ]
     },
-    devtool: "source-map",
     plugins: [
         new HtmlWebpackPlugin({
             template: './src/index.html',
