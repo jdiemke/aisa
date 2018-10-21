@@ -1,6 +1,22 @@
 import { Framebuffer } from './Framebuffer';
 import { AbstractScene } from './scenes/AbstractScene';
 
+declare global {
+    interface Element {
+        requestFullScreen?(): void;
+        mozRequestFullScreen?(): void;
+        webkitRequestFullScreen?(): void;
+        msRequestFullscreen?(): void;
+    }
+}
+
+declare global {
+    interface Document {
+        mozCancelFullScreen?(): void;
+        webkitExitFullscreen?(): void;
+    }
+}
+
 export class Canvas {
 
     public framebuffer: Framebuffer;
@@ -37,16 +53,38 @@ export class Canvas {
         this.boundRenderLoop = this.renderLoop.bind(this);
     }
 
+    public enterFullscreen(element: Element): void {
+        if (element.requestFullscreen) {
+            element.requestFullscreen();
+        } else if (element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+        } else if (element.msRequestFullscreen) {
+            element.msRequestFullscreen();
+        } else if (element.webkitRequestFullScreen) {
+            element.webkitRequestFullScreen();
+        }
+    }
+
+    public exitFullscreen(): void {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+    }
+
     //  Move parts
     public init(): void {
         // FIXME: move fullsccreen handling into utils class
         let fullscreen: boolean = false;
         const toggleFullscreen: () => void = (): void => {
             if (!fullscreen) {
-                this.canvas.requestFullscreen();
+                this.enterFullscreen(this.canvas);
                 fullscreen = true;
             } else {
-                document.exitFullscreen();
+                this.exitFullscreen();
                 fullscreen = false;
             }
         };
@@ -61,9 +99,8 @@ export class Canvas {
             }
             lastClick = currentClick;
         });
-        this.scene.init(this.framebuffer).then(() => {
-            this.renderLoop(0);
-        });
+
+        this.scene.init(this.framebuffer).then(() => this.renderLoop(0));
     }
 
     public renderLoop(time: number): void {
