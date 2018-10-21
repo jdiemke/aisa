@@ -1,21 +1,6 @@
 import { Framebuffer } from './Framebuffer';
+import { FullscreenUtils } from './fullscreen/FullscreenUtils';
 import { AbstractScene } from './scenes/AbstractScene';
-
-declare global {
-    interface Element {
-        requestFullScreen?(): void;
-        mozRequestFullScreen?(): void;
-        webkitRequestFullScreen?(): void;
-        msRequestFullscreen?(): void;
-    }
-}
-
-declare global {
-    interface Document {
-        mozCancelFullScreen?(): void;
-        webkitExitFullscreen?(): void;
-    }
-}
 
 export class Canvas {
 
@@ -45,6 +30,7 @@ export class Canvas {
 
         this.context = this.canvas.getContext('2d');
 
+        // FIXME: make this cross browser compatible!
         (this.context as any).oImageSmoothingEnabled = false;
         this.context.imageSmoothingEnabled = false;
         (this.context as any).webkitImageSmoothingEnabled = false;
@@ -53,53 +39,14 @@ export class Canvas {
         this.boundRenderLoop = this.renderLoop.bind(this);
     }
 
-    public enterFullscreen(element: Element): void {
-        if (element.requestFullscreen) {
-            element.requestFullscreen();
-        } else if (element.mozRequestFullScreen) {
-            element.mozRequestFullScreen();
-        } else if (element.msRequestFullscreen) {
-            element.msRequestFullscreen();
-        } else if (element.webkitRequestFullScreen) {
-            element.webkitRequestFullScreen();
-        }
-    }
-
-    public exitFullscreen(): void {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        }
-    }
-
-    //  Move parts
     public init(): void {
-        // FIXME: move fullsccreen handling into utils class
-        let fullscreen: boolean = false;
-        const toggleFullscreen: () => void = (): void => {
-            if (!fullscreen) {
-                this.enterFullscreen(this.canvas);
-                fullscreen = true;
-            } else {
-                this.exitFullscreen();
-                fullscreen = false;
-            }
-        };
-        let lastClick: number = 0;
-        // click supported on mobile and desktop. dblclick only supported on browser
-        // so emulate dblclick
-        this.canvas.addEventListener('click', function (evt) {
-            evt.preventDefault();
-            const currentClick: number = Date.now();
-            if (currentClick - lastClick < 200) {
-                toggleFullscreen.bind(this)();
-            }
-            lastClick = currentClick;
+        // Add fullscreen toggle on click
+        this.canvas.addEventListener('click', (event: MouseEvent) => {
+            event.preventDefault();
+            FullscreenUtils.toggleFullscreen(this.canvas);
         });
 
+        // Init scene and start rendering
         this.scene.init(this.framebuffer).then(() => this.renderLoop(0));
     }
 
