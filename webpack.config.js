@@ -35,7 +35,8 @@ module.exports = {
         'abstract-cube': './src/examples/abstract-cube/Application.ts',
         'frustum-culling': './src/examples/frustum-culling/Application.ts',
         'titan-effect': './src/examples/titan-effect/Application.ts',
-        'sine-scroller': './src/examples/sine-scroller/Application.ts'
+        'sine-scroller': './src/examples/sine-scroller/Application.ts',
+        'mode-7': './src/examples/mode-7/Application.ts'
     },
     mode: 'development',
     output: {
@@ -226,6 +227,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['sine-scroller'],
             filename: 'sine-scroller.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['mode-7'],
+            filename: 'mode-7.html'
         })
     ]
 }
