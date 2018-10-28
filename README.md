@@ -24,6 +24,7 @@ field of computer graphics including clipping, triangle rasterization, geometric
 ### Demos
 * [Wobble](https://jdiemke.github.io/aisa/titan-effect.html)
 * [Sine Scroller](https://jdiemke.github.io/aisa/sine-scroller.html)
+* [SNES Mode7](https://jdiemke.github.io/aisa/mode-7.html)
 * [Cube](https://jdiemke.github.io/aisa/cube.html)
 * [Twister](https://jdiemke.github.io/aisa/twister.html)
 * [Plasma](https://jdiemke.github.io/aisa/plasma.html)
