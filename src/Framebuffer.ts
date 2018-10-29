@@ -63,7 +63,7 @@ export class Framebuffer {
     public triangleRasterizer = new TriangleRasterizer(this);
     public texturedTriangleRasterizer = new TexturedTriangleRasterizer(this);
 
-    private scaleClipBlitter = new ScaleClipBlitter(this);
+    public scaleClipBlitter = new ScaleClipBlitter(this);
     public renderingPipeline = new FlatShadingRenderingPipeline(this);
     public texturedRenderingPipeline = new TexturingRenderingPipeline(this);
 
