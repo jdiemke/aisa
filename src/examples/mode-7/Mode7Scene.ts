@@ -2,6 +2,7 @@ import { Framebuffer } from '../../Framebuffer';
 import { Vector3f } from '../../math/index';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
+import { Keyboard } from './Keyboard';
 
 /**
  * TODO:
@@ -16,6 +17,9 @@ import { Texture, TextureUtils } from '../../texture/index';
  *      - http://engineeringdotnet.blogspot.com/2010/04/simple-2d-car-physics-in-games.html
  *      - https://github.com/leonardo-ono/Java2DRacingPhysicsTest
  *      - https://www.gamedev.net/articles/programming/math-and-physics/2d-car-physics-r2443/
+ *
+ * - maps
+ *      - http://www.mariouniverse.com/maps-snes-smk/
  */
 export class Mode7Scene extends AbstractScene {
 
@@ -28,23 +32,11 @@ export class Mode7Scene extends AbstractScene {
     private pipePositions: Array<Vector3f>;
     private angle: number = 270;
     private startTime: number = Date.now();
+    private keyboard: Keyboard = new Keyboard();
+
+    private velocity: number = 0;
+
     public init(framebuffer: Framebuffer): Promise<any> {
-        document.addEventListener('keydown', (e: KeyboardEvent) => {
-            if (e.which === 38) {
-                this.kartPosition.x += Math.cos(2 * Math.PI / 360 * this.angle) * 7;
-                this.kartPosition.y += Math.sin(2 * Math.PI / 360 * this.angle) * 7;
-            }
-            if (e.which === 40) {
-                this.kartPosition.x -= Math.cos(2 * Math.PI / 360 * this.angle) * 7;
-                this.kartPosition.y -= Math.sin(2 * Math.PI / 360 * this.angle) * 7;
-            }
-            if (e.which === 37) {
-                this.angle -= 1;
-            }
-            if (e.which === 39) {
-                this.angle += 1;
-            }
-        });
 
         this.pipePositions = new Array<Vector3f>();
         for (let i: number = 0; i < 100; i++) {
@@ -72,6 +64,29 @@ export class Mode7Scene extends AbstractScene {
         ]);
     }
 
+    private handleInput(): void {
+        if (this.keyboard.isDown(76)) {
+           this.velocity = Math.min(8, this.velocity + 0.26);
+
+        }
+        /*
+        if (this.keyboard.isDown(68)) {
+            this.kartPosition.x -= Math.cos(2 * Math.PI / 360 * this.angle) * 7;
+            this.kartPosition.y -= Math.sin(2 * Math.PI / 360 * this.angle) * 7;
+        }*/
+        if (this.keyboard.isDown(65)) {
+            this.angle -= 1.4;
+        }
+        if (this.keyboard.isDown(68)) {
+            this.angle += 1.4;
+        }
+
+        this.kartPosition.x += Math.cos(2 * Math.PI / 360 * this.angle) * this.velocity;
+        this.kartPosition.y += Math.sin(2 * Math.PI / 360 * this.angle) * this.velocity;
+
+        this.velocity *= 0.95;
+    }
+
     public render(framebuffer: Framebuffer): void {
         // TODO: optimize
         // * moving constants outside of loop
@@ -79,6 +94,8 @@ export class Mode7Scene extends AbstractScene {
         // * dont use put pixel but use linear offset and increment each pixel!
         // https://www.gamedev.net/forums/topic/51626-making-mario-kart-type-of-gameswhats-involved/
         // https://www.coranac.com/tonc/text/mode7.htm
+
+        this.handleInput();
 
         const time: number = Date.now() * 0.06;
 
