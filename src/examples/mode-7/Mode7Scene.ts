@@ -4,7 +4,18 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
 
 /**
- * TODO: extract lens into effect class
+ * TODO:
+ * - optimize rendering scene
+ * - draw sorted sprites
+ * - add enemies following splines
+ * - add collision
+ * - add control keyboard and touch
+ *
+ * - physics:
+ *      - http://rmgi.blog./pygame-2d-car-tutorial.html
+ *      - http://engineeringdotnet.blogspot.com/2010/04/simple-2d-car-physics-in-games.html
+ *      - https://github.com/leonardo-ono/Java2DRacingPhysicsTest
+ *      - https://www.gamedev.net/articles/programming/math-and-physics/2d-car-physics-r2443/
  */
 export class Mode7Scene extends AbstractScene {
 
