@@ -20,7 +20,6 @@ export class Keyboard {
     }
 
     public onKeyDown(event: KeyboardEvent): void {
-        console.warn('code: ', event.keyCode);
         this.pressed[event.keyCode] = true;
     }
 
