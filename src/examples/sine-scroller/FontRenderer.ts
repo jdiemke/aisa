@@ -7,7 +7,7 @@ export class FontRenderer {
     private charToIndex: Map<number, number>;
 
     constructor(private framebuffer: Framebuffer, private width: number,
-                private height: number, fonts: string,  private file: string) {
+        private height: number, fonts: string, private file: string) {
         this.charToIndex = new Map<number, number>();
 
         for (let x: number = 0; x < fonts.length; x++) {
@@ -27,9 +27,22 @@ export class FontRenderer {
         this.framebuffer.drawTextureRectFastAlpha(0, 0, 0, 0, 50, 50, this.fontTexture);
     }
 
+    public drawText2(x: number, y: number, text: string): void {
+        let xpos: number = x;
+        const xFonts: number = this.fontTexture.width / this.width;
+
+        for (let i: number = 0; i < text.length; i++) {
+            const asciiCode: number = text.charCodeAt(i);
+            const index: number = this.charToIndex.has(asciiCode) ? this.charToIndex.get(asciiCode) : 0;
+            const tx: number = Math.floor(index % xFonts) * this.width;
+            const ty: number = Math.floor(index / xFonts) * this.height;
+            this.framebuffer.drawTextureRectFastAlpha(xpos, y, tx, ty, 8, 14, this.fontTexture);
+            xpos += this.width;
+        }
+    }
+
     public drawText(x: number, y: number, text: string, time: number, sine: boolean = true): void {
         let xpos: number = x;
-        const firstIndex: number = 'A'.charCodeAt(0);
         const xFonts: number = this.fontTexture.width / this.width;
 
         const speed: number = 0.07;
@@ -48,11 +61,11 @@ export class FontRenderer {
     }
 
     public drawTextureRectFastAlpha(xs: number, ys: number, xt: number, yt: number,
-                                    width: number, height: number, texture: Texture, time: number, sine: boolean = true): void {
+        width: number, height: number, texture: Texture, time: number, sine: boolean = true): void {
         const startW: number = Math.max(0, 0 - xs);
         const endW: number = Math.min(xs + width, 320) - xs;
         for (let w: number = startW; w < endW; w++) {
-            
+
             const yDisp: number = sine ? Math.round(Math.sin(time * 0.004 + (xs + w) * 0.013) * 30) : 0;
             let texIndex: number = xt + w + yt * texture.width;
             let frIndex: number = xs + w + (ys + yDisp) * 320;
