@@ -4,6 +4,7 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
 import { Keyboard } from './Keyboard';
 import { KartAnimator } from './KartAnimator';
+import { FontRenderer } from '../sine-scroller/FontRenderer';
 
 /**
  * TODO:
@@ -26,7 +27,7 @@ export class Mode7Scene extends AbstractScene {
 
     private map: Texture;
     private back: Texture;
-    private mario: Texture;
+    private time: Texture;
     private grass: Texture;
     private pipe: Texture; private metrics: Texture;
     private kartPosition: Vector3f = new Vector3f(273.79803081006753, 2565.460311653938 - 1024, 0);
@@ -36,6 +37,7 @@ export class Mode7Scene extends AbstractScene {
     private keyboard: Keyboard = new Keyboard();
     private marioTextures: Array<Texture> = new Array<Texture>();
     private npc: Vector3f = new Vector3f(0, 0, 0);
+    private fontRenderer: FontRenderer;
 
     private npcTrack: Array<Vector3f> = [
         new Vector3f(920, 580, 0),
@@ -91,7 +93,16 @@ export class Mode7Scene extends AbstractScene {
             );
         }
 
+        const fonts: string =
+            '0123456789';
+        this.fontRenderer = new FontRenderer(
+            framebuffer,
+            8, 14, fonts,
+            require('./assets/sprites/time.png')
+        );
+
         return Promise.all([
+            this.fontRenderer.init(),
             TextureUtils.load(require('./assets/map.png'), false).then(
                 (texture: Texture) => this.map = texture
             ),
@@ -101,8 +112,8 @@ export class Mode7Scene extends AbstractScene {
             TextureUtils.load(require('./assets/grass.png'), false).then(
                 (texture: Texture) => this.grass = texture
             ),
-            TextureUtils.load(require('./assets/mario.png'), true).then(
-                (texture: Texture) => this.mario = texture
+            TextureUtils.load(require('./assets/sprites/time.png'), true).then(
+                (texture: Texture) => this.time = texture
             ),
             TextureUtils.load(require('./assets/pipe.png'), true).then(
                 (texture: Texture) => this.pipe = texture
@@ -310,7 +321,7 @@ export class Mode7Scene extends AbstractScene {
         if (this.keyboard.isDown(68)) {
             marioTex = this.marioTextures[1];
         } else if (this.keyboard.isDown(65)) {
-            marioTex = this.marioTextures[this.marioTextures.length-1];
+            marioTex = this.marioTextures[this.marioTextures.length - 1];
         } else {
             marioTex = this.marioTextures[0];
         }
@@ -424,6 +435,18 @@ export class Mode7Scene extends AbstractScene {
 
             }
         }
+        const gameTime: number = Date.now() - this.startTime;
+        const small: number = Math.floor(gameTime / 10) % 100;
+        const gameTimeSeconds: number = Math.floor(gameTime / 1000);
+        const gameTimeMinutes: number = Math.floor(gameTime / 60000);
+        const seconds: number = gameTimeSeconds % 60;
+        this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1, 4, this.pad(gameTimeMinutes, 2));
+        this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1 + 8 * 3, 4, this.pad(seconds, 2));
+        this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1 + 8 * 6, 4, this.pad(small, 2));
     }
 
+    private pad(num: number, size: number): string {
+        const s: string = '0' + num;
+        return s.substr(s.length - size);
+    }
 }
