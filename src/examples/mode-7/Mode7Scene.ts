@@ -34,7 +34,6 @@ export class Mode7Scene extends AbstractScene {
     private angle: number = 270;
     private startTime: number = Date.now();
     private keyboard: Keyboard = new Keyboard();
-    private pipeTextures: Array<Texture> = new Array<Texture>();
     private marioTextures: Array<Texture> = new Array<Texture>();
     private npc: Vector3f = new Vector3f(0, 0, 0);
 
@@ -107,42 +106,6 @@ export class Mode7Scene extends AbstractScene {
             ),
             TextureUtils.load(require('./assets/pipe.png'), true).then(
                 (texture: Texture) => this.pipe = texture
-            ),
-            TextureUtils.load(require('./assets/sprites/pipe01.png'), true).then(
-                (texture: Texture) => this.pipeTextures[0] = texture
-            ),
-            TextureUtils.load(require('./assets/sprites/pipe02.png'), true).then(
-                (texture: Texture) => this.pipeTextures[1] = texture
-            ),
-            TextureUtils.load(require('./assets/sprites/pipe03.png'), true).then(
-                (texture: Texture) => this.pipeTextures[2] = texture
-            ),
-            TextureUtils.load(require('./assets/sprites/pipe04.png'), true).then(
-                (texture: Texture) => this.pipeTextures[3] = texture
-            ),
-            TextureUtils.load(require('./assets/sprites/pipe05.png'), true).then(
-                (texture: Texture) => this.pipeTextures[4] = texture
-            ),
-            TextureUtils.load(require('./assets/sprites/pipe06.png'), true).then(
-                (texture: Texture) => this.pipeTextures[5] = texture
-            ),
-            TextureUtils.load(require('./assets/sprites/pipe07.png'), true).then(
-                (texture: Texture) => this.pipeTextures[6] = texture
-            ),
-            TextureUtils.load(require('./assets/sprites/pipe08.png'), true).then(
-                (texture: Texture) => this.pipeTextures[7] = texture
-            ),
-            TextureUtils.load(require('./assets/sprites/pipe09.png'), true).then(
-                (texture: Texture) => this.pipeTextures[8] = texture
-            ),
-            TextureUtils.load(require('./assets/sprites/pipe10.png'), true).then(
-                (texture: Texture) => this.pipeTextures[9] = texture
-            ),
-            TextureUtils.load(require('./assets/sprites/pipe11.png'), true).then(
-                (texture: Texture) => this.pipeTextures[10] = texture
-            ),
-            TextureUtils.load(require('./assets/sprites/pipe12.png'), true).then(
-                (texture: Texture) => this.pipeTextures[11] = texture
             ),
             TextureUtils.load(require('./assets/sprites/mario01.png'), true).then(
                 (texture: Texture) => this.marioTextures[0] = texture
