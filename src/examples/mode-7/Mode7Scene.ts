@@ -5,6 +5,8 @@ import { Texture, TextureUtils } from '../../texture/index';
 import { Keyboard } from './Keyboard';
 import { KartAnimator } from './KartAnimator';
 import { FontRenderer } from '../sine-scroller/FontRenderer';
+import { SpriteRenderer } from './SpriteRenderer';
+import { Sprite } from './Sprite';
 
 /**
  * TODO:
@@ -38,6 +40,7 @@ export class Mode7Scene extends AbstractScene {
     private marioTextures: Array<Texture> = new Array<Texture>();
     private npc: Vector3f = new Vector3f(0, 0, 0);
     private fontRenderer: FontRenderer;
+    private spriteRender: SpriteRenderer = new SpriteRenderer();
 
     private npcTrack: Array<Vector3f> = [
         new Vector3f(920, 580, 0),
@@ -305,10 +308,6 @@ export class Mode7Scene extends AbstractScene {
 
         framebuffer.drawTexture(320 - this.metrics.width - 16, 2, this.metrics, 1.0);
 
-        /* framebuffer.drawTexture(320 / 2 - 16, 200 - 32 - 32 * 3
-             + Math.floor(1 * Math.sin((time - this.startTime))),
-             this.mario, 1.0);
-        */
         // draw kart and enemies
 
         // project by scalar product lateron
@@ -325,11 +324,11 @@ export class Mode7Scene extends AbstractScene {
         } else {
             marioTex = this.marioTextures[0];
         }
-        framebuffer.scaleClipBlitter.drawScaledTextureClip(
-            Math.round(320 / 2 - (marioHeight * projectionHeightScale) / 2),
+
+        this.spriteRender.addSprite(new Sprite(Math.round(320 / 2 - (marioHeight * projectionHeightScale) / 2),
             Math.round(horizonHeight + yPos) - Math.round(marioHeight * projectionHeightScale),
             Math.round(marioHeight * projectionHeightScale),
-            Math.round(marioHeight * projectionHeightScale), marioTex, 1.0);
+            Math.round(marioHeight * projectionHeightScale), marioTex, 1.0, cameraDistance));
 
 
         // draw pipes
@@ -357,13 +356,8 @@ export class Mode7Scene extends AbstractScene {
         // https://www.gamedev.net/forums/topic/679371-3d-8-directional-sprite-rotation-based-on-facing-direction-relative-to-camera-direction/
         //https://stackoverflow.com/questions/22623013/doom-like-angle-based-sprite-changing
         const objVec: Vector3f = this.npc.sub(camPos);
-        const cameraAngle: number = ((this.angle % 360) + 360) % 360;
-        const objectAngle: number = (((Date.now() * 0.002) % 360) + 360) % 360;
         let spIndex = -Math.atan2(objVec.y, objVec.x) + Math.atan2(npcDir.y, npcDir.x);
-        // let spIndex = -Math.atan2(camDir.y, camDir.x) + Math.atan2(npcDir.y, npcDir.x);
         spIndex = (((spIndex / (Math.PI * 2) * 360) % 360) + 360) % 360;
-        //console.warn('index:', spIndex);
-
 
         this.npc.z = this.npc.sub(camPos).dot(camDir);
         if (this.npc.z > 0) {
@@ -374,11 +368,13 @@ export class Mode7Scene extends AbstractScene {
             const pipeW: number = tex.width;
             const projectionHeightScale2: number = screenDistance / this.npc.z;
             const yPos2: number = cameraHeight * projectionHeightScale2;
-            framebuffer.scaleClipBlitter.drawScaledTextureClip(
+
+            this.spriteRender.addSprite(new Sprite(
                 Math.round(320 / 2 + pipeDistX * projectionHeightScale2 - (pipeW * projectionHeightScale2) / 2),
                 Math.round(horizonHeight + yPos2) - Math.round(pipeH * projectionHeightScale2),
                 Math.round(pipeW * projectionHeightScale2),
-                Math.round(pipeH * projectionHeightScale2), tex, 1.0);
+                Math.round(pipeH * projectionHeightScale2), tex, 1.0, this.npc.z));
+
         }
         for (let i: number = 0; i < 100; i++) {
             const pipe: Vector3f = this.pipePositions[i].mul(1 / 0.3);
@@ -419,22 +415,23 @@ export class Mode7Scene extends AbstractScene {
                 tex = this.pipe;
                 const pipeH: number = tex.height;
                 const pipeW: number = tex.width;
-                /*
-                framebuffer.scaleClipBlitter.drawScaledTextureClip(
-                    Math.round(320 / 2 + pipeDistX * projectionHeightScale - (pipeW) / 2),
-                    Math.round(horizonHeight + yPos) - Math.round(pipeH ),
-                    Math.round(pipeW ),
-                    Math.round(pipeH ), tex, 1.0);
-                    */
 
-                framebuffer.scaleClipBlitter.drawScaledTextureClip(
-                    Math.round(320 / 2 + pipeDistX * projectionHeightScale - (pipeW * projectionHeightScale) / 2),
+                /*
+                                framebuffer.scaleClipBlitter.drawScaledTextureClip(
+                                    Math.round(320 / 2 + pipeDistX * projectionHeightScale - (pipeW * projectionHeightScale) / 2),
+                                    Math.round(horizonHeight + yPos) - Math.round(pipeH * projectionHeightScale),
+                                    Math.round(pipeW * projectionHeightScale),
+                                    Math.round(pipeH * projectionHeightScale), tex, 1.0);
+                */
+                this.spriteRender.addSprite(new Sprite(Math.round(320 / 2 + pipeDistX * projectionHeightScale - (pipeW * projectionHeightScale) / 2),
                     Math.round(horizonHeight + yPos) - Math.round(pipeH * projectionHeightScale),
                     Math.round(pipeW * projectionHeightScale),
-                    Math.round(pipeH * projectionHeightScale), tex, 1.0);
+                    Math.round(pipeH * projectionHeightScale), tex, 1.0, pipeDist));
 
             }
         }
+
+        this.spriteRender.render(framebuffer);
         const gameTime: number = Date.now() - this.startTime;
         const small: number = Math.floor(gameTime / 10) % 100;
         const gameTimeSeconds: number = Math.floor(gameTime / 1000);
