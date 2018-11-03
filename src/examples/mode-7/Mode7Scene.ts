@@ -2,11 +2,11 @@ import { Framebuffer } from '../../Framebuffer';
 import { Vector3f } from '../../math/index';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
-import { Keyboard } from './Keyboard';
-import { KartAnimator } from './KartAnimator';
 import { FontRenderer } from '../sine-scroller/FontRenderer';
-import { SpriteRenderer } from './SpriteRenderer';
+import { KartAnimator } from './KartAnimator';
+import { Keyboard } from './Keyboard';
 import { Sprite } from './Sprite';
+import { SpriteRenderer } from './SpriteRenderer';
 
 /**
  * TODO:
@@ -29,7 +29,6 @@ export class Mode7Scene extends AbstractScene {
 
     private map: Texture;
     private back: Texture;
-    private time: Texture;
     private grass: Texture;
     private pipe: Texture; private metrics: Texture;
     private kartPosition: Vector3f = new Vector3f(273.79803081006753, 2565.460311653938 - 1024, 0);
@@ -41,6 +40,11 @@ export class Mode7Scene extends AbstractScene {
     private npc: Vector3f = new Vector3f(0, 0, 0);
     private fontRenderer: FontRenderer;
     private spriteRender: SpriteRenderer = new SpriteRenderer();
+    private angleVel: number = 0;
+    private velocity: Vector3f = new Vector3f(0, 0, 0);
+    private acceleration: number = 0;
+    private track: Array<Vector3f> = new Array<Vector3f>();
+    private notPushed: boolean = true;
 
     private npcTrack: Array<Vector3f> = [
         new Vector3f(920, 580, 0),
@@ -96,11 +100,8 @@ export class Mode7Scene extends AbstractScene {
             );
         }
 
-        const fonts: string =
-            '0123456789';
         this.fontRenderer = new FontRenderer(
-            framebuffer,
-            8, 14, fonts,
+            framebuffer, 8, 14, '0123456789',
             require('./assets/sprites/time.png')
         );
 
@@ -114,9 +115,6 @@ export class Mode7Scene extends AbstractScene {
             ),
             TextureUtils.load(require('./assets/grass.png'), false).then(
                 (texture: Texture) => this.grass = texture
-            ),
-            TextureUtils.load(require('./assets/sprites/time.png'), true).then(
-                (texture: Texture) => this.time = texture
             ),
             TextureUtils.load(require('./assets/pipe.png'), true).then(
                 (texture: Texture) => this.pipe = texture
@@ -193,12 +191,172 @@ export class Mode7Scene extends AbstractScene {
         ]);
     }
 
-    private angleVel: number = 0;
-    private velocity: Vector3f = new Vector3f(0, 0, 0);
-    private acceleration: number = 0;
+    public render(framebuffer: Framebuffer): void {
+        // TODO: optimize
+        // * moving constants outside of loop
+        // * use DDA for scanlines
+        // * dont use put pixel but use linear offset and increment each pixel!
+        // https://www.gamedev.net/forums/topic/51626-making-mario-kart-type-of-gameswhats-involved/
+        // https://www.coranac.com/tonc/text/mode7.htm
 
-    private track: Array<Vector3f> = new Array<Vector3f>();
-    private notPushed: boolean = true;
+        this.handleInput();
+
+        const screenDistance: number = 160;
+        const cameraHeight: number = 80;
+        const horizonHeight: number = 20;
+        const cameraDistance: number = 153.4;
+
+        for (let y: number = 21; y < 200; y++) {
+            for (let x: number = 0; x < 320; x++) {
+                const distance: number = screenDistance * cameraHeight / (y - horizonHeight);
+
+                const step: number = distance / screenDistance;
+
+                const scannlineCenterX: number = Math.cos(2 * Math.PI / 360 * this.angle) *
+                    distance + this.kartPosition.x - Math.cos(2 * Math.PI / 360 * this.angle) * cameraDistance;
+                const scannlineCenterY: number = Math.sin(2 * Math.PI / 360 * this.angle) *
+                    distance + this.kartPosition.y - Math.sin(2 * Math.PI / 360 * this.angle) * cameraDistance;
+
+                const xStep: number = -Math.sin(2 * Math.PI / 360 * this.angle) * step;
+                const yStep: number = Math.cos(2 * Math.PI / 360 * this.angle) * step;
+
+                let xSampl: number = scannlineCenterX - (320 / 2 * xStep) + x * xStep;
+                let ySampl: number = scannlineCenterY - (320 / 2 * yStep) + x * yStep;
+                xSampl *= 0.3;
+                ySampl *= 0.3;
+                let texel: number;
+
+                if (xSampl >= 0 && xSampl <= 1023 && ySampl >= 0 && ySampl <= 1023) {
+                    texel = this.map.getPixel2(
+                        this.map,
+                        Math.round(xSampl) % 1024,
+                        Math.round(ySampl) % 1024);
+                } else {
+                    texel = this.grass.getPixel2(
+                        this.grass,
+                        ((Math.round(xSampl) % 8) + 8) % 8,
+                        (7 - (((Math.round(ySampl) % 8) + 8) % 8))
+                    );
+                }
+                framebuffer.drawPixel(x, y, texel);
+            }
+        }
+
+        // TODO: optimize
+        for (let x: number = 0; x < 320; x++) {
+            for (let y: number = 0; y < this.back.height; y++) {
+                framebuffer.drawPixel(
+                    x, y,
+                    this.back.getPixel2(
+                        this.back,
+                        ((Math.floor(x + this.angle * 2) % this.back.width) + this.back.width) % this.back.width, y)
+                );
+            }
+        }
+
+        framebuffer.drawTexture(320 - this.metrics.width - 16, 2, this.metrics, 1.0);
+
+        const yPos: number = cameraHeight * screenDistance / cameraDistance;
+        const marioHeight: number = 32;
+        const projectionHeightScale: number = 1; // yPos / cameraHeight;
+        let marioTex: Texture;
+        if (this.keyboard.isDown(68)) {
+            marioTex = this.marioTextures[1];
+        } else if (this.keyboard.isDown(65)) {
+            marioTex = this.marioTextures[this.marioTextures.length - 1];
+        } else {
+            marioTex = this.marioTextures[0];
+        }
+
+        this.spriteRender.addSprite(new Sprite(Math.round(320 / 2 - (marioHeight * projectionHeightScale) / 2),
+            Math.round(horizonHeight + yPos) - Math.round(marioHeight * projectionHeightScale),
+            Math.round(marioHeight * projectionHeightScale),
+            Math.round(marioHeight * projectionHeightScale), marioTex, 1.0, cameraDistance));
+
+        const camPos: Vector3f = new Vector3f(
+            this.kartPosition.x - Math.cos(2 * Math.PI / 360 * this.angle) * cameraDistance,
+            this.kartPosition.y - Math.sin(2 * Math.PI / 360 * this.angle) * cameraDistance, 0);
+
+        const camDir: Vector3f = new Vector3f(
+            Math.cos(2 * Math.PI / 360 * this.angle),
+            Math.sin(2 * Math.PI / 360 * this.angle), 0);
+
+        const camDirX: Vector3f = new Vector3f(
+            -Math.sin(2 * Math.PI / 360 * this.angle),
+            Math.cos(2 * Math.PI / 360 * this.angle), 0);
+
+        const tim: number = Date.now() - this.startTime;
+        this.npc = this.animator.getPos(tim);
+        this.npc = this.npc.mul(1 / 0.3); // scaling is important to fit cam pos
+        const npcDir: Vector3f = this.animator.getPos(tim + 10).mul(1 / 0.3).sub(this.npc).normalize();
+
+        const objVec: Vector3f = this.npc.sub(camPos);
+        let spIndex: number = -Math.atan2(objVec.y, objVec.x) + Math.atan2(npcDir.y, npcDir.x);
+        spIndex = (((spIndex / (Math.PI * 2) * 360) % 360) + 360) % 360;
+
+        this.npc.z = this.npc.sub(camPos).dot(camDir);
+        if (this.npc.z > 0) {
+            const pipeDistX: number = this.npc.sub(camPos).dot(camDirX);
+
+            const tex: Texture =
+                this.marioTextures[Math.floor(spIndex / 360 * this.marioTextures.length) % this.marioTextures.length];
+            const pipeH: number = tex.height;
+            const pipeW: number = tex.width;
+            const projectionHeightScale2: number = screenDistance / this.npc.z;
+            const yPos2: number = cameraHeight * projectionHeightScale2;
+
+            this.spriteRender.addSprite(new Sprite(
+                Math.round(320 / 2 + pipeDistX * projectionHeightScale2 - (pipeW * projectionHeightScale2) / 2),
+                Math.round(horizonHeight + yPos2) - Math.round(pipeH * projectionHeightScale2),
+                Math.round(pipeW * projectionHeightScale2),
+                Math.round(pipeH * projectionHeightScale2), tex, 1.0, this.npc.z));
+
+        }
+
+        // Render all pipes
+        // TODO: move duplicate code into method
+        for (let i: number = 0; i < 100; i++) {
+            const pipe: Vector3f = this.pipePositions[i].mul(1 / 0.3);
+            const pipeDist: number = pipe.sub(camPos).dot(camDir);
+
+            if (pipeDist > 0) {
+                const pipeDistX: number = pipe.sub(camPos).dot(camDirX);
+
+                const projectionScale: number = screenDistance / pipeDist;
+                if (Math.round(projectionScale * this.pipe.height) <= 3) { // dont renderi f sprite is to small
+                    continue;
+                }
+                const projectedY: number = cameraHeight * projectionScale;
+
+                this.spriteRender.addSprite(
+                    new Sprite(
+                        Math.round(320 / 2 + pipeDistX * projectionScale - (this.pipe.width * projectionScale) / 2),
+                        Math.round(horizonHeight + projectedY) - Math.round(this.pipe.height * projectionScale),
+                        Math.round(this.pipe.width * projectionScale),
+                        Math.round(this.pipe.height * projectionScale),
+                        this.pipe,
+                        1.0,
+                        pipeDist)
+                );
+            }
+        }
+
+        this.spriteRender.render(framebuffer);
+        const gameTime: number = Date.now() - this.startTime;
+        const small: number = Math.floor(gameTime / 10) % 100;
+        const gameTimeSeconds: number = Math.floor(gameTime / 1000);
+        const gameTimeMinutes: number = Math.floor(gameTime / 60000);
+        const seconds: number = gameTimeSeconds % 60;
+        this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1, 4, this.pad(gameTimeMinutes, 2));
+        this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1 + 8 * 3, 4, this.pad(seconds, 2));
+        this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1 + 8 * 6, 4, this.pad(small, 2));
+    }
+
+    private pad(num: number, size: number): string {
+        const s: string = '0' + num;
+        return s.substr(s.length - size);
+    }
+
     private handleInput(): void {
 
         if (this.keyboard.isDown(82) && this.notPushed) {
@@ -246,204 +404,4 @@ export class Mode7Scene extends AbstractScene {
 
     }
 
-    public render(framebuffer: Framebuffer): void {
-        // TODO: optimize
-        // * moving constants outside of loop
-        // * use DDA for scanlines
-        // * dont use put pixel but use linear offset and increment each pixel!
-        // https://www.gamedev.net/forums/topic/51626-making-mario-kart-type-of-gameswhats-involved/
-        // https://www.coranac.com/tonc/text/mode7.htm
-
-        this.handleInput();
-
-        const time: number = Date.now() * 0.06;
-
-        const screenDistance: number = 160;
-        const cameraHeight: number = 80;
-        const horizonHeight: number = 20;
-        const cameraDistance: number = 153.4;
-
-        for (let y: number = 21; y < 200; y++) {
-            for (let x: number = 0; x < 320; x++) {
-                const distance: number = screenDistance * cameraHeight / (y - horizonHeight);
-
-                const step: number = distance / screenDistance;
-
-                const scannlineCenterX: number = Math.cos(2 * Math.PI / 360 * this.angle) *
-                    distance + this.kartPosition.x - Math.cos(2 * Math.PI / 360 * this.angle) * cameraDistance;
-                const scannlineCenterY: number = Math.sin(2 * Math.PI / 360 * this.angle) *
-                    distance + this.kartPosition.y - Math.sin(2 * Math.PI / 360 * this.angle) * cameraDistance;
-
-                const xStep: number = -Math.sin(2 * Math.PI / 360 * this.angle) * step;
-                const yStep: number = Math.cos(2 * Math.PI / 360 * this.angle) * step;
-
-                let xSampl: number = scannlineCenterX - (320 / 2 * xStep) + x * xStep;
-                let ySampl: number = scannlineCenterY - (320 / 2 * yStep) + x * yStep;
-                xSampl *= 0.3;
-                ySampl *= 0.3;
-                let texel: number;
-
-                if (xSampl >= 0 && xSampl <= 1023 && ySampl >= 0 && ySampl <= 1023) {
-                    texel = this.map.getPixel2(
-                        this.map,
-                        Math.round(xSampl) % 1024,
-                        Math.round(ySampl) % 1024);
-                } else {
-                    texel = this.grass.getPixel2(
-                        this.grass,
-                        ((Math.round(xSampl) % 8) + 8) % 8,
-                        (7 - (((Math.round(ySampl) % 8) + 8) % 8))
-                    );
-                }
-                framebuffer.drawPixel(x, y, texel);
-            }
-        }
-
-        // TODO: optimize
-        for (let x = 0; x < 320; x++) {
-            for (let y = 0; y < this.back.height; y++) {
-                framebuffer.drawPixel(x, y, this.back.getPixel2(this.back, ((Math.floor(x + this.angle * 2) % this.back.width) + this.back.width) % this.back.width, y));
-            }
-        }
-
-        framebuffer.drawTexture(320 - this.metrics.width - 16, 2, this.metrics, 1.0);
-
-        // draw kart and enemies
-
-        // project by scalar product lateron
-        // only project for other players and use original size for own player
-        // HINT: real mario cart does not scale sprites but uses different versions for different sizes
-        const yPos: number = cameraHeight * screenDistance / cameraDistance;
-        const marioHeight: number = 32;
-        const projectionHeightScale: number = 1;// yPos / cameraHeight;
-        let marioTex: Texture;
-        if (this.keyboard.isDown(68)) {
-            marioTex = this.marioTextures[1];
-        } else if (this.keyboard.isDown(65)) {
-            marioTex = this.marioTextures[this.marioTextures.length - 1];
-        } else {
-            marioTex = this.marioTextures[0];
-        }
-
-        this.spriteRender.addSprite(new Sprite(Math.round(320 / 2 - (marioHeight * projectionHeightScale) / 2),
-            Math.round(horizonHeight + yPos) - Math.round(marioHeight * projectionHeightScale),
-            Math.round(marioHeight * projectionHeightScale),
-            Math.round(marioHeight * projectionHeightScale), marioTex, 1.0, cameraDistance));
-
-
-        // draw pipes
-        let sortedPipes: Array<Vector3f> = new Array<Vector3f>();
-
-        const camPos: Vector3f = new Vector3f(
-            this.kartPosition.x - Math.cos(2 * Math.PI / 360 * this.angle) * cameraDistance,
-            this.kartPosition.y - Math.sin(2 * Math.PI / 360 * this.angle) * cameraDistance, 0);
-
-        const camDir: Vector3f = new Vector3f(
-            Math.cos(2 * Math.PI / 360 * this.angle),
-            Math.sin(2 * Math.PI / 360 * this.angle), 0);
-
-        const camDirX: Vector3f = new Vector3f(
-            -Math.sin(2 * Math.PI / 360 * this.angle),
-            Math.cos(2 * Math.PI / 360 * this.angle), 0);
-
-
-        const tim = Date.now() - this.startTime;
-        this.npc = this.animator.getPos(tim);
-        this.npc = this.npc.mul(1 / 0.3); // scaling is important to fit cam pos
-        const npcDir = this.animator.getPos(tim + 10).mul(1 / 0.3).sub(this.npc).normalize();
-
-        //
-        // https://www.gamedev.net/forums/topic/679371-3d-8-directional-sprite-rotation-based-on-facing-direction-relative-to-camera-direction/
-        //https://stackoverflow.com/questions/22623013/doom-like-angle-based-sprite-changing
-        const objVec: Vector3f = this.npc.sub(camPos);
-        let spIndex = -Math.atan2(objVec.y, objVec.x) + Math.atan2(npcDir.y, npcDir.x);
-        spIndex = (((spIndex / (Math.PI * 2) * 360) % 360) + 360) % 360;
-
-        this.npc.z = this.npc.sub(camPos).dot(camDir);
-        if (this.npc.z > 0) {
-            const pipeDistX: number = this.npc.sub(camPos).dot(camDirX);
-
-            let tex: Texture = this.marioTextures[Math.floor(spIndex / 360 * this.marioTextures.length) % this.marioTextures.length];
-            const pipeH: number = tex.height;
-            const pipeW: number = tex.width;
-            const projectionHeightScale2: number = screenDistance / this.npc.z;
-            const yPos2: number = cameraHeight * projectionHeightScale2;
-
-            this.spriteRender.addSprite(new Sprite(
-                Math.round(320 / 2 + pipeDistX * projectionHeightScale2 - (pipeW * projectionHeightScale2) / 2),
-                Math.round(horizonHeight + yPos2) - Math.round(pipeH * projectionHeightScale2),
-                Math.round(pipeW * projectionHeightScale2),
-                Math.round(pipeH * projectionHeightScale2), tex, 1.0, this.npc.z));
-
-        }
-        for (let i: number = 0; i < 100; i++) {
-            const pipe: Vector3f = this.pipePositions[i].mul(1 / 0.3);
-
-            const pipeDist: number = pipe.sub(camPos).dot(camDir);
-            pipe.z = pipeDist;
-            sortedPipes.push(pipe);
-
-        }
-
-        sortedPipes.sort((a: Vector3f, b: Vector3f) => b.z - a.z);
-
-        // TODO: create sprite object with z for all sprites and sort them.
-
-
-        for (let i: number = 0; i < 100; i++) {
-            const pipe: Vector3f = sortedPipes[i];
-            let pipeDist: number = pipe.z;
-            if (pipeDist > 0) {
-                const pipeDistX: number = pipe.sub(camPos).dot(camDirX);
-
-                const projectionHeightScale: number = screenDistance / pipeDist;
-                //  if (projectionHeightScale * 32 < 3) continue;
-                const yPos: number = cameraHeight * projectionHeightScale;
-
-                /*
-                const myHeight = projectionHeightScale * this.pipeTextures[0].height;
-                if (myHeight < this.pipeTextures[this.pipeTextures.length-1].height) {
-                    continue;
-                }*/
-                let tex: Texture;
-                /*
-                for (let i = 0; i < this.pipeTextures.length; i++) {
-                    if (this.pipeTextures[this.pipeTextures.length-1 - i].height < myHeight) {
-                        tex = this.pipeTextures[this.pipeTextures.length-1 - i];
-                    }
-                }*/
-                tex = this.pipe;
-                const pipeH: number = tex.height;
-                const pipeW: number = tex.width;
-
-                /*
-                                framebuffer.scaleClipBlitter.drawScaledTextureClip(
-                                    Math.round(320 / 2 + pipeDistX * projectionHeightScale - (pipeW * projectionHeightScale) / 2),
-                                    Math.round(horizonHeight + yPos) - Math.round(pipeH * projectionHeightScale),
-                                    Math.round(pipeW * projectionHeightScale),
-                                    Math.round(pipeH * projectionHeightScale), tex, 1.0);
-                */
-                this.spriteRender.addSprite(new Sprite(Math.round(320 / 2 + pipeDistX * projectionHeightScale - (pipeW * projectionHeightScale) / 2),
-                    Math.round(horizonHeight + yPos) - Math.round(pipeH * projectionHeightScale),
-                    Math.round(pipeW * projectionHeightScale),
-                    Math.round(pipeH * projectionHeightScale), tex, 1.0, pipeDist));
-
-            }
-        }
-
-        this.spriteRender.render(framebuffer);
-        const gameTime: number = Date.now() - this.startTime;
-        const small: number = Math.floor(gameTime / 10) % 100;
-        const gameTimeSeconds: number = Math.floor(gameTime / 1000);
-        const gameTimeMinutes: number = Math.floor(gameTime / 60000);
-        const seconds: number = gameTimeSeconds % 60;
-        this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1, 4, this.pad(gameTimeMinutes, 2));
-        this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1 + 8 * 3, 4, this.pad(seconds, 2));
-        this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1 + 8 * 6, 4, this.pad(small, 2));
-    }
-
-    private pad(num: number, size: number): string {
-        const s: string = '0' + num;
-        return s.substr(s.length - size);
-    }
 }
