@@ -4,6 +4,9 @@ export class Keyboard {
     public static UP: number = 38;
     public static RIGHT: number = 39;
     public static DOWN: number = 40;
+    public static KEY_A: number = 65;
+    public static KEY_D: number = 68;
+    public static KEY_L: number = 76;
 
     private pressed: Array<boolean>;
 

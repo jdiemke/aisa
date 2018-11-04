@@ -37,14 +37,13 @@ export class Mode7Scene extends AbstractScene {
     private startTime: number = Date.now();
     private keyboard: Keyboard = new Keyboard();
     private marioTextures: Array<Texture> = new Array<Texture>();
+    private joshiTextures: Array<Texture> = new Array<Texture>();
     private npc: Vector3f = new Vector3f(0, 0, 0);
     private fontRenderer: FontRenderer;
-    private spriteRender: SpriteRenderer = new SpriteRenderer();
+    private spriteRenderer: SpriteRenderer = new SpriteRenderer();
     private angleVel: number = 0;
     private velocity: Vector3f = new Vector3f(0, 0, 0);
     private acceleration: number = 0;
-    private track: Array<Vector3f> = new Array<Vector3f>();
-    private notPushed: boolean = true;
 
     private npcTrack: Array<Vector3f> = [
         new Vector3f(920, 580, 0),
@@ -188,6 +187,74 @@ export class Mode7Scene extends AbstractScene {
             TextureUtils.load(require('./assets/sprites/metrics.png'), true).then(
                 (texture: Texture) => this.metrics = texture
             )
+
+            ,
+            TextureUtils.load(require('./assets/sprites/joshi01.png'), true).then(
+                (texture: Texture) => this.joshiTextures[0] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi02.png'), true).then(
+                (texture: Texture) => this.joshiTextures[1] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi03.png'), true).then(
+                (texture: Texture) => this.joshiTextures[2] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi04.png'), true).then(
+                (texture: Texture) => this.joshiTextures[3] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi05.png'), true).then(
+                (texture: Texture) => this.joshiTextures[4] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi06.png'), true).then(
+                (texture: Texture) => this.joshiTextures[5] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi07.png'), true).then(
+                (texture: Texture) => this.joshiTextures[6] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi08.png'), true).then(
+                (texture: Texture) => this.joshiTextures[7] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi09.png'), true).then(
+                (texture: Texture) => this.joshiTextures[8] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi10.png'), true).then(
+                (texture: Texture) => this.joshiTextures[9] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi11.png'), true).then(
+                (texture: Texture) => this.joshiTextures[10] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi12.png'), true).then(
+                (texture: Texture) => this.joshiTextures[11] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi13.png'), true).then(
+                (texture: Texture) => this.joshiTextures[12] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi14.png'), true).then(
+                (texture: Texture) => this.joshiTextures[13] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi15.png'), true).then(
+                (texture: Texture) => this.joshiTextures[14] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi16.png'), true).then(
+                (texture: Texture) => this.joshiTextures[15] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi17.png'), true).then(
+                (texture: Texture) => this.joshiTextures[16] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi18.png'), true).then(
+                (texture: Texture) => this.joshiTextures[17] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi19.png'), true).then(
+                (texture: Texture) => this.joshiTextures[18] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi20.png'), true).then(
+                (texture: Texture) => this.joshiTextures[19] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi21.png'), true).then(
+                (texture: Texture) => this.joshiTextures[20] = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/joshi22.png'), true).then(
+                (texture: Texture) => this.joshiTextures[21] = texture
+            ),
         ]);
     }
 
@@ -268,7 +335,7 @@ export class Mode7Scene extends AbstractScene {
             marioTex = this.marioTextures[0];
         }
 
-        this.spriteRender.addSprite(new Sprite(Math.round(320 / 2 - (marioHeight * projectionHeightScale) / 2),
+        this.spriteRenderer.addSprite(new Sprite(Math.round(320 / 2 - (marioHeight * projectionHeightScale) / 2),
             Math.round(horizonHeight + yPos) - Math.round(marioHeight * projectionHeightScale),
             Math.round(marioHeight * projectionHeightScale),
             Math.round(marioHeight * projectionHeightScale), marioTex, 1.0, cameraDistance));
@@ -299,22 +366,22 @@ export class Mode7Scene extends AbstractScene {
             const pipeDistX: number = this.npc.sub(camPos).dot(camDirX);
 
             const tex: Texture =
-                this.marioTextures[Math.floor(spIndex / 360 * this.marioTextures.length) % this.marioTextures.length];
+                this.joshiTextures[Math.floor(spIndex / 360 * this.joshiTextures.length) % this.joshiTextures.length];
             const pipeH: number = tex.height;
             const pipeW: number = tex.width;
             const projectionHeightScale2: number = screenDistance / this.npc.z;
             const yPos2: number = cameraHeight * projectionHeightScale2;
 
-            this.spriteRender.addSprite(new Sprite(
+            this.spriteRenderer.addSprite(new Sprite(
                 Math.round(320 / 2 + pipeDistX * projectionHeightScale2 - (pipeW * projectionHeightScale2) / 2),
                 Math.round(horizonHeight + yPos2) - Math.round(pipeH * projectionHeightScale2),
                 Math.round(pipeW * projectionHeightScale2),
                 Math.round(pipeH * projectionHeightScale2), tex, 1.0, this.npc.z));
-
         }
 
         // Render all pipes
         // TODO: move duplicate code into method
+        // make entity class that can be rendered in mode 7 with height attribute
         for (let i: number = 0; i < 100; i++) {
             const pipe: Vector3f = this.pipePositions[i].mul(1 / 0.3);
             const pipeDist: number = pipe.sub(camPos).dot(camDir);
@@ -328,7 +395,7 @@ export class Mode7Scene extends AbstractScene {
                 }
                 const projectedY: number = cameraHeight * projectionScale;
 
-                this.spriteRender.addSprite(
+                this.spriteRenderer.addSprite(
                     new Sprite(
                         Math.round(320 / 2 + pipeDistX * projectionScale - (this.pipe.width * projectionScale) / 2),
                         Math.round(horizonHeight + projectedY) - Math.round(this.pipe.height * projectionScale),
@@ -341,7 +408,7 @@ export class Mode7Scene extends AbstractScene {
             }
         }
 
-        this.spriteRender.render(framebuffer);
+        this.spriteRenderer.render(framebuffer);
         const gameTime: number = Date.now() - this.startTime;
         const small: number = Math.floor(gameTime / 10) % 100;
         const gameTimeSeconds: number = Math.floor(gameTime / 1000);
@@ -358,50 +425,33 @@ export class Mode7Scene extends AbstractScene {
     }
 
     private handleInput(): void {
-
-        if (this.keyboard.isDown(82) && this.notPushed) {
-            this.track.push(this.kartPosition.mul(0.3));
-            this.notPushed = false;
-            console.warn(JSON.stringify(this.track));
-        }
-
-        if (!this.keyboard.isDown(82)) {
-            this.notPushed = true;
-        }
-
-        if (this.keyboard.isDown(76)) {
+        if (this.keyboard.isDown(Keyboard.KEY_L)) {
             this.acceleration = 0.57;
         }
-        /*
-        if (this.keyboard.isDown(68)) {
-            this.kartPosition.x -= Math.cos(2 * Math.PI / 360 * this.angle) * 7;
-            this.kartPosition.y -= Math.sin(2 * Math.PI / 360 * this.angle) * 7;
-        }*/
-        if (this.keyboard.isDown(65)) {
+
+        if (this.keyboard.isDown(Keyboard.KEY_A)) {
             this.angleVel = Math.max(-1.0, this.angleVel - 0.2);
-        } else
-            if (this.keyboard.isDown(68)) {
-                this.angleVel = Math.min(1.0, this.angleVel + 0.2);
-            } else {
-                this.angleVel = 0;
-            }
+        } else if (this.keyboard.isDown(Keyboard.KEY_D)) {
+            this.angleVel = Math.min(1.0, this.angleVel + 0.2);
+        } else {
+            this.angleVel = 0;
+        }
 
         this.angle = this.angle + this.angleVel;
-
         this.velocity.x += Math.cos(2 * Math.PI / 360 * this.angle) * this.acceleration;
         this.velocity.y += Math.sin(2 * Math.PI / 360 * this.angle) * this.acceleration;
+
         if (this.velocity.length() > 7.4) {
             this.velocity = this.velocity.mul(1 / this.velocity.length() * 7.4);
         }
 
         this.kartPosition = this.kartPosition.add(this.velocity);
-
         this.velocity = this.velocity.mul(0.95);
         this.acceleration = this.acceleration * 0.99;
+
         if (this.velocity.length() < 0.5) {
             this.velocity = this.velocity.mul(0);
         }
-
     }
 
 }
