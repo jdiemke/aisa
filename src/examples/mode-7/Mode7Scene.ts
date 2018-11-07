@@ -28,6 +28,8 @@ import { SpriteRenderer } from './SpriteRenderer';
 export class Mode7Scene extends AbstractScene {
 
     private map: Texture;
+    private lap2Texture: Texture;
+    private shadowTexture: Texture;
     private back: Texture;
     private grass: Texture;
     private pipe: Texture; private metrics: Texture;
@@ -117,6 +119,10 @@ export class Mode7Scene extends AbstractScene {
             ),
             TextureUtils.load(require('./assets/pipe.png'), true).then(
                 (texture: Texture) => this.pipe = texture
+            ), TextureUtils.load(require('./assets/sprites/lap2.png'), true).then(
+                (texture: Texture) => this.lap2Texture = texture
+            ), TextureUtils.load(require('./assets/sprites/shadow.png'), true).then(
+                (texture: Texture) => this.shadowTexture = texture
             ),
             TextureUtils.load(require('./assets/sprites/mario01.png'), true).then(
                 (texture: Texture) => this.marioTextures[0] = texture
@@ -335,6 +341,14 @@ export class Mode7Scene extends AbstractScene {
             marioTex = this.marioTextures[0];
         }
 
+        // shadow
+        framebuffer.drawTexture(
+            Math.round(320 / 2 - (marioHeight * projectionHeightScale) / 2),
+            Math.round(horizonHeight + yPos) - Math.round(8 * projectionHeightScale),
+            this.shadowTexture,
+            0.5
+        );
+
         this.spriteRenderer.addSprite(new Sprite(Math.round(320 / 2 - (marioHeight * projectionHeightScale) / 2),
             Math.round(horizonHeight + yPos) - Math.round(marioHeight * projectionHeightScale),
             Math.round(marioHeight * projectionHeightScale),
@@ -417,6 +431,10 @@ export class Mode7Scene extends AbstractScene {
         this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1, 4, this.pad(gameTimeMinutes, 2));
         this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1 + 8 * 3, 4, this.pad(seconds, 2));
         this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1 + 8 * 6, 4, this.pad(small, 2));
+        framebuffer.drawTexture(80 +
+            Math.floor(Math.sin(Date.now() * 0.001) * 32),
+            Math.floor(Math.sin(Date.now() * 0.001) * 32),
+            this.lap2Texture, 1.0);
     }
 
     private pad(num: number, size: number): string {
