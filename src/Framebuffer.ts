@@ -922,8 +922,8 @@ export class Framebuffer {
 
         const div = 1 / 255 * alpha2;
 
-        for (let y = 0; y < height; y++) {
-            for (let x = 0; x < width; x++) {
+        for (let y: number = 0; y < height; y++) {
+            for (let x: number = 0; x < width; x++) {
                 let alpha = (texture.texture[textureIndex] >> 24 & 0xff) * div;
                 let inverseAlpha = 1 - alpha;
 
