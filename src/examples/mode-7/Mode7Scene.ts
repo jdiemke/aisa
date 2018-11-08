@@ -1,10 +1,11 @@
 import { Framebuffer } from '../../Framebuffer';
-import { Vector3f } from '../../math/index';
+import { Vector3f, Vector2f } from '../../math/index';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
 import { FontRenderer } from '../sine-scroller/FontRenderer';
 import { KartAnimator } from './KartAnimator';
 import { Keyboard } from './Keyboard';
+import { Mode7Renderer, Camera } from './Mode7Renderer';
 import { Sprite } from './Sprite';
 import { SpriteRenderer } from './SpriteRenderer';
 
@@ -46,6 +47,7 @@ export class Mode7Scene extends AbstractScene {
     private angleVel: number = 0;
     private velocity: Vector3f = new Vector3f(0, 0, 0);
     private acceleration: number = 0;
+    private mode7Renderer: Mode7Renderer;
 
     private npcTrack: Array<Vector3f> = [
         new Vector3f(920, 580, 0),
@@ -92,6 +94,11 @@ export class Mode7Scene extends AbstractScene {
     ];
 
     private animator: KartAnimator = new KartAnimator();
+
+    public onInit(): void {
+        this.mode7Renderer = new Mode7Renderer(this.map, this.grass);
+    }
+
     public init(framebuffer: Framebuffer): Promise<any> {
         this.animator.setKeyFrames(this.npcTrack);
         this.pipePositions = new Array<Vector3f>();
@@ -279,41 +286,15 @@ export class Mode7Scene extends AbstractScene {
         const horizonHeight: number = 20;
         const cameraDistance: number = 153.4;
 
-        for (let y: number = 21; y < 200; y++) {
-            for (let x: number = 0; x < 320; x++) {
-                const distance: number = screenDistance * cameraHeight / (y - horizonHeight);
-
-                const step: number = distance / screenDistance;
-
-                const scannlineCenterX: number = Math.cos(2 * Math.PI / 360 * this.angle) *
-                    distance + this.kartPosition.x - Math.cos(2 * Math.PI / 360 * this.angle) * cameraDistance;
-                const scannlineCenterY: number = Math.sin(2 * Math.PI / 360 * this.angle) *
-                    distance + this.kartPosition.y - Math.sin(2 * Math.PI / 360 * this.angle) * cameraDistance;
-
-                const xStep: number = -Math.sin(2 * Math.PI / 360 * this.angle) * step;
-                const yStep: number = Math.cos(2 * Math.PI / 360 * this.angle) * step;
-
-                let xSampl: number = scannlineCenterX - (320 / 2 * xStep) + x * xStep;
-                let ySampl: number = scannlineCenterY - (320 / 2 * yStep) + x * yStep;
-                xSampl *= 0.3;
-                ySampl *= 0.3;
-                let texel: number;
-
-                if (xSampl >= 0 && xSampl <= 1023 && ySampl >= 0 && ySampl <= 1023) {
-                    texel = this.map.getPixel2(
-                        this.map,
-                        Math.round(xSampl) % 1024,
-                        Math.round(ySampl) % 1024);
-                } else {
-                    texel = this.grass.getPixel2(
-                        this.grass,
-                        ((Math.round(xSampl) % 8) + 8) % 8,
-                        (7 - (((Math.round(ySampl) % 8) + 8) % 8))
-                    );
-                }
-                framebuffer.drawPixel(x, y, texel);
-            }
-        }
+        const camera: Camera = new Camera();
+        camera.position = new Vector2f(
+            this.kartPosition.x - Math.cos(2 * Math.PI / 360 * this.angle) * cameraDistance,
+            this.kartPosition.y - Math.sin(2 * Math.PI / 360 * this.angle) * cameraDistance
+        );
+        camera.height = cameraHeight;
+        camera.screenDistance = screenDistance;
+        camera.angle = this.angle;
+        this.mode7Renderer.render(framebuffer, camera);
 
         // TODO: optimize
         for (let x: number = 0; x < 320; x++) {

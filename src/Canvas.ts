@@ -47,7 +47,12 @@ export class Canvas {
         });
 
         // Init scene and start rendering
-        this.scene.init(this.framebuffer).then(() => this.renderLoop(0));
+        this.scene.init(this.framebuffer).then(
+            () => {
+                this.scene.onInit();
+                this.renderLoop(0);
+            }
+        );
     }
 
     public renderLoop(time: number): void {
