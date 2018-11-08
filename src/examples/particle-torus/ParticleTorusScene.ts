@@ -1,10 +1,11 @@
-import { Framebuffer } from "../../Framebuffer";
-import { Texture } from "../../texture/Texture";
-import { TextureUtils } from "../../texture/TextureUtils";
-import { Vector3f } from "../../math/Vector3f";
-import { Matrix4f } from "../../math/Matrix4f";
+import { Framebuffer } from '../../Framebuffer';
+import { Matrix4f } from '../../math/Matrix4f';
+import { Vector3f } from '../../math/Vector3f';
+import { AbstractScene } from '../../scenes/AbstractScene';
+import { Texture } from '../../texture/Texture';
+import { TextureUtils } from '../../texture/TextureUtils';
 
-export class ParticleTorusScene {
+export class ParticleTorusScene extends AbstractScene {
 
     private blurred: Texture;
     private particleTexture2: Texture;
@@ -19,8 +20,8 @@ export class ParticleTorusScene {
             TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
             ),
-            TextureUtils.generateProceduralParticleTexture().then(texture => this.particleTexture2 = texture),
-            TextureUtils.generateProceduralNoise().then(texture => this.noise = texture)
+            TextureUtils.generateProceduralParticleTexture().then((texture) => this.particleTexture2 = texture),
+            TextureUtils.generateProceduralNoise().then((texture) => this.noise = texture)
         ]);
     }
 
@@ -57,43 +58,41 @@ export class ParticleTorusScene {
 
         framebuffer.noise(time, this.noise);
     }
-    
-    drawParticleTorus(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, noClear: boolean = false) {
-        if (!noClear) framebuffer.clearColorBuffer(72 | 56 << 8 | 48 << 16 | 255 << 24);
+
+    public drawParticleTorus(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, noClear: boolean = false) {
+        if (!noClear) { framebuffer.clearColorBuffer(72 | 56 << 8 | 48 << 16 | 255 << 24); }
         framebuffer.clearDepthBuffer();
 
-        let points: Array<Vector3f> = new Array<Vector3f>();
+        const points: Array<Vector3f> = new Array<Vector3f>();
         const num = 300;
         for (let i = 0; i < num; i++) {
-            let radi = 3.4 * (2 + Math.sin((i * Math.PI / (num / 2)) * 2 + elapsedTime * 0.0004));//*sinf(Time*0.0008f)));
-            let move = elapsedTime * 0.0015;
-            let x = radi * Math.cos(((move + i) * Math.PI / (num / 2)) * 7);
-            let y = radi * Math.cos(((move + i) * Math.PI / (num / 2)) * 4);
-            let z = radi * Math.sin(((move + i) * Math.PI / (num / 2)) * 7);
+            const radi = 3.4 * (2 + Math.sin((i * Math.PI / (num / 2)) * 2 + elapsedTime * 0.0004)); // *sinf(Time*0.0008f)));
+            const move = elapsedTime * 0.0015;
+            const x = radi * Math.cos(((move + i) * Math.PI / (num / 2)) * 7);
+            const y = radi * Math.cos(((move + i) * Math.PI / (num / 2)) * 4);
+            const z = radi * Math.sin(((move + i) * Math.PI / (num / 2)) * 7);
 
             points.push(new Vector3f(x, y, z));
         }
 
-
-        let modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -20)
+        const modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -20)
             .multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.0003)
                 .multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.0003)));
 
-        let points2: Array<Vector3f> = new Array<Vector3f>(points.length);
-        points.forEach(element => {
+        const points2: Array<Vector3f> = new Array<Vector3f>(points.length);
+        points.forEach((element) => {
 
-
-            let transformed = framebuffer.project(modelViewMartrix.multiply(element));
+            const transformed = framebuffer.project(modelViewMartrix.multiply(element));
 
             points2.push(transformed);
         });
 
-        points2.sort(function (a, b) {
+        points2.sort(function(a, b) {
             return a.z - b.z;
         });
 
-        points2.forEach(element => {
-            let size = -(2.2 * 192 / (element.z));
+        points2.forEach((element) => {
+            const size = -(2.2 * 192 / (element.z));
             framebuffer.drawParticle(
                 Math.round(element.x) - Math.round(size / 2),
                 Math.round(element.y) - Math.round(size / 2),

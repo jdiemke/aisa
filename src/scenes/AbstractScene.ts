@@ -6,6 +6,10 @@ export abstract class AbstractScene {
         return Promise.all([]);
     }
 
+    public onInit(): void {
+        console.warn();
+    }
+
     public abstract render(framebuffer: Framebuffer): void;
 
 }
