@@ -21,25 +21,30 @@ export class Camera {
 // tslint:disable-next-line:max-classes-per-file
 export class Mode7Renderer {
 
+    private camera: Camera;
+
     constructor(private map: Texture, private grass: Texture) {
 
     }
 
-    public render(framebuffer: Framebuffer, camera: Camera): void {
+    public setCamera(camera: Camera): void {
+        this.camera = camera;
+    }
+    public render(framebuffer: Framebuffer): void {
         const horizonHeight: number = 20;
         const mapScale: number = 0.3;
 
         let framebufferPos: number = (horizonHeight + 1) * 320;
-        const viewDirection: Vector2f = camera.getViewDirection();
+        const viewDirection: Vector2f = this.camera.getViewDirection();
         const viewDirectionPerpendicular: Vector2f = viewDirection.perp();
 
         for (let y: number = 21; y < 200; y++) {
-            const distance: number = camera.screenDistance * camera.height / (y - horizonHeight);
+            const distance: number = this.camera.screenDistance * this.camera.height / (y - horizonHeight);
 
-            const step: number = distance / camera.screenDistance;
+            const step: number = distance / this.camera.screenDistance;
 
-            const scannlineCenterX: number = viewDirection.x * distance + camera.position.x;
-            const scannlineCenterY: number = viewDirection.y * distance + camera.position.y;
+            const scannlineCenterX: number = viewDirection.x * distance + this.camera.position.x;
+            const scannlineCenterY: number = viewDirection.y * distance + this.camera.position.y;
 
             const xStep: number = viewDirectionPerpendicular.x * step;
             const yStep: number = viewDirectionPerpendicular.y * step;

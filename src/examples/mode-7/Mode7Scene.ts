@@ -1,11 +1,11 @@
 import { Framebuffer } from '../../Framebuffer';
-import { Vector3f, Vector2f } from '../../math/index';
+import { Vector2f, Vector3f } from '../../math/index';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
 import { FontRenderer } from '../sine-scroller/FontRenderer';
 import { KartAnimator } from './KartAnimator';
 import { Keyboard } from './Keyboard';
-import { Mode7Renderer, Camera } from './Mode7Renderer';
+import { Camera, Mode7Renderer } from './Mode7Renderer';
 import { Sprite } from './Sprite';
 import { SpriteRenderer } from './SpriteRenderer';
 
@@ -36,67 +36,83 @@ export class Mode7Scene extends AbstractScene {
     private pipe: Texture; private metrics: Texture;
     private kartPosition: Vector3f = new Vector3f(273.79803081006753, 2565.460311653938 - 1024, 0);
     private pipePositions: Array<Vector3f>;
-    private angle: number = 270;
     private startTime: number = Date.now();
     private keyboard: Keyboard = new Keyboard();
     private marioTextures: Array<Texture> = new Array<Texture>();
     private joshiTextures: Array<Texture> = new Array<Texture>();
-    private npc: Vector3f = new Vector3f(0, 0, 0);
+    private npc: Vector2f = new Vector2f(0, 0);
     private fontRenderer: FontRenderer;
     private spriteRenderer: SpriteRenderer = new SpriteRenderer();
     private angleVel: number = 0;
     private velocity: Vector3f = new Vector3f(0, 0, 0);
     private acceleration: number = 0;
     private mode7Renderer: Mode7Renderer;
+    private camera: Camera;
 
-    private npcTrack: Array<Vector3f> = [
-        new Vector3f(920, 580, 0),
-        new Vector3f(940, 476, 0),
-        new Vector3f(922, 415, 0),
-        new Vector3f(850, 370, 0),
-        new Vector3f(766, 323, 0),
-        new Vector3f(684, 277, 0),
-        new Vector3f(615, 250, 0),
-        new Vector3f(524, 209, 0),
-        new Vector3f(449, 165, 0),
-        new Vector3f(371, 123, 0),
-        new Vector3f(295, 91, 0),
-        new Vector3f(229, 70, 0),
-        new Vector3f(165, 68, 0),
-        new Vector3f(119, 89, 0),
-        new Vector3f(85, 133, 0),
-        new Vector3f(64, 190, 0),
-        new Vector3f(56, 247, 0),
-        new Vector3f(72, 293, 0),
-        new Vector3f(87, 348, 0),
-        new Vector3f(81, 408, 0),
-        new Vector3f(71, 477, 0),
-        new Vector3f(64, 572, 0),
-        new Vector3f(67, 637, 0),
-        new Vector3f(78, 718, 0),
-        new Vector3f(134, 750, 0),
-        new Vector3f(226, 727, 0),
-        new Vector3f(286, 669, 0),
-        new Vector3f(344, 629, 0),
-        new Vector3f(447, 586, 0),
-        new Vector3f(535, 588, 0),
-        new Vector3f(583, 645, 0),
-        new Vector3f(612, 712, 0),
-        new Vector3f(641, 786, 0),
-        new Vector3f(681, 849, 0),
-        new Vector3f(744, 895, 0),
-        new Vector3f(820, 912, 0),
-        new Vector3f(880, 915, 0),
-        new Vector3f(930, 880, 0),
-        new Vector3f(955, 804, 0),
-        new Vector3f(944, 717, 0),
-        new Vector3f(921, 643, 0)
+    private npcTrack: Array<Vector2f> = [
+        new Vector2f(920, 580),
+        new Vector2f(940, 476),
+        new Vector2f(922, 415),
+        new Vector2f(850, 370),
+        new Vector2f(766, 323),
+        new Vector2f(684, 277),
+        new Vector2f(615, 250),
+        new Vector2f(524, 209),
+        new Vector2f(449, 165),
+        new Vector2f(371, 123),
+        new Vector2f(295, 91),
+        new Vector2f(229, 70),
+        new Vector2f(165, 68),
+        new Vector2f(119, 89),
+        new Vector2f(85, 133),
+        new Vector2f(64, 190),
+        new Vector2f(56, 247),
+        new Vector2f(72, 293),
+        new Vector2f(87, 348),
+        new Vector2f(81, 408),
+        new Vector2f(71, 477),
+        new Vector2f(64, 572),
+        new Vector2f(67, 637),
+        new Vector2f(78, 718),
+        new Vector2f(134, 750),
+        new Vector2f(226, 727),
+        new Vector2f(286, 669),
+        new Vector2f(344, 629),
+        new Vector2f(447, 586),
+        new Vector2f(535, 588),
+        new Vector2f(583, 645),
+        new Vector2f(612, 712),
+        new Vector2f(641, 786),
+        new Vector2f(681, 849),
+        new Vector2f(744, 895),
+        new Vector2f(820, 912),
+        new Vector2f(880, 915),
+        new Vector2f(930, 880),
+        new Vector2f(955, 804),
+        new Vector2f(944, 717),
+        new Vector2f(921, 643)
     ];
 
     private animator: KartAnimator = new KartAnimator();
 
     public onInit(): void {
+        const screenDistance: number = 160;
+        const cameraHeight: number = 80;
+        const cameraDistance: number = 153.4;
+
+        this.camera = new Camera();
+
+        this.camera.height = cameraHeight;
+        this.camera.screenDistance = screenDistance;
+        this.camera.angle = 270;
+
+        this.camera.position = new Vector2f(
+            this.kartPosition.x - Math.cos(2 * Math.PI / 360 * this.camera.angle) * cameraDistance,
+            this.kartPosition.y - Math.sin(2 * Math.PI / 360 * this.camera.angle) * cameraDistance
+        );
+
         this.mode7Renderer = new Mode7Renderer(this.map, this.grass);
+        this.mode7Renderer.setCamera(this.camera);
     }
 
     public init(framebuffer: Framebuffer): Promise<any> {
@@ -286,29 +302,9 @@ export class Mode7Scene extends AbstractScene {
         const horizonHeight: number = 20;
         const cameraDistance: number = 153.4;
 
-        const camera: Camera = new Camera();
-        camera.position = new Vector2f(
-            this.kartPosition.x - Math.cos(2 * Math.PI / 360 * this.angle) * cameraDistance,
-            this.kartPosition.y - Math.sin(2 * Math.PI / 360 * this.angle) * cameraDistance
-        );
-        camera.height = cameraHeight;
-        camera.screenDistance = screenDistance;
-        camera.angle = this.angle;
-        this.mode7Renderer.render(framebuffer, camera);
+        this.mode7Renderer.render(framebuffer);
 
-        // TODO: optimize
-        for (let x: number = 0; x < 320; x++) {
-            for (let y: number = 0; y < this.back.height; y++) {
-                framebuffer.drawPixel(
-                    x, y,
-                    this.back.getPixel2(
-                        this.back,
-                        ((Math.floor(x + this.angle * 2) % this.back.width) + this.back.width) % this.back.width, y)
-                );
-            }
-        }
-
-        framebuffer.drawTexture(320 - this.metrics.width - 16, 2, this.metrics, 1.0);
+        this.drawBackground(framebuffer);
 
         const yPos: number = cameraHeight * screenDistance / cameraDistance;
         const marioHeight: number = 32;
@@ -335,48 +331,53 @@ export class Mode7Scene extends AbstractScene {
             Math.round(marioHeight * projectionHeightScale),
             Math.round(marioHeight * projectionHeightScale), marioTex, 1.0, cameraDistance));
 
-        const camPos: Vector3f = new Vector3f(
-            this.kartPosition.x - Math.cos(2 * Math.PI / 360 * this.angle) * cameraDistance,
-            this.kartPosition.y - Math.sin(2 * Math.PI / 360 * this.angle) * cameraDistance, 0);
+        const camPos: Vector2f = this.camera.position;
 
-        const camDir: Vector3f = new Vector3f(
-            Math.cos(2 * Math.PI / 360 * this.angle),
-            Math.sin(2 * Math.PI / 360 * this.angle), 0);
+        const camDir: Vector2f = new Vector2f(
+            Math.cos(2 * Math.PI / 360 * this.camera.angle),
+            Math.sin(2 * Math.PI / 360 * this.camera.angle));
 
-        const camDirX: Vector3f = new Vector3f(
-            -Math.sin(2 * Math.PI / 360 * this.angle),
-            Math.cos(2 * Math.PI / 360 * this.angle), 0);
+        const camDirX: Vector2f = new Vector2f(
+            -Math.sin(2 * Math.PI / 360 * this.camera.angle),
+            Math.cos(2 * Math.PI / 360 * this.camera.angle));
 
         const tim: number = Date.now() - this.startTime;
-        this.npc = this.animator.getPos(tim);
-        this.npc = this.npc.mul(1 / 0.3); // scaling is important to fit cam pos
-        const npcDir: Vector3f = this.animator.getPos(tim + 10).mul(1 / 0.3).sub(this.npc).normalize();
 
-        const objVec: Vector3f = this.npc.sub(camPos);
-        let spIndex: number = -Math.atan2(objVec.y, objVec.x) + Math.atan2(npcDir.y, npcDir.x);
-        spIndex = (((spIndex / (Math.PI * 2) * 360) % 360) + 360) % 360;
+        for (let i: number = 0; i < 10; i++) {
+            const scale: number = 2200;
+            this.npc = this.animator.getPos(tim + i * scale);
+            this.npc = this.npc.mul(1 / 0.3); // scaling is important to fit cam pos
+            const npcDir: Vector2f =
+                this.animator.getPos(tim + 10 + i * scale).mul(1 / 0.3).sub(this.npc).normalize();
 
-        this.npc.z = this.npc.sub(camPos).dot(camDir);
-        if (this.npc.z > 0) {
-            const pipeDistX: number = this.npc.sub(camPos).dot(camDirX);
+            const objVec: Vector2f = this.npc.sub(camPos);
+            let spIndex: number = -Math.atan2(objVec.y, objVec.x) + Math.atan2(npcDir.y, npcDir.x);
+            spIndex = (((spIndex / (Math.PI * 2) * 360) % 360) + 360) % 360;
 
-            const tex: Texture =
-                this.joshiTextures[Math.floor(spIndex / 360 * this.joshiTextures.length) % this.joshiTextures.length];
-            const pipeH: number = tex.height;
-            const pipeW: number = tex.width;
-            const projectionHeightScale2: number = screenDistance / this.npc.z;
-            const yPos2: number = cameraHeight * projectionHeightScale2;
+            const dist: number = this.npc.sub(camPos).dot(camDir);
+            if (dist > 0) {
+                const pipeDistX: number = this.npc.sub(camPos).dot(camDirX);
 
-            this.spriteRenderer.addSprite(new Sprite(
-                Math.round(320 / 2 + pipeDistX * projectionHeightScale2 - (pipeW * projectionHeightScale2) / 2),
-                Math.round(horizonHeight + yPos2) - Math.round(pipeH * projectionHeightScale2),
-                Math.round(pipeW * projectionHeightScale2),
-                Math.round(pipeH * projectionHeightScale2), tex, 1.0, this.npc.z));
+                const tex: Texture =
+                    this.joshiTextures[
+                    Math.floor(spIndex / 360 * this.joshiTextures.length) % this.joshiTextures.length];
+                const pipeH: number = tex.height;
+                const pipeW: number = tex.width;
+                const projectionHeightScale2: number = screenDistance / dist;
+                const yPos2: number = cameraHeight * projectionHeightScale2;
+
+                this.spriteRenderer.addSprite(new Sprite(
+                    Math.round(320 / 2 + pipeDistX * projectionHeightScale2 - (pipeW * projectionHeightScale2) / 2),
+                    Math.round(horizonHeight + yPos2) - Math.round(pipeH * projectionHeightScale2),
+                    Math.round(pipeW * projectionHeightScale2),
+                    Math.round(pipeH * projectionHeightScale2), tex, 1.0, dist));
+            }
         }
 
         // Render all pipes
         // TODO: move duplicate code into method
         // make entity class that can be rendered in mode 7 with height attribute
+        /*
         for (let i: number = 0; i < 100; i++) {
             const pipe: Vector3f = this.pipePositions[i].mul(1 / 0.3);
             const pipeDist: number = pipe.sub(camPos).dot(camDir);
@@ -402,16 +403,42 @@ export class Mode7Scene extends AbstractScene {
                 );
             }
         }
-
+*/
         this.spriteRenderer.render(framebuffer);
+        this.drawHeadUpDisplay(framebuffer);
+        this.drawLapCounter(framebuffer);
+    }
+
+    private drawBackground(framebuffer: Framebuffer): void {
+        // TODO: optimize
+        for (let x: number = 0; x < 320; x++) {
+            for (let y: number = 0; y < this.back.height; y++) {
+                framebuffer.drawPixel(
+                    x, y,
+                    this.back.getPixel2(
+                        this.back,
+                        ((Math.floor(x + this.camera.angle * 2) % this.back.width) + this.back.width)
+                        % this.back.width, y)
+                );
+            }
+        }
+    }
+
+    private drawHeadUpDisplay(framebuffer: Framebuffer): void {
+        framebuffer.drawTexture(320 - this.metrics.width - 16, 2, this.metrics, 1.0);
+
         const gameTime: number = Date.now() - this.startTime;
         const small: number = Math.floor(gameTime / 10) % 100;
         const gameTimeSeconds: number = Math.floor(gameTime / 1000);
         const gameTimeMinutes: number = Math.floor(gameTime / 60000);
         const seconds: number = gameTimeSeconds % 60;
+
         this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1, 4, this.pad(gameTimeMinutes, 2));
         this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1 + 8 * 3, 4, this.pad(seconds, 2));
         this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1 + 8 * 6, 4, this.pad(small, 2));
+    }
+
+    private drawLapCounter(framebuffer: Framebuffer): void {
         framebuffer.drawTexture(80 +
             Math.floor(Math.sin(Date.now() * 0.001) * 32),
             Math.floor(Math.sin(Date.now() * 0.001) * 32),
@@ -436,9 +463,9 @@ export class Mode7Scene extends AbstractScene {
             this.angleVel = 0;
         }
 
-        this.angle = this.angle + this.angleVel;
-        this.velocity.x += Math.cos(2 * Math.PI / 360 * this.angle) * this.acceleration;
-        this.velocity.y += Math.sin(2 * Math.PI / 360 * this.angle) * this.acceleration;
+        this.camera.angle = this.camera.angle + this.angleVel;
+        this.velocity.x += Math.cos(2 * Math.PI / 360 * this.camera.angle) * this.acceleration;
+        this.velocity.y += Math.sin(2 * Math.PI / 360 * this.camera.angle) * this.acceleration;
 
         if (this.velocity.length() > 7.4) {
             this.velocity = this.velocity.mul(1 / this.velocity.length() * 7.4);
@@ -451,6 +478,12 @@ export class Mode7Scene extends AbstractScene {
         if (this.velocity.length() < 0.5) {
             this.velocity = this.velocity.mul(0);
         }
+
+        const cameraDistance: number = 153.4;
+        this.camera.position = new Vector2f(
+            this.kartPosition.x - Math.cos(2 * Math.PI / 360 * this.camera.angle) * cameraDistance,
+            this.kartPosition.y - Math.sin(2 * Math.PI / 360 * this.camera.angle) * cameraDistance
+        );
     }
 
 }
