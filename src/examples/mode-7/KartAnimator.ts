@@ -1,11 +1,9 @@
-import { BasicCamera } from '../../camera';
-import { Matrix4f } from '../../math/Matrix4f';
-import { Vector3f } from '../../math/Vector3f';
+import { Vector2f } from '../../math/Vector2f';
 
 export class KartAnimator {
 
-    public pos: Vector3f;
-    private keyFrames: Array<Vector3f>;
+    public pos: Vector2f;
+    private keyFrames: Array<Vector2f>;
 
     // TODO:
     // - should we really loop or better restart??
@@ -13,12 +11,12 @@ export class KartAnimator {
     // - maybe quaternions and slerp for rotation
     // temp solution: no linear for
 
-    public setKeyFrames(keyFrames: Array<Vector3f>): void {
+    public setKeyFrames(keyFrames: Array<Vector2f>): void {
         this.keyFrames = keyFrames;
     }
 
-    public getPos(elapsedTime: number): Vector3f {
-        let keyFrameDuration = 700;
+    public getPos(elapsedTime: number): Vector2f {
+        const keyFrameDuration: number = 700;
 
         let first = ((elapsedTime / keyFrameDuration) | 0) % this.keyFrames.length;
         let zero = ((first - 1) + this.keyFrames.length) % this.keyFrames.length;
@@ -26,10 +24,9 @@ export class KartAnimator {
         let third = (first + 2) % this.keyFrames.length;
         let fraction = ((elapsedTime / keyFrameDuration) % this.keyFrames.length) - first;
 
-        let position = new Vector3f(
+        let position = new Vector2f(
             CubicInterpolate(this.keyFrames[zero].x, this.keyFrames[first].x, this.keyFrames[second].x, this.keyFrames[third].x, fraction),
-            CubicInterpolate(this.keyFrames[zero].y, this.keyFrames[first].y, this.keyFrames[second].y, this.keyFrames[third].y, fraction),
-            CubicInterpolate(this.keyFrames[zero].z, this.keyFrames[first].z, this.keyFrames[second].z, this.keyFrames[third].z, fraction)
+            CubicInterpolate(this.keyFrames[zero].y, this.keyFrames[first].y, this.keyFrames[second].y, this.keyFrames[third].y, fraction)
         );
 
         return position;
