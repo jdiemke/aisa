@@ -12,8 +12,6 @@ import { SpriteRenderer } from './SpriteRenderer';
 /**
  * TODO:
  * - optimize rendering scene
- * - draw sorted sprites
- * - add enemies following splines
  * - add collision
  * - add control keyboard and touch
  *
@@ -332,14 +330,8 @@ export class Mode7Scene extends AbstractScene {
             Math.round(marioHeight * projectionHeightScale), marioTex, 1.0, cameraDistance));
 
         const camPos: Vector2f = this.camera.position;
-
-        const camDir: Vector2f = new Vector2f(
-            Math.cos(2 * Math.PI / 360 * this.camera.angle),
-            Math.sin(2 * Math.PI / 360 * this.camera.angle));
-
-        const camDirX: Vector2f = new Vector2f(
-            -Math.sin(2 * Math.PI / 360 * this.camera.angle),
-            Math.cos(2 * Math.PI / 360 * this.camera.angle));
+        const camDir: Vector2f = this.camera.getViewDirection();
+        const camDirX: Vector2f = camDir.perp();
 
         const tim: number = Date.now() - this.startTime;
 
