@@ -12,8 +12,6 @@ import { SpriteRenderer } from './SpriteRenderer';
 /**
  * TODO:
  * - optimize rendering scene
- * - draw sorted sprites
- * - add enemies following splines
  * - add collision
  * - add control keyboard and touch
  *
@@ -35,7 +33,7 @@ export class Mode7Scene extends AbstractScene {
     private grass: Texture;
     private pipe: Texture; private metrics: Texture;
     private kartPosition: Vector3f = new Vector3f(273.79803081006753, 2565.460311653938 - 1024, 0);
-    private pipePositions: Array<Vector3f>;
+    private pipePositions: Array<Vector2f>;
     private startTime: number = Date.now();
     private keyboard: Keyboard = new Keyboard();
     private marioTextures: Array<Texture> = new Array<Texture>();
@@ -117,10 +115,10 @@ export class Mode7Scene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.animator.setKeyFrames(this.npcTrack);
-        this.pipePositions = new Array<Vector3f>();
+        this.pipePositions = new Array<Vector2f>();
         for (let i: number = 0; i < 100; i++) {
             this.pipePositions.push(
-                new Vector3f(Math.random() * 1024, Math.random() * 1024, 0)
+                new Vector2f(Math.random() * 1024, Math.random() * 1024)
             );
         }
 
@@ -332,14 +330,8 @@ export class Mode7Scene extends AbstractScene {
             Math.round(marioHeight * projectionHeightScale), marioTex, 1.0, cameraDistance));
 
         const camPos: Vector2f = this.camera.position;
-
-        const camDir: Vector2f = new Vector2f(
-            Math.cos(2 * Math.PI / 360 * this.camera.angle),
-            Math.sin(2 * Math.PI / 360 * this.camera.angle));
-
-        const camDirX: Vector2f = new Vector2f(
-            -Math.sin(2 * Math.PI / 360 * this.camera.angle),
-            Math.cos(2 * Math.PI / 360 * this.camera.angle));
+        const camDir: Vector2f = this.camera.getViewDirection();
+        const camDirX: Vector2f = camDir.perp();
 
         const tim: number = Date.now() - this.startTime;
 
@@ -377,9 +369,8 @@ export class Mode7Scene extends AbstractScene {
         // Render all pipes
         // TODO: move duplicate code into method
         // make entity class that can be rendered in mode 7 with height attribute
-        /*
         for (let i: number = 0; i < 100; i++) {
-            const pipe: Vector3f = this.pipePositions[i].mul(1 / 0.3);
+            const pipe: Vector2f = this.pipePositions[i].mul(1 / 0.3);
             const pipeDist: number = pipe.sub(camPos).dot(camDir);
 
             if (pipeDist > 0) {
@@ -403,7 +394,7 @@ export class Mode7Scene extends AbstractScene {
                 );
             }
         }
-*/
+
         this.spriteRenderer.render(framebuffer);
         this.drawHeadUpDisplay(framebuffer);
         this.drawLapCounter(framebuffer);
