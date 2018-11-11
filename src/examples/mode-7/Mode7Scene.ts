@@ -3,8 +3,11 @@ import { Vector2f, Vector3f } from '../../math/index';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
 import { FontRenderer } from '../sine-scroller/FontRenderer';
+import { NpcEntity } from './entities/NpcEntity';
+import { Pipe } from './entities/Pipe';
 import { KartAnimator } from './KartAnimator';
 import { Keyboard } from './Keyboard';
+import { Mode7Entity } from './Mode7Entity';
 import { Camera, Mode7Renderer } from './Mode7Renderer';
 import { Sprite } from './Sprite';
 import { SpriteRenderer } from './SpriteRenderer';
@@ -33,7 +36,7 @@ export class Mode7Scene extends AbstractScene {
     private grass: Texture;
     private pipe: Texture; private metrics: Texture;
     private kartPosition: Vector3f = new Vector3f(273.79803081006753, 2565.460311653938 - 1024, 0);
-    private pipePositions: Array<Vector2f>;
+    private pipePositions: Array<Pipe>;
     private startTime: number = Date.now();
     private keyboard: Keyboard = new Keyboard();
     private marioTextures: Array<Texture> = new Array<Texture>();
@@ -111,16 +114,22 @@ export class Mode7Scene extends AbstractScene {
 
         this.mode7Renderer = new Mode7Renderer(this.map, this.grass);
         this.mode7Renderer.setCamera(this.camera);
+
+        this.pipePositions = new Array<Pipe>();
+        for (let i: number = 0; i < 100; i++) {
+            this.pipePositions.push(
+                new Pipe(
+                    new Vector2f(
+                        Math.random() * 1024,
+                        Math.random() * 1024
+                    ),
+                    this.pipe)
+            );
+        }
     }
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.animator.setKeyFrames(this.npcTrack);
-        this.pipePositions = new Array<Vector2f>();
-        for (let i: number = 0; i < 100; i++) {
-            this.pipePositions.push(
-                new Vector2f(Math.random() * 1024, Math.random() * 1024)
-            );
-        }
 
         this.fontRenderer = new FontRenderer(
             framebuffer, 8, 14, '0123456789',
@@ -329,75 +338,68 @@ export class Mode7Scene extends AbstractScene {
             Math.round(marioHeight * projectionHeightScale),
             Math.round(marioHeight * projectionHeightScale), marioTex, 1.0, cameraDistance));
 
-        const camPos: Vector2f = this.camera.position;
-        const camDir: Vector2f = this.camera.getViewDirection();
-        const camDirX: Vector2f = camDir.perp();
-
-        const tim: number = Date.now() - this.startTime;
-
-        for (let i: number = 0; i < 10; i++) {
-            const scale: number = 2200;
-            this.npc = this.animator.getPos(tim + i * scale);
-            this.npc = this.npc.mul(1 / 0.3); // scaling is important to fit cam pos
-            const npcDir: Vector2f =
-                this.animator.getPos(tim + 10 + i * scale).mul(1 / 0.3).sub(this.npc).normalize();
-
-            const objVec: Vector2f = this.npc.sub(camPos);
-            let spIndex: number = -Math.atan2(objVec.y, objVec.x) + Math.atan2(npcDir.y, npcDir.x);
-            spIndex = (((spIndex / (Math.PI * 2) * 360) % 360) + 360) % 360;
-
-            const dist: number = this.npc.sub(camPos).dot(camDir);
-            if (dist > 0) {
-                const pipeDistX: number = this.npc.sub(camPos).dot(camDirX);
-
-                const tex: Texture =
-                    this.joshiTextures[
-                    Math.floor(spIndex / 360 * this.joshiTextures.length) % this.joshiTextures.length];
-                const pipeH: number = tex.height;
-                const pipeW: number = tex.width;
-                const projectionHeightScale2: number = screenDistance / dist;
-                const yPos2: number = cameraHeight * projectionHeightScale2;
-
-                this.spriteRenderer.addSprite(new Sprite(
-                    Math.round(320 / 2 + pipeDistX * projectionHeightScale2 - (pipeW * projectionHeightScale2) / 2),
-                    Math.round(horizonHeight + yPos2) - Math.round(pipeH * projectionHeightScale2),
-                    Math.round(pipeW * projectionHeightScale2),
-                    Math.round(pipeH * projectionHeightScale2), tex, 1.0, dist));
-            }
-        }
-
-        // Render all pipes
-        // TODO: move duplicate code into method
-        // make entity class that can be rendered in mode 7 with height attribute
-        for (let i: number = 0; i < 100; i++) {
-            const pipe: Vector2f = this.pipePositions[i].mul(1 / 0.3);
-            const pipeDist: number = pipe.sub(camPos).dot(camDir);
-
-            if (pipeDist > 0) {
-                const pipeDistX: number = pipe.sub(camPos).dot(camDirX);
-
-                const projectionScale: number = screenDistance / pipeDist;
-                if (Math.round(projectionScale * this.pipe.height) <= 3) { // dont renderi f sprite is to small
-                    continue;
-                }
-                const projectedY: number = cameraHeight * projectionScale;
-
-                this.spriteRenderer.addSprite(
-                    new Sprite(
-                        Math.round(320 / 2 + pipeDistX * projectionScale - (this.pipe.width * projectionScale) / 2),
-                        Math.round(horizonHeight + projectedY) - Math.round(this.pipe.height * projectionScale),
-                        Math.round(this.pipe.width * projectionScale),
-                        Math.round(this.pipe.height * projectionScale),
-                        this.pipe,
-                        1.0,
-                        pipeDist)
-                );
-            }
-        }
+        this.drawMode7Entities(this.getNPCs());
+        this.drawMode7Entities(this.pipePositions);
 
         this.spriteRenderer.render(framebuffer);
         this.drawHeadUpDisplay(framebuffer);
         this.drawLapCounter(framebuffer);
+    }
+
+    private getNPCs(): Array<Mode7Entity> {
+        const tim: number = Date.now() - this.startTime;
+        const npcs: Array<NpcEntity> = new Array<NpcEntity>();
+
+        for (let i: number = 0; i < 10; i++) {
+            const scale: number = 2200;
+            const pos: Vector2f = this.animator.getPos(tim + i * scale);
+            const npcDir: Vector2f =
+                this.animator.getPos(tim + 10 + i * scale).mul(1 / 0.3).sub(pos.mul(1 / 0.3)).normalize();
+
+            const entity: NpcEntity = new NpcEntity(pos, this.joshiTextures);
+            entity.setDirection(npcDir);
+            npcs.push(entity);
+        }
+        return npcs;
+    }
+
+    private drawMode7Entities(entities: Array<Mode7Entity>): void {
+        const horizonHeight: number = 20;
+        const cameraDirection: Vector2f = this.camera.getViewDirection();
+        const cameraDirectionPerp: Vector2f = cameraDirection.perp();
+        const MINIMUM_SPRITE_HEIGHT: number = 3;
+
+        for (let i: number = 0; i < entities.length; i++) {
+            const entity: Vector2f = entities[i].position.mul(1 / 0.3);
+
+            const distance: number = entity.sub(this.camera.position).dot(cameraDirection);
+
+            if (distance > 0) {
+                const projectionScale: number = this.camera.screenDistance / distance;
+                const texture: Texture = entities[i].getTexture(this.camera);
+
+                if (Math.round(projectionScale * texture.height) <= MINIMUM_SPRITE_HEIGHT) {
+                    continue;
+                }
+
+                const cameraDirectionPerpDistance: number = entity.sub(this.camera.position).dot(cameraDirectionPerp);
+                const projectedY: number = this.camera.height * projectionScale;
+
+                this.spriteRenderer.addSprite(
+                    new Sprite(
+                        Math.round(
+                            320 / 2 + cameraDirectionPerpDistance * projectionScale -
+                            (texture.width * projectionScale) / 2
+                        ),
+                        Math.round(horizonHeight + projectedY) - Math.round(texture.height * projectionScale),
+                        Math.round(texture.width * projectionScale),
+                        Math.round(texture.height * projectionScale),
+                        texture,
+                        1.0,
+                        distance)
+                );
+            }
+        }
     }
 
     private drawBackground(framebuffer: Framebuffer): void {
