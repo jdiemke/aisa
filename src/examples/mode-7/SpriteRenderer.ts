@@ -14,7 +14,9 @@ export class SpriteRenderer {
     }
 
     public render(framebuffer: Framebuffer): void {
-        this.sprites.sort((a: Sprite, b: Sprite) => b.z - a.z);
+        this.sprites.sort((a: Sprite, b: Sprite) => {
+            return b.priority === a.priority ? b.z - a.z : b.priority - a.priority;
+        });
 
         this.sprites.forEach((sp: Sprite) => {
             framebuffer.scaleClipBlitter.drawScaledTextureClip(
@@ -24,7 +26,6 @@ export class SpriteRenderer {
                 sp.height, sp.texture, sp.alphaBlend);
         });
         this.sprites.length = 0;
-
     }
 
 }

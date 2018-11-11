@@ -1,3 +1,4 @@
+import { Color } from '../../core/Color';
 import { Framebuffer } from '../../Framebuffer';
 import { Vector2f, Vector3f } from '../../math/index';
 import { AbstractScene } from '../../scenes/AbstractScene';
@@ -33,6 +34,9 @@ import { SpriteRenderer } from './SpriteRenderer';
 export class Mode7Scene extends AbstractScene {
 
     private map: Texture;
+    private mapHud: Texture;
+    private pos: Texture;
+    private posJoshi: Texture;
     private lap2Texture: Texture;
     private shadowTexture: Texture;
     private back: Texture;
@@ -143,6 +147,9 @@ export class Mode7Scene extends AbstractScene {
             this.fontRenderer.init(),
             TextureUtils.load(require('./assets/map.png'), false).then(
                 (texture: Texture) => this.map = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/mapHUD.png'), true).then(
+                (texture: Texture) => this.mapHud = texture
             ),
             TextureUtils.load(require('./assets/background.png'), false).then(
                 (texture: Texture) => this.back = texture
@@ -294,6 +301,12 @@ export class Mode7Scene extends AbstractScene {
             TextureUtils.load(require('./assets/sprites/joshi22.png'), true).then(
                 (texture: Texture) => this.joshiTextures[21] = texture
             ),
+            TextureUtils.load(require('./assets/sprites/pos.png'), true).then(
+                (texture: Texture) => this.pos = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/posJoshi.png'), true).then(
+                (texture: Texture) => this.posJoshi = texture
+            ),
         ]);
     }
 
@@ -312,24 +325,46 @@ export class Mode7Scene extends AbstractScene {
         }
 
         this.drawMode7Entities(
-            [new Pipe(new Vector2f(this.kartPosition.x * 0.3, this.kartPosition.y * 0.3), this.shadowTexture, 0.5)]
+            [new Pipe(new Vector2f(this.kartPosition.x * 0.3, this.kartPosition.y * 0.3), this.shadowTexture, 1.0, 1)]
         );
+
+        const mario: Mode7Entity =
+            new Pipe(new Vector2f(this.kartPosition.x * 0.3, this.kartPosition.y * 0.3), marioTex);
+        mario.height = Math.abs(Math.sin((Date.now() - this.startTime) * 0.003) * 30);
 
         this.drawMode7Entities(
-            [new Pipe(new Vector2f(this.kartPosition.x * 0.3, this.kartPosition.y * 0.3), marioTex)]
+            [mario]
         );
 
-        this.drawMode7Entities(this.getNPCs());
+        const npcs: Array<Mode7Entity> = this.getNPCs();
+        this.drawMode7Entities(npcs);
         this.drawMode7Entities(this.pipePositions);
 
         this.spriteRenderer.render(framebuffer);
         this.drawHeadUpDisplay(framebuffer);
         this.drawLapCounter(framebuffer);
+        this.drawMinimap(framebuffer, npcs);
+    }
+
+    private drawMinimap(framebuffer: Framebuffer, npcs: Array<Mode7Entity>): void {
+        framebuffer.drawTexture(2, 100 - 2, this.mapHud, 0.5);
+
+        npcs.forEach((npc: Mode7Entity) => {
+            const x: number = Math.round(npc.position.x / 1024 * 100 - 8 + 2);
+            const y: number = Math.round(npc.position.y / 1024 * 100 - 8 + 100 - 2);
+
+            framebuffer.drawTexture(x, y, this.posJoshi, 0.5);
+        });
+
+        const x: number = Math.round(this.kartPosition.x / 1024 * 100 * 0.3 - 8 + 2);
+        const y: number = Math.round(this.kartPosition.y / 1024 * 100 * 0.3 - 8 + 100 - 2);
+
+        framebuffer.drawTexture(x, y, this.pos, 1.0);
     }
 
     private getNPCs(): Array<Mode7Entity> {
         const tim: number = Date.now() - this.startTime;
-        const npcs: Array<NpcEntity> = new Array<NpcEntity>();
+        const npcs: Array<Mode7Entity> = new Array<NpcEntity>();
 
         for (let i: number = 0; i < 10; i++) {
             const scale: number = 2200;
@@ -339,7 +374,11 @@ export class Mode7Scene extends AbstractScene {
 
             const entity: NpcEntity = new NpcEntity(pos, this.joshiTextures);
             entity.setDirection(npcDir);
+            entity.height = Math.abs(Math.sin((Date.now() - this.startTime) * 0.003) * 30);
             npcs.push(entity);
+            npcs.push(
+                new Pipe(pos, this.shadowTexture, 1.0, 1)
+            );
         }
         return npcs;
     }
@@ -348,7 +387,7 @@ export class Mode7Scene extends AbstractScene {
         const horizonHeight: number = 20;
         const cameraDirection: Vector2f = this.camera.getViewDirection();
         const cameraDirectionPerp: Vector2f = cameraDirection.perp();
-        const MINIMUM_SPRITE_HEIGHT: number = 3;
+        const MINIMUM_SPRITE_HEIGHT: number = 0;
 
         for (let i: number = 0; i < entities.length; i++) {
             const entity: Vector2f = entities[i].position.mul(1 / 0.3);
@@ -372,12 +411,14 @@ export class Mode7Scene extends AbstractScene {
                             320 / 2 + cameraDirectionPerpDistance * projectionScale -
                             (texture.width * projectionScale) / 2
                         ),
-                        Math.round(horizonHeight + projectedY) - Math.round(texture.height * projectionScale),
+                        Math.round(horizonHeight + projectedY) -
+                        Math.round((texture.height + entities[i].height) * projectionScale),
                         Math.round(texture.width * projectionScale),
                         Math.round(texture.height * projectionScale),
                         texture,
                         entities[i].getAlpha(),
-                        distance)
+                        distance,
+                        entities[i].getPriority())
                 );
             }
         }
@@ -446,8 +487,8 @@ export class Mode7Scene extends AbstractScene {
         }
 
         this.kartPosition = this.kartPosition.add(this.velocity);
-        this.velocity = this.velocity.mul(0.95);
-        this.acceleration = this.acceleration * 0.99;
+        this.velocity = this.velocity.mul(0.91);
+        this.acceleration = this.acceleration * 0.89;
 
         if (this.velocity.length() < 0.5) {
             this.velocity = this.velocity.mul(0);
