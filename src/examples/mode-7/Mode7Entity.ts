@@ -1,5 +1,6 @@
 import { Vector2f } from '../../math/index';
 import { Texture } from '../../texture/index';
+import { Camera } from './Mode7Renderer';
 
 export abstract class Mode7Entity {
 
@@ -11,6 +12,6 @@ export abstract class Mode7Entity {
         this.height = height;
     }
 
-    public abstract getTexture(): Texture;
+    public abstract getTexture(camera: Camera): Texture;
 
 }

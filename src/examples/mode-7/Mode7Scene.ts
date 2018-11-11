@@ -3,6 +3,7 @@ import { Vector2f, Vector3f } from '../../math/index';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
 import { FontRenderer } from '../sine-scroller/FontRenderer';
+import { NpcEntity } from './entities/NpcEntity';
 import { Pipe } from './entities/Pipe';
 import { KartAnimator } from './KartAnimator';
 import { Keyboard } from './Keyboard';
@@ -123,7 +124,7 @@ export class Mode7Scene extends AbstractScene {
                         Math.random() * 1024
                     ),
                     this.pipe)
-                );
+            );
         }
     }
 
@@ -337,49 +338,29 @@ export class Mode7Scene extends AbstractScene {
             Math.round(marioHeight * projectionHeightScale),
             Math.round(marioHeight * projectionHeightScale), marioTex, 1.0, cameraDistance));
 
-        const camPos: Vector2f = this.camera.position;
-        const cameraDirection: Vector2f = this.camera.getViewDirection();
-        const cameraDirectionPerp: Vector2f = cameraDirection.perp();
-
-        const tim: number = Date.now() - this.startTime;
-
-        for (let i: number = 0; i < 10; i++) {
-            const scale: number = 2200;
-            this.npc = this.animator.getPos(tim + i * scale);
-            this.npc = this.npc.mul(1 / 0.3); // scaling is important to fit cam pos
-            const npcDir: Vector2f =
-                this.animator.getPos(tim + 10 + i * scale).mul(1 / 0.3).sub(this.npc).normalize();
-
-            const objVec: Vector2f = this.npc.sub(camPos);
-            let spIndex: number = -Math.atan2(objVec.y, objVec.x) + Math.atan2(npcDir.y, npcDir.x);
-            spIndex = (((spIndex / (Math.PI * 2) * 360) % 360) + 360) % 360;
-
-            const distance: number = this.npc.sub(camPos).dot(cameraDirection);
-
-            if (distance > 0) {
-                const cameraDirectionPerpDistance: number = this.npc.sub(camPos).dot(cameraDirectionPerp);
-
-                const texture: Texture =
-                    this.joshiTextures[
-                    Math.floor(spIndex / 360 * this.joshiTextures.length) % this.joshiTextures.length];
-
-                const projectionScale: number = screenDistance / distance;
-                const yPos2: number = cameraHeight * projectionScale;
-
-                this.spriteRenderer.addSprite(new Sprite(
-                    Math.round(320 / 2 + cameraDirectionPerpDistance * projectionScale -
-                        (texture.width * projectionScale) / 2),
-                    Math.round(horizonHeight + yPos2) - Math.round(texture.height * projectionScale),
-                    Math.round(texture.width * projectionScale),
-                    Math.round(texture.height * projectionScale), texture, 1.0, distance));
-            }
-        }
-
+        this.drawMode7Entities(this.getNPCs());
         this.drawMode7Entities(this.pipePositions);
 
         this.spriteRenderer.render(framebuffer);
         this.drawHeadUpDisplay(framebuffer);
         this.drawLapCounter(framebuffer);
+    }
+
+    private getNPCs(): Array<Mode7Entity> {
+        const tim: number = Date.now() - this.startTime;
+        const npcs: Array<NpcEntity> = new Array<NpcEntity>();
+
+        for (let i: number = 0; i < 10; i++) {
+            const scale: number = 2200;
+            const pos: Vector2f = this.animator.getPos(tim + i * scale);
+            const npcDir: Vector2f =
+                this.animator.getPos(tim + 10 + i * scale).mul(1 / 0.3).sub(pos.mul(1 / 0.3)).normalize();
+
+            const entity: NpcEntity = new NpcEntity(pos, this.joshiTextures);
+            entity.setDirection(npcDir);
+            npcs.push(entity);
+        }
+        return npcs;
     }
 
     private drawMode7Entities(entities: Array<Mode7Entity>): void {
@@ -395,7 +376,7 @@ export class Mode7Scene extends AbstractScene {
 
             if (distance > 0) {
                 const projectionScale: number = this.camera.screenDistance / distance;
-                const texture: Texture = entities[i].getTexture();
+                const texture: Texture = entities[i].getTexture(this.camera);
 
                 if (Math.round(projectionScale * texture.height) <= MINIMUM_SPRITE_HEIGHT) {
                     continue;
