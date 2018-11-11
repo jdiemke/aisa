@@ -14,4 +14,6 @@ export abstract class Mode7Entity {
 
     public abstract getTexture(camera: Camera): Texture;
 
+    public abstract getAlpha(): number;
+
 }

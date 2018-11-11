@@ -24,6 +24,9 @@ import { SpriteRenderer } from './SpriteRenderer';
  *      - https://github.com/leonardo-ono/Java2DRacingPhysicsTest
  *      - https://www.gamedev.net/articles/programming/math-and-physics/2d-car-physics-r2443/
  *
+ * https://www.gamedev.net/forums/topic/51626-making-mario-kart-type-of-gameswhats-involved/
+ * https://www.coranac.com/tonc/text/mode7.htm
+ *
  * - maps
  *      - http://www.mariouniverse.com/maps-snes-smk/
  */
@@ -295,27 +298,10 @@ export class Mode7Scene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer): void {
-        // TODO: optimize
-        // * moving constants outside of loop
-        // * use DDA for scanlines
-        // * dont use put pixel but use linear offset and increment each pixel!
-        // https://www.gamedev.net/forums/topic/51626-making-mario-kart-type-of-gameswhats-involved/
-        // https://www.coranac.com/tonc/text/mode7.htm
-
         this.handleInput();
-
-        const screenDistance: number = 160;
-        const cameraHeight: number = 80;
-        const horizonHeight: number = 20;
-        const cameraDistance: number = 153.4;
-
         this.mode7Renderer.render(framebuffer);
-
         this.drawBackground(framebuffer);
 
-        const yPos: number = cameraHeight * screenDistance / cameraDistance;
-        const marioHeight: number = 32;
-        const projectionHeightScale: number = 1; // yPos / cameraHeight;
         let marioTex: Texture;
         if (this.keyboard.isDown(68)) {
             marioTex = this.marioTextures[1];
@@ -325,18 +311,13 @@ export class Mode7Scene extends AbstractScene {
             marioTex = this.marioTextures[0];
         }
 
-        // shadow
-        framebuffer.drawTexture(
-            Math.round(320 / 2 - (marioHeight * projectionHeightScale) / 2),
-            Math.round(horizonHeight + yPos) - Math.round(8 * projectionHeightScale),
-            this.shadowTexture,
-            0.5
+        this.drawMode7Entities(
+            [new Pipe(new Vector2f(this.kartPosition.x * 0.3, this.kartPosition.y * 0.3), this.shadowTexture, 0.5)]
         );
 
-        this.spriteRenderer.addSprite(new Sprite(Math.round(320 / 2 - (marioHeight * projectionHeightScale) / 2),
-            Math.round(horizonHeight + yPos) - Math.round(marioHeight * projectionHeightScale),
-            Math.round(marioHeight * projectionHeightScale),
-            Math.round(marioHeight * projectionHeightScale), marioTex, 1.0, cameraDistance));
+        this.drawMode7Entities(
+            [new Pipe(new Vector2f(this.kartPosition.x * 0.3, this.kartPosition.y * 0.3), marioTex)]
+        );
 
         this.drawMode7Entities(this.getNPCs());
         this.drawMode7Entities(this.pipePositions);
@@ -395,7 +376,7 @@ export class Mode7Scene extends AbstractScene {
                         Math.round(texture.width * projectionScale),
                         Math.round(texture.height * projectionScale),
                         texture,
-                        1.0,
+                        entities[i].getAlpha(),
                         distance)
                 );
             }
@@ -472,7 +453,7 @@ export class Mode7Scene extends AbstractScene {
             this.velocity = this.velocity.mul(0);
         }
 
-        const cameraDistance: number = 153.4;
+        const cameraDistance: number = 159;
         this.camera.position = new Vector2f(
             this.kartPosition.x - Math.cos(2 * Math.PI / 360 * this.camera.angle) * cameraDistance,
             this.kartPosition.y - Math.sin(2 * Math.PI / 360 * this.camera.angle) * cameraDistance

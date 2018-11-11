@@ -26,4 +26,8 @@ export class NpcEntity extends Mode7Entity {
         return texture;
     }
 
+    public getAlpha(): number {
+        return 1.0;
+    }
+
 }
