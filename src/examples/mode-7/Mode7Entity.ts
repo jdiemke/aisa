@@ -7,11 +7,13 @@ export abstract class Mode7Entity {
     public position: Vector2f;
     public height: number;
     public priority: number;
+    public scale: number;
 
-    public constructor(position: Vector2f, height: number = 0, priority: number = 0) {
+    public constructor(position: Vector2f, height: number = 0, priority: number = 0, scale: number = 1.0) {
         this.position = position;
         this.height = height;
         this.priority = priority;
+        this.scale = scale;
     }
 
     public abstract getTexture(camera: Camera): Texture;
