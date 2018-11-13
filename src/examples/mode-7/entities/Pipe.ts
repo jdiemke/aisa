@@ -7,8 +7,9 @@ export class Pipe extends Mode7Entity {
     private texture: Texture;
     private alpha: number;
 
-    public constructor(position: Vector2f, texture: Texture, alpha: number = 1.0, priority: number = 0) {
-        super(position, 0, priority);
+    public constructor(position: Vector2f, texture: Texture, alpha: number = 1.0,
+                       priority: number = 0, scale: number = 1.0) {
+        super(position, 0, priority, scale);
         this.texture = texture;
         this.alpha = alpha;
     }

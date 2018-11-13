@@ -39,6 +39,11 @@ export class Mode7Scene extends AbstractScene {
     private posJoshi: Texture;
     private lap2Texture: Texture;
     private shadowTexture: Texture;
+    private bump: Texture;
+    private banana: Texture;
+    private flower: Texture;
+    private egg: Texture;
+    private pipe2: Texture;
     private back: Texture;
     private grass: Texture;
     private pipe: Texture; private metrics: Texture;
@@ -123,14 +128,24 @@ export class Mode7Scene extends AbstractScene {
         this.mode7Renderer.setCamera(this.camera);
 
         this.pipePositions = new Array<Pipe>();
+        const texArray: Array<Texture> = [
+            this.banana,
+            this.bump,
+            this.pipe,
+            this.pipe2,
+            this.flower,
+            this.egg
+        ];
         for (let i: number = 0; i < 100; i++) {
+
+            // TODO: add drawing offset in order to correctly rotate :)
             this.pipePositions.push(
                 new Pipe(
                     new Vector2f(
                         Math.random() * 1024,
                         Math.random() * 1024
                     ),
-                    this.pipe)
+                    texArray[Math.floor(Math.random() * (texArray.length))], 1.0, 0, 1.2)
             );
         }
     }
@@ -147,6 +162,21 @@ export class Mode7Scene extends AbstractScene {
             this.fontRenderer.init(),
             TextureUtils.load(require('./assets/map.png'), false).then(
                 (texture: Texture) => this.map = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/bump.png'), true).then(
+                (texture: Texture) => this.bump = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/banana.png'), true).then(
+                (texture: Texture) => this.banana = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/egg.png'), true).then(
+                (texture: Texture) => this.egg = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/flower.png'), true).then(
+                (texture: Texture) => this.flower = texture
+            ),
+            TextureUtils.load(require('./assets/sprites/pipe2.png'), true).then(
+                (texture: Texture) => this.pipe2 = texture
             ),
             TextureUtils.load(require('./assets/sprites/mapHUD.png'), true).then(
                 (texture: Texture) => this.mapHud = texture
@@ -404,17 +434,17 @@ export class Mode7Scene extends AbstractScene {
 
                 const cameraDirectionPerpDistance: number = entity.sub(this.camera.position).dot(cameraDirectionPerp);
                 const projectedY: number = this.camera.height * projectionScale;
-
+                const scale: number = entities[i].scale;
                 this.spriteRenderer.addSprite(
                     new Sprite(
                         Math.round(
                             320 / 2 + cameraDirectionPerpDistance * projectionScale -
-                            (texture.width * projectionScale) / 2
+                            (texture.width * projectionScale * scale) / 2
                         ),
                         Math.round(horizonHeight + projectedY) -
-                        Math.round((texture.height + entities[i].height) * projectionScale),
-                        Math.round(texture.width * projectionScale),
-                        Math.round(texture.height * projectionScale),
+                        Math.round((texture.height * scale + entities[i].height) * projectionScale),
+                        Math.round(texture.width * projectionScale * scale),
+                        Math.round(texture.height * projectionScale * scale),
                         texture,
                         entities[i].getAlpha(),
                         distance,
