@@ -1,4 +1,3 @@
-import { Color } from '../../core/Color';
 import { Framebuffer } from '../../Framebuffer';
 import { Vector2f, Vector3f } from '../../math/index';
 import { AbstractScene } from '../../scenes/AbstractScene';
@@ -10,6 +9,7 @@ import { KartAnimator } from './KartAnimator';
 import { Keyboard } from './Keyboard';
 import { Mode7Entity } from './Mode7Entity';
 import { Camera, Mode7Renderer } from './Mode7Renderer';
+import { NpcTrack } from './NpcTrack';
 import { Sprite } from './Sprite';
 import { SpriteRenderer } from './SpriteRenderer';
 
@@ -53,7 +53,6 @@ export class Mode7Scene extends AbstractScene {
     private keyboard: Keyboard = new Keyboard();
     private marioTextures: Array<Texture> = new Array<Texture>();
     private joshiTextures: Array<Texture> = new Array<Texture>();
-    private npc: Vector2f = new Vector2f(0, 0);
     private fontRenderer: FontRenderer;
     private spriteRenderer: SpriteRenderer = new SpriteRenderer();
     private angleVel: number = 0;
@@ -62,49 +61,7 @@ export class Mode7Scene extends AbstractScene {
     private mode7Renderer: Mode7Renderer;
     private camera: Camera;
 
-    private npcTrack: Array<Vector2f> = [
-        new Vector2f(920, 580),
-        new Vector2f(940, 476),
-        new Vector2f(922, 415),
-        new Vector2f(850, 370),
-        new Vector2f(766, 323),
-        new Vector2f(684, 277),
-        new Vector2f(615, 250),
-        new Vector2f(524, 209),
-        new Vector2f(449, 165),
-        new Vector2f(371, 123),
-        new Vector2f(295, 91),
-        new Vector2f(229, 70),
-        new Vector2f(165, 68),
-        new Vector2f(119, 89),
-        new Vector2f(85, 133),
-        new Vector2f(64, 190),
-        new Vector2f(56, 247),
-        new Vector2f(72, 293),
-        new Vector2f(87, 348),
-        new Vector2f(81, 408),
-        new Vector2f(71, 477),
-        new Vector2f(64, 572),
-        new Vector2f(67, 637),
-        new Vector2f(78, 718),
-        new Vector2f(134, 750),
-        new Vector2f(226, 727),
-        new Vector2f(286, 669),
-        new Vector2f(344, 629),
-        new Vector2f(447, 586),
-        new Vector2f(535, 588),
-        new Vector2f(583, 645),
-        new Vector2f(612, 712),
-        new Vector2f(641, 786),
-        new Vector2f(681, 849),
-        new Vector2f(744, 895),
-        new Vector2f(820, 912),
-        new Vector2f(880, 915),
-        new Vector2f(930, 880),
-        new Vector2f(955, 804),
-        new Vector2f(944, 717),
-        new Vector2f(921, 643)
-    ];
+    private npcTrack: Array<Vector2f> = NpcTrack.track;
 
     private animator: KartAnimator = new KartAnimator();
 
@@ -136,16 +93,17 @@ export class Mode7Scene extends AbstractScene {
             this.flower,
             this.egg
         ];
-        for (let i: number = 0; i < 100; i++) {
 
-            // TODO: add drawing offset in order to correctly rotate :)
+        for (let i: number = 0; i < 100; i++) {
+            const tex: Texture = texArray[Math.floor(Math.random() * (texArray.length))];
+
             this.pipePositions.push(
                 new Pipe(
                     new Vector2f(
                         Math.random() * 1024,
                         Math.random() * 1024
                     ),
-                    texArray[Math.floor(Math.random() * (texArray.length))], 1.0, 0, 1.2)
+                    tex, 1.0, 0, 1.2, tex === this.bump ? -5 : tex === this.banana ? -3 : 0)
             );
         }
     }
@@ -380,10 +338,10 @@ export class Mode7Scene extends AbstractScene {
         framebuffer.drawTexture(2, 100 - 2, this.mapHud, 0.5);
 
         npcs.forEach((npc: Mode7Entity) => {
-            const x: number = Math.round(npc.position.x / 1024 * 100 - 8 + 2);
-            const y: number = Math.round(npc.position.y / 1024 * 100 - 8 + 100 - 2);
+            const xx: number = Math.round(npc.position.x / 1024 * 100 - 8 + 2);
+            const yy: number = Math.round(npc.position.y / 1024 * 100 - 8 + 100 - 2);
 
-            framebuffer.drawTexture(x, y, this.posJoshi, 0.5);
+            framebuffer.drawTexture(xx, yy, this.posJoshi, 0.5);
         });
 
         const x: number = Math.round(this.kartPosition.x / 1024 * 100 * 0.3 - 8 + 2);
@@ -435,14 +393,15 @@ export class Mode7Scene extends AbstractScene {
                 const cameraDirectionPerpDistance: number = entity.sub(this.camera.position).dot(cameraDirectionPerp);
                 const projectedY: number = this.camera.height * projectionScale;
                 const scale: number = entities[i].scale;
+                const offset: number = entities[i].offset;
                 this.spriteRenderer.addSprite(
                     new Sprite(
                         Math.round(
                             320 / 2 + cameraDirectionPerpDistance * projectionScale -
                             (texture.width * projectionScale * scale) / 2
                         ),
-                        Math.round(horizonHeight + projectedY) -
-                        Math.round((texture.height * scale + entities[i].height) * projectionScale),
+                        Math.round(horizonHeight + projectedY -
+                        ((texture.height + offset) * scale + entities[i].height) * projectionScale),
                         Math.round(texture.width * projectionScale * scale),
                         Math.round(texture.height * projectionScale * scale),
                         texture,
