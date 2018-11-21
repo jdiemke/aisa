@@ -299,10 +299,44 @@ export class Mode7Scene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer): void {
+        // https://www.emanueleferonato.com/2007/05/15/create-a-flash-racing-game-tutorial/
+        // http://engineeringdotnet.blogspot.com/2010/04/simple-2d-car-physics-in-games.html
         this.handleInput();
         this.mode7Renderer.render(framebuffer);
         this.drawBackground(framebuffer);
 
+        this.drawMario();
+
+        const npcs: Array<Mode7Entity> = this.getNPCs();
+        this.drawMode7Entities(npcs);
+        this.drawMode7Entities(this.pipePositions);
+
+        this.spriteRenderer.render(framebuffer);
+        this.drawHeadUpDisplay(framebuffer);
+        this.drawLapCounter(framebuffer);
+        this.drawMinimap(framebuffer, npcs);
+    }
+
+    private drawLapCounter(framebuffer: Framebuffer): void {
+        const offset: Vector2f = this.camera.getViewDirection().perp()
+            .mul(10.0 * Math.sin((Date.now() - this.startTime) * 0.001) + 25);
+        const pos: Vector2f = new Vector2f(this.kartPosition.x * 0.3, this.kartPosition.y * 0.3).sub(offset);
+
+        const counterEntity: Mode7Entity =
+            new Pipe(pos, this.lap2Texture);
+        counterEntity.height = Math.abs(Math.sin((Date.now() - this.startTime) * 0.001) * 30) + 25 +
+            Math.abs(Math.sin((Date.now() - this.startTime) * 0.002) * 40);
+
+        this.drawMode7Entities(
+            [new Pipe(pos, this.shadowTexture, 1.0, 1, 1.0, -4)]
+        );
+
+        this.drawMode7Entities(
+            [counterEntity]
+        );
+    }
+
+    private drawMario(): void {
         let marioTex: Texture;
         if (this.keyboard.isDown(68)) {
             marioTex = this.marioTextures[1];
@@ -313,25 +347,17 @@ export class Mode7Scene extends AbstractScene {
         }
 
         this.drawMode7Entities(
-            [new Pipe(new Vector2f(this.kartPosition.x * 0.3, this.kartPosition.y * 0.3), this.shadowTexture, 1.0, 1)]
+            [new Pipe(new Vector2f(this.kartPosition.x * 0.3, this.kartPosition.y * 0.3),
+                this.shadowTexture, 1.0, 1, 1, -4)]
         );
 
         const mario: Mode7Entity =
-            new Pipe(new Vector2f(this.kartPosition.x * 0.3, this.kartPosition.y * 0.3), marioTex);
+            new Pipe(new Vector2f(this.kartPosition.x * 0.3, this.kartPosition.y * 0.3), marioTex, 1.0, 0, 1.0, -4);
         mario.height = Math.abs(Math.sin((Date.now() - this.startTime) * 0.003) * 30);
 
         this.drawMode7Entities(
             [mario]
         );
-
-        const npcs: Array<Mode7Entity> = this.getNPCs();
-        this.drawMode7Entities(npcs);
-        this.drawMode7Entities(this.pipePositions);
-
-        this.spriteRenderer.render(framebuffer);
-        this.drawHeadUpDisplay(framebuffer);
-        this.drawLapCounter(framebuffer);
-        this.drawMinimap(framebuffer, npcs);
     }
 
     private drawMinimap(framebuffer: Framebuffer, npcs: Array<Mode7Entity>): void {
@@ -401,7 +427,7 @@ export class Mode7Scene extends AbstractScene {
                             (texture.width * projectionScale * scale) / 2
                         ),
                         Math.round(horizonHeight + projectedY -
-                        ((texture.height + offset) * scale + entities[i].height) * projectionScale),
+                            ((texture.height + offset) * scale + entities[i].height) * projectionScale),
                         Math.round(texture.width * projectionScale * scale),
                         Math.round(texture.height * projectionScale * scale),
                         texture,
@@ -440,13 +466,6 @@ export class Mode7Scene extends AbstractScene {
         this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1, 4, this.pad(gameTimeMinutes, 2));
         this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1 + 8 * 3, 4, this.pad(seconds, 2));
         this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1 + 8 * 6, 4, this.pad(small, 2));
-    }
-
-    private drawLapCounter(framebuffer: Framebuffer): void {
-        framebuffer.drawTexture(80 +
-            Math.floor(Math.sin(Date.now() * 0.001) * 32),
-            Math.floor(Math.sin(Date.now() * 0.001) * 32),
-            this.lap2Texture, 1.0);
     }
 
     private pad(num: number, size: number): string {
