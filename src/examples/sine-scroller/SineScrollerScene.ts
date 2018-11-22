@@ -69,10 +69,10 @@ export class SineScrollerScene extends AbstractScene {
         const elapsedTime: number = time;
 
         //framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.atlantisBackground.texture);
+
         this.drawStarField(framebuffer, elapsedTime);
 
         framebuffer.drawTexture(0, 0, this.texture2, 1.0);
-        //  this.renderingPipeline.draw(this.cubeMesh.getMesh(), this.getModelViewMatrix(elapsedTime * 0.007), 100, 200, 100);
 
         this.fontRenderer.drawText(0, 102, ' # TEAM GENESIS # IS BACK IN 2018 WITH A NEW PC FIRST! \'STAR WARS - EMPIRE AT WAR\' DO YOU LIKE THIS?    ', elapsedTime);
         this.fontRenderer2.drawText(0, 200 - 20,
@@ -104,14 +104,15 @@ export class SineScrollerScene extends AbstractScene {
         let stars2 = new Array<Vector3f>();
 
         for (let i = 0; i < 100; i++) {
-            stars.push(new Vector3f(rng.getFloat() * 320, Math.round(rng.getFloat() * 100+68), 0));
+            stars.push(new Vector3f(rng.getFloat() * 320, Math.round(rng.getFloat() * 100 + 68), 0));
         }
 
         for (let i = 0; i < 60; i++) {
-            stars2.push(new Vector3f(rng.getFloat() * 320, Math.round(rng.getFloat() * 100+68), 0));
+            stars2.push(new Vector3f(rng.getFloat() * 320, Math.round(rng.getFloat() * 100 + 68), 0));
         }
 
         frambuffer.clearColorBuffer(backgroundColor);
+        frambuffer.drawRect2(0, 68, 320, 100, Color.DARK_BLUE.toPackedFormat());
 
         for (let i = 0; i < 100; i++) {
             frambuffer.drawPixel(((stars[i].x + elapsedTime * 0.02) | 0) % 320, stars[i].y, darkStarColor);
