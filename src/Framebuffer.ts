@@ -131,11 +131,11 @@ export class Framebuffer {
         let inverseAlpha = 1 - alpha;
 
         let r = (((this.framebuffer[index] >> 0) & 0xff) * (inverseAlpha)
-        + ((color >> 0) & 0xff) * (alpha)) | 0;
+            + ((color >> 0) & 0xff) * (alpha)) | 0;
         let g = (((this.framebuffer[index] >> 8) & 0xff) * (inverseAlpha) +
-        ((color >> 8) & 0xff) * (alpha)) | 0;
+            ((color >> 8) & 0xff) * (alpha)) | 0;
         let b = (((this.framebuffer[index] >> 16) & 0xff) * (inverseAlpha) +
-        ((color >> 16) & 0xff) * (alpha)) | 0;
+            ((color >> 16) & 0xff) * (alpha)) | 0;
 
         this.framebuffer[index] = r | (g << 8) | (b << 16) | (255 << 24);
 
@@ -1059,81 +1059,97 @@ export class Framebuffer {
             index += 320
         }
     }
-    /*
-        public wireFrameSphereClipping(elapsedTime: number): void {
 
-            this.wBuffer.fill(100);
+    // TODO: implement subpixel accuracy
+    // https://github.com/specht/cruiser
+    public wireFrameSphereClipping(elapsedTime: number): void {
 
-            let points: Array<Vector4f> = [];
+        this.wBuffer.fill(100);
 
-            const STEPS = 16;
-            const STEPS2 = 16;
+        let points: Array<Vector4f> = [];
 
-            // TODO: move into setup method
-            for (let i = 0; i <= STEPS; i++) {
-                for (let r = 0; r < STEPS2; r++) {
-                    points.push(this.sphereFunction2(-i * Math.PI / STEPS - Math.PI / 2, -r * 2 * Math.PI / STEPS2));
-                }
-            }
+        const STEPS = 16;
+        const STEPS2 = 16;
 
-            let index: Array<number> = [];
-
-            for (let j = 0; j < STEPS; j++) {
-                for (let i = 0; i < STEPS2; i++) {
-                    index.push(((STEPS2 * j) + (1 + i) % STEPS2)); // 2
-                    index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 1
-                    index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); //3
-
-                    index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2)); //4
-                    index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); //3
-                    index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 5
-                }
-            }
-
-            // Create MV Matrix
-            let scale = 10.8 + 5 * (Math.sin(elapsedTime * 0.16) + 1) / 2;
-            let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.08));
-            modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.08));
-            modelViewMartrix = Matrix4f.constructTranslationMatrix(0 + 20 * Math.sin(elapsedTime * 0.04), 5 * Math.sin(elapsedTime * 0.06), -36).multiplyMatrix(modelViewMartrix);
-
-            let points2: Array<Vector3f> = new Array<Vector3f>();
-
-            for (let p = 0; p < points.length; p++) {
-                let transformed = modelViewMartrix.multiplyHom(points[p]);
-
-                let x = transformed.x;
-                let y = transformed.y;
-                let z = transformed.z;
-
-                let xx = (320 * 0.5) + (x / (-z * 0.0078));
-                let yy = (200 * 0.5) + (y / (-z * 0.0078));
-
-                points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
-            }
-
-            // draw clip region
-            let colred = 255 << 24 | 230 << 16 | 200 << 16 | 200;
-            this.drawLineDDA(new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.minWindow.y - 1, 0), new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.maxWindow.y + 1, 0), colred);
-            this.drawLineDDA(new Vector3f(Framebuffer.maxWindow.x + 1, Framebuffer.minWindow.y - 1, 0), new Vector3f(Framebuffer.maxWindow.x + 1, Framebuffer.maxWindow.y + 1, 0), colred);
-            this.drawLineDDA(new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.minWindow.y - 1, 0), new Vector3f(Framebuffer.maxWindow.x + 1, Framebuffer.minWindow.y - 1, 0), colred);
-            this.drawLineDDA(new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.maxWindow.y + 1, 0), new Vector3f(Framebuffer.maxWindow.x + 2, Framebuffer.maxWindow.y + 1, 0), colred);
-
-            this.drawBox();
-
-            for (let i = 0; i < index.length; i += 3) {
-                let v1 = points2[index[i]];
-                let v2 = points2[index[i + 1]];
-                let v3 = points2[index[i + 2]];
-
-                let colLine = 255 << 24 | 255 << 16 | 255 << 8 | 255;
-                if (this.isTriangleCCW(v1, v2, v3)) {
-                    this.linerClipper.cohenSutherlandLineClipper(v1, v2, colLine);
-                    this.linerClipper.cohenSutherlandLineClipper(v1, v3, colLine);
-                    this.linerClipper.cohenSutherlandLineClipper(v3, v2, colLine);
-                }
+        // TODO: move into setup method
+        for (let i = 0; i <= STEPS; i++) {
+            for (let r = 0; r < STEPS2; r++) {
+                points.push(this.sphereFunction2(-i * Math.PI / STEPS - Math.PI / 2, -r * 2 * Math.PI / STEPS2));
             }
         }
-    */
+
+        let index: Array<number> = [];
+
+        for (let j = 0; j < STEPS; j++) {
+            for (let i = 0; i < STEPS2; i++) {
+                index.push(((STEPS2 * j) + (1 + i) % STEPS2)); // 2
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 1
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); //3
+
+                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2)); //4
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); //3
+                index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 5
+            }
+        }
+
+        // Create MV Matrix
+        let scale = 10.8 + 5 * (Math.sin(elapsedTime * 0.16) + 1) / 2;
+        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.08));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.08));
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(0 + 20 * Math.sin(elapsedTime * 0.04), 5 * Math.sin(elapsedTime * 0.06), -22).multiplyMatrix(modelViewMartrix);
+
+        let points2: Array<Vector3f> = new Array<Vector3f>();
+
+        for (let p = 0; p < points.length; p++) {
+            let transformed = modelViewMartrix.multiplyHom(points[p]);
+
+            let x = transformed.x;
+            let y = transformed.y;
+            let z = transformed.z;
+
+            let xx = (320 * 0.5) + (x / (-z * 0.0078));
+            let yy = (200 * 0.5) + (y / (-z * 0.0078));
+
+            points2.push(new Vector3f(xx, yy, z));
+        }
+
+        // draw clip region
+        let colred = 255 << 24 | 230 << 16 | 200 << 16 | 200;
+        this.drawLineDDA(new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.minWindow.y - 1, 0), new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.maxWindow.y + 1, 0), colred);
+        this.drawLineDDA(new Vector3f(Framebuffer.maxWindow.x + 1, Framebuffer.minWindow.y - 1, 0), new Vector3f(Framebuffer.maxWindow.x + 1, Framebuffer.maxWindow.y + 1, 0), colred);
+        this.drawLineDDA(new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.minWindow.y - 1, 0), new Vector3f(Framebuffer.maxWindow.x + 1, Framebuffer.minWindow.y - 1, 0), colred);
+        this.drawLineDDA(new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.maxWindow.y + 1, 0), new Vector3f(Framebuffer.maxWindow.x + 2, Framebuffer.maxWindow.y + 1, 0), colred);
+
+        this.drawBox();
+
+        for (let i = 0; i < index.length; i += 3) {
+            let v1 = points2[index[i]];
+            let v2 = points2[index[i + 1]];
+            let v3 = points2[index[i + 2]];
+
+            let colLine = 255 << 24 | 255 << 16 | 255 << 8 | 255;
+            if (this.isTriangleCCW(v1, v2, v3)) {
+                this.linerClipper.cohenSutherlandLineClipper(v1, v2, colLine);
+                this.linerClipper.cohenSutherlandLineClipper(v1, v3, colLine);
+                this.linerClipper.cohenSutherlandLineClipper(v3, v2, colLine);
+            }
+        }
+    }
+
+    public isTriangleCCW(v1: { x: number, y: number, z: number },
+        v2: { x: number, y: number, z: number },
+        v3: { x: number, y: number, z: number }): boolean {
+        const det: number =
+            v1.x * v2.y - v2.x * v1.y +
+            v2.x * v3.y - v3.x * v2.y +
+            v3.x * v1.y - v1.x * v3.y;
+        if (this.cullMode === CullFace.BACK) {
+            return det < 0.0;
+        } else {
+            return det > 0.0;
+        }
+    }
+
     public static minWindow: Vector3f = new Vector3f(0, 0, 0);
     public static maxWindow: Vector3f = new Vector3f(319, 199, 0);
     /*
