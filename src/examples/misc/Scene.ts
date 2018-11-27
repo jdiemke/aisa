@@ -155,8 +155,9 @@ export class Scene extends AbstractScene {
         time = time % (1150000);
 
         framebuffer.setCullFace(CullFace.FRONT);
+        framebuffer.wireFrameSphereClipping(time * 0.00009);
         /*
-             if (time < 30000) {   
+             if (time < 30000) {
                     this.framebuffer.shadingSphere(time * 0.01);
                 } else if (time < 40000) {
                     this.framebuffer.wireFrameSphereClipping(time * 0.01);
@@ -270,11 +271,11 @@ export class Scene extends AbstractScene {
                 } else if (time < 520000) {
                     this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
                     this.framebuffer.noise(time, this.noise);
-        
+
                     let scale = 1 / (99 - ((time * 0.02) % 100));
                     let width = (this.hoodlumLogo.width * scale * 10) | 0;
                     let height = (this.hoodlumLogo.height * scale * 10) | 0;
-        
+
                     this.framebuffer.drawScaledTextureClipBi(
                         Math.round(320 / 2 - width / 2),
                         Math.round(200 / 2 - height / 2),
@@ -297,7 +298,7 @@ export class Scene extends AbstractScene {
                         }
                     }
                     this.framebuffer.drawPolarDistotion2(time, tempTexture);
-        
+
                     const ukBasslineBpm = 140;
                     const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
                     const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
@@ -305,15 +306,15 @@ export class Scene extends AbstractScene {
                         this.framebuffer.cosineInterpolate(15, 200, smashTime) +
                         0.4 * this.framebuffer.cosineInterpolate(200, 300, smashTime) -
                         0.4 * this.framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
-        
-        
+
+
                     let size = Math.round(1 * smash);
                     let size2 = Math.round(2 * smash);
                     this.framebuffer.drawScaledTextureClipAdd(
                         320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)),
                         200 / 2 - 20 + size,
                         this.micro.width * 2, this.micro.height * 2, this.micro);
-        
+
                     this.framebuffer.drawScaledTextureClipAdd(
                         320 - (((time * 0.05) | 0) % (this.micro.width + 320)) + size2,
                         200 / 2 - 60,
@@ -322,12 +323,12 @@ export class Scene extends AbstractScene {
                 } else if (time < 590000) {
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
                     this.framebuffer.drawParticleTorus(time, this.particleTexture2, true);
-        
+
                     let tmpGlitch = new Uint32Array(320 * 200);
                     this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
-        
+
                     let texture = new Texture(tmpGlitch, 320, 200);
-        
+
                     const ukBasslineBpm = 140;
                     const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
                     const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
@@ -335,37 +336,37 @@ export class Scene extends AbstractScene {
                         this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
                     let width = 320 + smash * 320 / 100;
                     let height = 200 + smash * 200 / 100;
-        
+
                     this.framebuffer.drawScaledTextureClip(
                         Math.round(320 / 2 - width / 2),
                         Math.round(200 / 2 - height / 2),
                         width, height, texture, 1.0);
-        
+
                     this.framebuffer.noise(time, this.noise);
                 } else if (time < 650000) {
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-        
+
                     this.framebuffer.setCullFace(CullFace.BACK);
                     this.framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
-        
+
                     this.framebuffer.drawScaledTextureClipAdd(
                         320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)),
                         200 / 2 - 20,
                         this.micro.width * 2, this.micro.height * 2, this.micro);
-        
+
                     this.framebuffer.drawScaledTextureClipAdd(
                         320 - (((time * 0.05) | 0) % (this.micro.width + 320)),
                         200 / 2 - 60,
                         this.micro.width, this.micro.height, this.micro);
-        
+
                     let tmpGlitch = new Uint32Array(320 * 200);
                     this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
-        
+
                     let texture = new Texture();
                     texture.texture = tmpGlitch;
                     texture.width = 320;
                     texture.height = 200;
-        
+
                     const ukBasslineBpm = 140;
                     const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
                     const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
@@ -373,20 +374,20 @@ export class Scene extends AbstractScene {
                         this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
                     let width = Math.round(320 + smash * 320 / 50);
                     let height = Math.round(200 + smash * 200 / 50);
-        
+
                     // slow
                     this.framebuffer.drawScaledTextureClip(
                         Math.round(320 / 2 - width / 2),
                         Math.round(200 / 2 - height / 2),
                         width, height, texture, 1.0);
-        
+
                     this.framebuffer.noise(time, this.noise);
                 } else if (time < 670000) {
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
                     this.framebuffer.setCullFace(CullFace.BACK);
                     this.framebuffer.setBob(this.spheremap);
                     this.framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
-        
+
                     let source: number = 0;
                     let dest: number = 319;
                     for (let y: number = 0; y < 200; y++) {
@@ -400,20 +401,20 @@ export class Scene extends AbstractScene {
                         320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)),
                         200 / 2 - 20,
                         this.micro.width * 2, this.micro.height * 2, this.micro);
-        
+
                     this.framebuffer.drawScaledTextureClipAdd(
                         320 - (((time * 0.05) | 0) % (this.micro.width + 320)),
                         200 / 2 - 60,
                         this.micro.width, this.micro.height, this.micro);
-        
+
                     let tmpGlitch = new Uint32Array(320 * 200);
                     this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
-        
+
                     let texture = new Texture();
                     texture.texture = tmpGlitch;
                     texture.width = 320;
                     texture.height = 200;
-        
+
                     const ukBasslineBpm = 140;
                     const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
                     const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
@@ -421,42 +422,42 @@ export class Scene extends AbstractScene {
                         this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
                     let width = Math.round(320 + smash * 320 / 50);
                     let height = Math.round(200 + smash * 200 / 50);
-        
+
                     this.framebuffer.drawScaledTextureClip(
                         Math.round(320 / 2 - width / 2),
                         Math.round(200 / 2 - height / 2),
                         width, height, texture, 1.0);
-        
+
                     for (let y = 0; y < 3; y++) {
                         for (let x = 0; x < 4; x++) {
                             let xx = Math.round(320 / 4 * x + 320 / 4 * 0.5 - this.cross.width / 2);
                             let yy = Math.round(200 / 3 * y + 200 / 3 * 0.5 - this.cross.height / 2);
-        
+
                             this.framebuffer.drawTexture(xx, yy, this.cross, 0.45);
                         }
                     }
-        
+
                     this.framebuffer.noise(time, this.noise);
                 } else if (time < 690000) {
-        
+
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
                     this.framebuffer.setCullFace(CullFace.BACK);
                     this.framebuffer.setBob(this.spheremap);
-        
+
                     this.framebuffer.shadingSphereEnv(time * 0.0002);
-        
-        
+
+
                     this.framebuffer.drawScaledTextureClipAdd(
                         320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)),
                         200 / 2 - 20,
                         this.micro.width * 2, this.micro.height * 2, this.micro);
-        
+
                     this.framebuffer.drawScaledTextureClipAdd(
                         320 - (((time * 0.05) | 0) % (this.micro.width + 320)),
                         200 / 2 - 60,
                         this.micro.width, this.micro.height, this.micro);
-        
-        
+
+
                     let source: number = 0;
                     let dest: number = 319;
                     for (let y: number = 0; y < 100; y++) {
@@ -466,7 +467,7 @@ export class Scene extends AbstractScene {
                         source += 160;
                         dest += 320 + 160;
                     }
-        
+
                     source = 0;
                     dest = 199 * 320;
                     for (let y: number = 0; y < 100; y++) {
@@ -475,15 +476,15 @@ export class Scene extends AbstractScene {
                         }
                         dest -= 320 * 2;
                     }
-        
+
                     let tmpGlitch = new Uint32Array(320 * 200);
                     this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
-        
+
                     let texture = new Texture();
                     texture.texture = tmpGlitch;
                     texture.width = 320;
                     texture.height = 200;
-        
+
                     const ukBasslineBpm = 140;
                     const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
                     const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
@@ -491,21 +492,21 @@ export class Scene extends AbstractScene {
                         this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
                     let width = Math.round(320 + smash * 320 / 50);
                     let height = Math.round(200 + smash * 200 / 50);
-        
+
                     this.framebuffer.drawScaledTextureClip(
                         Math.round(320 / 2 - width / 2),
                         Math.round(200 / 2 - height / 2),
                         width, height, texture, 1.0);
-        
+
                     for (let y = 0; y < 3; y++) {
                         for (let x = 0; x < 4; x++) {
                             let xx = Math.round(320 / 4 * x + 320 / 4 * 0.5 - this.cross.width / 2);
                             let yy = Math.round(200 / 3 * y + 200 / 3 * 0.5 - this.cross.height / 2);
-        
+
                             this.framebuffer.drawTexture(xx, yy, this.cross, 0.45);
                         }
                     }
-        
+
                     this.framebuffer.noise(time, this.noise);
                 } else if (time < 720000) {
                     // Rave video & Wobblin Cylinder
@@ -513,7 +514,7 @@ export class Scene extends AbstractScene {
                     this.framebuffer.setCullFace(CullFace.FRONT);
                     this.framebuffer.setBob(this.spheremap);
                     this.framebuffer.shadingCylinderEnv(time * 0.0002);
-        
+
                     // Crosses
                     for (let y = 0; y < 3; y++) {
                         for (let x = 0; x < 4; x++) {
@@ -522,7 +523,7 @@ export class Scene extends AbstractScene {
                             this.framebuffer.drawTexture(xx, yy, this.cross, 0.2);
                         }
                     }
-        
+
                     // Motion Blur
                     let texture = new Texture(this.accumulationBuffer, 320, 200);
                     this.framebuffer.drawTexture(0, 0, texture, 0.3 + 0.6 * (0.5 + 0.5 * Math.sin(time * 0.0003)));
@@ -542,14 +543,14 @@ export class Scene extends AbstractScene {
                         else
                             texture.texture[x + y * 32] = 252 | 130 << 8 | 195 << 16;
                     }
-        
+
                     this.framebuffer.drawPlanedeformationTunnelAnim(time, texture);
-        
-        
+
+
                     // GLOW
                     let glowBuffer = new Uint32Array(16 * 2 * 10 * 2);
                     let glowBuffer2 = new Uint32Array(16 * 2 * 10 * 2);
-        
+
                     // todo filer onlyy brigh parts
                     // blur if too blocky
                     // clamp to border when filterting bilinear
@@ -566,10 +567,10 @@ export class Scene extends AbstractScene {
                             let color = r * scale | g * scale << 8 | b * scale << 16 | 255 << 24;
                             //  if (intensity > 138) {
                             glowBuffer[x + y * 32] = this.framebuffer.framebuffer[xx + yy * 320];//color ;
-                            // } 
+                            // }
                         }
                     }
-        
+
                     for (let y = 0; y < 20; y++) {
                         for (let x = 0; x < 32; x++) {
                             let col1 = glowBuffer[Math.max(x - 1, 0) + y * 32];
@@ -581,7 +582,7 @@ export class Scene extends AbstractScene {
                             glowBuffer2[x + y * 32] = r | g << 8 | b << 16;
                         }
                     }
-        
+
                     for (let y = 0; y < 20; y++) {
                         for (let x = 0; x < 32; x++) {
                             let col1 = glowBuffer2[(x) + Math.max(y - 1, 0) * 32];
@@ -593,17 +594,17 @@ export class Scene extends AbstractScene {
                             glowBuffer[x + y * 32] = r | g << 8 | b << 16;
                         }
                     }
-        
+
                     let texture2 = new Texture();
                     texture2.texture = glowBuffer;
                     texture2.width = 32;
                     texture2.height = 20;
-        
-        
+
+
                     this.framebuffer.drawScaledTextureClipBiAdd(
                         0, 0,
                         320, 200, texture2, 0.75);
-        
+
                     this.framebuffer.setCullFace(CullFace.BACK);
                     this.framebuffer.setBob(this.spheremap);
                     this.framebuffer.reflectionBunny(time * 0.002);
@@ -622,16 +623,16 @@ export class Scene extends AbstractScene {
                     let texture3 = new Texture(this.accumulationBuffer, 320, 200);
                     this.framebuffer.drawTexture(0, 0, texture3, 0.8);
                     this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-        
-        
+
+
                     let tmpGlitch = new Uint32Array(320 * 200);
                     this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
-        
+
                     let texture = new Texture();
                     texture.texture = tmpGlitch;
                     texture.width = 320;
                     texture.height = 200;
-        
+
                     const ukBasslineBpm = 140;
                     const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
                     const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
@@ -639,12 +640,12 @@ export class Scene extends AbstractScene {
                         this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
                     let width = Math.round(320 + smash * 320 / 100);
                     let height = Math.round(200 + smash * 200 / 100);
-        
+
                     this.framebuffer.drawScaledTextureClip(
                         Math.round(320 / 2 - width / 2),
                         Math.round(200 / 2 - height / 2),
                         width, height, texture, 1.0);
-        
+
                     this.framebuffer.noise(time, this.noise);
                 }
         */
@@ -656,16 +657,16 @@ export class Scene extends AbstractScene {
                     this.framebuffer.setCullFace(CullFace.BACK);
                     this.framebuffer.setBob(this.spheremap);
                     this.framebuffer.shadingSphereEnvDisp(time * 0.0002);
-        
+
                     // Motion Blur
                     const tmpGlitch: Uint32Array = new Uint32Array(320 * 200);
                     this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
-        
+
                     const texture: Texture = new Texture();
                     texture.texture = tmpGlitch;
                     texture.width = 320;
                     texture.height = 200;
-        
+
                     const ukBasslineBpm: number = 140;
                     const ukBasslineClapMs: number = 60000 / ukBasslineBpm * 2;
                     const smashTime: number = (Date.now() - this.start) % ukBasslineClapMs;
@@ -673,45 +674,45 @@ export class Scene extends AbstractScene {
                         this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
                     const width: number = Math.round(320 + smash * 320 / 100);
                     const height: number = Math.round(200 + smash * 200 / 100);
-        
+
                     this.framebuffer.drawScaledTextureClip(
                         Math.round(320 / 2 - width / 2),
                         Math.round(200 / 2 - height / 2),
                         width, height, texture, 1.0);
-        
+
                     const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
                     this.framebuffer.drawTexture(0, 0, texture3, 0.85);
-        
+
                     this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-        
+
                     this.framebuffer.noise(time, this.noise);
                 } else if (time < 100000) {
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
                     this.framebuffer.setCullFace(CullFace.BACK);
                     // this.framebuffer.setBob(this.spheremap);
                     this.framebuffer.setBob(this.envmap);
-        
+
                     let scale: number = 3.7;
                     let elapsedTime: number = (time - 50000) * 0.0002;
-        
+
                     let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.35)
                         .multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3)));
-        
+
                     modelViewMartrix = Matrix4f.constructTranslationMatrix(-0, -0,
                         -10 - (Math.sin(elapsedTime * 0.3) * 0.5 + 0.5) * 6)
                         .multiplyMatrix(modelViewMartrix);
                     this.framebuffer.clearDepthBuffer();
                     this.framebuffer.shadingSphereEnvDisp2((time - 50000) * 0.0002, modelViewMartrix);
-        
+
                     // Motion Blur
                     const tmpGlitch: Uint32Array = new Uint32Array(320 * 200);
                     this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
-        
+
                     const texture: Texture = new Texture();
                     texture.texture = tmpGlitch;
                     texture.width = 320;
                     texture.height = 200;
-        
+
                     const ukBasslineBpm: number = 140;
                     const ukBasslineClapMs: number = 60000 / ukBasslineBpm * 2;
                     const smashTime: number = (Date.now() - this.start) % ukBasslineClapMs;
@@ -719,31 +720,31 @@ export class Scene extends AbstractScene {
                         this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
                     const width: number = Math.round(320 + smash * 320 / 100);
                     const height: number = Math.round(200 + smash * 200 / 100);
-        
+
                     this.framebuffer.drawScaledTextureClipBi(
                         Math.round(320 / 2 - width / 2),
                         Math.round(200 / 2 - height / 2),
                         width, height, texture, 1.0);
-        
+
                     const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
                     this.framebuffer.drawTexture(0, 0, texture3, 0.85);
                     this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-        
+
                     this.framebuffer.noise(time, this.noise);
                 } else if (time < 200000) {
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
                     this.framebuffer.setCullFace(CullFace.BACK);
                     this.framebuffer.setBob(this.spheremap);
                     this.framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
-        
+
                     const tmpGlitch: Uint32Array = new Uint32Array(320 * 200);
                     this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
-        
+
                     const texture: Texture = new Texture();
                     texture.texture = tmpGlitch;
                     texture.width = 320;
                     texture.height = 200;
-        
+
                     const ukBasslineBpm = 140;
                     const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
                     const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
@@ -751,16 +752,16 @@ export class Scene extends AbstractScene {
                         this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
                     const width = Math.round(320 + smash * 320 / 100);
                     const height = Math.round(200 + smash * 200 / 100);
-        
+
                     this.framebuffer.drawScaledTextureClipBi(
                         Math.round(320 / 2 - width / 2),
                         Math.round(200 / 2 - height / 2),
                         width, height, texture, 1.0);
-        
+
                     const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
                     this.framebuffer.drawTexture(0, 0, texture3, 0.85);
                     this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-        
+
                     this.framebuffer.noise(time, this.noise);
                 } else if (time < 250000) {
                     this.framebuffer.raveMoview(time, this.rave);
@@ -768,11 +769,11 @@ export class Scene extends AbstractScene {
                     this.framebuffer.setCullFace(CullFace.BACK);
                     this.framebuffer.setBob(this.spheremap);
                     this.framebuffer.shadingPlaneEnv(time * 0.0002);
-        
+
                     const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
                     this.framebuffer.drawTexture(0, 0, texture3, 0.85);
                     this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-        
+
                     this.framebuffer.noise(time, this.noise);
                 } else if (time < 300000) {
                     this.framebuffer.drawVoxelLandscape4(this.heightmap, time);
@@ -785,24 +786,24 @@ export class Scene extends AbstractScene {
                             tempTexture.texture[x + y * 256] = this.framebuffer.framebuffer[xpos + ypos * 320];
                         }
                     }
-        
+
                     this.framebuffer.drawPolarDistotion2(time, tempTexture);
-        
+
                     const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
                     this.framebuffer.drawTexture(0, 0, texture3, 0.65);
                     this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-        
+
                     this.framebuffer.noise(time, this.noise);
                 } else if (time < 350000) {
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
                     this.framebuffer.setCullFace(CullFace.FRONT);
                     this.framebuffer.setBob(this.spheremap);
                     this.framebuffer.shadingCylinderEnvDisp(time * 0.0002);
-        
+
                     const texture3 = new Texture(this.accumulationBuffer, 320, 200);
                     this.framebuffer.drawTexture(0, 0, texture3, 0.85);
                     this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-        
+
                     this.framebuffer.noise(time, this.noise);
                 } else if (time < 400000) {
                     this.framebuffer.raveMoview(time, this.rave);
@@ -810,16 +811,16 @@ export class Scene extends AbstractScene {
                     this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
                     this.framebuffer.glitchScreen(time, this.noise);
                 } else if (time < 450000) {
-        
+
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
                     this.framebuffer.drawParticleWaves(time, this.particleTexture2, true);
-        
+
                     const texture3 = new Texture(this.accumulationBuffer, 320, 200);
                     this.framebuffer.drawTexture(0, 0, texture3, 0.85);
                     this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-        
+
                     this.framebuffer.noise(time, this.noise);
-        
+
                 } else if (time < 500000) {
                     this.framebuffer.drawMetaballs();
                     this.framebuffer.noise(time, this.noise, 0.1);
@@ -827,9 +828,9 @@ export class Scene extends AbstractScene {
                     this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
                     this.framebuffer.noise(time, this.noise);
                 } else if (time < 600000) {
-                   
+
                 } else if (time < 650000) {
-        
+
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
                     this.framebuffer.drawParticleStreams(time, this.particleTexture2, true);
                     const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
@@ -840,7 +841,7 @@ export class Scene extends AbstractScene {
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
                     this.framebuffer.setCullFace(CullFace.BACK);
                     this.framebuffer.setBob(this.envmap);
-        
+
                     this.framebuffer.drawBlenderScene5(time, this.texture4,
                         [
                             { tex: this.texture10, scale: 0.0, alpha: 1.0 },
@@ -849,17 +850,17 @@ export class Scene extends AbstractScene {
                             { tex: this.texture13, scale: 0.7, alpha: 0.22 },
                             { tex: this.texture13, scale: -0.4, alpha: 0.22 },
                         ], this.dirt);
-        
+
                     const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
                     this.framebuffer.drawTexture(0, 0, texture3, 0.75);
                     this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
                     this.framebuffer.glitchScreen(time * 0.9, this.noise);
                 } else if (time < 950000) {
-                           
+
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
                     this.framebuffer.setCullFace(CullFace.BACK);
                     this.framebuffer.setBob(this.baked);
-        
+
                     this.framebuffer.drawBlenderScene7(time, this.particleTexture2,
                         [
                             { tex: this.texture10, scale: 0.0, alpha: 1.0 },
@@ -868,7 +869,7 @@ export class Scene extends AbstractScene {
                             { tex: this.texture13, scale: 0.7, alpha: 0.22 },
                             { tex: this.texture13, scale: -0.4, alpha: 0.22 },
                         ], this.dirt);
-        
+
                     const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
                     this.framebuffer.drawTexture(0, 0, texture3, 0.75);
                     this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
@@ -922,7 +923,7 @@ export class Scene extends AbstractScene {
         /*
           framebuffer.setCullFace(CullFace.BACK);
           framebuffer.setTexture(this.envmap);
-  
+
           framebuffer.drawBlenderScene6(time, this.particleTexture2,
               [
                   { tex: this.texture10, scale: 0.0, alpha: 1.0 },
@@ -931,11 +932,11 @@ export class Scene extends AbstractScene {
                   { tex: this.texture13, scale: 0.7, alpha: 0.22 },
                   { tex: this.texture13, scale: -0.4, alpha: 0.22 },
               ], this.dirt);
-  
+
           const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
           framebuffer.drawTexture(0, 0, texture3, 0.85);
           framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
-  
+
           framebuffer.noise(time, this.noise);
   */
 
@@ -998,15 +999,15 @@ export class Scene extends AbstractScene {
               texture.texture = this.accumulationBuffer;
               texture.width = 320;
               texture.height = 200;
-      
+
               let scale = 1 + (1+Math.sin(time*0.00006))*0.5*20;
               let width = 320 *  scale;
               let height = 200 * scale;
-      
+
               // looks crappy with linear interpolation!
               // probably  bilinear is required here
-         
-              
+
+
                   this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
                   this.framebuffer.drawScaledTextureClipBi(
                       Math.round(320/2-width/2),
@@ -1020,20 +1021,20 @@ export class Scene extends AbstractScene {
     texture.texture = this.accumulationBuffer;
     texture.width = 320;
     texture.height = 200;
-    
+
     let scale = 1.05;
     let width = 320 *  scale;
     let height = 200 * scale;
-    
+
     // looks crappy with linear interpolation!
     // probably  bilinear is required here
-     
-     
+
+
         this.framebuffer.drawScaledTextureClipBi(
             Math.round(320/2-width/2),
             Math.round(200/2-height/2),
             width, height, texture, 0.95);
-     
+
             this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
             */
 
@@ -1043,7 +1044,7 @@ export class Scene extends AbstractScene {
         // https://github.com/ninjadev/nin/blob/38e80381415934136c7bd97233a2792df2bffa8d/nin/dasBoot/shims.js
         /*****/
         /*
-    
+
         let scale =  (99-((time * 0.04) % 100))/99;
         let width = (this.micro.width * scale * 2) | 0;
         let height = (this.micro.height * scale * 2) | 0;
@@ -1053,7 +1054,7 @@ export class Scene extends AbstractScene {
         for(let i=0; i < 100; i++) {
             pos.push({x:rng.getFloat(), y: rng.getFloat()});
         }
-    
+
         let xpos = 20+(320-40) * pos[((time*0.04/99)%100)|0].x;
         let ypos = 20+(200-40) * pos[((time*0.04/99)%100)|0].y;
         this.framebuffer.drawScaledTextureClipAdd(
@@ -1076,9 +1077,9 @@ export class Scene extends AbstractScene {
         this.framebuffer.setCullFace(CullFace.BACK);
         //this.framebuffer.drawBlenderScene(time, this.texture4, this.particleTexture2);
         this.framebuffer.setBob(this.spheremap);
-        this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);  
+        this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
         this.framebuffer.shadingSphereEnv(time*0.0002);
-         this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);  
+         this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
         */
 
         /**

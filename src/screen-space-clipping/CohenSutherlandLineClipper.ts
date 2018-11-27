@@ -41,16 +41,16 @@ export class CohenSutherlandLineClipper {
                 }
 
                 if ((code1 & CohenSutherlandLineClipper.REGION_CODE_TOP) != CohenSutherlandLineClipper.REGION_CODE_CENTER) {
-                    p1.x = Math.round(p1.x + (p2.x - p1.x) * (Framebuffer.maxWindow.y - p1.y) / (p2.y - p1.y));
+                    p1.x = (p1.x + (p2.x - p1.x) * (Framebuffer.maxWindow.y - p1.y) / (p2.y - p1.y));
                     p1.y = Framebuffer.maxWindow.y;
                 } else if ((code1 & CohenSutherlandLineClipper.REGION_CODE_BOTTOM) != CohenSutherlandLineClipper.REGION_CODE_CENTER) {
-                    p1.x = Math.round(p1.x + (p2.x - p1.x) * (Framebuffer.minWindow.y - p1.y) / (p2.y - p1.y));
+                    p1.x = (p1.x + (p2.x - p1.x) * (Framebuffer.minWindow.y - p1.y) / (p2.y - p1.y));
                     p1.y = Framebuffer.minWindow.y;
                 } else if ((code1 & CohenSutherlandLineClipper.REGION_CODE_RIGHT) != CohenSutherlandLineClipper.REGION_CODE_CENTER) {
-                    p1.y = Math.round(p1.y + (p2.y - p1.y) * (Framebuffer.maxWindow.x - p1.x) / (p2.x - p1.x));
+                    p1.y = (p1.y + (p2.y - p1.y) * (Framebuffer.maxWindow.x - p1.x) / (p2.x - p1.x));
                     p1.x = Framebuffer.maxWindow.x;
                 } else if ((code1 & CohenSutherlandLineClipper.REGION_CODE_LEFT) != CohenSutherlandLineClipper.REGION_CODE_CENTER) {
-                    p1.y = Math.round(p1.y + (p2.y - p1.y) * (Framebuffer.minWindow.x - p1.x) / (p2.x - p1.x));
+                    p1.y = (p1.y + (p2.y - p1.y) * (Framebuffer.minWindow.x - p1.x) / (p2.x - p1.x));
                     p1.x = Framebuffer.minWindow.x;
                 }
 

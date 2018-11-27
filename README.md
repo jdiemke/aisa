@@ -109,6 +109,7 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
     - Key Frame Animated Camera
 - Web Audio API
 ### Backlog
+- Subpixel Accuracy (Lines and Polygons)
 - VFC with AABB Hierachies & PVS
 - Configurable Clipping Regions (Sprites / Geometry)
 - Procedural Textures
