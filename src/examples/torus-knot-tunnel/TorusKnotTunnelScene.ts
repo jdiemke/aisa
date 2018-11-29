@@ -15,7 +15,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        framebuffer.setCullFace(CullFace.FRONT);
+        framebuffer.renderingPipeline.setCullFace(CullFace.FRONT);
         return Promise.all([
             TextureUtils.generateProceduralNoise().then((texture: Texture) => this.noise = texture),
             TextureUtils.generateProceduralParticleTexture2().then((texture: Texture) => this.particleTexture = texture),
@@ -103,10 +103,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
 
         let ppoints2: Array<Vector3f> = new Array<Vector3f>(ppoints.length);
         ppoints.forEach(element => {
-
-
             let transformed = framebuffer.project(modelViewMartrix.multiply(element));
-
             ppoints2.push(transformed);
         });
 
