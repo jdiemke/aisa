@@ -36,7 +36,8 @@ module.exports = {
         'frustum-culling': './src/examples/frustum-culling/Application.ts',
         'titan-effect': './src/examples/titan-effect/Application.ts',
         'sine-scroller': './src/examples/sine-scroller/Application.ts',
-        'mode-7': './src/examples/mode-7/Application.ts'
+        'mode-7': './src/examples/mode-7/Application.ts',
+        'bump': './src/examples/bump-map/Application.ts'
     },
     mode: 'development',
     output: {
@@ -232,6 +233,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['mode-7'],
             filename: 'mode-7.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['bump'],
+            filename: 'bump.html'
         })
     ]
 }

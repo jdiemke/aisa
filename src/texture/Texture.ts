@@ -53,6 +53,12 @@ export class Texture {
         return this.texture[x + y * this.width];
     }
 
+    getPixel3(texture: Texture, x: number, y: number) {
+        return this.texture[
+            (((x % this.width) + this.width) % this.width) +
+            (((y % this.height) + this.height) % this.height) * this.width];
+    }
+
     private interpolateComp(x, y, x0y0, x1y0, x0y1, x1y1) {
         let col1 = x0y0 * (1 - (x - Math.floor(x))) + (x1y0 * ((x - Math.floor(x))));
         let col2 = x0y1 * (1 - (x - Math.floor(x))) + (x1y1 * ((x - Math.floor(x))));
