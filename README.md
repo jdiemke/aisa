@@ -23,6 +23,7 @@ project contains a lot of elementary algorithms from then
 field of computer graphics including clipping, triangle rasterization, geometric transformations and so forth.
 ### Demos
 * [Wobble](https://jdiemke.github.io/aisa/titan-effect.html)
+* [Lens](https://jdiemke.github.io/aisa/lens.html)
 * [Sine Scroller](https://jdiemke.github.io/aisa/sine-scroller.html)
 * [SNES Mode7](https://jdiemke.github.io/aisa/mode-7.html)
 * [2D Bump Mapping](https://jdiemke.github.io/aisa/bump.html)
