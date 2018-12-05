@@ -22,6 +22,7 @@ Engine from scratch I used this opportunity. Hence this
 project contains a lot of elementary algorithms from then
 field of computer graphics including clipping, triangle rasterization, geometric transformations and so forth.
 ### Demos
+* [TRISTAR](https://jdiemke.github.io/aisa/floor.html)
 * [Wobble](https://jdiemke.github.io/aisa/titan-effect.html)
 * [Lens](https://jdiemke.github.io/aisa/lens.html)
 * [Sine Scroller](https://jdiemke.github.io/aisa/sine-scroller.html)

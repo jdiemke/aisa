@@ -37,7 +37,9 @@ module.exports = {
         'titan-effect': './src/examples/titan-effect/Application.ts',
         'sine-scroller': './src/examples/sine-scroller/Application.ts',
         'mode-7': './src/examples/mode-7/Application.ts',
-        'bump': './src/examples/bump-map/Application.ts'
+        'bump': './src/examples/bump-map/Application.ts',
+        'gears-2': './src/examples/gears-2/Application.ts',
+        'floor': './src/examples/floor/Application.ts',
     },
     mode: 'development',
     output: {
@@ -238,6 +240,16 @@ module.exports = {
             template: './src/index.html',
             chunks: ['bump'],
             filename: 'bump.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['gears-2'],
+            filename: 'gears-2.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['floor'],
+            filename: 'floor.html'
         })
     ]
 }
