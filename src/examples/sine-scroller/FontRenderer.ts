@@ -36,7 +36,7 @@ export class FontRenderer {
             const index: number = this.charToIndex.has(asciiCode) ? this.charToIndex.get(asciiCode) : 0;
             const tx: number = Math.floor(index % xFonts) * this.width;
             const ty: number = Math.floor(index / xFonts) * this.height;
-            this.framebuffer.drawTextureRectFastAlpha(xpos, y, tx, ty, 8, 14, this.fontTexture);
+            this.framebuffer.drawTextureRectFastAlpha(xpos, y, tx, ty, this.width, this.height, this.fontTexture);
             xpos += this.width;
         }
     }
