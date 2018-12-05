@@ -69,13 +69,8 @@ export class TriangleRasterizer {
         let zslope1 = (1 / v2.z - 1 / v1.z) / yDistance;
         let zslope2 = (1 / v3.z - 1 / v1.z) / yDistance;
 
-        let curx1 = v1.x;
-        let curx2 = v1.x;
-
         let curz1 = 1.0 / v1.z;
         let curz2 = 1.0 / v1.z;
-
-        let length = Math.round(yDistance);
 
         let xPosition = v1.x;
         let xPosition2 = v1.x;
@@ -99,9 +94,6 @@ export class TriangleRasterizer {
             xPosition2 += slope2;
             yPosition++;
 
-            curx1 += slope1;
-            curx2 += slope2;
-
             curz1 += zslope1;
             curz2 += zslope2;
         }
@@ -115,9 +107,6 @@ export class TriangleRasterizer {
 
         let zslope1 = (1 / v3.z - 1 / v1.z) / yDistance;
         let zslope2 = (1 / v3.z - 1 / v2.z) / yDistance;
-
-        let curx1 = v1.x;
-        let curx2 = v2.y;
 
         let curz1 = 1.0 / v1.z;
         let curz2 = 1.0 / v2.z;
@@ -142,9 +131,6 @@ export class TriangleRasterizer {
             xPosition2 += slope2;
             yPosition++;
 
-            curx1 += slope1;
-            curx2 += slope2;
-
             curz1 += zslope1;
             curz2 += zslope2;
         }
@@ -160,9 +146,6 @@ export class TriangleRasterizer {
 
         let zslope1 = (1 / v2.z - 1 / v1.z) / yDistanceLeft;
         let zslope2 = (1 / v3.z - 1 / v1.z) / yDistanceRight;
-
-        let curx1 = v1.x;
-        let curx2 = v1.x;
 
         let curz1 = 1.0 / v1.z;
         let curz2 = 1.0 / v1.z;
@@ -189,9 +172,6 @@ export class TriangleRasterizer {
             xPosition2 += slope2;
             yPosition++;
 
-            curx1 += slope1;
-            curx2 += slope2;
-
             curz1 += zslope1;
             curz2 += zslope2;
         }
@@ -199,8 +179,7 @@ export class TriangleRasterizer {
         yDistanceLeft = v3.y - v2.y;
         slope1 = (v3.x - v2.x) / yDistanceLeft;
         zslope1 = (1 / v3.z - 1 / v2.z) / yDistanceLeft;
-        curx1 = v2.x;
-        curz1 = 1.0 / v2.z;
+
         xPosition = v2.x;
         yPosition = v2.y;
 
@@ -222,9 +201,6 @@ export class TriangleRasterizer {
             xPosition2 += slope2;
             yPosition++;
 
-            curx1 += slope1;
-            curx2 += slope2;
-
             curz1 += zslope1;
             curz2 += zslope2;
         }
@@ -241,9 +217,6 @@ export class TriangleRasterizer {
 
         let zslope2 = (1 / v2.z - 1 / v1.z) / yDistanceRight;
         let zslope1 = (1 / v3.z - 1 / v1.z) / yDistanceLeft;
-
-        let curx1 = v1.x;
-        let curx2 = v1.x;
 
         let curz1 = 1.0 / v1.z;
         let curz2 = 1.0 / v1.z;
@@ -270,9 +243,6 @@ export class TriangleRasterizer {
             xPosition2 += slope2;
             yPosition++;
 
-            curx1 += slope1;
-            curx2 += slope2;
-
             curz1 += zslope1;
             curz2 += zslope2;
         }
@@ -280,7 +250,7 @@ export class TriangleRasterizer {
         yDistanceRight = v3.y - v2.y;
         slope2 = (v3.x - v2.x) / yDistanceRight;
         zslope2 = (1 / v3.z - 1 / v2.z) / yDistanceRight;
-        curx2 = v2.x;
+
         curz2 = 1.0 / v2.z;
         xPosition2 = v2.x;
         yPosition = v2.y;
@@ -302,9 +272,6 @@ export class TriangleRasterizer {
             xPosition += slope1;
             xPosition2 += slope2;
             yPosition++;
-
-            curx1 += slope1;
-            curx2 += slope2;
 
             curz1 += zslope1;
             curz2 += zslope2;
