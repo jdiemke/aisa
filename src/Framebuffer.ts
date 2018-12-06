@@ -123,6 +123,18 @@ export class Framebuffer {
         this.framebuffer[x + y * this.width] = color;
 
     }
+    public drawPixel4(x: number, y: number, color: number, alpha: number) {
+        const index: number = x + y * this.width;
+        let inverseAlpha = 1 - alpha;
+        let r = (((this.framebuffer[index] >> 0) & 0xff) * (inverseAlpha)
+            + ((color >> 0) & 0xff) * (alpha)) | 0;
+        let g = (((this.framebuffer[index] >> 8) & 0xff) * (inverseAlpha) +
+            ((color >> 8) & 0xff) * (alpha)) | 0;
+        let b = (((this.framebuffer[index] >> 16) & 0xff) * (inverseAlpha) +
+            ((color >> 16) & 0xff) * (alpha)) | 0;
+        this.framebuffer[x + y * this.width] = r | (g << 8) | (b << 16) | (255 << 24);
+
+    }
 
     public drawPixel3(x: number, y: number, color: number, alpha2: number) {
 

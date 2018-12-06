@@ -40,6 +40,7 @@ module.exports = {
         'bump': './src/examples/bump-map/Application.ts',
         'gears-2': './src/examples/gears-2/Application.ts',
         'floor': './src/examples/floor/Application.ts',
+        'pixel-effect': './src/examples/pixel-effect/Application.ts',
     },
     mode: 'development',
     output: {
@@ -250,6 +251,12 @@ module.exports = {
             template: './src/index.html',
             chunks: ['floor'],
             filename: 'floor.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['pixel-effect'],
+            filename: 'pixel-effect.html'
         })
+
     ]
 }
