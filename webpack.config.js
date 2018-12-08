@@ -42,6 +42,7 @@ module.exports = {
         'floor': './src/examples/floor/Application.ts',
         'pixel-effect': './src/examples/pixel-effect/Application.ts',
         'planedeformation-abstract': './src/examples/planedeformation-abstract/Application.ts',
+        'tunnel': './src/examples/tunnel/Application.ts',
     },
     mode: 'development',
     output: {
@@ -263,6 +264,12 @@ module.exports = {
             template: './src/index.html',
             chunks: ['planedeformation-abstract'],
             filename: 'planedeformation-abstract.html'
+        })
+        ,
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['tunnel'],
+            filename: 'tunnel.html'
         })
 
     ]

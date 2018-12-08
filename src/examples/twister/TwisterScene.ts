@@ -36,10 +36,11 @@ export class TwisterScene extends AbstractScene {
         for (let i: number = 10; i < 190; i++) {
             let xoff = (Math.sin(a + i * 0.01) * 50) | 0;
             let rot = Math.sin(a * 0.4 + i * 0.0021) * Math.PI * 2;
-            let x1 = (Math.sin(rot) * 32) | 0;
-            let x2 = (Math.sin(Math.PI * 2 / 4 + rot) * 32) | 0;
-            let x3 = (Math.sin(Math.PI * 2 / 4 * 2 + rot) * 32) | 0;
-            let x4 = (Math.sin(Math.PI * 2 / 4 * 3 + rot) * 32) | 0;
+            let scale = 32;
+            let x1 = (Math.sin(rot) * scale) | 0;
+            let x2 = (Math.sin(Math.PI * 2 / 4 + rot) * scale) | 0;
+            let x3 = (Math.sin(Math.PI * 2 / 4 * 2 + rot) * scale) | 0;
+            let x4 = (Math.sin(Math.PI * 2 / 4 * 3 + rot) * scale) | 0;
 
             if (x2 > x1) {
                 let scale = Math.max(0, Math.sin(Math.PI * 2 / 4 * 1.5 + rot));
