@@ -954,6 +954,43 @@ export class Framebuffer {
         }
     }
 
+    public drawTexture3(x: number, y: number, texture: Texture, alpha2: number, time: number) {
+        const SCREEN_WIDTH = 320;
+        const SCREEN_HEIGHT = 200;
+
+        let framebufferIndex: number = Math.max(x, 0) + Math.max(y, 0) * this.width;
+        let textureIndex: number = Math.max(0, 0 - x) + Math.max(0, 0 - y) * texture.width;
+
+        const width: number = Math.min(texture.width, SCREEN_WIDTH - x) - Math.max(0, 0 - x);
+        const height: number = Math.min(texture.height, SCREEN_HEIGHT - y) - Math.max(0, 0 - y);
+
+        const textureRowOffset = texture.width - width;
+        const framebufferRowOffset = this.width - width;
+
+        const div = 1 / 255 * alpha2;
+
+        const mHeight = Math.floor(height * Math.max(Math.min(1,time), 0));
+
+        for (let y: number = 0; y < mHeight; y++) {
+            for (let x: number = 0; x < width; x++) {
+                let alpha = (texture.texture[textureIndex] >> 24 & 0xff) * div;
+                let inverseAlpha = 1 - alpha;
+
+                let r = (this.framebuffer[framebufferIndex] >> 0 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 0 & 0xff) * alpha;
+                let g = (this.framebuffer[framebufferIndex] >> 8 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 8 & 0xff) * alpha;
+                let b = (this.framebuffer[framebufferIndex] >> 16 & 0xff) * inverseAlpha + (texture.texture[textureIndex] >> 16 & 0xff) * alpha;
+
+                this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | (255 << 24);
+
+                framebufferIndex++;
+                textureIndex++;
+            }
+
+            textureIndex += textureRowOffset;
+            framebufferIndex += framebufferRowOffset;
+        }
+    }
+
     public drawTextureNoClipAlpha(x: number, y: number, texture: Texture): void {
         let framebufferIndex: number = x + y * this.width;
         let textureIndex: number = 0;
