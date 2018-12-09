@@ -22,6 +22,7 @@ Engine from scratch I used this opportunity. Hence this
 project contains a lot of elementary algorithms from then
 field of computer graphics including clipping, triangle rasterization, geometric transformations and so forth.
 ### Demos
+* [Cubes](https://jdiemke.github.io/aisa/voxel-balls.html)
 * [TRISTAR](https://jdiemke.github.io/aisa/floor.html)
 * [Wobble Tunnel](https://jdiemke.github.io/aisa/tunnel.html)
 * [4th Dimension](https://jdiemke.github.io/aisa/planedeformation-abstract.html)
