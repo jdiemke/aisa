@@ -954,6 +954,21 @@ export class Framebuffer {
         }
     }
 
+    public drawTextureFullscreen(texture: Texture, alpha2: number) {
+
+        let framebufferIndex: number = 0;
+        let inverseAlpha = 1 - alpha2;
+        for (let y: number = 0; y < 320 * 200; y++) {
+
+            let r = (this.framebuffer[framebufferIndex] >> 0 & 0xff) * inverseAlpha + (texture.texture[framebufferIndex] >> 0 & 0xff) * alpha2;
+            let g = (this.framebuffer[framebufferIndex] >> 8 & 0xff) * inverseAlpha + (texture.texture[framebufferIndex] >> 8 & 0xff) * alpha2;
+            let b = (this.framebuffer[framebufferIndex] >> 16 & 0xff) * inverseAlpha + (texture.texture[framebufferIndex] >> 16 & 0xff) * alpha2;
+
+            this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | (255 << 24);
+            framebufferIndex ++;
+        }
+    }
+
     public drawTexture3(x: number, y: number, texture: Texture, alpha2: number, time: number) {
         const SCREEN_WIDTH = 320;
         const SCREEN_HEIGHT = 200;
@@ -969,7 +984,7 @@ export class Framebuffer {
 
         const div = 1 / 255 * alpha2;
 
-        const mHeight = Math.floor(height * Math.max(Math.min(1,time), 0));
+        const mHeight = Math.floor(height * Math.max(Math.min(1, time), 0));
 
         for (let y: number = 0; y < mHeight; y++) {
             for (let x: number = 0; x < width; x++) {

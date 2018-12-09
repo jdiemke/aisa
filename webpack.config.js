@@ -43,6 +43,7 @@ module.exports = {
         'pixel-effect': './src/examples/pixel-effect/Application.ts',
         'planedeformation-abstract': './src/examples/planedeformation-abstract/Application.ts',
         'tunnel': './src/examples/tunnel/Application.ts',
+        'voxel-balls': './src/examples/voxel-balls/Application.ts',
     },
     mode: 'development',
     output: {
@@ -271,6 +272,14 @@ module.exports = {
             chunks: ['tunnel'],
             filename: 'tunnel.html'
         })
+        ,
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['voxel-balls'],
+            filename: 'voxel-balls.html'
+        })
+
+
 
     ]
 }
