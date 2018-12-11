@@ -24,7 +24,7 @@
   "author": "Johannes Diemke",
   "license": "MIT",
   "devDependencies": {
-    "@types/jasmine": "3.3.0",
+    "@types/jasmine": "3.3.1",
     "@types/node": "10.12.12",
     "babel-minify-webpack-plugin": "0.3.1",
     "file-loader": "2.0.0",
