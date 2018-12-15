@@ -18,6 +18,9 @@ export class Color {
     public static readonly CYAN = new Color(0, 255, 255, 255);
     public static readonly MAGENTA = new Color(255, 0, 255, 255);
     public static readonly SLATE_GRAY = new Color(112, 128, 144, 255);
+    public static readonly DARK_GRAY = new Color( 19, 19, 20, 255);
+
+
 
     constructor(private r: number, private g: number, private b: number, private a: number) {
     }

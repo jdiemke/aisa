@@ -44,6 +44,7 @@ module.exports = {
         'planedeformation-abstract': './src/examples/planedeformation-abstract/Application.ts',
         'tunnel': './src/examples/tunnel/Application.ts',
         'voxel-balls': './src/examples/voxel-balls/Application.ts',
+        'cube-tunnel': './src/examples/cube-tunnel/Application.ts',
     },
     mode: 'development',
     output: {
@@ -279,6 +280,12 @@ module.exports = {
             filename: 'voxel-balls.html'
         })
 
+        ,
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['cube-tunnel'],
+            filename: 'cube-tunnel.html'
+        })
 
 
     ]
