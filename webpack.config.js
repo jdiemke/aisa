@@ -45,6 +45,7 @@ module.exports = {
         'tunnel': './src/examples/tunnel/Application.ts',
         'voxel-balls': './src/examples/voxel-balls/Application.ts',
         'cube-tunnel': './src/examples/cube-tunnel/Application.ts',
+        'md2': './src/examples/md2/Application.ts',
     },
     mode: 'development',
     output: {
@@ -65,7 +66,7 @@ module.exports = {
                 use: 'html-loader'
             },
             {
-                test: /\.(png|jpg|mp3|ogg)$/,
+                test: /\.(png|jpg|mp3|ogg|md2)$/,
                 use: 'file-loader'
             }
         ]
@@ -260,33 +261,31 @@ module.exports = {
             template: './src/index.html',
             chunks: ['pixel-effect'],
             filename: 'pixel-effect.html'
-        })
-        ,
+        }),
         new HtmlWebpackPlugin({
             template: './src/index.html',
             chunks: ['planedeformation-abstract'],
             filename: 'planedeformation-abstract.html'
-        })
-        ,
+        }),
         new HtmlWebpackPlugin({
             template: './src/index.html',
             chunks: ['tunnel'],
             filename: 'tunnel.html'
-        })
-        ,
+        }),
         new HtmlWebpackPlugin({
             template: './src/index.html',
             chunks: ['voxel-balls'],
             filename: 'voxel-balls.html'
-        })
-
-        ,
+        }),
         new HtmlWebpackPlugin({
             template: './src/index.html',
             chunks: ['cube-tunnel'],
             filename: 'cube-tunnel.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['md2'],
+            filename: 'md2.html'
         })
-
-
     ]
 }
