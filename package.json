@@ -24,7 +24,7 @@
   "author": "Johannes Diemke",
   "license": "MIT",
   "devDependencies": {
-    "@types/jasmine": "3.3.4",
+    "@types/jasmine": "3.3.5",
     "@types/node": "10.12.18",
     "babel-minify-webpack-plugin": "0.3.1",
     "file-loader": "3.0.1",
@@ -41,8 +41,8 @@
     "ts-node": "7.0.1",
     "tslint": "5.12.0",
     "typescript": "3.2.2",
-    "webpack": "4.28.1",
+    "webpack": "4.28.2",
     "webpack-cli": "3.1.2",
-    "webpack-dev-server": "3.1.11"
+    "webpack-dev-server": "3.1.13"
   }
 }
