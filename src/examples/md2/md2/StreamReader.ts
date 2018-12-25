@@ -14,6 +14,12 @@ export class StreamReader {
         return value;
     }
 
+    public readFloat(): number {
+        const value: number = this.dataView.getFloat32(this.position, true);
+        this.position += 4;
+        return value;
+    }
+
     public readUnsignedInt8(): number {
         const value: number = this.dataView.getUint8(this.position);
         this.position += 1;
@@ -22,6 +28,12 @@ export class StreamReader {
 
     public readSignedShort(): number {
         const value: number = this.dataView.getInt16(this.position, true);
+        this.position += 2;
+        return value;
+    }
+
+    public readUnsigbnedShort(): number {
+        const value: number = this.dataView.getUint16(this.position, true);
         this.position += 2;
         return value;
     }
