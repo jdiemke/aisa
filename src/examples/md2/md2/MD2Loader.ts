@@ -3,6 +3,7 @@ import { TexturedMesh } from '../../../rendering-pipelines/TexturedMesh';
 import { TextureCoordinate } from '../../../Vertex';
 import { MD2Frame } from './MD2Frame';
 import { MD2Header } from './MD2Header';
+import { MD2Model } from './MD2Model';
 import { MD2Skin } from './MD2Skin';
 import { MD2TexCoord } from './MD2TexCoord';
 import { MD2Triangle } from './MD2Triangle';
@@ -11,7 +12,7 @@ import { StreamReader } from './StreamReader';
 
 export class MD2Loader {
 
-    public static load(filename: string): Promise<TexturedMesh> {
+    public static load(filename: string): Promise<MD2Model> {
         return fetch(filename).then((response: Response) => {
             return response.arrayBuffer();
         }).then((arrayBuffer: ArrayBuffer) => {
@@ -23,7 +24,7 @@ export class MD2Loader {
         });
     }
 
-    private static parse(arrayBuffer: ArrayBuffer): TexturedMesh {
+    private static parse(arrayBuffer: ArrayBuffer): MD2Model {
         // 7load header
         const header: MD2Header = new MD2Header(arrayBuffer);
 
@@ -58,41 +59,13 @@ export class MD2Loader {
             const frame: MD2Frame = new MD2Frame(arrayBuffer, header.framesOffset + header.frameSize * i, header);
             frames.push(frame);
         }
-        const mesh: TexturedMesh = new TexturedMesh();
-        const cframe: MD2Frame = frames[99];
-        const points: Array<Vector4f> = new Array<Vector4f>();
-        cframe.vertices.forEach( (x: MD2Vertex) => {
-            points.push(new Vector4f(
-                x.vector.x * cframe.scale.x + cframe.translate.x,
-                x.vector.y * cframe.scale.y + cframe.translate.y,
-                x.vector.z * cframe.scale.z + cframe.translate.z,
-                1
-            ));
-        });
 
-        const texCoords2: Array<TextureCoordinate> = new Array<TextureCoordinate>();
-        texCoords.forEach((tc: MD2TexCoord) => {
-            texCoords2.push(new TextureCoordinate(tc.s, tc.t));
-        });
-        mesh.points = points;
-        mesh.points2 = points.map(() => new Vector4f(0, 0, 0, 0));
-        mesh.uv = texCoords2;
-        const faces: Array<{
-            vertices: Array<number>,
-            uv: Array<number>
-        }> = new Array();
+        const model: MD2Model = new MD2Model();
+        model.frames = frames;
+        model.textureCoordinates = texCoords;
+        model.triangles = trianfgles;
 
-        trianfgles.forEach((t: MD2Triangle) => {
-
-            faces.push({
-                uv: t.texCoords,
-                vertices:  t.vertices
-            });
-        });
-
-        mesh.faces = faces;
-
-        return mesh;
+        return model;
     }
 
     private constructor() {
