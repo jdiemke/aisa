@@ -60,12 +60,7 @@ export class MD2Loader {
             frames.push(frame);
         }
 
-        const model: MD2Model = new MD2Model();
-        model.frames = frames;
-        model.textureCoordinates = texCoords;
-        model.triangles = trianfgles;
-
-        return model;
+        return new MD2Model(texCoords, trianfgles, frames, header);
     }
 
     private constructor() {
