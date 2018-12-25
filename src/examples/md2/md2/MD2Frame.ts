@@ -36,7 +36,11 @@ export class MD2Frame {
             const nomralIndex: number = streamvert.readUnsignedInt8();
 
             vertArray.push(new MD2Vertex(
-                new Vector3f(px, py, pz),
+                new Vector3f(
+                    px * scale.x + trans.x,
+                    py * scale.y + trans.y,
+                    pz * scale.z + trans.z
+                ),
                 nomralIndex
             ));
         }
