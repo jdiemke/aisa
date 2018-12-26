@@ -16,7 +16,6 @@
 
 import { Vector3f } from './Vector3f';
 import { Vector4f } from './Vector4f';
-import { Matrix3f } from './Matrix3';
 
 export class Matrix4f {
 
@@ -66,8 +65,33 @@ export class Matrix4f {
         return matrix;
     }
 
+
+    public setIdentityMatrix(): void {
+
+
+        this.m11 = 1.0;
+        this.m12 = 0.0;
+        this.m13 = 0.0;
+        this.m14 = 0.0;
+
+        this.m21 = 0.0;
+        this.m22 = 1.0;
+        this.m23 = 0.0;
+        this.m24 = 0.0;
+
+        this.m31 = 0.0;
+        this.m32 = 0.0;
+        this.m33 = 1.0;
+        this.m34 = 0.0;
+
+        this.m41 = 0.0;
+        this.m42 = 0.0;
+        this.m43 = 0.0;
+        this.m44 = 1.0;
+    }
+
     public transpose(): Matrix4f {
-        let transpose = new Matrix4f();
+        const transpose: Matrix4f = new Matrix4f();
 
         transpose.m11 = this.m11;
         transpose.m12 = this.m21;
@@ -140,12 +164,12 @@ export class Matrix4f {
         inverseRotation.m13 = this.m31 * scale;
         inverseRotation.m23 = this.m32 * scale;
         inverseRotation.m33 = this.m33 * scale;
-        
+
         return inverseRotation;
     }
 
     public getRotation(): Matrix4f {
-    
+
         let inverseRotation = Matrix4f.constructIdentityMatrix();
         inverseRotation.m11 = this.m11;
         inverseRotation.m21 = this.m21 ;
@@ -158,7 +182,7 @@ export class Matrix4f {
         inverseRotation.m13 = this.m13 ;
         inverseRotation.m23 = this.m23 ;
         inverseRotation.m33 = this.m33 ;
-        
+
         return inverseRotation;
     }
 
@@ -196,7 +220,7 @@ export class Matrix4f {
         shadowMatrix.m44 = NdotL;
 
         return shadowMatrix;
-        
+
     }
 
     static constructTranslationMatrix(tx: number, ty: number, tz: number): Matrix4f {
@@ -225,6 +249,28 @@ export class Matrix4f {
         return matrix;
     }
 
+    public setTranslationMatrix(tx: number, ty: number, tz: number): void {
+        this.m11 = 1.0;
+        this.m12 = 0.0;
+        this.m13 = 0.0;
+        this.m14 = tx;
+
+        this.m21 = 0.0;
+        this.m22 = 1.0;
+        this.m23 = 0.0;
+        this.m24 = ty;
+
+        this.m31 = 0.0;
+        this.m32 = 0.0;
+        this.m33 = 1.0;
+        this.m34 = tz;
+
+        this.m41 = 0.0;
+        this.m42 = 0.0;
+        this.m43 = 0.0;
+        this.m44 = 1.0;
+    }
+
     static constructXRotationMatrix(alpha: number): Matrix4f {
         let matrix: Matrix4f = new Matrix4f();
 
@@ -249,6 +295,50 @@ export class Matrix4f {
         matrix.m44 = 1.0;
 
         return matrix;
+    }
+
+    public setXRotationMatrix(alpha: number): void {
+        this.m11 = 1.0;
+        this.m12 = 0.0;
+        this.m13 = 0.0;
+        this.m14 = 0.0;
+
+        this.m21 = 0.0;
+        this.m22 = Math.cos(alpha);
+        this.m23 = -Math.sin(alpha);
+        this.m24 = 0.0;
+
+        this.m31 = 0.0;
+        this.m32 = Math.sin(alpha);
+        this.m33 = Math.cos(alpha);
+        this.m34 = 0.0;
+
+        this.m41 = 0.0;
+        this.m42 = 0.0;
+        this.m43 = 0.0;
+        this.m44 = 1.0;
+    }
+
+    public setYRotationMatrix(alpha: number): void {
+        this.m11 = Math.cos(alpha);
+        this.m12 = 0.0;
+        this.m13 = Math.sin(alpha);
+        this.m14 = 0.0;
+
+        this.m21 = 0.0;
+        this.m22 = 1.0;
+        this.m23 = 0.0;
+        this.m24 = 0.0;
+
+        this.m31 = -Math.sin(alpha);
+        this.m32 = 0.0;
+        this.m33 = Math.cos(alpha);
+        this.m34 = 0.0;
+
+        this.m41 = 0.0;
+        this.m42 = 0.0;
+        this.m43 = 0.0;
+        this.m44 = 1.0;
     }
 
     static constructYRotationMatrix(alpha: number): Matrix4f {
@@ -353,6 +443,28 @@ export class Matrix4f {
         result.m44 = this.m41 * matrix.m14 + this.m42 * matrix.m24 + this.m43 * matrix.m34 + this.m44 * matrix.m44;
 
         return result;
+    }
+
+    public multiply2(matrix: Matrix4f, matrix2: Matrix4f): void {
+        this.m11 = matrix.m11 * matrix2.m11 + matrix.m12 * matrix2.m21 + matrix.m13 * matrix2.m31 + matrix.m14 * matrix2.m41;
+        this.m21 = matrix.m21 * matrix2.m11 + matrix.m22 * matrix2.m21 + matrix.m23 * matrix2.m31 + matrix.m24 * matrix2.m41;
+        this.m31 = matrix.m31 * matrix2.m11 + matrix.m32 * matrix2.m21 + matrix.m33 * matrix2.m31 + matrix.m34 * matrix2.m41;
+        this.m41 = matrix.m41 * matrix2.m11 + matrix.m42 * matrix2.m21 + matrix.m43 * matrix2.m31 + matrix.m44 * matrix2.m41;
+
+        this.m12 = matrix.m11 * matrix2.m12 + matrix.m12 * matrix2.m22 + matrix.m13 * matrix2.m32 + matrix.m14 * matrix2.m42;
+        this.m22 = matrix.m21 * matrix2.m12 + matrix.m22 * matrix2.m22 + matrix.m23 * matrix2.m32 + matrix.m24 * matrix2.m42;
+        this.m32 = matrix.m31 * matrix2.m12 + matrix.m32 * matrix2.m22 + matrix.m33 * matrix2.m32 + matrix.m34 * matrix2.m42;
+        this.m42 = matrix.m41 * matrix2.m12 + matrix.m42 * matrix2.m22 + matrix.m43 * matrix2.m32 + matrix.m44 * matrix2.m42;
+
+        this.m13 = matrix.m11 * matrix2.m13 + matrix.m12 * matrix2.m23 + matrix.m13 * matrix2.m33 + matrix.m14 * matrix2.m43;
+        this.m23 = matrix.m21 * matrix2.m13 + matrix.m22 * matrix2.m23 + matrix.m23 * matrix2.m33 + matrix.m24 * matrix2.m43;
+        this.m33 = matrix.m31 * matrix2.m13 + matrix.m32 * matrix2.m23 + matrix.m33 * matrix2.m33 + matrix.m34 * matrix2.m43;
+        this.m43 = matrix.m41 * matrix2.m13 + matrix.m42 * matrix2.m23 + matrix.m43 * matrix2.m33 + matrix.m44 * matrix2.m43;
+
+        this.m14 = matrix.m11 * matrix2.m14 + matrix.m12 * matrix2.m24 + matrix.m13 * matrix2.m34 + matrix.m14 * matrix2.m44;
+        this.m24 = matrix.m21 * matrix2.m14 + matrix.m22 * matrix2.m24 + matrix.m23 * matrix2.m34 + matrix.m24 * matrix2.m44;
+        this.m34 = matrix.m31 * matrix2.m14 + matrix.m32 * matrix2.m24 + matrix.m33 * matrix2.m34 + matrix.m34 * matrix2.m44;
+        this.m44 = matrix.m41 * matrix2.m14 + matrix.m42 * matrix2.m24 + matrix.m43 * matrix2.m34 + matrix.m44 * matrix2.m44;
     }
 
     public multiply(vector: Vector3f): Vector3f {

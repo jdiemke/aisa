@@ -1,23 +1,24 @@
-import { Framebuffer } from '../Framebuffer';
-import { Vector3f, Vector4f } from '../math';
 import { Matrix4f } from '../math/Matrix4f';
+import { Vector4f } from '../math/Vector4f';
 import { TextureCoordinate, Vertex } from '../Vertex';
 import { AbstractRenderingPipeline } from './AbstractRenderingPipeline';
 import { TexturedMesh } from './TexturedMesh';
 
 export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
 
+    private vertexArray: Array<Vertex> = new Array<Vertex>(
+        new Vertex(), new Vertex(), new Vertex()
+    );
+
+    private projectedVertices: Array<Vector4f> = new Array<Vector4f>(
+        new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1)
+    );
+
     public draw(mesh: TexturedMesh, modelViewMartrix: Matrix4f): void {
 
         for (let i: number = 0; i < mesh.points.length; i++) {
             modelViewMartrix.multiplyHomArr(mesh.points[i], mesh.points2[i]);
         }
-
-        const vertexArray: Array<Vertex> = new Array<Vertex>(
-            new Vertex(),
-            new Vertex(),
-            new Vertex()
-        );
 
         for (let i: number = 0; i < mesh.faces.length; i++) {
             const v1: Vector4f = mesh.points2[mesh.faces[i].vertices[0]];
@@ -28,37 +29,37 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
                 this.isInFrontOfNearPlane(v2) &&
                 this.isInFrontOfNearPlane(v3)) {
 
-                const p1: Vector4f = this.project(v1);
-                const p2: Vector4f = this.project(v2);
-                const p3: Vector4f = this.project(v3);
+                this.project2(v1, this.projectedVertices[0]);
+                this.project2(v2, this.projectedVertices[1]);
+                this.project2(v3, this.projectedVertices[2]);
 
-                if (this.isTriangleCCW(p1, p2, p3)) {
-                    vertexArray[0].position = p1; // p1 is Vector3f
-                    vertexArray[0].textureCoordinate = mesh.uv[mesh.faces[i].uv[0]];
+                if (this.isTriangleCCW(this.projectedVertices[0], this.projectedVertices[1], this.projectedVertices[2])) {
+                    this.vertexArray[0].position = this.projectedVertices[0]; // p1 is Vector3f
+                    this.vertexArray[0].textureCoordinate = mesh.uv[mesh.faces[i].uv[0]];
 
-                    vertexArray[1].position = p2;
-                    vertexArray[1].textureCoordinate = mesh.uv[mesh.faces[i].uv[1]];
+                    this.vertexArray[1].position = this.projectedVertices[1];
+                    this.vertexArray[1].textureCoordinate = mesh.uv[mesh.faces[i].uv[1]];
 
-                    vertexArray[2].position = p3;
-                    vertexArray[2].textureCoordinate = mesh.uv[mesh.faces[i].uv[2]];
+                    this.vertexArray[2].position = this.projectedVertices[2];
+                    this.vertexArray[2].textureCoordinate = mesh.uv[mesh.faces[i].uv[2]];
 
-                    this.framebuffer.clipConvexPolygon2(vertexArray);
+                    this.framebuffer.clipConvexPolygon2(this.vertexArray);
                 }
             } else if (!this.isInFrontOfNearPlane(v1) &&
                 !this.isInFrontOfNearPlane(v2) &&
                 !this.isInFrontOfNearPlane(v3)) {
                 continue;
             } else {
-                vertexArray[0].position = v1; // v1 is Vector4f
-                vertexArray[0].textureCoordinate = mesh.uv[mesh.faces[i].uv[0]];
+                this.vertexArray[0].position = v1; // v1 is Vector4f
+                this.vertexArray[0].textureCoordinate = mesh.uv[mesh.faces[i].uv[0]];
 
-                vertexArray[1].position = v2;
-                vertexArray[1].textureCoordinate = mesh.uv[mesh.faces[i].uv[1]];
+                this.vertexArray[1].position = v2;
+                this.vertexArray[1].textureCoordinate = mesh.uv[mesh.faces[i].uv[1]];
 
-                vertexArray[2].position = v3;
-                vertexArray[2].textureCoordinate = mesh.uv[mesh.faces[i].uv[2]];
+                this.vertexArray[2].position = v3;
+                this.vertexArray[2].textureCoordinate = mesh.uv[mesh.faces[i].uv[2]];
 
-                this.zClipTriangle2(vertexArray);
+                this.zClipTriangle2(this.vertexArray);
             }
         }
     }
@@ -69,6 +70,12 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
             Math.round((200 / 2) - (t1.y * 292 / (-t1.z))),
             t1.z
         );
+    }
+
+    public project2(t1: { x: number, y: number, z: number }, result: Vector4f): void {
+        result.x = Math.round((320 / 2) + (292 * t1.x / (-t1.z)));
+        result.y = Math.round((200 / 2) - (t1.y * 292 / (-t1.z)));
+        result.z = t1.z;
     }
 
     public computeNearPlaneIntersection2(p1: Vertex, p2: Vertex): Vertex {
