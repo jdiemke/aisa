@@ -87,6 +87,9 @@ Type the following command into your shell:
 ```
 And open `http://localhost:8080/webpack-dev-server/` in your favourite web browser.
 ### Features
+- Model Loading
+    - Wavefront OBJ (JSON)
+    - MD2 (Quake 2)
 - Post Processing
     - Noise
     - Glitch
@@ -112,12 +115,23 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Lens Flare
 - Billboarding
 - Soft Particles
-- Wavefront OBJ
 - Camera
     - Controllable First Person Camera
     - Key Frame Animated Camera
 - Web Audio API
 ### Backlog
+- Light Sources
+    - Directional
+    - Point Light
+    - Spot Light
+    - Ambient / Diffuse / Specular Color Components
+- Generalized Perspective Correct Vertex Attribute Interpolation
+    - https://computergraphics.stackexchange.com/questions/4079/perspective-correct-texture-mapping
+    - http://www.flipcode.com/archives/The_Art_of_Demomaking-Issue_14_Perspective_Correct_Texture_Mapping.shtml
+    - http://www.lysator.liu.se/~mikaelk/doc/perspectivetexture/
+    - http://web.cs.ucdavis.edu/~amenta/s12/perspectiveCorrect.pdf
+- Milkshape 3D Skeletal Animation
+- Wavefront OBJ (TXT)
 - Subpixel Accuracy (Lines and Polygons)
 - VFC with AABB Hierachies & PVS
 - Configurable Clipping Regions (Sprites / Geometry)
@@ -136,11 +150,6 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Quaternions
     - Spherical Linear Interpolation (SLERP)
 - Perspective Projection Matrix
-- Light Sources
-    - Directional
-    - Point Light
-    - Spot Light
-    - Ambient / Diffuse / Specular Color Components
 - Transparency
 - Water Relfection / Refraction
 - Fog
