@@ -151,113 +151,108 @@ export class Scene extends AbstractScene {
         this.fpsCount++;
 
         let time: number = (Date.now() - this.start);
-        time = time * 3 + 550000;
-        time = time % (1150000);
+
 
         //  framebuffer.setCullFace(CullFace.FRONT);
         // framebuffer.wireFrameSphereClipping(time * 0.00009);
         // framebuffer.shadingSphere(time * 0.01);
-        /*
-             if (time < 30000) {
 
-                } else if (time < 40000) {
-                    this.framebuffer.wireFrameSphereClipping(time * 0.01);
-                } else if (time < 80000) {
-                    this.framebuffer.blockFace(this.texture5, time, 80000);
-                } else if (time < 140000) {
-                    this.framebuffer.scrollingBackground(this.texture8, time - 95000);
-                } else if (time < 160000) {
-                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture9.texture);
-                    this.framebuffer.cinematicScroller(this.texture4, time - 140000);
-                } else if (time < 185000) {
-                    this.framebuffer.shadingSphereClip((time - 170000) * 0.003);
-                    this.framebuffer.cinematicScroller(this.texture4, time - 160000);
-                } else if (time < 200000) {
-                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture12.texture);
-                    this.framebuffer.shadingTorus(time * 0.02);
-                    this.framebuffer.drawLensFlare(time - 185000, [
-                        { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                        { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                        { tex: this.texture13, scale: 1.6, alpha: 0.25 }
-                    ]);
-                } else if (time < 210000) {
-                    this.framebuffer.blur();
-                    this.framebuffer.shadingTorus3(time * 0.015);
-                    this.framebuffer.drawTexture(32, 70, this.texture2, 1.0);
-                } else if (time < 215000) {
-                    this.framebuffer.led(time, this.texture14);
-                    this.framebuffer.drawTexture(32, 64, this.texture2, 1.0);
-                } else if (time < 230000) {
-                    this.framebuffer.setBob(this.metal);
-                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
-                    this.framebuffer.shadingTorus4(time * 0.002);
-                    this.framebuffer.drawLensFlare(time - 185000, [
-                        { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                        { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                        { tex: this.texture13, scale: 1.6, alpha: 0.25 }
-                    ]);
-                    this.framebuffer.cinematicScroller(this.texture4, time);
-                } else if (time < 240000) {
-                    this.framebuffer.setBob(this.spheremap);
-                    this.framebuffer.clear();
-                    this.framebuffer.shadingTorusENvironment(time * 0.006);
-                    this.framebuffer.drawLensFlare(time - 185000, [
-                        { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                        { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                        { tex: this.texture13, scale: 1.6, alpha: 0.25 }
-                    ]);
-                }
-                } else if (time < 260000) {
-                    this.framebuffer.setCullFace(CullFace.BACK);
-                    this.framebuffer.setBob(this.spheremap);
-                    this.framebuffer.led(time, this.texture14);
-                    this.framebuffer.reflectionBunny(time * 0.002);
-                } else if (time < 280000) {
-                    this.framebuffer.drawStarField(time * 0.9);
-                    this.framebuffer.setBob(this.spheremap);
-                    this.framebuffer.setCullFace(CullFace.BACK);
-                    this.framebuffer.reflectionBunny(time * 0.002);
-                    this.framebuffer.scene7(time * 0.2, this.texture7);
-                } else if (time < 290000) {
-                    this.framebuffer.drawPlaneDeformation(time, this.metal);
-                    this.framebuffer.drawTexture(32, 69, this.texture2, 1.0);
-                } else if (time < 330000) {
-                    this.framebuffer.drawLedTunnel(time, this.texture14);
-                    this.framebuffer.setCullFace(CullFace.BACK);
-                    this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
-                    this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
-                } else if (time < 360000) {
-                    this.framebuffer.drawParticleTorus(time, this.particleTexture);
-                    this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
-                } else if (time < 380000) {
-                    // THE NEXT LINE IS THE BOTTLENECK NOT THE SPHERE!
-                    this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
-                    this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
-                } else if (time < 420000) {
-                    this.framebuffer.setCullFace(CullFace.BACK);
-                    this.framebuffer.setBob(this.spheremap);
-                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
-                    this.framebuffer.shadingSphereEnv(time * 0.0002);
-                } else if (time < 440000) {
-                    this.framebuffer.raveMoview(time, this.rave);
-                    this.framebuffer.setCullFace(CullFace.BACK);
-                    this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
-                    this.framebuffer.glitchScreen(time, this.noise);
-                    this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
-                } else if (time < 450000) {
-                    this.framebuffer.drawVoxelLandscape3(this.heightmap, time);
-                    let tempTexture = new Texture();
-                    tempTexture.texture = new Uint32Array(256 * 256);
-                    for (let y = 0; y < 256; y++) {
-                        for (let x = 0; x < 256; x++) {
-                            let ypos = Math.round(200 / 256 * x);
-                            let xpos = Math.round(320 / 256 * y);
-                            tempTexture.texture[x + y * 256] = this.framebuffer.framebuffer[xpos + ypos * 320];
-                        }
-                    }
-                    this.framebuffer.drawPolarDistotion(time, tempTexture);
-                } else if (time < 490000) {
-                    */
+        framebuffer.blockFace(this.texture5, time, 0);
+        /*
+    } else if (time < 140000) {
+        this.framebuffer.scrollingBackground(this.texture8, time - 95000);
+    } else if (time < 160000) {
+        this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture9.texture);
+        this.framebuffer.cinematicScroller(this.texture4, time - 140000);
+    } else if (time < 185000) {
+        this.framebuffer.shadingSphereClip((time - 170000) * 0.003);
+        this.framebuffer.cinematicScroller(this.texture4, time - 160000);
+    } else if (time < 200000) {
+        this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture12.texture);
+        this.framebuffer.shadingTorus(time * 0.02);
+        this.framebuffer.drawLensFlare(time - 185000, [
+            { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+            { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+            { tex: this.texture13, scale: 1.6, alpha: 0.25 }
+        ]);
+    } else if (time < 210000) {
+        this.framebuffer.blur();
+        this.framebuffer.shadingTorus3(time * 0.015);
+        this.framebuffer.drawTexture(32, 70, this.texture2, 1.0);
+    } else if (time < 215000) {
+        this.framebuffer.led(time, this.texture14);
+        this.framebuffer.drawTexture(32, 64, this.texture2, 1.0);
+    } else if (time < 230000) {
+        this.framebuffer.setBob(this.metal);
+        this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
+        this.framebuffer.shadingTorus4(time * 0.002);
+        this.framebuffer.drawLensFlare(time - 185000, [
+            { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+            { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+            { tex: this.texture13, scale: 1.6, alpha: 0.25 }
+        ]);
+        this.framebuffer.cinematicScroller(this.texture4, time);
+    } else if (time < 240000) {
+        this.framebuffer.setBob(this.spheremap);
+        this.framebuffer.clear();
+        this.framebuffer.shadingTorusENvironment(time * 0.006);
+        this.framebuffer.drawLensFlare(time - 185000, [
+            { tex: this.texture10, scale: 0.0, alpha: 1.0 },
+            { tex: this.texture11, scale: 2.3, alpha: 0.5 },
+            { tex: this.texture13, scale: 1.6, alpha: 0.25 }
+        ]);
+    }
+    } else if (time < 260000) {
+        this.framebuffer.setCullFace(CullFace.BACK);
+        this.framebuffer.setBob(this.spheremap);
+        this.framebuffer.led(time, this.texture14);
+        this.framebuffer.reflectionBunny(time * 0.002);
+    } else if (time < 280000) {
+        this.framebuffer.drawStarField(time * 0.9);
+        this.framebuffer.setBob(this.spheremap);
+        this.framebuffer.setCullFace(CullFace.BACK);
+        this.framebuffer.reflectionBunny(time * 0.002);
+        this.framebuffer.scene7(time * 0.2, this.texture7);
+    } else if (time < 290000) {
+        this.framebuffer.drawPlaneDeformation(time, this.metal);
+        this.framebuffer.drawTexture(32, 69, this.texture2, 1.0);
+    } else if (time < 330000) {
+        this.framebuffer.drawLedTunnel(time, this.texture14);
+        this.framebuffer.setCullFace(CullFace.BACK);
+        this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
+        this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
+    } else if (time < 360000) {
+        this.framebuffer.drawParticleTorus(time, this.particleTexture);
+        this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
+    } else if (time < 380000) {
+        // THE NEXT LINE IS THE BOTTLENECK NOT THE SPHERE!
+        this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
+        this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
+    } else if (time < 420000) {
+        this.framebuffer.setCullFace(CullFace.BACK);
+        this.framebuffer.setBob(this.spheremap);
+        this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
+        this.framebuffer.shadingSphereEnv(time * 0.0002);
+    } else if (time < 440000) {
+        this.framebuffer.raveMoview(time, this.rave);
+        this.framebuffer.setCullFace(CullFace.BACK);
+        this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
+        this.framebuffer.glitchScreen(time, this.noise);
+        this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
+    } else if (time < 450000) {
+        this.framebuffer.drawVoxelLandscape3(this.heightmap, time);
+        let tempTexture = new Texture();
+        tempTexture.texture = new Uint32Array(256 * 256);
+        for (let y = 0; y < 256; y++) {
+            for (let x = 0; x < 256; x++) {
+                let ypos = Math.round(200 / 256 * x);
+                let xpos = Math.round(320 / 256 * y);
+                tempTexture.texture[x + y * 256] = this.framebuffer.framebuffer[xpos + ypos * 320];
+            }
+        }
+        this.framebuffer.drawPolarDistotion(time, tempTexture);
+    } else if (time < 490000) {
+        */
 
         /*
     } else if (time < 520000) {
