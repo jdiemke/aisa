@@ -14,7 +14,7 @@ export class MD2Model {
 
     constructor(public textureCoordinates: Array<MD2TexCoord>,
                 public triangles: Array<MD2Triangle>,
-                public frames: Array<MD2Frame>, header: MD2Header) {
+                public frames: Array<MD2Frame>, public header: MD2Header) {
 
         const mesh: TexturedMesh = new TexturedMesh();
 

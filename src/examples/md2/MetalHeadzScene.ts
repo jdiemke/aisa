@@ -33,15 +33,24 @@ export class MetalHeadzScene extends AbstractScene {
         framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
         this.startTime = Date.now();
         return Promise.all([
-            TextureUtils.load(require('../../assets/md2/texture2.jpg'), false).then(
+         TextureUtils.load(require('../../assets/md2/texture2.jpg'), false).then(
                 (texture: Texture) => this.ogroTexture = texture
             ),
-            /* MD2Loader.load(require('../../assets/md2/ogro.md2')).then(
-                 (mesh: MD2Model) => this.md2 = mesh
-             ),*/
             MD2Loader.load(require('../../assets/md2/drfreak.md2')).then(
                 (mesh: MD2Model) => this.md2 = mesh
+            ), /*
+            TextureUtils.load(require('../../assets/md2/Samourai.jpg'), false).then(
+                (texture: Texture) => this.ogroTexture = texture
             ),
+            MD2Loader.load(require('../../assets/md2/Samourai.md2')).then(
+                (mesh: MD2Model) => this.md2 = mesh
+            )
+            TextureUtils.load(require('../../assets/md2/dead.png'), false).then(
+                (texture: Texture) => this.ogroTexture = texture
+            ),
+            MD2Loader.load(require('../../assets/md2/ratamahatta.md2')).then(
+                (mesh: MD2Model) => this.md2 = mesh
+            ),,*/
             TextureUtils.load(require('../../assets/font.png'), true).then(
                 (texture: Texture) => this.texture4 = texture),
         ]);
@@ -66,7 +75,8 @@ export class MetalHeadzScene extends AbstractScene {
 
         framebuffer.setTexture(this.ogroTexture);
         framebuffer.texturedRenderingPipeline.draw(this.md2.getMesh(), camera);
-        framebuffer.drawText(8, 8, 'FPS: ' + this.fps.toString(), this.texture4);
+        framebuffer.drawText(8,  8, 'FPS: ' + this.fps.toString(), this.texture4);
+        framebuffer.drawText(8, 16, 'TRIANGELS: ' + this.md2.header.numberOfTriangles, this.texture4);
     }
 
     private computeCameraMovement(elapsedTime: number): Matrix4f {
