@@ -46,6 +46,7 @@ module.exports = {
         'voxel-balls': './src/examples/voxel-balls/Application.ts',
         'cube-tunnel': './src/examples/cube-tunnel/Application.ts',
         'md2': './src/examples/md2/Application.ts',
+        'polar-voxels': './src/examples/polar-voxels/Application.ts',
     },
     mode: 'development',
     output: {
@@ -286,6 +287,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['md2'],
             filename: 'md2.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['polar-voxels'],
+            filename: 'polar-voxels.html'
         })
     ]
 }
