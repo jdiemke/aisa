@@ -158,15 +158,11 @@ export class Scene extends AbstractScene {
         // framebuffer.shadingSphere(time * 0.01);
 
         framebuffer.blockFace(this.texture5, time, 0);
+        framebuffer.scrollingBackground(this.texture8, time);
+
         /*
-    } else if (time < 140000) {
-        this.framebuffer.scrollingBackground(this.texture8, time - 95000);
-    } else if (time < 160000) {
-        this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture9.texture);
-        this.framebuffer.cinematicScroller(this.texture4, time - 140000);
     } else if (time < 185000) {
         this.framebuffer.shadingSphereClip((time - 170000) * 0.003);
-        this.framebuffer.cinematicScroller(this.texture4, time - 160000);
     } else if (time < 200000) {
         this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture12.texture);
         this.framebuffer.shadingTorus(time * 0.02);
@@ -1323,6 +1319,5 @@ export class Scene extends AbstractScene {
         }
         return conv;
     }
-
 
 }
