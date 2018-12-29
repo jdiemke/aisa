@@ -10,6 +10,7 @@ import { Texture, TextureUtils } from '../../texture';
 export class RotoZoomerScene extends AbstractScene {
 
     private logoTexture: Texture;
+    private startTime: number = Date.now();
 
     public init(framebuffer: Framebuffer): Promise<any> {
         return Promise.all([
@@ -20,7 +21,7 @@ export class RotoZoomerScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer): void {
-        const time: number = Date.now();
+        const time: number = Date.now() - this.startTime;
         this.scrollingBackground(framebuffer, this.logoTexture, time);
     }
 
