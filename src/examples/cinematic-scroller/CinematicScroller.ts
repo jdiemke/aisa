@@ -6,7 +6,7 @@ import { TextureUtils } from '../../texture/TextureUtils';
 /**
  * TODO: extract lens into effect class
  */
-export class FloodFillScene extends AbstractScene {
+export class CinematicScroller extends AbstractScene {
 
     private ledTexture: Texture;
     private texture4: Texture;

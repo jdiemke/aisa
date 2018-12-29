@@ -2,16 +2,16 @@ import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Cube } from '../../geometrical-objects/Cube';
-import { Matrix4f } from '../../math';
+import { Matrix4f } from '../../math/Matrix4f';
+import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { TextureUtils, Texture } from '../../texture/index';
-import RandomNumberGenerator from '../../RandomNumberGenerator';
+import { Texture, TextureUtils } from '../../texture/index';
 
 /**
  * TODO: use cube mesh and draw using drawObject2
  */
-export class CubeScene extends AbstractScene {
+export class CubeTunnelScene extends AbstractScene {
 
     private static BACKGROUND_COLOR: number = Color.DARK_GRAY.toPackedFormat();
     private renderingPipeline: FlatShadingRenderingPipeline;
@@ -33,7 +33,7 @@ export class CubeScene extends AbstractScene {
         //   framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         const elapsedTime: number = Date.now() * 0.02;
 
-        framebuffer.clearColorBuffer(CubeScene.BACKGROUND_COLOR);
+        framebuffer.clearColorBuffer(CubeTunnelScene.BACKGROUND_COLOR);
         framebuffer.clearDepthBuffer();
 
         let xSteps = 40;

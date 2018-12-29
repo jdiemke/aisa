@@ -1,11 +1,11 @@
-import { Canvas } from '../../Canvas';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { Matrix4f, Vector3f } from '../../math';
-import RandomNumberGenerator from '../../RandomNumberGenerator';
+import { Matrix4f } from '../../math/Matrix4f';
+import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { SkyBox } from '../../SkyBox';
-import { Texture, TextureUtils } from '../../texture';
+import { Texture } from '../../texture/Texture';
+import { TextureUtils } from '../../texture/TextureUtils';
 
 /**
  * TODO:
@@ -20,9 +20,8 @@ export class BakedLighting extends AbstractScene {
 
     private baked: Texture;
     private noise: Texture;
-    private dirt: Texture;
 
-    private blenderObj8: any;
+    private blenderObj8: Array<TexturedMesh>;
 
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
 
@@ -36,9 +35,6 @@ export class BakedLighting extends AbstractScene {
             TextureUtils.load(require('../../assets/Backed.png'), false).then(
                 (texture: Texture) => this.baked = texture
             ),
-            TextureUtils.load(require('../../assets/dirt.png'), true).then(
-                (texture: Texture) => this.dirt = texture
-            ),
             TextureUtils.generateProceduralNoise().then(
                 (texture: Texture) => this.noise = texture
             ),
@@ -48,7 +44,7 @@ export class BakedLighting extends AbstractScene {
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
 
-        this.drawBlenderScene7(framebuffer, time - 1100000, null, null);
+        this.drawBlenderScene7(framebuffer, time - 1100000);
         /*
             [
                 //   { tex: this.texture10, scale: 0.0, alpha: 1.0 },
@@ -64,35 +60,28 @@ export class BakedLighting extends AbstractScene {
         framebuffer.noise(time, this.noise);
     }
 
-    public drawBlenderScene7(framebuffer: Framebuffer, elapsedTime: number,
-                             texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
+    public drawBlenderScene7(framebuffer: Framebuffer, elapsedTime: number): void {
         elapsedTime *= 0.2;
         framebuffer.clearDepthBuffer();
 
-        let camera: Matrix4f =
+        const camera: Matrix4f =
             Matrix4f.constructTranslationMatrix(0, 0, -134 + (Math.sin(elapsedTime * 0.00007) * 0.5 + 0.5) * 17).multiplyMatrix(
                 Matrix4f.constructXRotationMatrix(elapsedTime * 0.0006).multiplyMatrix(
                     Matrix4f.constructYRotationMatrix(-elapsedTime * 0.0005).multiplyMatrix(
                         Matrix4f.constructTranslationMatrix(0, -25, 0)
                     )));
 
-
-        let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(13, 13, 13));
+        const mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(13, 13, 13));
 
         this.skyBox.draw(framebuffer, mv);
         framebuffer.clearDepthBuffer();
 
         framebuffer.setTexture(this.baked);
 
-        for (let j = 0; j < this.blenderObj8.length; j++) {
-            let model = this.blenderObj8[j];
-            framebuffer.texturedRenderingPipeline.draw(model, mv);
+        for (let j: number = 0; j < this.blenderObj8.length; j++) {
+            const mesh: TexturedMesh = this.blenderObj8[j];
+            framebuffer.texturedRenderingPipeline.draw(mesh, mv);
         }
-
-        let scale = 20;
-        let lensflareScreenSpace = framebuffer.project(camera.getRotation().multiply(new Vector3f(1.1 * scale, 2 * scale, -0.9 * scale)));
-
-        // framebuffer.drawLensFlare(lensflareScreenSpace, elapsedTime * 1.2, texture, dirt);
     }
 
 }

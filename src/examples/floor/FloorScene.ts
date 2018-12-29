@@ -1,27 +1,17 @@
-import { Canvas } from '../../Canvas';
-import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { Vector3f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
-import { ScaleClipBlitter } from '../../blitter/ScaleClipBlitter';
+import { Texture } from '../../texture/Texture';
+import { TextureUtils } from '../../texture/TextureUtils';
 import { FontRenderer } from '../sine-scroller/FontRenderer';
 
-/**
- * TODO: extract lens into effect class
- */
-export class MetaballsScene extends AbstractScene {
+export class FloorScene extends AbstractScene {
 
     private heightmap: Texture;
-    private metall: Texture;
     private hoodlumLogo: Texture;
     private fontRenderer2: FontRenderer;
-    private startTime = Date.now();
-
-    private scaleClipBlitter: ScaleClipBlitter;
+    private startTime: number = Date.now();
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.scaleClipBlitter = new ScaleClipBlitter(framebuffer);
 
         const fonts2: string =
             ' !"    \'  ' +
@@ -47,7 +37,7 @@ export class MetaballsScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer): void {
-        this.drawPlanedeformationTunnel(framebuffer, Date.now(), this.heightmap, this.heightmap);
+        this.drawPlanedeformationTunnel(framebuffer, Date.now(), this.heightmap);
 
         this.fontRenderer2.drawText(0, 200 - 32 - 16,
             '              WELCOME TO A NEW RELEASE FROM YOUR FRIENDS IN CRIME! HOW DO YOU LIKE THIS INTRO?'
@@ -63,7 +53,7 @@ export class MetaballsScene extends AbstractScene {
      * - fadeout
      * - substraction to create black holes
      */
-    drawPlanedeformationTunnel(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, texture2: Texture) {
+    private drawPlanedeformationTunnel(framebuffer: Framebuffer, elapsedTime: number, texture2: Texture): void {
 
         let i = 0;
         for (let y = 0; y < 200; y++) {
@@ -73,12 +63,9 @@ export class MetaballsScene extends AbstractScene {
             for (let x = 0; x < 320; x++) {
                 let xdist = (x - (320 / 2));
 
-
                 let u = (((((xdist / 160) / Math.abs(ydist / 100 * 0.02))) % 256) + 256) % 256;
 
                 let color1 = texture2.texture[(u | 0) + (v | 0) * 256];
-
-
 
                 let r = (((color1 >> 0) & 0xff) * (alpha)) | 0;
                 let g = (((color1 >> 8) & 0xff) * (alpha)) | 0;

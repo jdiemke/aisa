@@ -1,12 +1,11 @@
-import { Canvas } from '../../Canvas';
-import { Color } from '../../core/Color';
+import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f, Vector3f } from '../../math';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
+import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
-import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
 
 export class HoodlumScene extends AbstractScene {
 
@@ -15,7 +14,7 @@ export class HoodlumScene extends AbstractScene {
     private noise: Texture;
     private particleTexture2: Texture;
 
-    private spaceLabMesh: any; // Create Type for Modells!
+    private spaceLabMesh: Array<TexturedMesh>; // Create Type for Modells!
     private hoodlumLogoMesh: any;
 
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
@@ -50,7 +49,6 @@ export class HoodlumScene extends AbstractScene {
     public drawBlenderScene9(framebuffer: Framebuffer, elapsedTime: number, texture3: Texture): void {
         framebuffer.clearDepthBuffer();
 
-        let scal = Math.sin(elapsedTime * 0.003) * 0.5 + 0.5;
         let camera: Matrix4f =
             Matrix4f.constructTranslationMatrix(0, 0, -34 + (Math.sin(elapsedTime * 0.00007) * 0.5 + 0.5) * 7).multiplyMatrix(
                 Matrix4f.constructXRotationMatrix((Math.sin(elapsedTime * 0.00014) * 0.5 + 0.5) * 0.5 - 0.2).multiplyMatrix(
@@ -61,8 +59,8 @@ export class HoodlumScene extends AbstractScene {
         let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(13, 13, 13));
 
         for (let j = 0; j < this.spaceLabMesh.length; j++) {
-            let model = this.spaceLabMesh[j];
-            framebuffer.texturedRenderingPipeline.draw(model, mv);
+            const mesh: TexturedMesh = this.spaceLabMesh[j];
+            framebuffer.texturedRenderingPipeline.draw(mesh, mv);
         }
 
         mv = camera.multiplyMatrix(

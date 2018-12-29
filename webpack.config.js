@@ -48,7 +48,8 @@ module.exports = {
         'md2': './src/examples/md2/Application.ts',
         'polar-voxels': './src/examples/polar-voxels/Application.ts',
         'cinematic-scroller': './src/examples/cinematic-scroller/Application.ts',
-        'scrolling-background': './src/examples/scrolling-background/Application.ts'
+        'scrolling-background': './src/examples/scrolling-background/Application.ts',
+        'block-fade': './src/examples/block-fade/Application.ts',
     },
     mode: 'development',
     output: {
@@ -304,6 +305,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['scrolling-background'],
             filename: 'scrolling-background.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['block-fade'],
+            filename: 'block-fade.html'
         })
 
 

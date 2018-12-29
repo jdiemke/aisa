@@ -1,23 +1,17 @@
-import { Canvas } from '../../Canvas';
-import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { Vector3f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
-import { FontRenderer } from '../sine-scroller/FontRenderer';
-
 
 /**
  * http://pascal.sources.ru/demo/bumpmap.htm
  */
-export class BumpMapScene extends AbstractScene {
+export class BumpMap extends AbstractScene {
 
     private map: Texture;
     private bump: Texture;
     private phong: Texture;
-    private normals = Array<[number, number]>(320 * 200);
-
+    private normals: Array<[number, number]> = Array<[number, number]>(320 * 200);
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.phong = new Texture(new Uint32Array(256 * 256), 256, 256);
@@ -35,13 +29,13 @@ export class BumpMapScene extends AbstractScene {
             }
         }
 
-
         return Promise.all([
             TextureUtils.load(require('./map.png'), false).then(texture => this.map = texture),
             TextureUtils.load(require('./bump.png'), false).then(texture => this.bump = texture),
 
         ]);
     }
+
     public onInit(): void {
          // precompute normal map
 
@@ -53,7 +47,6 @@ export class BumpMapScene extends AbstractScene {
                  this.normals[framebufferIndex++] = [nx, ny];
              }
          }
-
     }
 
     public render(framebuffer: Framebuffer): void {

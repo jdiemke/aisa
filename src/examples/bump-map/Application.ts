@@ -1,10 +1,10 @@
 import { Canvas } from '../../Canvas';
-import { BumpMapScene } from './BumpMapScene';
+import { BumpMap } from './BumpMap';
 
 class Application {
 
     public static main(): void {
-        const canvas: Canvas = new Canvas(320, 200, new BumpMapScene());
+        const canvas: Canvas = new Canvas(320, 200, new BumpMap());
         canvas.appendTo(document.getElementById('aisa'));
         canvas.init();
     }

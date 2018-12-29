@@ -331,26 +331,6 @@ export class Framebuffer {
         return (current - start) / (end - start);
     }
 
-
-    public blockFace(texture: Texture, time: number, startTime: number) {
-        let fadeArray = new Array<number>(16 * 10);
-        let rng = new RandomNumberGenerator();
-        rng.setSeed(366);
-        // TODO: different fadeArray algorithms
-        for (let y = 0; y < 10; y++) {
-            for (let x = 0; x < 16; x++) {
-                fadeArray[x + y * 16] = 500 + Math.round(rng.getFloat() * 600000) % 10000;
-            }
-        }
-        this.clear();
-        for (let y = 0; y < 10; y++) {
-            for (let x = 0; x < 16; x++) {
-                this.drawTextureRect(x * 20, y * 20, x * 20, y * 20, 20, 20, texture,
-                    this.interpolate(startTime + fadeArray[x + y * 16], startTime + fadeArray[x + y * 16] + 700, time));
-            }
-        }
-    }
-
     public fastFramebufferCopyOffset(src: Uint32Array, dest: Uint32Array, offset = 0) {
         let i = 320 * 200 / 32 + 1;
         let k = 320 * 200;

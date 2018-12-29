@@ -66,6 +66,7 @@ field of computer graphics including clipping, triangle rasterization, geometric
 * [Torus Knot Tunnel](https://jdiemke.github.io/aisa/torus-knot-tunnel.html)
 * [Cinematic Scroller](https://jdiemke.github.io/aisa/cinematic-scroller.html)
 * [Scrolling Background](https://jdiemke.github.io/aisa/scrolling-background.html)
+* [Block Fade](https://jdiemke.github.io/aisa/block-fade.html)
 
 ### How to get
 Type the following command into your shell:

@@ -1,14 +1,12 @@
 import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
-import { Canvas } from '../../Canvas';
-import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
-import { Matrix4f, Vector3f } from '../../math';
-import RandomNumberGenerator from '../../RandomNumberGenerator';
+import { Matrix4f } from '../../math/Matrix4f';
 import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
+import { Texture } from '../../texture/Texture';
+import { TextureUtils } from '../../texture/TextureUtils';
 
 export class GearsScene extends AbstractScene {
 
@@ -38,7 +36,7 @@ export class GearsScene extends AbstractScene {
         const time: number = Date.now();
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
 
-        this.drawBlenderScene4(framebuffer, time, null, null);
+        this.drawBlenderScene4(framebuffer, time);
         /*  [
               { tex: this.texture10, scale: 0.0, alpha: 1.0 },
               { tex: this.texture11, scale: 2.3, alpha: 0.5 },
@@ -53,8 +51,7 @@ export class GearsScene extends AbstractScene {
         framebuffer.noise(time, this.noise);
     }
 
-    public drawBlenderScene4(framebuffer: Framebuffer, elapsedTime: number,
-        texture: Array<{ tex: Texture, scale: number, alpha: number }>, dirt: Texture): void {
+    public drawBlenderScene4(framebuffer: Framebuffer, elapsedTime: number): void {
         framebuffer.clearDepthBuffer();
 
         const camera: Matrix4f = Matrix4f.constructTranslationMatrix(0, 0, -21).multiplyMatrix(
