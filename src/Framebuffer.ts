@@ -331,10 +331,6 @@ export class Framebuffer {
         return (current - start) / (end - start);
     }
 
-    public scrollingBackground(texture: Texture, time: number) {
-        let offset = Math.round(-(1 - this.interpolate(250, 10250, time * 0.25)) * (texture.height - 200));
-        this.fastFramebufferCopyOffset(this.framebuffer, texture.texture, offset);
-    }
 
     public blockFace(texture: Texture, time: number, startTime: number) {
         let fadeArray = new Array<number>(16 * 10);

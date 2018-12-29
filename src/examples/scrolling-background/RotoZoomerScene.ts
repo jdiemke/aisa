@@ -21,7 +21,12 @@ export class RotoZoomerScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
-        framebuffer.scrollingBackground(this.logoTexture, time);
+        this.scrollingBackground(framebuffer, this.logoTexture, time);
+    }
+
+    public scrollingBackground(framebuffer: Framebuffer, texture: Texture, time: number) {
+        let offset = Math.round(-(1 - framebuffer.interpolate(250, 10250, time * 0.25)) * (texture.height - 200));
+        framebuffer.fastFramebufferCopyOffset(framebuffer.framebuffer, texture.texture, offset);
     }
 
 }
