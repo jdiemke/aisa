@@ -1,10 +1,7 @@
-import { Canvas } from '../../Canvas';
-import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { Vector3f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { TextureUtils } from '../../texture';
 import { Texture } from '../../texture/Texture';
+import { TextureUtils } from '../../texture/TextureUtils';
 
 /**
  * TODO: extract lens into effect class
@@ -20,7 +17,8 @@ export class FloodFillScene extends AbstractScene {
                 (texture: Texture) => this.ledTexture = texture
             ),
             TextureUtils.load(require('../../assets/font.png'), true).then(
-                texture => this.texture4 = texture),
+                (texture: Texture) => this.texture4 = texture
+            )
         ]);
     }
 
@@ -30,9 +28,9 @@ export class FloodFillScene extends AbstractScene {
         this.cinematicScroller(framebuffer, this.texture4, time - 140000);
     }
 
-    public floodFill(framebuffer: Framebuffer, texture: Texture, time: number) {
-        let pos = Math.floor(time * 0.02) % 200;
-        let index = 320 * 200;
+    public floodFill(framebuffer: Framebuffer, texture: Texture, time: number): void {
+        const pos: number = Math.floor(time * 0.02) % 200;
+        let index: number = 320 * 200;
 
         for (let y = 0; y < pos; y++) {
             for (let x = 0; x < 320; x++) {
@@ -52,8 +50,8 @@ export class FloodFillScene extends AbstractScene {
         }
     }
 
-    public cinematicScroller(framebuffer: Framebuffer, texture: Texture, time: number) {
-        let scrollText: Array<string> = [
+    public cinematicScroller(framebuffer: Framebuffer, texture: Texture, time: number): void {
+        const scrollText: Array<string> = [
             '', '', '', '', '', '', '', '', '', '',
             '', '', '', '', '', '', '', '', '', '',
             '', '', '', '', '',

@@ -47,7 +47,8 @@ module.exports = {
         'cube-tunnel': './src/examples/cube-tunnel/Application.ts',
         'md2': './src/examples/md2/Application.ts',
         'polar-voxels': './src/examples/polar-voxels/Application.ts',
-        'cinematic-scroller': './src/examples/cinematic-scroller/Application.ts'
+        'cinematic-scroller': './src/examples/cinematic-scroller/Application.ts',
+        'scrolling-background': './src/examples/scrolling-background/Application.ts'
     },
     mode: 'development',
     output: {
@@ -298,6 +299,13 @@ module.exports = {
             template: './src/index.html',
             chunks: ['cinematic-scroller'],
             filename: 'cinematic-scroller.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['scrolling-background'],
+            filename: 'scrolling-background.html'
         })
+
+
     ]
 }

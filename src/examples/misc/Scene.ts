@@ -158,7 +158,7 @@ export class Scene extends AbstractScene {
         // framebuffer.shadingSphere(time * 0.01);
 
         framebuffer.blockFace(this.texture5, time, 0);
-        framebuffer.scrollingBackground(this.texture8, time);
+
 
         /*
     } else if (time < 185000) {
