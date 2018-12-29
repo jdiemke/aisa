@@ -1,10 +1,8 @@
 import { CameraAnimator } from '../../animation/CameraAnimator';
 import { CameraKeyFrame } from '../../animation/CameraKeyFrame';
 import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
-import { Canvas } from '../../Canvas';
 import { BoundingVolumeExpander } from '../../clustered-culling/BoundingVolumeExpander';
 import { FrustumCuller } from '../../clustered-culling/FrustumCuller';
-import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
@@ -13,13 +11,12 @@ import { Sphere } from '../../math/Sphere';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
+import { Texture } from '../../texture';
 
 export class FrustumCullingScene extends AbstractScene {
 
     private world: Array<[FlatshadedMesh, Sphere]>;
 
-    private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
     private renderingPipeline: FlatShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
@@ -35,10 +32,10 @@ export class FrustumCullingScene extends AbstractScene {
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
 
-        this.drawBlenderScene(framebuffer, time - 260000, null);
+        this.drawBlenderScene(framebuffer, time - 260000);
     }
 
-    public drawBlenderScene(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, texture2?: Texture): void {
+    public drawBlenderScene(framebuffer: Framebuffer, elapsedTime: number, texture2?: Texture): void {
         // camerea:
         // http://graphicsrunner.blogspot.de/search/label/Water
         framebuffer.clearColorBuffer(72 | 56 << 8 | 48 << 16 | 255 << 24);
@@ -62,11 +59,9 @@ export class FrustumCullingScene extends AbstractScene {
 
         let modelViewMartrix: Matrix4f = cameraAnimator.getViewMatrix(elapsedTime);
 
-        let count = 0;
 
         let frustumCuller = new FrustumCuller();
         frustumCuller.updateFrustum(modelViewMartrix, cameraAnimator.pos);
-        let i = 0;
 
         for (let j = 0; j <  this.world.length; j++) {
 
@@ -76,7 +71,7 @@ export class FrustumCullingScene extends AbstractScene {
                 this.renderingPipeline.draw(model[0], modelViewMartrix, 144, 165, 116);
                 let colLine = 255 << 24 | 255 << 8;
                 framebuffer.drawBoundingSphere(model[1], modelViewMartrix, colLine);
-                count++;
+              //  count++;
             } else {
                 let colLine = 255 << 24 | 255;
                 framebuffer.drawBoundingSphere(model[1], modelViewMartrix, colLine);

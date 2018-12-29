@@ -1,19 +1,17 @@
 import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
-import { Canvas } from '../../Canvas';
-import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
-import { Matrix3f, Matrix4f, Vector3f } from '../../math';
-import { TriangleRasterizer } from '../../rasterizer/TriangleRasterizer';
+import { Matrix4f } from '../../math/Matrix4f';
 import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
+import { Texture } from '../../texture/Texture';
+import { TextureUtils } from '../../texture/TextureUtils';
 
 /**
  * TODO: use cube mesh and draw using drawObject2
  */
-export class AbstractCubeScene extends AbstractScene {
+export class AbstractCube extends AbstractScene {
 
     private blurred: Texture;
     private noise: Texture;
@@ -63,7 +61,7 @@ export class AbstractCubeScene extends AbstractScene {
     public drawBlenderScene2(framebuffer: Framebuffer, elapsedTime: number): void {
         framebuffer.clearDepthBuffer();
 
-        let camera: Matrix4f = Matrix4f.constructTranslationMatrix(0, 0, -12).multiplyMatrix(
+        const camera: Matrix4f = Matrix4f.constructTranslationMatrix(0, 0, -12).multiplyMatrix(
             Matrix4f.constructYRotationMatrix(elapsedTime * 0.0002)
                 .multiplyMatrix(
                     Matrix4f.constructXRotationMatrix(elapsedTime * 0.0002)

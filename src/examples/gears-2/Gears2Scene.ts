@@ -1,14 +1,12 @@
 import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
-import { Canvas } from '../../Canvas';
-import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
-import { Matrix4f, Vector3f } from '../../math';
-import RandomNumberGenerator from '../../RandomNumberGenerator';
+import { Matrix4f } from '../../math/Matrix4f';
 import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
+import { Texture } from '../../texture/Texture';
+import { TextureUtils } from '../../texture/TextureUtils';
 
 /**
  * wireframe font 3d logo.. multiple lines drawn with damping
@@ -19,7 +17,7 @@ import { Texture, TextureUtils } from '../../texture';
  * 3d bobs
  * http://sol.gfxile.net/gp/ch17.html
  */
-export class GearsScene2 extends AbstractScene {
+export class Gears2Scene extends AbstractScene {
 
     private blurred: Texture;
     private noise: Texture;
@@ -47,7 +45,7 @@ export class GearsScene2 extends AbstractScene {
         const time: number = Date.now();
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
 
-        this.drawBlenderScene4(framebuffer, time, null, null);
+        this.drawBlenderScene4(framebuffer);
         /*  [
               { tex: this.texture10, scale: 0.0, alpha: 1.0 },
               { tex: this.texture11, scale: 2.3, alpha: 0.5 },
@@ -62,8 +60,7 @@ export class GearsScene2 extends AbstractScene {
         framebuffer.noise(time, this.noise);
     }
 
-    public drawBlenderScene4(framebuffer: Framebuffer, elapsedTime: number,
-        texture: Array<{ tex: Texture, scale: number, alpha: number }>, dirt: Texture): void {
+    public drawBlenderScene4(framebuffer: Framebuffer): void {
         framebuffer.clearDepthBuffer();
         let mat =
         Matrix4f.constructTranslationMatrix(0, 0, -14)
@@ -81,14 +78,5 @@ export class GearsScene2 extends AbstractScene {
         this.renderingPipeline.draw(this.gearsMesh, mat2, 246, 165, 177);
     }
 
-    private getModelViewMatrix(camera: Matrix4f, dampFactor: number, scale: number, i: number,
-        elapsedTime: number): Matrix4f {
-        const modelViewMartrix: Matrix4f =
-            Matrix4f.constructXRotationMatrix(elapsedTime * 0.0006 + dampFactor * 0.7 * (4 - i)).multiplyMatrix(
-                Matrix4f.constructYRotationMatrix(elapsedTime * 0.0005 + dampFactor * 0.7 * (4 - i)).multiplyMatrix(
-                    Matrix4f.constructScaleMatrix(scale, scale, scale)));
-
-        return camera.multiplyMatrix(modelViewMartrix);
-    }
 
 }

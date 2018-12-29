@@ -1,10 +1,7 @@
-import { Canvas } from '../../Canvas';
-import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { Vector3f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { TextureUtils } from '../../texture';
 import { Texture } from '../../texture/Texture';
+import { TextureUtils } from '../../texture/TextureUtils';
 
 /**
  * TODO: extract lens into effect class

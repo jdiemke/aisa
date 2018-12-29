@@ -1,10 +1,10 @@
 import { Canvas } from '../../Canvas';
-import { CinematicScroller } from './CinematicScroller';
+import { BlockFade } from './BlockFade';
 
 class Application {
 
     public static main(): void {
-        const canvas: Canvas = new Canvas(320, 200, new CinematicScroller());
+        const canvas: Canvas = new Canvas(320, 200, new BlockFade());
         canvas.appendTo(document.getElementById('aisa'));
         canvas.init();
     }

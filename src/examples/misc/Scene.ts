@@ -157,7 +157,7 @@ export class Scene extends AbstractScene {
         // framebuffer.wireFrameSphereClipping(time * 0.00009);
         // framebuffer.shadingSphere(time * 0.01);
 
-        framebuffer.blockFace(this.texture5, time, 0);
+
 
 
         /*
