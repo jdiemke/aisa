@@ -1,10 +1,10 @@
-import { Canvas } from '../../Canvas';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
-import { Vector3f, Matrix4f } from '../../math';
 import { Torus } from '../../geometrical-objects/Torus';
+import { Matrix4f } from '../../math/Matrix4f';
+import { AbstractScene } from '../../scenes/AbstractScene';
+import { Texture } from '../../texture/Texture';
+import { TextureUtils } from '../../texture/TextureUtils';
 
 export class TorusScene extends AbstractScene {
 
@@ -28,17 +28,15 @@ export class TorusScene extends AbstractScene {
         this.shadingTorus(framebuffer, elapsedTime);
         framebuffer.drawTexture(32, 1, this.razorLogo, 1.0);
     }
-    
-    public shadingTorus(framebuffer: Framebuffer, elapsedTime: number): void {
 
-        framebuffer.wBuffer.fill(100);
-        
-        let scale = 1.0;
-        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.05));
+    public shadingTorus(framebuffer: Framebuffer, elapsedTime: number): void {
+        framebuffer.clearDepthBuffer();
+
+        let modelViewMartrix: Matrix4f = Matrix4f.constructYRotationMatrix(elapsedTime * 0.05);
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.08));
         modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -24).multiplyMatrix(modelViewMartrix);
-            
-        framebuffer.renderingPipeline.draw(this.torus.getMesh(), modelViewMartrix,  190, 100, 100);
+
+        framebuffer.renderingPipeline.draw(this.torus.getMesh(), modelViewMartrix, 190, 100, 100);
     }
 
 

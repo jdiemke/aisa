@@ -1,5 +1,3 @@
-import { Canvas } from '../../Canvas';
-import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Vector3f } from '../../math';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
@@ -13,7 +11,7 @@ export class StarfieldScene extends AbstractScene {
     public render(framebuffer: Framebuffer): void {
         this.drawStarField(framebuffer, Date.now());
     }
-    
+
     public drawStarField(frambuffer: Framebuffer, elapsedTime: number): void {
         let darkStarColor = 255 << 24 | 128 << 16 | 128 << 8 | 128;
         let lightStarColor = 255 << 24 | 255 << 16 | 255 << 8 | 255;
@@ -33,7 +31,7 @@ export class StarfieldScene extends AbstractScene {
         }
 
         frambuffer.clearColorBuffer(backgroundColor);
-        
+
         for (let i = 0; i < 100; i++) {
             frambuffer.drawPixel(((stars[i].x + elapsedTime * 0.02) | 0) % 320, stars[i].y, darkStarColor);
         }

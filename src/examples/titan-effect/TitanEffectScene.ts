@@ -1,15 +1,13 @@
-import { Color } from '../../core/Color';
 import { Framebuffer } from '../../Framebuffer';
-import { Vector3f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
+import { Texture } from '../../texture/Texture';
+import { TextureUtils } from '../../texture/TextureUtils';
 
-export class WobbleScene extends AbstractScene {
+export class TitanEffectScene extends AbstractScene {
 
     private hoodlumLogo: Texture;
     private atlantisBackground: Texture;
     private startTime: number;
-    private noise: Texture;
 
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
 
@@ -21,9 +19,6 @@ export class WobbleScene extends AbstractScene {
             ),
             TextureUtils.load(require('./assets/hoodlumLogo.png'), true).then(
                 (texture: Texture) => this.hoodlumLogo = texture
-            ),
-            TextureUtils.generateProceduralNoise().then(
-                (texture: Texture) => this.noise = texture
             ),
         ]);
     }
