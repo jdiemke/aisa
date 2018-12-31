@@ -1,16 +1,18 @@
-import { Canvas } from '../../Canvas';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { Matrix4f, Vector3f, Vector4f } from '../../math';
-import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
 import { TorusKnot } from '../../geometrical-objects/TorusKnot';
+import { Matrix4f } from '../../math/Matrix4f';
+import { Vector3f, } from '../../math/Vector3f';
+import { Vector4f } from '../../math/Vector4f';
+import { AbstractScene } from '../../scenes/AbstractScene';
+import { Texture } from '../../texture/Texture';
+import { TextureUtils } from '../../texture/TextureUtils';
 
 export class TorusKnotTunnelScene extends AbstractScene {
 
     private noise: Texture;
     private particleTexture: Texture;
-    private torusKnot = new TorusKnot();
+    private torusKnot: TorusKnot = new TorusKnot();
 
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
 
@@ -18,7 +20,9 @@ export class TorusKnotTunnelScene extends AbstractScene {
         framebuffer.renderingPipeline.setCullFace(CullFace.FRONT);
         return Promise.all([
             TextureUtils.generateProceduralNoise().then((texture: Texture) => this.noise = texture),
-            TextureUtils.generateProceduralParticleTexture2().then((texture: Texture) => this.particleTexture = texture),
+            TextureUtils.generateProceduralParticleTexture2().then(
+                (texture: Texture) => this.particleTexture = texture
+            ),
         ]);
     }
 
@@ -31,7 +35,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
 
-        this.torusTunnel(framebuffer, time * 0.02, Date.now(), this.particleTexture);
+        this.torusTunnel(framebuffer, time * 0.02, this.particleTexture);
 
         const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
         framebuffer.drawTexture(0, 0, texture3, 0.75);
@@ -39,7 +43,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
         framebuffer.noise(time, this.noise);
     }
 
-    public torusTunnel(framebuffer: Framebuffer, elapsedTime: number, sync: number, texture: Texture): void {
+    public torusTunnel(framebuffer: Framebuffer, elapsedTime: number, texture: Texture): void {
         framebuffer.clearDepthBuffer();
 
         let scale = 1.0;
@@ -115,7 +119,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
             //let size = -(2.0 * 192 / (element.z));
             let size = -(2.3 * 192 / (element.z));
             if (element.z < -4)
-            framebuffer.drawParticle(
+                framebuffer.drawParticle(
                     Math.round(element.x - size / 2),
                     Math.round(element.y - size / 2),
                     Math.round(size), Math.round(size), texture, 1 / element.z, framebuffer.interpolate(-90, -55, element.z));

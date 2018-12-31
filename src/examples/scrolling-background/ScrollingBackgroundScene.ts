@@ -1,13 +1,9 @@
-import { Canvas } from '../../Canvas';
-import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
+import { Texture } from '../../texture/Texture';
+import { TextureUtils } from '../../texture/TextureUtils';
 
-/**
- * TODO: extract lens into effect class
- */
-export class RotoZoomerScene extends AbstractScene {
+export class ScrollingBackgroundScene extends AbstractScene {
 
     private logoTexture: Texture;
     private startTime: number = Date.now();
@@ -25,8 +21,11 @@ export class RotoZoomerScene extends AbstractScene {
         this.scrollingBackground(framebuffer, this.logoTexture, time);
     }
 
-    public scrollingBackground(framebuffer: Framebuffer, texture: Texture, time: number) {
-        let offset = Math.round(-(1 - framebuffer.interpolate(250, 10250, time * 0.25)) * (texture.height - 200));
+    public scrollingBackground(framebuffer: Framebuffer, texture: Texture, time: number): void {
+        const offset: number = Math.round(
+            -(1 - framebuffer.interpolate(250, 10250, time * 0.25)) * (texture.height - 200)
+        );
+
         framebuffer.fastFramebufferCopyOffset(framebuffer.framebuffer, texture.texture, offset);
     }
 

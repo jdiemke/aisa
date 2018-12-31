@@ -1,12 +1,10 @@
 import { Color } from '../../core/Color';
-import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { Cube } from '../../geometrical-objects/Cube';
-import { Vector3f, Matrix4f } from '../../math';
+import { Vector3f } from '../../math/Vector3f';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
-import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
+import { Texture } from '../../texture/Texture';
+import { TextureUtils } from '../../texture/TextureUtils';
 import { FontRenderer } from './FontRenderer';
 
 export class SineScrollerScene extends AbstractScene {

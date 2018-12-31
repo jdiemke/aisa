@@ -1,13 +1,10 @@
-import { Canvas } from '../../Canvas';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Cube } from '../../geometrical-objects/Cube';
 import { Dodecahedron } from '../../geometrical-objects/Dodecahedron';
-import { Icosahedron } from '../../geometrical-objects/Icosahedron';
 import { Pyramid } from '../../geometrical-objects/Pyramid';
 import { Sphere } from '../../geometrical-objects/Sphere';
 import { Matrix4f, Vector3f } from '../../math';
-import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 
@@ -82,7 +79,6 @@ export class RazorScene extends AbstractScene {
         modelViewMartrix = camera.multiplyMatrix(
             modelViewMartrix);
 
-        let colLine = 255 << 24 | 255 << 8;
 
         let model = this.dodecahedron.getMesh();
         framebuffer.renderingPipeline.draw(model, modelViewMartrix, 221, 96, 48);
@@ -126,7 +122,7 @@ export class RazorScene extends AbstractScene {
          * SHADOWS
          */
         framebuffer.renderingPipeline.flatShading = true;
-        
+
         scale = 2.0;
         modelViewMartrix = Matrix4f.constructYRotationMatrix(elapsedTime * 0.2).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));
         modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 1.0, 0).multiplyMatrix(modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(-elapsedTime * 0.2)));

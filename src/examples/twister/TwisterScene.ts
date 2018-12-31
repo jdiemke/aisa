@@ -1,8 +1,7 @@
-import { Canvas } from '../../Canvas';
-import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
+import { Texture } from '../../texture/Texture';
+import { TextureUtils } from '../../texture/TextureUtils';
 
 /**
  * TODO: extract twister into effect class
@@ -25,7 +24,6 @@ export class TwisterScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
-        const elapsedTime: number = 0.02 * time;
 
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.backgroundTexture.texture);
         this.draw(framebuffer, this.logoTexture, time);

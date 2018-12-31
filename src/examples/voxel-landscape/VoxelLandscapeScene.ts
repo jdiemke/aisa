@@ -1,12 +1,8 @@
-import { Canvas } from '../../Canvas';
-import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
+import { Texture } from '../../texture/Texture';
+import { TextureUtils } from '../../texture/TextureUtils';
 
-/**
- * TODO: extract lens into effect class
- */
 export class VoxelLandscapeScene extends AbstractScene {
 
     private heightmap: Texture;
@@ -36,18 +32,18 @@ export class VoxelLandscapeScene extends AbstractScene {
 
     /**
      * Generates a voxel landscape.
-     * 
+     *
      * TODO:
      * - y-span color interpolation
      * - texturing
-     * 
+     *
      * http://simulationcorner.net/index.php?page=comanche
      * http://www.flipcode.com/archives/Realtime_Voxel_Landscape_Engines-Part_2_Rendering_the_Landscapes_Structure.shtml
      * http://www.massal.net/article/voxel/
-     * 
+     *
      * @param {Texture} texture The heightmap
      * @param {number} time Elapsed time in milliseconds
-     * 
+     *
      * @memberof Framebuffer
      */
     drawVoxelLandscape2(framebuffer: Framebuffer, texture: Texture, time: number) {
@@ -129,7 +125,6 @@ export class VoxelLandscapeScene extends AbstractScene {
 
                 let height = texture.getPixel(texture, rayX, rayY) & 0xff;
                 let projHeight = Math.round((height - eye) * focus / dist + center);
-                let color = Math.round(height) * Math.min(1.0, (1 - (dist - MIN_DIST) / (MAX_DIST - MIN_DIST)) * 10);
                 let packedRGB = texture.getPixel(this.abstract, rayX, rayY) | 255 << 24;
 
                 if (projHeight > highestPoint) {

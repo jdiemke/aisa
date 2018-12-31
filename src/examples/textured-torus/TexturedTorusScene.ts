@@ -1,10 +1,9 @@
-import { Canvas } from '../../Canvas';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f, Vector3f, Vector4f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
-import { TextureCoordinate, Vertex } from '../../Vertex';
+import { TextureCoordinate } from '../../Vertex';
 
 export class TexturedTorusScene extends AbstractScene {
 
@@ -28,7 +27,6 @@ export class TexturedTorusScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
-        const elapsedTime: number = 0.02 * time;
 
         framebuffer.setTexture(this.abstract);
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.texture5.texture);
@@ -78,7 +76,6 @@ export class TexturedTorusScene extends AbstractScene {
             }
         }
 
-        let index: Array<number> = [];
         const faces: Array<{
             vertices: Array<number>;
             uv: Array<number>
@@ -116,7 +113,7 @@ export class TexturedTorusScene extends AbstractScene {
 
         const torus = {
             points,
-            points2: points.map(x => new Vector4f(0, 0, 0)),
+            points2: points.map(() => new Vector4f(0, 0, 0)),
             uv: textCoords,
             faces
         };

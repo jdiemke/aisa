@@ -1,12 +1,11 @@
-import { Canvas } from '../../Canvas';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
-import { Vector3f, Matrix4f } from '../../math';
-import { Torus } from '../../geometrical-objects/Torus';
 import { TorusKnot } from '../../geometrical-objects/TorusKnot';
+import { Matrix4f } from '../../math/Matrix4f';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
+import { AbstractScene } from '../../scenes/AbstractScene';
+import { Texture } from '../../texture/Texture';
+import { TextureUtils } from '../../texture/TextureUtils';
 
 export class TorusKnotScene extends AbstractScene {
 
@@ -18,14 +17,17 @@ export class TorusKnotScene extends AbstractScene {
         framebuffer.setCullFace(CullFace.BACK);
 
         return Promise.all([
-            TextureUtils.load(require('../../assets/rave.png'), false).then(texture => this.rave = texture),
-            TextureUtils.generateProceduralNoise().then(texture => this.noise = texture)
+            TextureUtils.load(require('../../assets/rave.png'), false).then(
+                (texture: Texture) => this.rave = texture
+            ),
+            TextureUtils.generateProceduralNoise().then(
+                (texture: Texture) => this.noise = texture
+            )
         ]);
     }
 
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
-        const elapsedTime: number = 0.02 * time;
 
         this.raveMoview(framebuffer, time * 5, this.rave);
         framebuffer.setCullFace(CullFace.BACK);
