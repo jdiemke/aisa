@@ -1,4 +1,4 @@
-import { Vector3f } from '../../../math/index';
+import { Vector3f } from '../../math/index';
 
 export class MD2Vertex {
 

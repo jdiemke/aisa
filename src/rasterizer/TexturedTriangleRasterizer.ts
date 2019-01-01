@@ -1,7 +1,7 @@
 import { Framebuffer } from '../Framebuffer';
 import { Vector3f } from '../math/Vector3f';
-import { Vertex } from '../Vertex';
 import { Vector4f } from '../math/Vector4f';
+import { Vertex } from '../Vertex';
 
 export class TexturedTriangleRasterizer {
 
@@ -206,7 +206,7 @@ export class TexturedTriangleRasterizer {
         }
     }
 
-    
+
     fillLongLeftTriangle2(v1: Vector4f, v2: Vector4f, v3: Vector4f, t1: Vector3f, t2: Vector3f, t3: Vector3f): void {
 
         let yDistanceRight = v2.y - v1.y;

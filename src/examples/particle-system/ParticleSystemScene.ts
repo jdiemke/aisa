@@ -1,15 +1,12 @@
-import { Canvas } from '../../Canvas';
-import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
+import { Matrix3f } from '../../math/Matrix3';
+import { Matrix4f } from '../../math/Matrix4f';
+import { Vector3f } from '../../math/Vector3f';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Vector3f, Matrix4f, Matrix3f } from '../../math';
 import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture';
+import { TextureUtils } from '../../texture/TextureUtils';
 
-/**
- * TODO: extract lens into effect class
- */
-export class ParticleStreamsScene extends AbstractScene {
+export class ParticleSystemScene extends AbstractScene {
 
     private blurred: Texture;
     private particleTexture2: Texture;
@@ -34,14 +31,14 @@ export class ParticleStreamsScene extends AbstractScene {
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
-        this.drawParticleStreams(framebuffer, time, this.particleTexture2, true);
-        const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-        framebuffer.drawTexture(0, 0, texture3, 0.55);
-        framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
-        framebuffer.noise(time, this.noise);
+        this.drawParticleStreams(framebuffer, time, this.particleTexture2);
+       // const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+      //  framebuffer.drawTexture(0, 0, texture3, 0.55);
+      //  framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
+     //   framebuffer.noise(time, this.noise);
     }
 
-    public drawParticleStreams(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, noClear: boolean = false) {
+    public drawParticleStreams(framebuffer: Framebuffer, elapsedTime: number, texture: Texture) {
 
         let points: Array<Vector3f> = new Array<Vector3f>();
         const num = 50;

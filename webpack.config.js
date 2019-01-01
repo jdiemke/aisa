@@ -50,6 +50,7 @@ module.exports = {
         'cinematic-scroller': './src/examples/cinematic-scroller/Application.ts',
         'scrolling-background': './src/examples/scrolling-background/Application.ts',
         'block-fade': './src/examples/block-fade/Application.ts',
+        'particle-system': './src/examples/particle-system/Application.ts',
     },
     mode: 'development',
     output: {
@@ -310,6 +311,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['block-fade'],
             filename: 'block-fade.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['particle-system'],
+            filename: 'particle-system.html'
         })
 
 

@@ -1,6 +1,6 @@
-import { Vector4f } from '../../../math/index';
-import { TexturedMesh } from '../../../rendering-pipelines/TexturedMesh';
-import { TextureCoordinate } from '../../../Vertex';
+import { Vector4f } from '../../math/index';
+import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
+import { TextureCoordinate } from '../../Vertex';
 import { MD2Frame } from './MD2Frame';
 import { MD2Header } from './MD2Header';
 import { MD2TexCoord } from './MD2TexCoord';

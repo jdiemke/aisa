@@ -1,4 +1,4 @@
-import { Vector3f } from '../../../math/index';
+import { Vector3f } from '../../math/index';
 import { MD2Header } from './MD2Header';
 import { MD2Vertex } from './MD2Vertex';
 import { StreamReader } from './StreamReader';

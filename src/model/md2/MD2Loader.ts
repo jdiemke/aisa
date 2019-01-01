@@ -1,13 +1,9 @@
-import { Vector4f } from '../../../math/index';
-import { TexturedMesh } from '../../../rendering-pipelines/TexturedMesh';
-import { TextureCoordinate } from '../../../Vertex';
 import { MD2Frame } from './MD2Frame';
 import { MD2Header } from './MD2Header';
 import { MD2Model } from './MD2Model';
 import { MD2Skin } from './MD2Skin';
 import { MD2TexCoord } from './MD2TexCoord';
 import { MD2Triangle } from './MD2Triangle';
-import { MD2Vertex } from './MD2Vertex';
 import { StreamReader } from './StreamReader';
 
 export class MD2Loader {
