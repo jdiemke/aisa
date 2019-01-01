@@ -3,18 +3,19 @@ import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f } from '../../math/Matrix4f';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
-import { MD2Loader } from './md2/MD2Loader';
-import { MD2Model } from './md2/MD2Model';
+import { Texture } from '../../texture/Texture';
+import { TextureUtils } from '../../texture/TextureUtils';
+import { MD2Loader } from './../../model/md2/MD2Loader';
+import { MD2Model } from './../../model/md2/MD2Model';
 import { ModelViewMatrix } from './ModelViewMatrix';
 
 /**
+ * http://tfc.duke.free.fr/coding/mdl-specs-en.html
  * http://tfc.duke.free.fr/coding/md2-specs-en.html
  * https://github.com/mrdoob/three.js/tree/dev/examples/models/md2/ogro
  * http://tfc.duke.free.fr/old/models/md2.htm
  */
-
-export class MetalHeadzScene extends AbstractScene {
+export class Md2ModelScene extends AbstractScene {
 
     private static readonly CLEAR_COLOR: number = Color.SLATE_GRAY.toPackedFormat();
 
@@ -38,19 +39,7 @@ export class MetalHeadzScene extends AbstractScene {
             ),
             MD2Loader.load(require('../../assets/md2/drfreak.md2')).then(
                 (mesh: MD2Model) => this.md2 = mesh
-            ), /*
-            TextureUtils.load(require('../../assets/md2/Samourai.jpg'), false).then(
-                (texture: Texture) => this.ogroTexture = texture
             ),
-            MD2Loader.load(require('../../assets/md2/Samourai.md2')).then(
-                (mesh: MD2Model) => this.md2 = mesh
-            )
-            TextureUtils.load(require('../../assets/md2/dead.png'), false).then(
-                (texture: Texture) => this.ogroTexture = texture
-            ),
-            MD2Loader.load(require('../../assets/md2/ratamahatta.md2')).then(
-                (mesh: MD2Model) => this.md2 = mesh
-            ),,*/
             TextureUtils.load(require('../../assets/font.png'), true).then(
                 (texture: Texture) => this.texture4 = texture),
         ]);
@@ -68,23 +57,23 @@ export class MetalHeadzScene extends AbstractScene {
 
         const time: number = Date.now() - this.startTime;
 
-        framebuffer.clearColorBuffer(MetalHeadzScene.CLEAR_COLOR);
+        framebuffer.clearColorBuffer(Md2ModelScene.CLEAR_COLOR);
         framebuffer.clearDepthBuffer();
 
-        const camera: Matrix4f = this.computeCameraMovement(time * 0.6);
+        this.computeCameraMovement(time * 0.6);
 
         framebuffer.setTexture(this.ogroTexture);
-        framebuffer.texturedRenderingPipeline.draw(this.md2.getMesh(), camera);
+        framebuffer.texturedRenderingPipeline.draw(this.md2.getMesh(), this.modelViewMatrix.getMatrix());
+
         framebuffer.drawText(8,  8, 'FPS: ' + this.fps.toString(), this.texture4);
         framebuffer.drawText(8, 16, 'TRIANGELS: ' + this.md2.header.numberOfTriangles, this.texture4);
     }
 
-    private computeCameraMovement(elapsedTime: number): Matrix4f {
+    private computeCameraMovement(elapsedTime: number): void {
         this.modelViewMatrix.setIdentity();
         this.modelViewMatrix.trans(0, 0, -120 + (Math.sin(elapsedTime * 0.0007) * 0.5 + 0.5) * 87);
         this.modelViewMatrix.yRotate(-elapsedTime * 0.006);
         this.modelViewMatrix.xRotate(Math.PI * 2 / 360 * -90);
-        return this.modelViewMatrix.getMatrix();
     }
 
 }

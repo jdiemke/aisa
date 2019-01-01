@@ -1,10 +1,10 @@
 import { Canvas } from '../../Canvas';
-import { MetalHeadzScene } from './MetalHeadzScene';
+import { Md2ModelScene } from './Md2ModelScene';
 
 class Application {
 
     public main(): void {
-        const canvas: Canvas = new Canvas(320, 200, new MetalHeadzScene());
+        const canvas: Canvas = new Canvas(320, 200, new Md2ModelScene());
         canvas.appendTo(document.getElementById('aisa'));
         canvas.init();
     }
