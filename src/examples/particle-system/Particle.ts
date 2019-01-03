@@ -16,21 +16,21 @@ export class Particle {
     }
 
     public init(): void {
-        this.position = new Vector3f(Math.sin(1*Date.now() * 0.002) * 6, Math.cos(2*Date.now() * 0.002) * 6, -26 + Math.sin(2*Date.now() * 0.002) * 6);
+        this.position = new Vector3f(Math.sin(1 * Date.now() * 0.002) * 2.3, Math.cos(2 * Date.now() * 0.002) * 2.3, + Math.sin(2 * Date.now() * 0.002) * 2.3);
         this.velocity = new Vector3f(
             (Math.random() - 0.5) * 0.1,
             (Math.random() - 0.5) * 0.1,
             (Math.random() - 0.5) * 0.1
         ).mul(Math.random());
         this.alpha = Math.random();
-        this.size = Math.random() + 0.5;
+        this.size = (Math.random() + 0.5) * 1.8;
         this.start = Date.now();
-        this.lifespan = Math.random() * 1000 + 1000;
+        this.lifespan = Math.random() * 900 + 500;
         this.dead = false;
     }
 
     public update(): void {
-        this.position = this.position.add(this.velocity);
+        this.position = this.position.add(this.velocity.mul(0.3));
         this.alpha = 1 - (Date.now() - this.start) / this.lifespan;
         this.velocity = this.velocity.sub(new Vector3f(0, +0.005, 0));
         if ((this.start + this.lifespan) < Date.now()) {
