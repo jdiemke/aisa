@@ -11,29 +11,30 @@ export class Particle {
     public dead: boolean;
     public start: number;
 
-    constructor() {
-        this.init();
+    constructor(elapsedTime: number) {
+        this.init(elapsedTime);
     }
 
-    public init(): void {
-        this.position = new Vector3f(Math.sin(1 * Date.now() * 0.002) * 2.3, Math.cos(2 * Date.now() * 0.002) * 2.3, + Math.sin(2 * Date.now() * 0.002) * 2.3);
+    public init(elapsedTime: number): void {
+        this.position = new Vector3f(Math.sin(1 * elapsedTime * 0.002) * 2.3, Math.cos(2 * elapsedTime * 0.002) * 2.3, + Math.sin(2 * elapsedTime * 0.002) * 2.3);
+        const scale: number = 1.3;
         this.velocity = new Vector3f(
-            (Math.random() - 0.5) * 0.1,
-            (Math.random() - 0.5) * 0.1,
-            (Math.random() - 0.5) * 0.1
+            (Math.random() - 0.5) * scale,
+            (Math.random() - 0.5) * scale,
+            (Math.random() - 0.5) * scale
         ).mul(Math.random());
         this.alpha = Math.random();
         this.size = (Math.random() + 0.5) * 1.8;
-        this.start = Date.now();
+        this.start = elapsedTime;
         this.lifespan = Math.random() * 900 + 500;
         this.dead = false;
     }
 
-    public update(): void {
-        this.position = this.position.add(this.velocity.mul(0.3));
-        this.alpha = 1 - (Date.now() - this.start) / this.lifespan;
-        this.velocity = this.velocity.sub(new Vector3f(0, +0.005, 0));
-        if ((this.start + this.lifespan) < Date.now()) {
+    public update(elapsedTime: number, deltaTime: number): void {
+        this.position = this.position.add(this.velocity.mul(deltaTime / 1000));
+        this.alpha = 1 - (elapsedTime - this.start) / this.lifespan;
+        //this.velocity = this.velocity.sub(new Vector3f(0, +0.005 * deltaTime / 1000, 0));
+        if ((this.start + this.lifespan) < elapsedTime) {
             this.dead = true;
         }
     }
