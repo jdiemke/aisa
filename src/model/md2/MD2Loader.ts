@@ -21,10 +21,21 @@ export class MD2Loader {
     }
 
     private static parse(arrayBuffer: ArrayBuffer): MD2Model {
-        // 7load header
-        const header: MD2Header = new MD2Header(arrayBuffer);
+        const header: MD2Header = MD2Loader.getHeader(arrayBuffer);
 
-        // load skins
+        return new MD2Model(
+            MD2Loader.getTextureCoords(arrayBuffer, header),
+            MD2Loader.getTriangles(arrayBuffer, header),
+            MD2Loader.getFrames(arrayBuffer, header),
+            header
+        );
+    }
+
+    private static getHeader(arrayBuffer: ArrayBuffer): MD2Header {
+        return new MD2Header(arrayBuffer);
+    }
+
+    private static getSkins(arrayBuffer: ArrayBuffer, header: MD2Header): Array<MD2Skin> {
         const skins: Array<MD2Skin> = new Array<MD2Skin>();
 
         for (let k: number = 0; k < header.numberOfSkins; k++) {
@@ -32,7 +43,10 @@ export class MD2Loader {
             skins.push(skin);
         }
 
-        // load tex coords
+        return skins;
+    }
+
+    private static getTextureCoords(arrayBuffer: ArrayBuffer, header: MD2Header): Array<MD2TexCoord> {
         const texCoords: Array<MD2TexCoord> = new Array<MD2TexCoord>();
         const stream: StreamReader = new StreamReader(arrayBuffer, header.texCoordsOffset);
 
@@ -40,15 +54,21 @@ export class MD2Loader {
             texCoords.push(new MD2TexCoord(stream, header));
         }
 
-        // load triangles
-        const trianfgles: Array<MD2Triangle> = new Array<MD2Triangle>();
-        const stream2: StreamReader = new StreamReader(arrayBuffer, header.triangleOffset);
+        return texCoords;
+    }
+
+    private static getTriangles(arrayBuffer: ArrayBuffer, header: MD2Header): Array<MD2Triangle> {
+        const triangles: Array<MD2Triangle> = new Array<MD2Triangle>();
+        const stream: StreamReader = new StreamReader(arrayBuffer, header.triangleOffset);
 
         for (let i: number = 0; i < header.numberOfTriangles; i++) {
-            trianfgles.push(new MD2Triangle(stream2));
+            triangles.push(new MD2Triangle(stream));
         }
 
-        // load frame
+        return triangles;
+    }
+
+    private static getFrames(arrayBuffer: ArrayBuffer, header: MD2Header): Array<MD2Frame> {
         const frames: Array<MD2Frame> = new Array<MD2Frame>();
 
         for (let i: number = 0; i < header.numberOfFrames; i++) {
@@ -56,7 +76,7 @@ export class MD2Loader {
             frames.push(frame);
         }
 
-        return new MD2Model(texCoords, trianfgles, frames, header);
+        return frames;
     }
 
     private constructor() {
