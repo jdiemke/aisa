@@ -46,6 +46,7 @@ module.exports = {
         'voxel-balls': './src/examples/voxel-balls/Application.ts',
         'cube-tunnel': './src/examples/cube-tunnel/Application.ts',
         'md2': './src/examples/md2/Application.ts',
+        'other-md2': './src/examples/different-md2/Application.ts',
         'polar-voxels': './src/examples/polar-voxels/Application.ts',
         'cinematic-scroller': './src/examples/cinematic-scroller/Application.ts',
         'scrolling-background': './src/examples/scrolling-background/Application.ts',
@@ -291,6 +292,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['md2'],
             filename: 'md2.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['other-md2'],
+            filename: 'other-md2.html'
         }),
         new HtmlWebpackPlugin({
             template: './src/index.html',
