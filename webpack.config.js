@@ -52,6 +52,7 @@ module.exports = {
         'scrolling-background': './src/examples/scrolling-background/Application.ts',
         'block-fade': './src/examples/block-fade/Application.ts',
         'particle-system': './src/examples/particle-system/Application.ts',
+        'mdl': './src/examples/mdl/Application.ts',
     },
     mode: 'development',
     output: {
@@ -72,7 +73,7 @@ module.exports = {
                 use: 'html-loader'
             },
             {
-                test: /\.(png|jpg|mp3|ogg|md2|tga)$/,
+                test: /\.(png|jpg|mp3|ogg|md2|mdl|tga)$/,
                 use: 'file-loader'
             }
         ]
@@ -322,6 +323,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['particle-system'],
             filename: 'particle-system.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['mdl'],
+            filename: 'mdl.html'
         })
 
 
