@@ -67,8 +67,6 @@ export class MD2Header {
 
         const magicNumber: number = dataView.getInt32(0, true);
         const version: number = dataView.getInt32(4, true);
-        console.log(magicNumber);
-        console.log(version);
 
         return magicNumber === MD2Header.IDP2 && version === MD2Header.VERSION;
     }
