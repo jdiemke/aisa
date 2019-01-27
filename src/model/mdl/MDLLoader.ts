@@ -1,3 +1,4 @@
+import { MDLHeader } from './MDLHeader';
 import { MDLModel } from './MDLModel';
 
 /**
@@ -18,7 +19,13 @@ export class MDLLoader {
     }
 
     private static parse(arrayBuffer: ArrayBuffer): MDLModel {
-       return new MDLModel();
+        const header: MDLHeader = MDLLoader.getHeader(arrayBuffer);
+
+        return new MDLModel();
+    }
+
+    private static getHeader(arrayBuffer: ArrayBuffer): MDLHeader {
+        return new MDLHeader(arrayBuffer);
     }
 
     private constructor() {
