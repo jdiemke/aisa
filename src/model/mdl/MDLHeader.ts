@@ -27,13 +27,11 @@ export class MDLHeader {
     public flags: number;
     public size: number;
 
-    public constructor(arrayBuffer: ArrayBuffer) {
+    public constructor(arrayBuffer: ArrayBuffer, stream: StreamReader) {
 
         if (!this.isValidMD2File(arrayBuffer)) {
             throw new InvalidFileFormatException('Not a valid MD2 file.');
         }
-
-        const stream: StreamReader = new StreamReader(arrayBuffer);
 
         this.ident = stream.readInt();
         this.version = stream.readInt();
