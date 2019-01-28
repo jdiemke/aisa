@@ -34,10 +34,10 @@ export class Md2ModelScene extends AbstractScene {
         framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
         this.startTime = Date.now();
         return Promise.all([
-         TextureUtils.load(require('../../assets/md2/dead.png'), false).then(
+         TextureUtils.load(require('../../assets/md2/hueteotl.png'), false).then(
                 (texture: Texture) => this.ogroTexture = texture
             ),
-            MD2Loader.load(require('../../assets/md2/ratamahatta.md2')).then(
+            MD2Loader.load(require('../../assets/md2/tris.md2')).then(
                 (mesh: MD2Model) => this.md2 = mesh
             ),
             TextureUtils.load(require('../../assets/font.png'), true).then(
