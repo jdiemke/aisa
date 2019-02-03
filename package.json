@@ -25,7 +25,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/jasmine": "3.3.8",
-    "@types/node": "10.12.20",
+    "@types/node": "10.12.21",
     "babel-minify-webpack-plugin": "0.3.1",
     "file-loader": "3.0.1",
     "html-loader": "0.5.5",
