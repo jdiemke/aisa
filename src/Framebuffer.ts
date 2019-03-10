@@ -686,19 +686,19 @@ export class Framebuffer {
     }
 
     public drawFog(red: number, green: number, blue: number): void {
-        let index: number = 0;
-        for (let y = 0; y < 200; y++) {
-            for (let x = 0; x < 320; x++) {
-                const alpha = Math.max(Math.min(-1 / this.wBuffer[index]*0.07, 1.0), 0.0);
-                const inverseAlpha = 1 - alpha;
+        const videoMemorySize: number = 320 * 200;
+        const fogScale: number = 0.07;
+        const wBufferScale: number = -fogScale;
 
-                const r = (this.framebuffer[index] >> 0 & 0xff) * inverseAlpha + red * alpha;
-                const g = (this.framebuffer[index] >> 8 & 0xff) * inverseAlpha + green * alpha;
-                const b = (this.framebuffer[index] >> 16 & 0xff) * inverseAlpha + blue * alpha;
+        for (let index: number = 0; index < videoMemorySize; index++) {
+            const alpha = Math.max(Math.min(wBufferScale / this.wBuffer[index], 1.0), 0.0);
+            const inverseAlpha = 1.0 - alpha;
 
-                this.framebuffer[index] = r | (g << 8) | (b << 16) | (255 << 24);
-                index++;
-            }
+            const r = (this.framebuffer[index] >> 0 & 0xff) * inverseAlpha + red * alpha;
+            const g = (this.framebuffer[index] >> 8 & 0xff) * inverseAlpha + green * alpha;
+            const b = (this.framebuffer[index] >> 16 & 0xff) * inverseAlpha + blue * alpha;
+
+            this.framebuffer[index] = r | (g << 8) | (b << 16) | (255 << 24);
         }
     }
 
