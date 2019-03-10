@@ -5,62 +5,57 @@ import { Vertex } from '../Vertex';
 
 export class TexturedTriangleRasterizer {
 
+    private temp: Vertex = null;
+
     // requires
     // bob und wbuffer
     constructor(private framebuffer: Framebuffer) { }
 
     public drawTriangleDDA2(p1: Vertex, p2: Vertex, p3: Vertex): void {
 
-        let temp: Vertex;
-
         if (p1.position.y > p3.position.y) {
-            temp = p1;
+            this.temp = p1;
             p1 = p3;
-            p3 = temp;
+            p3 = this.temp;
         }
 
         if (p1.position.y > p2.position.y) {
-            temp = p1;
+            this.temp = p1;
             p1 = p2;
-            p2 = temp;
+            p2 = this.temp;
         }
 
         if (p2.position.y > p3.position.y) {
-            temp = p2;
+            this.temp = p2;
             p2 = p3;
-            p3 = temp;
+            p3 = this.temp;
         }
 
         if (p1.position.y === p3.position.y) {
             return;
-        } /*else if (p2.y == p3.y) {
-            if (p2.x > p3.x) {
-                let temp: Vector3f = p2;
-                p2 = p3;
-                p3 = temp;
-            }
-            this.fillBottomFlatTriangle(p1, p2, p3, color);
-        } else if (p1.y == p2.y) {
-            if (p1.x > p2.x) {
-                let temp: Vector3f = p1;
-                p1 = p2;
-                p2 = temp;
-            }
-            this.fillTopFlatTriangle(p1, p2, p3, color);
-        } */else {
-            let x = (p3.position.x - p1.position.x) * (p2.position.y - p1.position.y) / (p3.position.y - p1.position.y) + p1.position.x;
+        } else {
+            const x: number = (p3.position.x - p1.position.x) * (p2.position.y - p1.position.y) /
+                (p3.position.y - p1.position.y) + p1.position.x;
             if (x > p2.position.x) {
                 this.fillLongRightTriangle2(p1, p2, p3);
             } else {
                 let tex = p1.textureCoordinate;
                 let tex2 = p2.textureCoordinate;
                 let tex3 = p3.textureCoordinate;
-                this.fillLongLeftTriangle2(p1.position, p2.position, p3.position, new Vector3f(tex.u, tex.v, 0), new Vector3f(tex2.u, tex2.v, 0), new Vector3f(tex3.u, tex3.v, 0));
+
+                this.fillLongLeftTriangle2(
+                    p1.position,
+                    p2.position,
+                    p3.position,
+                    new Vector3f(tex.u, tex.v, 0),
+                    new Vector3f(tex2.u, tex2.v, 0),
+                    new Vector3f(tex3.u, tex3.v, 0)
+                );
             }
         }
     }
 
-    fillLongRightTriangle2(v1: Vertex, v2: Vertex, v3: Vertex): void {
+    private fillLongRightTriangle2(v1: Vertex, v2: Vertex, v3: Vertex): void {
         let yDistanceLeft = v2.position.y - v1.position.y;
         let yDistanceRight = v3.position.y - v1.position.y;
 

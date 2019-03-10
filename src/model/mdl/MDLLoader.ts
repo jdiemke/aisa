@@ -6,6 +6,8 @@ import { MDLTexCoord } from './MDLTexCoord';
 
 /**
  * http://tfc.duke.free.fr/coding/mdl-specs-en.html
+ * http://www.gamers.org/dEngine/quake/spec/quake-spec34/qkspec_5.htm
+ * http://www.gamers.org/dEngine/quake/spec/quake-spec32.html#CMDLF
  */
 export class MDLLoader {
 
