@@ -22,7 +22,7 @@ export class Color {
 
 
 
-    constructor(private r: number, private g: number, private b: number, private a: number) {
+    constructor(public r: number, public g: number, public b: number, public a: number) {
     }
 
     public toPackedFormat(): number {
