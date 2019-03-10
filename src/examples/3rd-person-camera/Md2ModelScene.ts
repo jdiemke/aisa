@@ -23,9 +23,11 @@ export class Md2ModelScene extends AbstractScene {
     private static readonly CLEAR_COLOR: number = Color.SLATE_GRAY.toPackedFormat();
 
     private ogroTexture: Texture;
+    private weaponTexture: Texture;
     private texture4: Texture;
     private ground: Texture;
     private md2: MD2Model;
+    private weapon: MD2Model;
     private startTime: number;
 
     private modelViewMatrix: ModelViewMatrix = new ModelViewMatrix();
@@ -43,9 +45,18 @@ export class Md2ModelScene extends AbstractScene {
             TextureUtils.load(require('../../assets/md2/hueteotl.png'), false).then(
                 (texture: Texture) => this.ogroTexture = texture
             ),
+            TextureUtils.load(require('../../assets/md2/weapon.png'), false).then(
+                (texture: Texture) => this.weaponTexture = texture
+            ),
             MD2Loader.load(require('../../assets/md2/tris.md2')).then(
                 (mesh: MD2Model) => {
                     this.md2 = mesh;
+                    console.log(this.md2.header);
+                }
+            ),
+            MD2Loader.load(require('../../assets/md2/weapon.md2')).then(
+                (mesh: MD2Model) => {
+                    this.weapon = mesh;
                     console.log(this.md2.header);
                 }
             ),
@@ -122,11 +133,13 @@ export class Md2ModelScene extends AbstractScene {
 
         framebuffer.setTexture(this.ogroTexture);
         framebuffer.texturedRenderingPipeline.draw(this.md2.getMesh(), this.modelViewMatrix.getMatrix());
+        framebuffer.setTexture(this.weaponTexture);
+        framebuffer.texturedRenderingPipeline.draw(this.weapon.getMesh(), this.modelViewMatrix.getMatrix());
     }
 
     private computeCameraMovement(elapsedTime: number): void {
         this.modelViewMatrix.setIdentity();
-        this.modelViewMatrix.trans(0, -1, -5);
+        this.modelViewMatrix.trans(0, -1.2, -4);
         this.modelViewMatrix.yRotate(Math.PI * 2 / 360 * 90 + elapsedTime * 0.002);
         //  this.modelViewMatrix.xRotate(Math.PI * 2 / 360 * -90);
     }
@@ -135,7 +148,7 @@ export class Md2ModelScene extends AbstractScene {
         // http://cubeengine.com/wiki/Importing_md2_and_md3_files
         this.modelViewMatrix.setIdentity();
 
-        this.modelViewMatrix.trans(0, 24 * 0.05 - 1, -5);
+        this.modelViewMatrix.trans(0, 24 * 0.05 - 1.2, -4);
         this.modelViewMatrix.yRotate(Math.PI * 2 / 360 * -90 + elapsedTime * 0.002);
         this.modelViewMatrix.xRotate(Math.PI * 2 / 360 * -90);
         this.modelViewMatrix.scal(0.05, 0.05, 0.05);
