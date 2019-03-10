@@ -3,6 +3,8 @@ import { Vector3f } from "../math/Vector3f";
 
 export class TriangleRasterizer {
 
+    private temp: Vector3f = null;
+
     constructor(private framebuffer: Framebuffer) {
 
     }
@@ -14,41 +16,41 @@ export class TriangleRasterizer {
      */
     public drawTriangleDDA(p1: Vector3f, p2: Vector3f, p3: Vector3f, color: number): void {
         if (p1.y > p3.y) {
-            let temp: Vector3f = p1;
+            this.temp = p1;
             p1 = p3;
-            p3 = temp;
+            p3 = this.temp;
         }
 
         if (p1.y > p2.y) {
-            let temp: Vector3f = p1;
+            this.temp = p1;
             p1 = p2;
-            p2 = temp;
+            p2 = this.temp;
         }
 
         if (p2.y > p3.y) {
-            let temp: Vector3f = p2;
+            this.temp = p2;
             p2 = p3;
-            p3 = temp;
+            p3 = this.temp;
         }
 
-        if (p1.y == p3.y) {
+        if (p1.y === p3.y) {
             return;
-        } else if (p2.y == p3.y) {
+        } else if (p2.y === p3.y) {
             if (p2.x > p3.x) {
-                let temp: Vector3f = p2;
+                this.temp = p2;
                 p2 = p3;
-                p3 = temp;
+                p3 = this.temp;
             }
             this.fillBottomFlatTriangle(p1, p2, p3, color);
-        } else if (p1.y == p2.y) {
+        } else if (p1.y === p2.y) {
             if (p1.x > p2.x) {
-                let temp: Vector3f = p1;
+                this.temp = p1;
                 p1 = p2;
-                p2 = temp;
+                p2 = this.temp;
             }
             this.fillTopFlatTriangle(p1, p2, p3, color);
         } else {
-            let x = (p3.x - p1.x) * (p2.y - p1.y) / (p3.y - p1.y) + p1.x;
+            const x: number = (p3.x - p1.x) * (p2.y - p1.y) / (p3.y - p1.y) + p1.x;
             if (x > p2.x) {
                 this.fillLongRightTriangle(p1, p2, p3, color);
             } else {
@@ -57,28 +59,26 @@ export class TriangleRasterizer {
         }
     }
 
+    private fillBottomFlatTriangle(v1: Vector3f, v2: Vector3f, v3: Vector3f, color: number): void {
 
+        const yDistance: number = v3.y - v1.y;
 
-    fillBottomFlatTriangle(v1: Vector3f, v2: Vector3f, v3: Vector3f, color: number): void {
+        const slope1: number = (v2.x - v1.x) / yDistance;
+        const slope2: number = (v3.x - v1.x) / yDistance;
 
-        let yDistance = v3.y - v1.y;
+        const zslope1: number = (1 / v2.z - 1 / v1.z) / yDistance;
+        const zslope2: number = (1 / v3.z - 1 / v1.z) / yDistance;
 
-        let slope1 = (v2.x - v1.x) / yDistance;
-        let slope2 = (v3.x - v1.x) / yDistance;
+        let curz1: number = 1.0 / v1.z;
+        let curz2: number = 1.0 / v1.z;
 
-        let zslope1 = (1 / v2.z - 1 / v1.z) / yDistance;
-        let zslope2 = (1 / v3.z - 1 / v1.z) / yDistance;
-
-        let curz1 = 1.0 / v1.z;
-        let curz2 = 1.0 / v1.z;
-
-        let xPosition = v1.x;
-        let xPosition2 = v1.x;
-        let yPosition = v1.y;
+        let xPosition: number = v1.x;
+        let xPosition2: number = v1.x;
+        let yPosition: number = v1.y;
 
         for (let i = 0; i < yDistance; i++) {
             let length = Math.round(xPosition2) - Math.round(xPosition);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
             let spanzStep = (curz2 - curz1) / length;
             let wStart = curz1;
             for (let j = 0; j < length; j++) {
@@ -99,7 +99,6 @@ export class TriangleRasterizer {
         }
     }
 
-
     fillTopFlatTriangle(v1: Vector3f, v2: Vector3f, v3: Vector3f, color: number): void {
         let yDistance = v3.y - v1.y;
         let slope1 = (v3.x - v1.x) / yDistance;
@@ -117,7 +116,7 @@ export class TriangleRasterizer {
 
         for (let i = 0; i < yDistance; i++) {
             let length = Math.round(xPosition2) - Math.round(xPosition);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
             for (let j = 0; j < length; j++) {
                 let wStart = (curz2 - curz1) / (length) * j + curz1;
                 if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
@@ -156,7 +155,7 @@ export class TriangleRasterizer {
 
         for (let i = 0; i < yDistanceLeft; i++) {
             let length = Math.round(xPosition2) - Math.round(xPosition);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
             let spanzStep = (curz2 - curz1) / length;
             let wStart = curz1;
             for (let j = 0; j < length; j++) {
@@ -227,7 +226,7 @@ export class TriangleRasterizer {
 
         for (let i = 0; i < yDistanceRight; i++) {
             let length = Math.round(xPosition2) - Math.round(xPosition);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
             let spanzStep = (curz2 - curz1) / length;
             let wStart = curz1;
             for (let j = 0; j < length; j++) {
