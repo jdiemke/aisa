@@ -319,6 +319,28 @@ export class Matrix4f {
         this.m44 = 1.0;
     }
 
+    public setScaleMatrix(sx: number, sy: number, sz: number): void {
+        this.m11 = sx;
+        this.m12 = 0.0;
+        this.m13 = 0.0;
+        this.m14 = 0.0;
+
+        this.m21 = 0.0;
+        this.m22 = sy;
+        this.m23 = 0.0;
+        this.m24 = 0.0;
+
+        this.m31 = 0.0;
+        this.m32 = 0.0;
+        this.m33 = sz;
+        this.m34 = 0.0;
+
+        this.m41 = 0.0;
+        this.m42 = 0.0;
+        this.m43 = 0.0;
+        this.m44 = 1.0;
+    }
+
     public setYRotationMatrix(alpha: number): void {
         this.m11 = Math.cos(alpha);
         this.m12 = 0.0;

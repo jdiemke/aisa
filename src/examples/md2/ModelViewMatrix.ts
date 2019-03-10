@@ -31,6 +31,11 @@ export class ModelViewMatrix {
         this.applyMat();
     }
 
+    public scal(x: number, y: number, z: number): void {
+        this.transformation.setScaleMatrix(x, y, z);
+        this.applyMat();
+    }
+
     public xRotate(x: number): void {
         this.transformation.setXRotationMatrix(x);
         this.applyMat();
