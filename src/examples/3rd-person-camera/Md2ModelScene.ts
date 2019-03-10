@@ -11,6 +11,7 @@ import { ModelViewMatrix } from './../md2/ModelViewMatrix';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 import { Vector4f } from '../../math/index';
 import { TextureCoordinate } from '../../Vertex';
+import { MD2AnimationNames } from '../../model/md2/MD2AnimationNames';
 
 /**
  * http://tfc.duke.free.fr/coding/mdl-specs-en.html
@@ -51,13 +52,11 @@ export class Md2ModelScene extends AbstractScene {
             MD2Loader.load(require('../../assets/md2/tris.md2')).then(
                 (mesh: MD2Model) => {
                     this.md2 = mesh;
-                    console.log(this.md2.header);
                 }
             ),
             MD2Loader.load(require('../../assets/md2/weapon.md2')).then(
                 (mesh: MD2Model) => {
                     this.weapon = mesh;
-                    console.log(this.md2.header);
                 }
             ),
             TextureUtils.load(require('../../assets/font.png'), true).then(
@@ -121,7 +120,6 @@ export class Md2ModelScene extends AbstractScene {
         framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
 
         this.renderPlayer(framebuffer, time);
-
         const fog: Color = Color.RED;
         framebuffer.drawFog(fog.r, fog.g, fog.b);
         framebuffer.drawText(8, 8, 'FPS: ' + this.fps.toString(), this.texture4);
