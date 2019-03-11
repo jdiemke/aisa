@@ -6,6 +6,7 @@ import { MD2Header } from './MD2Header';
 import { MD2TexCoord } from './MD2TexCoord';
 import { MD2Triangle } from './MD2Triangle';
 import { MD2Vertex } from './MD2Vertex';
+import { MD2Animation } from './MD2AnimationNames';
 
 export class MD2Model {
 
@@ -58,6 +59,27 @@ export class MD2Model {
         const f2: number = (f1 + 1) % this.frames.length;
         const cframe: MD2Frame = this.frames[f1];
         const cframe2: MD2Frame = this.frames[f2];
+        const alpha: number = time - Math.floor(time);
+        const oneMinusAlpha: number = 1 - alpha;
+
+        for (let i: number = 0; i < cframe.vertices.length; i++) {
+            const x: MD2Vertex = cframe.vertices[i];
+            const x2: MD2Vertex = cframe2.vertices[i];
+            this.points[i].x = x.vector.x * oneMinusAlpha + x2.vector.x * alpha;
+            this.points[i].y = x.vector.y * oneMinusAlpha + x2.vector.y * alpha;
+            this.points[i].z = x.vector.z * oneMinusAlpha + x2.vector.z * alpha;
+        }
+
+        return this.mesh;
+    }
+
+    public getMesh2(animation: MD2Animation): TexturedMesh {
+        const time: number = Date.now() * 0.005;
+        const modulo: number = (animation.last - animation.first + 1);
+        const f1: number = Math.floor(time) % modulo;
+        const f2: number = (f1 + 1) % modulo;
+        const cframe: MD2Frame = this.frames[f1 + animation.first];
+        const cframe2: MD2Frame = this.frames[f2 + animation.first];
         const alpha: number = time - Math.floor(time);
         const oneMinusAlpha: number = 1 - alpha;
 
