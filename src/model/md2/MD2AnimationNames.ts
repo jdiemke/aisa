@@ -1,25 +1,17 @@
-export enum MD2AnimationNames {
-    STAND,
-    RUN,
-    ATTACK,
-    PAIN_A,
-    PAIN_B,
-    PAIN_C,
-    JUMP,
-    FLIP,
-    SALUTE,
-    FALLBACK,
-    WAVE,
-    POINTING,
-    CROUCH_STAND,
-    CROUCH_WALK,
-    CROUCH_ATTACK,
-    CROUCH_PAIN,
-    CROUCH_DEATH,
-    DEATH_FALLBACK,
-    DEATH_FALL_FORWARD,
-    DEATH_FALLVBACK_SLOW,
-    BOOM
+
+// http://www.mbsoftworks.sk/tutorials/opengl3/24-animation-pt1-keyframe-md2/
+// https://www.gamedev.net/forums/topic/361176-md2-animation-speed/
+// https://www.allegro.cc/forums/thread/414171/414344
+
+export class MD2Animation {
+
+    public static readonly STAND: MD2Animation = new MD2Animation(0, 39, 9);
+    public static readonly RUN: MD2Animation = new MD2Animation(40, 45, 10);
+    public static readonly ATTACK: MD2Animation = new MD2Animation(46, 53, 10);
+    public static readonly PAIN_A: MD2Animation = new MD2Animation(54, 57, 7);
+
+    constructor(public first: number, public last: number, public fps: number) { }
+
 }
 
 interface Animation {
@@ -29,10 +21,6 @@ interface Animation {
 }
 
 const animations: Array<Animation> = [
-    { first: 0, last: 39, fps: 9 },   // STAND
-    { first: 40, last: 45, fps: 10 },   // RUN
-    { first: 46, last: 53, fps: 10 },   // ATTACK
-    { first: 54, last: 57, fps: 7 },   // PAIN_A
     { first: 58, last: 61, fps: 7 },   // PAIN_B
     { first: 62, last: 65, fps: 7 },   // PAIN_C
     { first: 66, last: 71, fps: 7 },   // JUMP

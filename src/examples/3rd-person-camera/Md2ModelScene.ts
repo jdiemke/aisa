@@ -1,17 +1,16 @@
 import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { Matrix4f } from '../../math/Matrix4f';
+import { Vector4f } from '../../math/index';
+import { MD2Animation } from '../../model/md2/MD2AnimationNames';
+import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
+import { TextureCoordinate } from '../../Vertex';
 import { MD2Loader } from './../../model/md2/MD2Loader';
 import { MD2Model } from './../../model/md2/MD2Model';
 import { ModelViewMatrix } from './../md2/ModelViewMatrix';
-import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
-import { Vector4f } from '../../math/index';
-import { TextureCoordinate } from '../../Vertex';
-import { MD2AnimationNames } from '../../model/md2/MD2AnimationNames';
 
 /**
  * http://tfc.duke.free.fr/coding/mdl-specs-en.html
@@ -130,9 +129,13 @@ export class Md2ModelScene extends AbstractScene {
         this.computeCameraMovement2(time * 0.6);
 
         framebuffer.setTexture(this.ogroTexture);
-        framebuffer.texturedRenderingPipeline.draw(this.md2.getMesh(), this.modelViewMatrix.getMatrix());
+        framebuffer.texturedRenderingPipeline.draw(
+            this.md2.getMesh2(MD2Animation.RUN), this.modelViewMatrix.getMatrix()
+        );
         framebuffer.setTexture(this.weaponTexture);
-        framebuffer.texturedRenderingPipeline.draw(this.weapon.getMesh(), this.modelViewMatrix.getMatrix());
+        framebuffer.texturedRenderingPipeline.draw(
+            this.weapon.getMesh2(MD2Animation.RUN), this.modelViewMatrix.getMatrix()
+        );
     }
 
     private computeCameraMovement(elapsedTime: number): void {
