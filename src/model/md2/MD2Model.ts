@@ -83,6 +83,9 @@ export class MD2Model {
         const alpha: number = time - Math.floor(time);
         const oneMinusAlpha: number = 1 - alpha;
 
+        /**
+         * TODO: add animation blending??? expensive :(
+         */
         for (let i: number = 0; i < cframe.vertices.length; i++) {
             const x: MD2Vertex = cframe.vertices[i];
             const x2: MD2Vertex = cframe2.vertices[i];
