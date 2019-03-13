@@ -1,16 +1,18 @@
 import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { Vector4f } from '../../math/index';
+import { Vector4f, Vector2f } from '../../math/index';
 import { MD2Animation } from '../../model/md2/MD2AnimationNames';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { TextureCoordinate } from '../../Vertex';
+import { Keyboard } from '../mode-7/Keyboard';
 import { MD2Loader } from './../../model/md2/MD2Loader';
 import { MD2Model } from './../../model/md2/MD2Model';
 import { ModelViewMatrix } from './../md2/ModelViewMatrix';
+import { Player } from './Player';
 
 /**
  * http://tfc.duke.free.fr/coding/mdl-specs-en.html
@@ -21,6 +23,10 @@ import { ModelViewMatrix } from './../md2/ModelViewMatrix';
 export class Md2ModelScene extends AbstractScene {
 
     private static readonly CLEAR_COLOR: number = Color.SLATE_GRAY.toPackedFormat();
+
+    public lastTime: number = 0;
+
+    private keyboard: Keyboard = new Keyboard();
 
     private ogroTexture: Texture;
     private weaponTexture: Texture;
@@ -37,6 +43,9 @@ export class Md2ModelScene extends AbstractScene {
     private fpsStartTime: number = Date.now();
     private fpsCount: number = 0;
     private fps: number = 0;
+
+    private position: Vector2f = new Vector2f(0, 0);
+    private player: Player = new Player();
 
     public init(framebuffer: Framebuffer): Promise<any> {
         framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
@@ -94,8 +103,31 @@ export class Md2ModelScene extends AbstractScene {
         this.floor = mesh;
     }
 
+    public processInput(deltaTime: number): void {
+        const speed: number = 3.1;
+        const Angspeed: number = 110.0;
+        if (this.keyboard.isDown(Keyboard.UP)) {
+            this.player.moveForward(speed, deltaTime);
+        }
+
+        if (this.keyboard.isDown(Keyboard.DOWN)) {
+            this.player.moveBackward(speed, deltaTime);
+        }
+
+        if (this.keyboard.isDown(Keyboard.LEFT)) {
+            this.player.turnLeft(Angspeed, deltaTime);
+        }
+
+        if (this.keyboard.isDown(Keyboard.RIGHT)) {
+            this.player.turnRight(Angspeed, deltaTime);
+        }
+    }
+
     public render(framebuffer: Framebuffer): void {
+
         const currentTime: number = Date.now();
+        const delta: number = (currentTime - this.lastTime) / 1000;
+        this.lastTime = currentTime;
 
         if (currentTime > this.fpsStartTime + 1000) {
             this.fpsStartTime = currentTime;
@@ -105,6 +137,8 @@ export class Md2ModelScene extends AbstractScene {
         this.fpsCount++;
 
         const time: number = Date.now() - this.startTime;
+
+        this.processInput(delta);
 
         framebuffer.clearColorBuffer(Md2ModelScene.CLEAR_COLOR);
         framebuffer.clearDepthBuffer();
@@ -122,26 +156,31 @@ export class Md2ModelScene extends AbstractScene {
         const fog: Color = Color.RED;
         framebuffer.drawFog(fog.r, fog.g, fog.b);
         framebuffer.drawText(8, 8, 'FPS: ' + this.fps.toString(), this.texture4);
-        framebuffer.drawText(8, 16, 'TRIANGELS: ' + this.md2.header.numberOfTriangles, this.texture4);
+        framebuffer.drawText(8, 16, 'TRIANGELS: ' +
+            (this.md2.header.numberOfTriangles + this.weapon.header.numberOfTriangles), this.texture4);
     }
 
     private renderPlayer(framebuffer: Framebuffer, time: number): void {
         this.computeCameraMovement2(time * 0.6);
+        let anim: MD2Animation = MD2Animation.STAND;
+        if (this.keyboard.isDown(Keyboard.UP) || this.keyboard.isDown(Keyboard.DOWN)) {
+            anim = MD2Animation.RUN;
+        }
 
         framebuffer.setTexture(this.ogroTexture);
         framebuffer.texturedRenderingPipeline.draw(
-            this.md2.getMesh2(MD2Animation.RUN), this.modelViewMatrix.getMatrix()
+            this.md2.getMesh2(anim), this.modelViewMatrix.getMatrix()
         );
         framebuffer.setTexture(this.weaponTexture);
         framebuffer.texturedRenderingPipeline.draw(
-            this.weapon.getMesh2(MD2Animation.RUN), this.modelViewMatrix.getMatrix()
+            this.weapon.getMesh2(anim), this.modelViewMatrix.getMatrix()
         );
     }
 
     private computeCameraMovement(elapsedTime: number): void {
         this.modelViewMatrix.setIdentity();
         this.modelViewMatrix.trans(0, -1.2, -4);
-        this.modelViewMatrix.yRotate(Math.PI * 2 / 360 * 90 + elapsedTime * 0.002);
+        this.modelViewMatrix.yRotate(Math.PI * 2 / 360 * 90);
         //  this.modelViewMatrix.xRotate(Math.PI * 2 / 360 * -90);
     }
 
@@ -149,8 +188,8 @@ export class Md2ModelScene extends AbstractScene {
         // http://cubeengine.com/wiki/Importing_md2_and_md3_files
         this.modelViewMatrix.setIdentity();
 
-        this.modelViewMatrix.trans(0, 24 * 0.05 - 1.2, -4);
-        this.modelViewMatrix.yRotate(Math.PI * 2 / 360 * -90 + elapsedTime * 0.002);
+        this.modelViewMatrix.trans(0 + this.player.position.x, 24 * 0.05 - 1.2, -4 + this.player.position.y);
+        this.modelViewMatrix.yRotate(Math.PI * 2 / 360 * (90 + this.player.angle));
         this.modelViewMatrix.xRotate(Math.PI * 2 / 360 * -90);
         this.modelViewMatrix.scal(0.05, 0.05, 0.05);
 
