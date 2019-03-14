@@ -1,7 +1,7 @@
 import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { Vector4f, Vector2f } from '../../math/index';
+import { Vector4f, Vector2f, Vector3f, Matrix4f } from '../../math/index';
 import { MD2Animation } from '../../model/md2/MD2AnimationNames';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 import { AbstractScene } from '../../scenes/AbstractScene';
@@ -13,6 +13,7 @@ import { MD2Loader } from './../../model/md2/MD2Loader';
 import { MD2Model } from './../../model/md2/MD2Model';
 import { ModelViewMatrix } from './../md2/ModelViewMatrix';
 import { Player } from './Player';
+import { ThirdPersonCamera } from '../../camera/ThirdPersonCamera';
 
 /**
  * http://tfc.duke.free.fr/coding/mdl-specs-en.html
@@ -46,6 +47,8 @@ export class Md2ModelScene extends AbstractScene {
 
     private position: Vector2f = new Vector2f(0, 0);
     private player: Player = new Player();
+
+    private camera: ThirdPersonCamera = new ThirdPersonCamera();
 
     public init(framebuffer: Framebuffer): Promise<any> {
         framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
@@ -147,7 +150,7 @@ export class Md2ModelScene extends AbstractScene {
         framebuffer.setTexture(this.ground);
 
         framebuffer.texturedRenderingPipeline.setCullFace(CullFace.BACK);
-        this.computeCameraMovement(time * 0.6);
+        this.computeFloorMovement(time * 0.6);
         framebuffer.texturedRenderingPipeline.draw(this.floor, this.modelViewMatrix.getMatrix());
 
         framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
@@ -161,7 +164,7 @@ export class Md2ModelScene extends AbstractScene {
     }
 
     private renderPlayer(framebuffer: Framebuffer, time: number): void {
-        this.computeCameraMovement2(time * 0.6);
+        this.computePlayerMovement(time * 0.6);
         let anim: MD2Animation = MD2Animation.STAND;
         if (this.keyboard.isDown(Keyboard.UP) || this.keyboard.isDown(Keyboard.DOWN)) {
             anim = MD2Animation.RUN;
@@ -177,22 +180,30 @@ export class Md2ModelScene extends AbstractScene {
         );
     }
 
-    private computeCameraMovement(elapsedTime: number): void {
+    private computeFloorMovement(elapsedTime: number): void {
         this.modelViewMatrix.setIdentity();
-        this.modelViewMatrix.trans(0, -1.2, -4);
+        this.modelViewMatrix.multMatrix(this.getCamMatrix());
+        this.modelViewMatrix.trans(0, 0, 0);
         this.modelViewMatrix.yRotate(Math.PI * 2 / 360 * 90);
         //  this.modelViewMatrix.xRotate(Math.PI * 2 / 360 * -90);
     }
 
-    private computeCameraMovement2(elapsedTime: number): void {
+    private getCamMatrix(): Matrix4f {
+        return this.camera.computeMatrix(new Vector3f(
+            this.player.position.x,
+            3.0,
+            this.player.position.y + 4
+        ), new Vector3f(this.player.position.x, 1.0, -1 + this.player.position.y), new Vector3f(0, 1, 0));
+    }
+
+    private computePlayerMovement(elapsedTime: number): void {
         // http://cubeengine.com/wiki/Importing_md2_and_md3_files
         this.modelViewMatrix.setIdentity();
-
-        this.modelViewMatrix.trans(0 + this.player.position.x, 24 * 0.05 - 1.2, -4 + this.player.position.y);
+        this.modelViewMatrix.multMatrix(this.getCamMatrix());
+        this.modelViewMatrix.trans(this.player.position.x, 24 * 0.05, this.player.position.y);
         this.modelViewMatrix.yRotate(Math.PI * 2 / 360 * (90 + this.player.angle));
         this.modelViewMatrix.xRotate(Math.PI * 2 / 360 * -90);
         this.modelViewMatrix.scal(0.05, 0.05, 0.05);
-
     }
 
 }

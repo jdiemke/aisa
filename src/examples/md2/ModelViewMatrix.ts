@@ -26,6 +26,10 @@ export class ModelViewMatrix {
         this.currtentMatrix.setIdentityMatrix();
     }
 
+    public multMatrix(mat: Matrix4f): void {
+        this.currtentMatrix = this.currtentMatrix.multiplyMatrix(mat);
+    }
+
     public trans(x: number, y: number, z: number): void {
         this.transformation.setTranslationMatrix(x, y, z);
         this.applyMat();
