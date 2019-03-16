@@ -17,6 +17,11 @@ export class Player {
         this.position.y -= distance * -Math.cos(Math.PI * 2 / 360 * this.angle);
     }
 
+    public getDirection(): Vector2f {
+        return new Vector2f(-Math.sin(Math.PI * 2 / 360 * this.angle),
+            - Math.cos(Math.PI * 2 / 360 * this.angle));
+    }
+
     public turnLeft(speed: number, deltaTime: number): void {
         const distance: number = speed * deltaTime;
         this.angle += distance;
