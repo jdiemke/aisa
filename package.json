@@ -24,8 +24,8 @@
   "author": "Johannes Diemke",
   "license": "MIT",
   "devDependencies": {
-    "@types/jasmine": "3.3.9",
-    "@types/node": "11.11.0",
+    "@types/jasmine": "3.3.10",
+    "@types/node": "11.11.3",
     "babel-minify-webpack-plugin": "0.3.1",
     "file-loader": "3.0.1",
     "html-loader": "0.5.5",
@@ -36,13 +36,13 @@
     "karma-jasmine": "2.0.1",
     "karma-jasmine-html-reporter": "1.4.0",
     "karma-spec-reporter": "0.0.32",
-    "karma-webpack": "3.0.5",
+    "karma-webpack": "4.0.0-rc.6",
     "ts-loader": "5.3.3",
     "ts-node": "8.0.3",
-    "tslint": "5.13.1",
+    "tslint": "5.14.0",
     "typescript": "3.3.3333",
     "webpack": "4.29.6",
-    "webpack-cli": "3.2.3",
+    "webpack-cli": "3.3.0",
     "webpack-dev-server": "3.2.1"
   }
 }
