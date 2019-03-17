@@ -2,6 +2,7 @@ import { ThirdPersonCamera } from '../../camera/ThirdPersonCamera';
 import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
+import { AisaGamepad } from '../../input/AisaGamepad';
 import { Matrix4f, Vector2f, Vector3f, Vector4f } from '../../math/index';
 import { MD2Animation } from '../../model/md2/MD2AnimationNames';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
@@ -28,6 +29,7 @@ export class Md2ModelScene extends AbstractScene {
     public lastTime: number = Date.now();
 
     private keyboard: Keyboard = new Keyboard();
+    private gamepad: AisaGamepad = new AisaGamepad();
 
     private ogroTexture: Texture;
     private weaponTexture: Texture;
@@ -50,6 +52,7 @@ export class Md2ModelScene extends AbstractScene {
     private camera: ThirdPersonCamera = new ThirdPersonCamera();
 
     private oldEye: Vector3f = new Vector3f(0, 0, 0);
+    private anim: MD2Animation = MD2Animation.STAND;
 
     public init(framebuffer: Framebuffer): Promise<any> {
         framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
@@ -76,12 +79,18 @@ export class Md2ModelScene extends AbstractScene {
     }
 
     public onInit(): void {
+        window.addEventListener('gamepadconnected', (e: GamepadEvent) => {
+            console.log('Gamepad connected at index %d: %s. %d buttons, %d axes.',
+                e.gamepad.index, e.gamepad.id,
+                e.gamepad.buttons.length, e.gamepad.axes.length);
+        });
+
         const mesh: TexturedMesh = new TexturedMesh();
         mesh.points = [
-            new Vector4f(-20, 0, 20),
-            new Vector4f(20, 0, 20),
-            new Vector4f(20, 0, -20),
-            new Vector4f(-20, 0, -20)
+            new Vector4f(-10, 0, 10),
+            new Vector4f(10, 0, 10),
+            new Vector4f(10, 0, -10),
+            new Vector4f(-10, 0, -10)
         ];
         mesh.uv = [
             new TextureCoordinate(0, 0),
@@ -106,20 +115,29 @@ export class Md2ModelScene extends AbstractScene {
     public processInput(deltaTime: number): void {
         const speed: number = 3.1;
         const Angspeed: number = 110.0;
-        if (this.keyboard.isDown(Keyboard.UP)) {
+
+        this.anim = MD2Animation.STAND;
+
+        if (this.keyboard.isDown(Keyboard.UP) || this.gamepad.isLeft(1, -1)) {
+            this.anim = MD2Animation.RUN;
             this.player.moveForward(speed, deltaTime);
         }
 
-        if (this.keyboard.isDown(Keyboard.DOWN)) {
+        if (this.keyboard.isDown(Keyboard.DOWN) || this.gamepad.isLeft(1, 1)) {
+            this.anim = MD2Animation.RUN;
             this.player.moveBackward(speed, deltaTime);
         }
 
-        if (this.keyboard.isDown(Keyboard.LEFT)) {
+        if (this.keyboard.isDown(Keyboard.LEFT) || this.gamepad.isLeft(0, -1)) {
             this.player.turnLeft(Angspeed, deltaTime);
         }
 
-        if (this.keyboard.isDown(Keyboard.RIGHT)) {
+        if (this.keyboard.isDown(Keyboard.RIGHT) || this.gamepad.isLeft(0, 1)) {
             this.player.turnRight(Angspeed, deltaTime);
+        }
+
+        if (this.gamepad.isButtonPressed(0)) {
+            this.anim = MD2Animation.ATTACK;
         }
     }
 
@@ -153,27 +171,25 @@ export class Md2ModelScene extends AbstractScene {
         framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
 
         this.renderPlayer(framebuffer, delta);
-        const fog: Color = Color.RED;
-        //  framebuffer.drawFog(fog.r, fog.g, fog.b);
+        framebuffer.drawFog(Color.RED, 0.06, 5.0);
         framebuffer.drawText(8, 8, 'FPS: ' + this.fps.toString(), this.texture4);
         framebuffer.drawText(8, 16, 'TRIANGELS: ' +
             (this.md2.header.numberOfTriangles + this.weapon.header.numberOfTriangles), this.texture4);
+        if (this.gamepad.isAvailable() && (currentTime % 1000) > 500) {
+            framebuffer.drawText(8, 200 - 16, 'GAMEPAD DETECTED', this.texture4);
+        }
     }
 
     private renderPlayer(framebuffer: Framebuffer, time: number): void {
         this.computePlayerMovement(time);
-        let anim: MD2Animation = MD2Animation.STAND;
-        if (this.keyboard.isDown(Keyboard.UP) || this.keyboard.isDown(Keyboard.DOWN)) {
-            anim = MD2Animation.RUN;
-        }
 
         framebuffer.setTexture(this.ogroTexture);
         framebuffer.texturedRenderingPipeline.draw(
-            this.md2.getMesh2(anim), this.modelViewMatrix.getMatrix()
+            this.md2.getMesh2(this.anim), this.modelViewMatrix.getMatrix()
         );
         framebuffer.setTexture(this.weaponTexture);
         framebuffer.texturedRenderingPipeline.draw(
-            this.weapon.getMesh2(anim), this.modelViewMatrix.getMatrix()
+            this.weapon.getMesh2(this.anim), this.modelViewMatrix.getMatrix()
         );
     }
 
@@ -189,7 +205,7 @@ export class Md2ModelScene extends AbstractScene {
         const eyePos: Vector3f = this.oldEye.add(
             new Vector3f(
                 this.player.position.x - this.player.getDirection().x * 5,
-                3.2, this.player.position.y - this.player.getDirection().y * 5
+                2.2, this.player.position.y - this.player.getDirection().y * 5
             ).sub(this.oldEye).mul(dampFactor));
         this.oldEye = eyePos;
 
