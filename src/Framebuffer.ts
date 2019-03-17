@@ -1,25 +1,25 @@
 
+import { ScaleClipBlitter } from './blitter/ScaleClipBlitter';
+import { ControllableCamera } from './camera';
+import { Color } from './core/Color';
+import { CullFace } from './CullFace';
+import { Torus } from './geometrical-objects/Torus';
+import { Matrix3f, Matrix4f, Vector3f, Vector4f } from './math';
 import { ComputationalGeometryUtils } from './math/Geometry';
 import { Sphere } from './math/Sphere';
-import { CullFace } from './CullFace';
-import { TextureCoordinate, Vertex } from './Vertex';
-import { Texture } from './texture';
-import { Matrix3f, Matrix4f, Vector3f, Vector4f } from './math';
-import { ControllableCamera } from './camera';
 import RandomNumberGenerator from './RandomNumberGenerator';
-import { Color } from './core/Color';
-import { AbstractClipEdge } from './screen-space-clipping/AbstractClipEdge';
-import { RightClipEdge } from './screen-space-clipping/RightClipEdge';
-import { LeftClipEdge } from './screen-space-clipping/LeftClipEdge';
-import { TopClipEdge } from './screen-space-clipping/TopClipEdge';
-import { BottomClipEdge } from './screen-space-clipping/BottomClipEdge';
-import { CohenSutherlandLineClipper } from './screen-space-clipping/CohenSutherlandLineClipper';
-import { Torus } from './geometrical-objects/Torus';
-import { TriangleRasterizer } from './rasterizer/TriangleRasterizer';
-import { ScaleClipBlitter } from './blitter/ScaleClipBlitter';
 import { TexturedTriangleRasterizer } from './rasterizer/TexturedTriangleRasterizer';
+import { TriangleRasterizer } from './rasterizer/TriangleRasterizer';
 import { FlatShadingRenderingPipeline } from './rendering-pipelines/FlatShadingRenderingPipeline';
 import { TexturingRenderingPipeline } from './rendering-pipelines/TexturingRenderingPipeline';
+import { AbstractClipEdge } from './screen-space-clipping/AbstractClipEdge';
+import { BottomClipEdge } from './screen-space-clipping/BottomClipEdge';
+import { CohenSutherlandLineClipper } from './screen-space-clipping/CohenSutherlandLineClipper';
+import { LeftClipEdge } from './screen-space-clipping/LeftClipEdge';
+import { RightClipEdge } from './screen-space-clipping/RightClipEdge';
+import { TopClipEdge } from './screen-space-clipping/TopClipEdge';
+import { Texture } from './texture/Texture';
+import { TextureCoordinate, Vertex } from './Vertex';
 
 //let bunnyJson = <any>require('./assets/bunny.json');
 // let roomJson = <any>require('./assets/room.json');
@@ -685,18 +685,17 @@ export class Framebuffer {
         }
     }
 
-    public drawFog(red: number, green: number, blue: number): void {
+    public drawFog(color: Color, fogScale: number, fogOffset: number): void {
         const videoMemorySize: number = 320 * 200;
-        const fogScale: number = 0.07;
         const wBufferScale: number = -fogScale;
 
         for (let index: number = 0; index < videoMemorySize; index++) {
-            const alpha = Math.max(Math.min(wBufferScale / this.wBuffer[index], 1.0), 0.0);
+            const alpha = Math.max(Math.min(wBufferScale * (1 / this.wBuffer[index] + fogOffset), 1.0), 0.0);
             const inverseAlpha = 1.0 - alpha;
 
-            const r = (this.framebuffer[index] >> 0 & 0xff) * inverseAlpha + red * alpha;
-            const g = (this.framebuffer[index] >> 8 & 0xff) * inverseAlpha + green * alpha;
-            const b = (this.framebuffer[index] >> 16 & 0xff) * inverseAlpha + blue * alpha;
+            const r = (this.framebuffer[index] >> 0 & 0xff) * inverseAlpha + color.r * alpha;
+            const g = (this.framebuffer[index] >> 8 & 0xff) * inverseAlpha + color.g * alpha;
+            const b = (this.framebuffer[index] >> 16 & 0xff) * inverseAlpha + color.b * alpha;
 
             this.framebuffer[index] = r | (g << 8) | (b << 16) | (255 << 24);
         }
@@ -958,7 +957,7 @@ export class Framebuffer {
             let b = (this.framebuffer[framebufferIndex] >> 16 & 0xff) * inverseAlpha + (texture.texture[framebufferIndex] >> 16 & 0xff) * alpha2;
 
             this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | (255 << 24);
-            framebufferIndex ++;
+            framebufferIndex++;
         }
     }
 

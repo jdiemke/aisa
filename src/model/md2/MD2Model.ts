@@ -1,12 +1,12 @@
 import { Vector4f } from '../../math/index';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 import { TextureCoordinate } from '../../Vertex';
+import { MD2Animation } from './MD2AnimationNames';
 import { MD2Frame } from './MD2Frame';
 import { MD2Header } from './MD2Header';
 import { MD2TexCoord } from './MD2TexCoord';
 import { MD2Triangle } from './MD2Triangle';
 import { MD2Vertex } from './MD2Vertex';
-import { MD2Animation } from './MD2AnimationNames';
 
 export class MD2Model {
 
@@ -20,8 +20,8 @@ export class MD2Model {
         const mesh: TexturedMesh = new TexturedMesh();
 
         const texCoords2: Array<TextureCoordinate> = new Array<TextureCoordinate>();
-        this.textureCoordinates.forEach((tc: MD2TexCoord) => {
-            texCoords2.push(new TextureCoordinate(tc.s, tc.t));
+        this.textureCoordinates.forEach((textureCoordinate: MD2TexCoord) => {
+            texCoords2.push(new TextureCoordinate(textureCoordinate.s, textureCoordinate.t));
         });
 
         const points: Array<Vector4f> = new Array<Vector4f>();
@@ -40,11 +40,11 @@ export class MD2Model {
             uv: Array<number>
         }> = new Array();
 
-        this.triangles.forEach((t: MD2Triangle) => {
+        this.triangles.forEach((triangle: MD2Triangle) => {
 
             faces.push({
-                uv: t.texCoords,
-                vertices: t.vertices
+                uv: triangle.texCoords,
+                vertices: triangle.vertices
             });
         });
 
