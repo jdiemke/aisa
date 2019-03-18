@@ -12,10 +12,13 @@ export class MD2Model {
 
     private mesh: TexturedMesh;
     private points: Array<Vector4f>;
+    private animation: MD2Animation = MD2Animation.STAND;
+    private animStart: number = 0;
+    private currentFrame: number = 0;
 
     constructor(public textureCoordinates: Array<MD2TexCoord>,
-                public triangles: Array<MD2Triangle>,
-                public frames: Array<MD2Frame>, public header: MD2Header) {
+        public triangles: Array<MD2Triangle>,
+        public frames: Array<MD2Frame>, public header: MD2Header) {
 
         const mesh: TexturedMesh = new TexturedMesh();
 
@@ -73,14 +76,25 @@ export class MD2Model {
         return this.mesh;
     }
 
-    public getMesh2(animation: MD2Animation): TexturedMesh {
-        const time: number = Date.now() * 0.005;
-        const modulo: number = (animation.last - animation.first + 1);
-        const f1: number = Math.floor(time) % modulo;
+    public setAnim(animation: MD2Animation, time: number): void {
+        this.animation = animation;
+        this.currentFrame = 0;
+    }
+
+    public getMesh2(delta: number): TexturedMesh {
+        this.currentFrame += delta * 0.009;
+
+        if (this.currentFrame > (this.animation.last - this.animation.first)) {
+            this.currentFrame -= (this.animation.last - this.animation.first);
+            this.animation = MD2Animation.STAND;
+        }
+
+        const modulo: number = (this.animation.last - this.animation.first + 1);
+        const f1: number = Math.floor(this.currentFrame) % modulo;
         const f2: number = (f1 + 1) % modulo;
-        const cframe: MD2Frame = this.frames[f1 + animation.first];
-        const cframe2: MD2Frame = this.frames[f2 + animation.first];
-        const alpha: number = time - Math.floor(time);
+        const cframe: MD2Frame = this.frames[f1 + this.animation.first];
+        const cframe2: MD2Frame = this.frames[f2 + this.animation.first];
+        const alpha: number = this.currentFrame - Math.floor(this.currentFrame);
         const oneMinusAlpha: number = 1 - alpha;
 
         /**

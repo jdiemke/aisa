@@ -6,6 +6,11 @@ import { MD2TexCoord } from './MD2TexCoord';
 import { MD2Triangle } from './MD2Triangle';
 import { StreamReader } from './StreamReader';
 
+/**
+ * http://tfc.duke.free.fr/coding/md2-specs-en.html
+ * http://tfc.duke.free.fr/old/models/md2.htm
+ * https://fabiensanglard.net/quake2/quake2_software_renderer.php
+ */
 export class MD2Loader {
 
     public static load(filename: string): Promise<MD2Model> {
