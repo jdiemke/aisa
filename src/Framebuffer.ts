@@ -71,7 +71,7 @@ export class Framebuffer {
         this.cullMode = face;
     }
 
-    setTexture(texture: Texture) {
+    public setTexture(texture: Texture): void {
         this.bob = texture;
     }
 

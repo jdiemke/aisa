@@ -32,4 +32,8 @@ export class AisaGamepad {
         return false;
     }
 
+    public vl(): string {
+        return this.gamepad.id;
+    }
+
 }
