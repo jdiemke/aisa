@@ -13,8 +13,8 @@ export class MD2Model {
     private mesh: TexturedMesh;
     private points: Array<Vector4f>;
     private animation: MD2Animation = MD2Animation.STAND;
-    private animStart: number = 0;
     private currentFrame: number = 0;
+    private loop: boolean = false;
 
     constructor(public textureCoordinates: Array<MD2TexCoord>,
         public triangles: Array<MD2Triangle>,
@@ -76,17 +76,19 @@ export class MD2Model {
         return this.mesh;
     }
 
-    public setAnim(animation: MD2Animation, time: number): void {
+    public setAnim(animation: MD2Animation, time: number, loop: boolean = false): void {
         this.animation = animation;
         this.currentFrame = 0;
+        this.loop = loop;
     }
 
     public getMesh2(delta: number): TexturedMesh {
-        this.currentFrame += delta * 0.009;
+        this.currentFrame += delta * 0.004;
 
         if (this.currentFrame > (this.animation.last - this.animation.first)) {
-            this.currentFrame -= (this.animation.last - this.animation.first);
-            this.animation = MD2Animation.STAND;
+            if (!this.loop) {
+                this.currentFrame = this.animation.last - this.animation.first;
+            }
         }
 
         const modulo: number = (this.animation.last - this.animation.first + 1);

@@ -53,7 +53,9 @@ export class Md2ModelScene extends AbstractScene {
     private camera: ThirdPersonCamera = new ThirdPersonCamera();
 
     private oldEye: Vector3f = new Vector3f(0, 0, 0);
-    private anim: MD2Animation = MD2Animation.STAND;
+    private attack: boolean = false;
+    private jump: boolean = false;
+    private run: boolean = false;
 
     public init(framebuffer: Framebuffer): Promise<any> {
         framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
@@ -116,17 +118,24 @@ export class Md2ModelScene extends AbstractScene {
         this.floor = mesh;
     }
 
-    private attack: boolean = false;
-    private jump: boolean = false;
-
     public processInput(deltaTime: number): void {
         const speed: number = 3.1;
         const Angspeed: number = 110.0;
 
         if (this.keyboard.isDown(Keyboard.UP) || this.gamepad.isLeft(1, -1)) {
-            this.md2.setAnim( MD2Animation.RUN, Date.now());
-            this.weapon.setAnim( MD2Animation.RUN, Date.now());
             this.player.moveForward(speed, deltaTime);
+        }
+
+        if ( this.gamepad.isLeft(1, -1) && !this.run) {
+            this.md2.setAnim( MD2Animation.RUN, Date.now(), true);
+            this.weapon.setAnim( MD2Animation.RUN, Date.now(), true);
+            this.run = true;
+        }
+
+        if (!this.gamepad.isLeft(1, -1) && this.run) {
+            this.md2.setAnim( MD2Animation.STAND, Date.now(), true);
+            this.weapon.setAnim( MD2Animation.STAND, Date.now(), true);
+            this.run = false;
         }
 
         if (this.keyboard.isDown(Keyboard.DOWN) || this.gamepad.isLeft(1, 1)) {
@@ -148,7 +157,6 @@ export class Md2ModelScene extends AbstractScene {
         }
 
         if (!this.gamepad.isButtonPressed(3) && this.attack) {
-
             this.attack = false;
         }
 
@@ -159,7 +167,6 @@ export class Md2ModelScene extends AbstractScene {
         }
 
         if (!this.gamepad.isButtonPressed(2) && this.jump) {
-
             this.jump = false;
         }
     }
