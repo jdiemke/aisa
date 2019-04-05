@@ -26,6 +26,7 @@ field of computer graphics including clipping, triangle rasterization, geometric
 * [Quake 2 Model (Ratamahatta)](https://jdiemke.github.io/aisa/other-md2.html)
 * [Quake 1 Model](https://jdiemke.github.io/aisa/mdl.html)
 * [3rd Person Camera](https://jdiemke.github.io/aisa/3rd-person-camera.html)
+* [Depth of Field Billboards](https://jdiemke.github.io/aisa/dof-balls.html)
 * [Cubes](https://jdiemke.github.io/aisa/voxel-balls.html)
 * [Polar Voxel Landscape](https://jdiemke.github.io/aisa/polar-voxels.html)
 * [Cube Tunnel](https://jdiemke.github.io/aisa/cube-tunnel.html)
