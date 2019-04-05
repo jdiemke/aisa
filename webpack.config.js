@@ -54,6 +54,7 @@ module.exports = {
         'particle-system': './src/examples/particle-system/Application.ts',
         'mdl': './src/examples/mdl/Application.ts',
         '3rd-person-camera': './src/examples/3rd-person-camera/Application.ts',
+        'dof-balls': './src/examples/dof-balls/Application.ts',
     },
     mode: 'development',
     output: {
@@ -334,6 +335,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['3rd-person-camera'],
             filename: '3rd-person-camera.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['dof-balls'],
+            filename: 'dof-balls.html'
         })
 
 
