@@ -6,6 +6,7 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { FontRenderer } from './FontRenderer';
+import { SoundManager } from '../../sound/SoundManager';
 
 export class SineScrollerScene extends AbstractScene {
 
@@ -17,6 +18,8 @@ export class SineScrollerScene extends AbstractScene {
     public init(framebuffer: Framebuffer): Promise<any> {
         this.startTime = Date.now();
 
+        const sm: SoundManager = new SoundManager();
+        sm.playExtendedModule(require('./assets/dubmood_-_cromenu1_haschkaka.xm'));
         const fonts: string =
             'ABCDEFGHIJ' +
             'KLMNOPQRST' +

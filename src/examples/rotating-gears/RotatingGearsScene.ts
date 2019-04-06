@@ -5,6 +5,7 @@ import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { Matrix4f } from '../../math';
 import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
+import { SoundManager } from '../../sound/SoundManager';
 import { Texture, TextureUtils } from '../../texture';
 
 export class RotatingGearsScene extends AbstractScene {
@@ -21,6 +22,9 @@ export class RotatingGearsScene extends AbstractScene {
     public init(framebuffer: Framebuffer): Promise<any> {
         this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.FRONT);
+
+        const sm: SoundManager = new SoundManager();
+        sm.playExtendedModule(require('./starchip.xm'));
 
         this.gearsMesh = BlenderJsonParser.parse(require('../../assets/gear.json'), false)[0];
 
