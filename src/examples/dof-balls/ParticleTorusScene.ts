@@ -30,11 +30,14 @@ export class ParticleTorusScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer): void {
-        const time: number = Date.now();
+        const time: number = Date.now() - this.start;
 
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         this.drawParticleTorus(framebuffer, time, this.particleTexture2, true);
 
+        const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+        framebuffer.drawTexture(0, 0, texture3, 0.60);
+        framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
 
         framebuffer.noise(time, this.noise);
     }
@@ -59,40 +62,38 @@ export class ParticleTorusScene extends AbstractScene {
         framebuffer.clearDepthBuffer();
 
         const points: Array<Vector3f> = new Array<Vector3f>();
-        const num = 100;
-        const radi= 5.3;
+        const num = 50;
+        const radi = 5.2;
+
         for (let i = 0; i < num; i++) {
-            const x = radi * Math.cos((( i) * Math.PI*2 / (num)) * 7);
-            const y = (i - num *0.5 )* 0.3;
-            const z = radi * Math.sin((( i) * Math.PI*2 / (num)) * 7);
+            const x = radi * Math.cos(((i) * Math.PI * 2 / (num)) * 3.7 + elapsedTime * 0.0016);
+            const y = (i - num * 0.5) * 0.4;
+            const z = radi * Math.sin(((i) * Math.PI * 2 / (num)) * 3.7 + elapsedTime * 0.0016);
 
             points.push(new Vector3f(x, y, z));
         }
 
-        const modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -10 - 2*Math.sin(elapsedTime * 0.0002))
-            .multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.0003)
-                .multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.0003)));
+        const modelViewMartrix: Matrix4f = Matrix4f.constructTranslationMatrix(0, 0, -12)
+            .multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.0004)
+                .multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.0004)));
 
         const points2: Array<Vector3f> = new Array<Vector3f>(points.length);
-        points.forEach((element) => {
 
-            const transformed = framebuffer.project(modelViewMartrix.multiply(element));
-
-            points2.push(transformed);
+        points.forEach((element: Vector3f) => {
+            points2.push(framebuffer.project(modelViewMartrix.multiply(element)));
         });
 
-        points2.sort(function (a, b) {
-            return a.z - b.z;
-        });
+        points2.sort((a: Vector3f, b: Vector3f) => a.z - b.z);
 
-        points2.forEach((element) => {
-            const size = -(2.8 * 292 / (element.z));
+        points2.forEach((element: Vector3f) => {
+            const size: number = -(2.9 * 292 / (element.z));
             const spriteNum: number = Math.round(this.computeDepthBlur(0, -15, -70, element.z) * 13);
 
             framebuffer.drawParticle2(
                 Math.round(element.x) - Math.round(size / 2),
                 Math.round(element.y) - Math.round(size / 2),
-                Math.round(size), Math.round(size), texture, 1 / element.z, 1.0, spriteNum, 128);
+                Math.round(size), Math.round(size), texture, 1 / element.z, 1.0, spriteNum, 128
+            );
         });
     }
 
