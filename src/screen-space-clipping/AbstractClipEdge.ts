@@ -1,5 +1,5 @@
 import { Vector3f } from '../math';
-import { Vertex } from '../Vertex';
+import { Vertex } from "../Vertex";
 
 // TODO:
 // - use polymorphism in order to have different intersection methods

@@ -1,5 +1,5 @@
 import { Vector4f } from '../math/Vector4f';
-import { TextureCoordinate } from '../Vertex';
+import { TextureCoordinate } from '../TextureCoordinate';
 
 export class TexturedMesh {
 

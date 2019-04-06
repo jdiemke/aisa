@@ -1,6 +1,6 @@
 import { Vector4f } from '../../math/index';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
-import { TextureCoordinate } from '../../Vertex';
+import { TextureCoordinate } from '../../TextureCoordinate';
 import { MD2Animation } from './MD2AnimationNames';
 import { MD2Frame } from './MD2Frame';
 import { MD2Header } from './MD2Header';
@@ -83,7 +83,7 @@ export class MD2Model {
     }
 
     public getMesh2(delta: number): TexturedMesh {
-        this.currentFrame += delta * 0.004;
+        this.currentFrame += delta * 0.009;
 
         if (this.currentFrame > (this.animation.last - this.animation.first)) {
             if (!this.loop) {
