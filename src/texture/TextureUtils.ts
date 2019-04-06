@@ -4,8 +4,8 @@ import { Texture } from './Texture';
 export class TextureUtils {
 
     public static generateProceduralNoise(): Promise<Texture> {
-        return new Promise((resolve) => {
-            const texture = new Texture();
+        return new Promise<Texture>((resolve: (value?: Texture) => void): void => {
+            const texture: Texture = new Texture();
             texture.texture = new Uint32Array(256 * 256);
 
             const rng: RandomNumberGenerator = new RandomNumberGenerator();
@@ -23,21 +23,23 @@ export class TextureUtils {
     }
 
     public static generateProceduralParticleTexture(): Promise<Texture> {
-        return new Promise((resolve) => {
-            const texture = new Texture();
+        return new Promise((resolve: (value?: Texture) => void): void => {
+            const texture: Texture = new Texture();
             texture.texture = new Uint32Array(256 * 256);
 
-            let rng = new RandomNumberGenerator();
+            const rng: RandomNumberGenerator = new RandomNumberGenerator();
             rng.setSeed(100);
 
-            for (let y = 0; y < 256; y++) {
-                for (let x = 0; x < 256; x++) {
-                    let dx = 127 - x
-                    let dy = 127 - y
-                    let r = Math.sqrt(dx * dx + dy * dy) / 127;
-                    let c = 1 - r;
+            for (let y: number = 0; y < 256; y++) {
+                for (let x: number = 0; x < 256; x++) {
+                    const dx: number = 127 - x;
+                    const dy: number = 127 - y;
+                    const r: number = Math.sqrt(dx * dx + dy * dy) / 127;
+                    let c: number = 1 - r;
                     c = c * c * c;
-                    if (r > 1) c = 0;
+                    if (r > 1) {
+                        c = 0;
+                    }
                     c = Math.min(1, c * 2.9);
 
                     texture.texture[x + y * 256] = 235 | 255 << 8 | 235 << 16 | (c * 255) << 24;
@@ -76,8 +78,6 @@ export class TextureUtils {
             resolve(texture);
         });
     }
-
-
 
     public static load(filename: string, transparency: boolean): Promise<Texture> {
         return new Promise<Texture>((resolve: (texture?: Texture) => void): void => {
