@@ -7,7 +7,7 @@ export abstract class AbstractScene {
     }
 
     public onInit(): void {
-        console.warn();
+
     }
 
     public abstract render(framebuffer: Framebuffer): void;
