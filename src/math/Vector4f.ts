@@ -39,6 +39,10 @@ export class Vector4f {
         return new Vector4f(this.x * scal, this.y * scal, this.z * scal, this.w);
     }
 
+    public componentWiseMul(vec: Vector4f): Vector4f {
+        return new Vector4f(this.x * vec.x, this.y * vec.y, this.z * vec.z, this.w * vec.w);
+    }
+
     public dot(vec: Vector4f): number {
         return this.x * vec.x + this.y * vec.y + this.z * vec.z;
     }

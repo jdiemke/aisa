@@ -1,14 +1,5 @@
-import { Vector3f, Vector4f } from './math';
-
-export class TextureCoordinate {
-    public u: number;
-    public v: number;
-
-    constructor(u?: number, v?: number) {
-        this.u = u;
-        this.v = v;
-    }
-}
+import { Vector4f } from './math';
+import { TextureCoordinate } from './TextureCoordinate';
 
 export class Vertex {
     public position: Vector4f;

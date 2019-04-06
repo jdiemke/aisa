@@ -3,7 +3,7 @@ import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f, Vector3f, Vector4f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
-import { TextureCoordinate } from '../../Vertex';
+import { TextureCoordinate } from '../../TextureCoordinate';
 
 export class TexturedTorusScene extends AbstractScene {
 

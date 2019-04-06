@@ -19,7 +19,8 @@ import { LeftClipEdge } from './screen-space-clipping/LeftClipEdge';
 import { RightClipEdge } from './screen-space-clipping/RightClipEdge';
 import { TopClipEdge } from './screen-space-clipping/TopClipEdge';
 import { Texture } from './texture/Texture';
-import { TextureCoordinate, Vertex } from './Vertex';
+import { TextureCoordinate } from './TextureCoordinate';
+import { Vertex } from "./Vertex";
 
 //let bunnyJson = <any>require('./assets/bunny.json');
 // let roomJson = <any>require('./assets/room.json');

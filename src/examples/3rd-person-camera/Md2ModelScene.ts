@@ -9,12 +9,13 @@ import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
-import { TextureCoordinate } from '../../Vertex';
+import { TextureCoordinate } from '../../TextureCoordinate';
 import { Keyboard } from '../mode-7/Keyboard';
 import { MD2Loader } from './../../model/md2/MD2Loader';
 import { MD2Model } from './../../model/md2/MD2Model';
 import { ModelViewMatrix } from './../md2/ModelViewMatrix';
 import { Player } from './Player';
+import { PlayerStateMachine } from './state-machine/PlayerStateMachine';
 
 /**
  * http://tfc.duke.free.fr/coding/mdl-specs-en.html
@@ -57,6 +58,8 @@ export class Md2ModelScene extends AbstractScene {
     private jump: boolean = false;
     private run: boolean = false;
 
+    private playerStateMachine: PlayerStateMachine;
+
     public init(framebuffer: Framebuffer): Promise<any> {
         framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
         this.startTime = Date.now();
@@ -85,6 +88,7 @@ export class Md2ModelScene extends AbstractScene {
     }
 
     public onInit(): void {
+        this.playerStateMachine = new PlayerStateMachine(this.md2, this.player);
         window.addEventListener('gamepadconnected', (e: GamepadEvent) => {
             console.log('Gamepad connected at index %d: %s. %d buttons, %d axes.',
                 e.gamepad.index, e.gamepad.id,
@@ -119,6 +123,16 @@ export class Md2ModelScene extends AbstractScene {
     }
 
     public processInput(deltaTime: number): void {
+
+        if (this.gamepad.isLeft(1, -1)) {
+            this.playerStateMachine.upButton();
+        }
+
+        if (!this.gamepad.isLeft(1, -1)) {
+            this.playerStateMachine.upButtonNot();
+        }
+
+        /*
         const speed: number = 3.1;
         const Angspeed: number = 110.0;
 
@@ -169,6 +183,7 @@ export class Md2ModelScene extends AbstractScene {
         if (!this.gamepad.isButtonPressed(2) && this.jump) {
             this.jump = false;
         }
+        */
     }
 
     public render(framebuffer: Framebuffer): void {
