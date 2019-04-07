@@ -6,19 +6,21 @@ import { AbstractClipEdge } from './AbstractClipEdge';
 
 export class BottomClipEdge extends AbstractClipEdge {
 
-    public isInside(p: Vector3f): boolean {
-        return p.y >= Framebuffer.minWindow.y;
+    public isInside(p: Vertex): boolean {
+        return p.projection.y >= Framebuffer.minWindow.y;
     }
 
     public isInside2(p: Vertex): boolean {
         return p.position.y >= Framebuffer.minWindow.y;
     }
 
-    public computeIntersection(p1: Vector3f, p2: Vector3f): Vector3f {
-        return new Vector3f(
-            Math.round(p1.x + (p2.x - p1.x) * (Framebuffer.minWindow.y - p1.y) / (p2.y - p1.y)),
+    public computeIntersection(p1: Vertex, p2: Vertex): Vertex {
+        const vertex: Vertex = new Vertex();
+        vertex.projection = new Vector4f(
+            Math.round(p1.projection.x + (p2.projection.x - p1.projection.x) * (Framebuffer.minWindow.y - p1.projection.y) / (p2.projection.y - p1.projection.y)),
             Framebuffer.minWindow.y,
-            1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.minWindow.y - p1.y) / (p2.y - p1.y)));
+            1 / (1 / p1.projection.z + (1 / p2.projection.z - 1 / p1.projection.z) * (Framebuffer.minWindow.y - p1.projection.y) / (p2.projection.y - p1.projection.y)));
+            return vertex;
     }
 
     public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {

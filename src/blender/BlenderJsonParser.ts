@@ -1,13 +1,13 @@
 import { FlatShadedFace } from '../geometrical-objects/Face';
 import { FlatshadedMesh } from '../geometrical-objects/FlatshadedMesh';
-import { Vector4f } from '../math';
+import { Vector4f } from '../math/index';
 import { Face } from './face';
 import { Mesh } from './mesh';
 import { Vector } from './vector';
 
 export class BlenderJsonParser {
 
-    public static parse(file: any, disp: boolean = true, flat: boolean = false): Array<FlatshadedMesh> {
+    public static parse(file: any, invert: boolean = false): Array<FlatshadedMesh> {
         const scene: Array<FlatshadedMesh> = [];
 
         file.forEach((object: Mesh) => {
@@ -19,7 +19,9 @@ export class BlenderJsonParser {
             });
 
             object.normals.forEach((v: Vector) => {
-                normals.push(new Vector4f(v.x, v.y, v.z));
+                normals.push(
+                    invert ? new Vector4f(v.x, v.y, v.z).normalize().mul(-1) : new Vector4f(v.x, v.y, v.z).normalize()
+                );
             });
 
             const faces: Array<FlatShadedFace> = [];

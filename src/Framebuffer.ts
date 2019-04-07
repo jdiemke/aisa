@@ -921,7 +921,7 @@ export class Framebuffer {
     }
 
 
-    public drawScaledTextureClipAdd(xp: number, yp: number, width: number, height: number, texture: Texture): void {
+    public drawScaledTextureClipAdd(xp: number, yp: number, width: number, height: number, texture: Texture, alpha: number = 1.0): void {
         let xStep = texture.width / width;
         let yStep = texture.height / height;
         let xx = 0;
@@ -968,9 +968,9 @@ export class Framebuffer {
                 let framebufferPixel = this.framebuffer[index2];
                 let texturePixel = texture.texture[textureIndex];
 
-                let r = Math.min((framebufferPixel >> 0 & 0xff) + (texturePixel >> 0 & 0xff), 255);
-                let g = Math.min((framebufferPixel >> 8 & 0xff) + (texturePixel >> 8 & 0xff), 255);
-                let b = Math.min((framebufferPixel >> 16 & 0xff) + (texturePixel >> 16 & 0xff), 255);
+                let r = Math.min((framebufferPixel >> 0 & 0xff) + (texturePixel >> 0 & 0xff)*alpha, 255);
+                let g = Math.min((framebufferPixel >> 8 & 0xff) + (texturePixel >> 8 & 0xff)*alpha, 255);
+                let b = Math.min((framebufferPixel >> 16 & 0xff) + (texturePixel >> 16 & 0xff)*alpha, 255);
 
                 this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
                 xx += xStep;

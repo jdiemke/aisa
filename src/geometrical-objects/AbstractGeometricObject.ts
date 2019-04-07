@@ -7,7 +7,8 @@ export class AbstractGeometricObject {
     protected mesh: FlatshadedMesh;
     protected inverse: boolean;
 
-    protected buildMesh(points: Array<Vector4f>, index: Array<number>): void {
+    protected buildMesh(points: Array<Vector4f>, index: Array<number>, inverse: boolean = false): void {
+        this.inverse = inverse;
         const normals: Array<Vector4f> = new Array<Vector4f>();
 
         // todo use index array for normals to have less normal objects

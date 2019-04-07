@@ -67,7 +67,6 @@ export class RazorScene extends AbstractScene {
         framebuffer.clearDepthBuffer();
 
         let modelViewMartrix: Matrix4f;
-        framebuffer.renderingPipeline.flatShading = false;
 
         let camera = Matrix4f.constructTranslationMatrix(0, 0, -6.4 - 5 * (Math.sin(elapsedTime * 0.06) * 0.5 + 0.5)).multiplyMatrix(
             Matrix4f.constructXRotationMatrix((Math.sin(elapsedTime * 0.08) * 0.5 + 0.5) * 0.5).multiplyMatrix(
@@ -121,7 +120,6 @@ export class RazorScene extends AbstractScene {
         /**
          * SHADOWS
          */
-        framebuffer.renderingPipeline.flatShading = true;
 
         scale = 2.0;
         modelViewMartrix = Matrix4f.constructYRotationMatrix(elapsedTime * 0.2).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));

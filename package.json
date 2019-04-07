@@ -4,6 +4,7 @@
   "description": "A Software 3D Engine written in TypeScript",
   "scripts": {
     "build": "webpack-cli --mode production",
+    "build:dev": "webpack-cli",
     "serve": "webpack-dev-server --no-inline --open",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "karma": "karma start",
