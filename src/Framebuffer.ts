@@ -1614,12 +1614,12 @@ export class Framebuffer {
         for (let j = 0; j < this.blenderObj4.length; j++) {
             let model = this.blenderObj4[j];
             if (j !== 0 && j !== 2)
-                this.renderingPipeline.draw(model, mv, 200, 255, 216);
+                this.renderingPipeline.draw(model, mv);
 
             if (j === 0)
-                this.renderingPipeline.draw(model, mv, 244, 200, 216);
+                this.renderingPipeline.draw(model, mv);
             if (j === 2)
-                this.renderingPipeline.draw(model, mv, 244, 225, 216);
+                this.renderingPipeline.draw(model, mv);
 
         }
 
@@ -1630,7 +1630,7 @@ export class Framebuffer {
             ));
 
         let model2 = this.blenderObj5[0];
-        this.renderingPipeline.draw(model2, mv, 200, 255, 216);
+        this.renderingPipeline.draw(model2, mv);
 
         const scale: number = 8;
         mv = camera.multiplyMatrix(
@@ -1664,7 +1664,7 @@ export class Framebuffer {
         let scal = Math.sin(elapsedTime * 0.003) * 0.5 + 0.5;
         for (let j = 0; j < this.blenderObj6.length; j++) {
             let model = this.blenderObj6[j];
-            this.renderingPipeline.draw(model, mv, 244 * scal, 225 * scal, 216 * scal);
+            this.renderingPipeline.draw(model, mv);
         }
 
         mv = camera.multiplyMatrix(
@@ -1675,7 +1675,7 @@ export class Framebuffer {
             ));
 
         let model = this.blenderObj7[0];
-        this.renderingPipeline.draw(model, mv, 244, 100, 116);
+        this.renderingPipeline.draw(model, mv);
 
         let points: Array<Vector3f> = new Array<Vector3f>();
         const num = 10;
@@ -1807,7 +1807,7 @@ export class Framebuffer {
         modelViewMartrix = Matrix4f.constructZRotationMatrix(-elapsedTime * 0.02).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0, -21)
             .multiplyMatrix(modelViewMartrix));
 
-        this.renderingPipeline.draw(this.torus.getMesh(), modelViewMartrix, 215, 30, 120);
+        this.renderingPipeline.draw(this.torus.getMesh(), modelViewMartrix);
     }
 
     public torusFunction(alpha: number): Vector3f {

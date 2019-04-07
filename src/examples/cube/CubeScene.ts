@@ -27,7 +27,7 @@ export class CubeScene extends AbstractScene {
         framebuffer.clearColorBuffer(CubeScene.BACKGROUND_COLOR);
         framebuffer.clearDepthBuffer();
 
-        this.renderingPipeline.draw(this.cubeMesh.getMesh(), this.getModelViewMatrix(elapsedTime), 100, 200, 100);
+        this.renderingPipeline.draw(this.cubeMesh.getMesh(), this.getModelViewMatrix(elapsedTime));
     }
 
     private getModelViewMatrix(elapsedTime: number): Matrix4f {
