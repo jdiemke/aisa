@@ -8,6 +8,7 @@ import { PointLight } from '../shading/light/PointLight';
 import { Material } from '../shading/material/Material';
 import { Vertex } from '../Vertex';
 import { AbstractRenderingPipeline } from './AbstractRenderingPipeline';
+import { Fog } from '../shading/fog/Fog';
 
 /**
  * TODO:
@@ -208,7 +209,16 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
         mat.diffuseColor = new Vector4f(0.38, 0.4, 0.4, 1);
         mat.specularColor = new Vector4f(0.8, 0.5, 0.5, 0);
         mat.shininess = 2;
-        return new PhongLighting().computeColor(mat, pl, normal, vertex);
+        const color: Vector4f = new Fog().computeVertexColor(
+            new PhongLighting().computeColor(mat, pl, normal, vertex), vertex
+        );
+
+        return new Color(
+            Math.min(255, color.x * 255),
+            Math.min(255, color.y * 255),
+            Math.min(255, color.z * 255),
+            255
+        );
     }
 
 }

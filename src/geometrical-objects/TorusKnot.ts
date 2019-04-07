@@ -15,7 +15,7 @@ export class TorusKnot extends AbstractGeometricObject {
             let frame2 = this.torusFunction3(i * 2 * Math.PI / STEPS + 0.1);
 
             let tangent = frame2.sub(frame);
-            let up = frame.add(frame2).normalize()
+            let up = frame.add(frame2).normalize();
             let right = tangent.cross(up).normalize().mul(26.4);
             up = right.cross(tangent).normalize().mul(26.4);
 
@@ -40,7 +40,6 @@ export class TorusKnot extends AbstractGeometricObject {
                 index.push(((STEPS2 * j) + (0 + i) % STEPS2) % points.length); // 5
             }
         }
-
 
         this.buildMesh(points, index, inverse);
     }

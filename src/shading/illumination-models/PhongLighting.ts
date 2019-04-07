@@ -6,7 +6,7 @@ import { Material } from '../material/Material';
 
 export class PhongLighting {
 
-    public computeColor(mat: Material, light: PointLight, normal: Vector4f, vertex: Vector4f): Color {
+    public computeColor(mat: Material, light: PointLight, normal: Vector4f, vertex: Vector4f): Vector4f {
         let finalColor: Vector4f;
 
         const ambientIntensity: Vector4f = this.computeAmbientIntensity(mat, light);
@@ -17,12 +17,7 @@ export class PhongLighting {
             .add(diffuseIntensity)
             .add(specularIntensity);
 
-        return new Color(
-            Math.min(finalColor.x * 255, 255),
-            Math.min(finalColor.y * 255, 255),
-            Math.min(finalColor.z * 255, 255),
-            255
-        );
+        return finalColor;
     }
 
     private computeAmbientIntensity(mat: Material, l: PointLight): Vector4f {
