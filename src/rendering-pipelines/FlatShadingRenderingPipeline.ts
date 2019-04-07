@@ -1,14 +1,14 @@
 import { Color } from '../core/Color';
 import { FlatshadedMesh } from '../geometrical-objects/FlatshadedMesh';
-import { Vector3f, Vector4f } from '../math/index';
+import { Vector4f } from '../math/index';
 import { Matrix4f } from '../math/Matrix4f';
 import { SutherlandHodgman2DClipper } from '../screen-space-clipping/SutherlandHodgman2DClipper';
+import { Fog } from '../shading/fog/Fog';
 import { PhongLighting } from '../shading/illumination-models/PhongLighting';
 import { PointLight } from '../shading/light/PointLight';
 import { Material } from '../shading/material/Material';
 import { Vertex } from '../Vertex';
 import { AbstractRenderingPipeline } from './AbstractRenderingPipeline';
-import { Fog } from '../shading/fog/Fog';
 
 /**
  * TODO:
@@ -25,6 +25,12 @@ import { Fog } from '../shading/fog/Fog';
  */
 export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
 
+    private fog: Fog = null;
+
+    public setFog(fog: Fog): void {
+        this.fog = fog;
+    }
+
     private projectedVertices: Array<Vector4f> = new Array<Vector4f>(
         new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1)
     );
@@ -33,8 +39,7 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
         new Vertex(), new Vertex(), new Vertex()
     );
 
-    public draw(mesh: FlatshadedMesh, modelViewMartrix: Matrix4f,
-        red: number, green: number, blue: number): void {
+    public draw(mesh: FlatshadedMesh, modelViewMartrix: Matrix4f): void {
 
         const normalMatrix: Matrix4f = modelViewMartrix.computeNormalMatrix();
 
@@ -193,12 +198,10 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
     }
 
     private computeColor(normal: Vector4f, vertex: Vector4f): Color {
-        // TODO: do lighting only if triangle is visible
-        //let scalar: number = Math.min((Math.max(0.0, normal.dot(lightDirection))), 1.0);
-        //scalar = scalar * 0.85 + 0.15;
-        //return new Color(scalar * red, scalar * green, scalar * blue, 255).toPackedFormat();
 
-        // do lighting before projecton and clipping and use vertex structure to save
+        // TODO: if lighting is enabled use mat and light
+        // else use Color set
+        // do setup in constructor
         const pl: PointLight = new PointLight();
         pl.ambientIntensity = new Vector4f(1, 1, 1, 1);
         pl.diffuseIntensity = new Vector4f(1, 1, 1, 1);
@@ -209,14 +212,17 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
         mat.diffuseColor = new Vector4f(0.38, 0.4, 0.4, 1);
         mat.specularColor = new Vector4f(0.8, 0.5, 0.5, 0);
         mat.shininess = 2;
-        const color: Vector4f = new Fog().computeVertexColor(
-            new PhongLighting().computeColor(mat, pl, normal, vertex), vertex
-        );
+
+        let vertexColor: Vector4f = new PhongLighting().computeColor(mat, pl, normal, vertex);
+
+        if (this.fog !== null) {
+            vertexColor = this.fog.computeVertexColor(vertexColor, vertex);
+        }
 
         return new Color(
-            Math.min(255, color.x * 255),
-            Math.min(255, color.y * 255),
-            Math.min(255, color.z * 255),
+            Math.min(255, vertexColor.x * 255),
+            Math.min(255, vertexColor.y * 255),
+            Math.min(255, vertexColor.z * 255),
             255
         );
     }

@@ -70,7 +70,7 @@ export class AbstractCube extends AbstractScene {
 
         let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(5, 16, 5));
         let model: FlatshadedMesh = this.scene[0];
-        this.renderingPipeline.draw(model, mv, 246, 165, 177);
+        this.renderingPipeline.draw(model, mv);
 
         mv = camera.multiplyMatrix(Matrix4f.constructZRotationMatrix(
             Math.PI * 0.5 * framebuffer.cosineInterpolate(0, 600, Math.floor(elapsedTime * 0.7) % 4000))
@@ -78,7 +78,7 @@ export class AbstractCube extends AbstractScene {
                 Math.PI * 0.5 * framebuffer.cosineInterpolate(2000, 2600, Math.floor(elapsedTime * 0.7) % 4000)))
         );
         model = this.scene[1];
-        this.renderingPipeline.draw(model, mv, 186, 165, 197);
+        this.renderingPipeline.draw(model, mv);
 
         // let lensflareScreenSpace = framebuffer.project(camera.multiply(new Vector3f(16.0 * 20, 16.0 * 20, 0)));
         // framebuffer.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.3, texture, dirt);

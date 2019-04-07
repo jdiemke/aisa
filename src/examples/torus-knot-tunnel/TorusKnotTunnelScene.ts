@@ -5,42 +5,106 @@ import { Matrix4f } from '../../math/Matrix4f';
 import { Vector3f, } from '../../math/Vector3f';
 import { Vector4f } from '../../math/Vector4f';
 import { AbstractScene } from '../../scenes/AbstractScene';
+import { Fog } from '../../shading/fog/Fog';
+import { LinearFog } from '../../shading/fog/LinearFog';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
+import RandomNumberGenerator from '../../RandomNumberGenerator';
 
 export class TorusKnotTunnelScene extends AbstractScene {
 
     private noise: Texture;
     private particleTexture: Texture;
+    private cocoon: Texture;
     private torusKnot: TorusKnot = new TorusKnot(true);
-
-    private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
+    private fog: Fog = new LinearFog(-50, -240, new Vector4f(0.67, 0.4, 0.5, 1.0));
 
     public init(framebuffer: Framebuffer): Promise<any> {
         framebuffer.renderingPipeline.setCullFace(CullFace.FRONT);
+        framebuffer.renderingPipeline.setFog(this.fog);
+
         return Promise.all([
             TextureUtils.generateProceduralNoise().then((texture: Texture) => this.noise = texture),
+            TextureUtils.load(require('../../assets/cocoon.png'), false).then(
+                (texture: Texture) => this.cocoon = texture
+            ),
             TextureUtils.generateProceduralParticleTexture2().then(
                 (texture: Texture) => this.particleTexture = texture
             ),
         ]);
     }
 
-    /**
-     * TODO:
-     * * move stackig geometry into mesh
-     * * particles into particle system class
-     * * remove old renderObject method
-     */
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
-
         this.torusTunnel(framebuffer, time * 0.019, this.particleTexture);
+        framebuffer.drawScaledTextureClipAdd(
+            320 / 2 - this.cocoon.width / 2,
+            200 / 2 - this.cocoon.height / 2,
+            this.cocoon.width, this.cocoon.height, this.cocoon, 0.67);
 
-     //   const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-      //  framebuffer.drawTexture(0, 0, texture3, 0.75);
-      //  framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
        // framebuffer.noise(time, this.noise);
+        this.glitchScreen(framebuffer, time*5, this.noise);
+    }
+
+    public glitchScreen(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, noise: boolean = true): void {
+
+        const glitchFactor = (Math.sin(elapsedTime * 0.00002) * 0.9 + 0.1);
+        let rng = new RandomNumberGenerator();
+        rng.setSeed((elapsedTime / 250) | 0);
+        let texture2 = new Texture();
+        texture2.height = 200;
+        texture2.width = 320;
+        texture2.texture = framebuffer.framebuffer;
+        for (let x = 0; x < 16; x++) {
+            for (let y = 0; y < 10; y++) {
+                if (rng.getFloat() > 0.25) {
+                    continue;
+                }
+
+                framebuffer.drawTextureRect(20 * (16 - x), 20 * ((16 * rng.getFloat()) | 0), 20 * x, 20 * y, 20, 20, texture2, 0.03 + 0.35 * glitchFactor);
+            }
+        }
+
+        if (noise) {
+            for (let x = 0; x < 16; x++) {
+                for (let y = 0; y < 10; y++) {
+                    framebuffer.drawTextureRect(x * 20, y * 20, 20 * (Math.round(elapsedTime / 100 + x + y) % 12), 0, 20, 20, texture, 0.1 + 0.3 * glitchFactor);
+                }
+            }
+        }
+
+        framebuffer.fastFramebufferCopy(framebuffer.tmpGlitch, framebuffer.framebuffer);
+
+        // now distort the tmpGlitch buffer and render to framebuffer again
+
+        let rng2 = new RandomNumberGenerator();
+
+        for (let k = 0; k < 8; k++) {
+            let yStart = Math.round(rng.getFloat() * 180);
+            const size = 3 + Math.round(rng.getFloat() * 20);
+            rng2.setSeed((elapsedTime / 250) | 0);
+            let scale = rng2.getFloat() * glitchFactor;
+            let off = rng.getFloat() * glitchFactor;
+            for (let y = 0; y < size; y++) {
+                const offset = Math.abs(Math.round(off * 25) + Math.round(rng2.getFloat() * 3)
+                    + Math.round(Math.cos(y * 0.01 + elapsedTime * 0.002 + off) * scale * 5));
+
+                let index = yStart * 320;
+                let glIndex = yStart * 320 + 320 - offset;
+
+                for (let i = 0; i < Math.max(0, offset); i++) {
+                    framebuffer.framebuffer[index++] = framebuffer.tmpGlitch[glIndex++];
+                }
+
+                glIndex = yStart * 320;
+                let count = 320 - offset;
+
+                for (let i = 0; i < count; i++) {
+                    framebuffer.framebuffer[index++] = framebuffer.tmpGlitch[glIndex++];
+                }
+                yStart++;
+            }
+        }
     }
 
     public torusTunnel(framebuffer: Framebuffer, elapsedTime: number, texture: Texture): void {
@@ -85,46 +149,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
         modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -10).multiplyMatrix(modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.04)));
         modelViewMartrix = Matrix4f.constructZRotationMatrix(elapsedTime * 0.01).multiplyMatrix(finalMatrix);
 
-        framebuffer.renderingPipeline.draw(this.torusKnot.getMesh(), modelViewMartrix, 221, 96, 48);
-
-        let ppoints = new Array<Vector3f>();
-        const num = 40;
-        const STEPS22 = 8 * 2;
-        for (let j = 0; j < num; j++) {
-            let frame = this.torusFunction3(j * 2 * Math.PI / num);
-            let frame2 = this.torusFunction3(j * 2 * Math.PI / num + 0.1);
-
-            let tangent = frame2.sub(frame);
-            let up = frame.add(frame2).normalize()
-            let right = tangent.cross(up).normalize().mul(10.4);
-            up = right.cross(tangent).normalize().mul(10.4);
-
-            for (let r = 0; r < STEPS22; r++) {
-                let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS22)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS22))).add(frame);
-                ppoints.push(new Vector3f(pos.x, pos.y, pos.z));
-            }
-
-        }
-
-        let ppoints2: Array<Vector3f> = new Array<Vector3f>(ppoints.length);
-        ppoints.forEach(element => {
-            let transformed = framebuffer.project(modelViewMartrix.multiply(element));
-            ppoints2.push(transformed);
-        });
-
-        ppoints2.sort(function (a, b) {
-            return a.z - b.z;
-        });
-/*
-        ppoints2.forEach(element => {
-            //let size = -(2.0 * 192 / (element.z));
-            let size = -(2.3 * 192 / (element.z));
-            if (element.z < -4)
-                framebuffer.drawParticle(
-                    Math.round(element.x - size / 2),
-                    Math.round(element.y - size / 2),
-                    Math.round(size), Math.round(size), texture, 1 / element.z, framebuffer.interpolate(-90, -55, element.z));
-        });*/
+        framebuffer.renderingPipeline.draw(this.torusKnot.getMesh(), modelViewMartrix);
     }
 
     private torusFunction3(alpha: number): Vector4f {
