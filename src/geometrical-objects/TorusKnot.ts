@@ -3,7 +3,7 @@ import { AbstractGeometricObject } from './AbstractGeometricObject';
 
 export class TorusKnot extends AbstractGeometricObject {
 
-    public constructor() {
+    public constructor(inverse: boolean = false) {
         super();
 
         const points: Array<Vector4f> = [];
@@ -27,7 +27,7 @@ export class TorusKnot extends AbstractGeometricObject {
 
         const index: Array<number> = [];
 
-        
+
 
         for (let j = 0; j < STEPS; j++) {
             for (let i = 0; i < STEPS2; i++) {
@@ -42,7 +42,7 @@ export class TorusKnot extends AbstractGeometricObject {
         }
 
 
-        this.buildMesh(points, index);
+        this.buildMesh(points, index, inverse);
     }
 
     private torusFunction3(alpha: number): Vector4f {

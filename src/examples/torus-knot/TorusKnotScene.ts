@@ -12,13 +12,18 @@ export class TorusKnotScene extends AbstractScene {
     private rave: Texture;
     private torus: TorusKnot = new TorusKnot();
     private noise: Texture;
+    private micro: Texture;
+    private startTime: number;
 
     public init(framebuffer: Framebuffer): Promise<any> {
         framebuffer.setCullFace(CullFace.BACK);
-
+        this.startTime = Date.now();
         return Promise.all([
             TextureUtils.load(require('../../assets/rave.png'), false).then(
                 (texture: Texture) => this.rave = texture
+            ),
+            TextureUtils.load(require('../../assets/microstrange.png'), false).then(
+                (texture: Texture) => this.micro = texture
             ),
             TextureUtils.generateProceduralNoise().then(
                 (texture: Texture) => this.noise = texture
@@ -27,13 +32,30 @@ export class TorusKnotScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer): void {
-        const time: number = Date.now();
+        const time: number = (Date.now() - this.startTime);
 
         this.raveMoview(framebuffer, time * 5, this.rave);
-        framebuffer.setCullFace(CullFace.BACK);
-        this.shadingTorus5(framebuffer, Date.now() * 0.03);
+
         this.glitchScreen(framebuffer, time, this.noise);
         // framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
+
+        framebuffer.drawScaledTextureClipAdd(
+            320 - (((time * 0.13) | 0) % (this.micro.width * 2 + 320)),
+            200 / 2 - 20,
+            this.micro.width * 2, this.micro.height * 2, this.micro, 0.5);
+
+        framebuffer.drawScaledTextureClipAdd(
+            (((time * 0.1) | 0) % (this.micro.width + 320)) - 320,
+            200 / 2 - 60,
+            this.micro.width, this.micro.height, this.micro, 0.5);
+
+        framebuffer.setCullFace(CullFace.BACK);
+        this.shadingTorus5(framebuffer, Date.now() * 0.03);
+        /*
+                framebuffer.drawScaledTextureClipAdd(
+                    320 - (((time * 0.05) | 0) % (this.micro.width + 320)),
+                    200 / 2 - 60,
+                    this.micro.width, this.micro.height, this.micro);*/
     }
 
     public raveMoview(framebuffer: Framebuffer, elapsedTime: number, texture: Texture): void {

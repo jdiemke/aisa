@@ -4,15 +4,11 @@ import { RightClipEdge } from './RightClipEdge';
 import { LeftClipEdge } from './LeftClipEdge';
 import { BottomClipEdge } from './BottomClipEdge';
 import { TopClipEdge } from './TopClipEdge';
+import { Vertex } from '../Vertex';
 
 export class SutherlandHodgman2DClipper {
 
-    private static clipRegion = new Array<AbstractClipEdge>(
-        new RightClipEdge(),
-        new LeftClipEdge(),
-        new BottomClipEdge(),
-        new TopClipEdge()
-    );
+
 
     /**
      * FIXME: optimize by minimizing creation of new arrays
@@ -24,14 +20,14 @@ export class SutherlandHodgman2DClipper {
      * @returns {void}
      * @memberof Framebuffer
      */
-    public static clipConvexPolygon(subject: Array<Vector3f>): Array<Vector3f> {
+    public static clipConvexPolygon(subject: Array<Vertex>): Array<Vertex> {
 
         let output = subject;
 
         for (let j = 0; j < SutherlandHodgman2DClipper.clipRegion.length; j++) {
-            const edge = SutherlandHodgman2DClipper.clipRegion[j];
+            const edge: AbstractClipEdge = SutherlandHodgman2DClipper.clipRegion[j];
             const input = output;
-            output = new Array<Vector3f>();
+            output = new Array<Vertex>();
             let S = input[input.length - 1];
 
             for (let i = 0; i < input.length; i++) {
@@ -50,5 +46,12 @@ export class SutherlandHodgman2DClipper {
 
         return output;
     }
+
+    private static clipRegion: Array<AbstractClipEdge> = new Array<AbstractClipEdge>(
+        new RightClipEdge(),
+        new LeftClipEdge(),
+        new BottomClipEdge(),
+        new TopClipEdge()
+    );
 
 }

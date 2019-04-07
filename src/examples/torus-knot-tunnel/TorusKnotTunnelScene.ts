@@ -12,7 +12,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
 
     private noise: Texture;
     private particleTexture: Texture;
-    private torusKnot: TorusKnot = new TorusKnot();
+    private torusKnot: TorusKnot = new TorusKnot(true);
 
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
 
@@ -37,10 +37,10 @@ export class TorusKnotTunnelScene extends AbstractScene {
 
         this.torusTunnel(framebuffer, time * 0.02, this.particleTexture);
 
-        const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-        framebuffer.drawTexture(0, 0, texture3, 0.75);
-        framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
-        framebuffer.noise(time, this.noise);
+     //   const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+      //  framebuffer.drawTexture(0, 0, texture3, 0.75);
+      //  framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
+       // framebuffer.noise(time, this.noise);
     }
 
     public torusTunnel(framebuffer: Framebuffer, elapsedTime: number, texture: Texture): void {
@@ -49,7 +49,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
         let scale = 1.0;
 
         let frame = this.torusFunction3(elapsedTime * 0.02);
-        let frame2 = this.torusFunction3(elapsedTime * 0.02 + 0.01);
+        let frame2 = this.torusFunction3(elapsedTime * 0.02 + 0.5);
 
         let tangent = frame2.sub(frame).normalize();
         let up = frame.add(frame2).normalize();
@@ -114,7 +114,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
         ppoints2.sort(function (a, b) {
             return a.z - b.z;
         });
-
+/*
         ppoints2.forEach(element => {
             //let size = -(2.0 * 192 / (element.z));
             let size = -(2.3 * 192 / (element.z));
@@ -123,7 +123,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
                     Math.round(element.x - size / 2),
                     Math.round(element.y - size / 2),
                     Math.round(size), Math.round(size), texture, 1 / element.z, framebuffer.interpolate(-90, -55, element.z));
-        });
+        });*/
     }
 
     private torusFunction3(alpha: number): Vector4f {

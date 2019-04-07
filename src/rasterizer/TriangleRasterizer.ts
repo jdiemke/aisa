@@ -1,9 +1,10 @@
 import { Framebuffer } from "../Framebuffer";
+import { Vector4f } from "../math/index";
 import { Vector3f } from "../math/Vector3f";
 
 export class TriangleRasterizer {
 
-    private temp: Vector3f = null;
+    private temp: Vector4f = null;
 
     constructor(private framebuffer: Framebuffer) {
 
@@ -14,7 +15,7 @@ export class TriangleRasterizer {
      * Internally DDA is used for edge-walking.
      * TODO: rotate around center and check for correctness!!
      */
-    public drawTriangleDDA(p1: Vector3f, p2: Vector3f, p3: Vector3f, color: number): void {
+    public drawTriangleDDA(p1: Vector4f, p2: Vector4f, p3: Vector4f, color: number): void {
         if (p1.y > p3.y) {
             this.temp = p1;
             p1 = p3;
@@ -59,7 +60,7 @@ export class TriangleRasterizer {
         }
     }
 
-    private fillBottomFlatTriangle(v1: Vector3f, v2: Vector3f, v3: Vector3f, color: number): void {
+    private fillBottomFlatTriangle(v1: Vector4f, v2: Vector4f, v3: Vector4f, color: number): void {
 
         const yDistance: number = v3.y - v1.y;
 
@@ -99,7 +100,7 @@ export class TriangleRasterizer {
         }
     }
 
-    fillTopFlatTriangle(v1: Vector3f, v2: Vector3f, v3: Vector3f, color: number): void {
+    fillTopFlatTriangle(v1: Vector4f, v2: Vector4f, v3: Vector4f, color: number): void {
         let yDistance = v3.y - v1.y;
         let slope1 = (v3.x - v1.x) / yDistance;
         let slope2 = (v3.x - v2.x) / yDistance;
@@ -135,7 +136,7 @@ export class TriangleRasterizer {
         }
     }
 
-    fillLongRightTriangle(v1: Vector3f, v2: Vector3f, v3: Vector3f, color: number): void {
+    fillLongRightTriangle(v1: Vector4f, v2: Vector4f, v3: Vector4f, color: number): void {
 
         let yDistanceLeft = v2.y - v1.y;
         let yDistanceRight = v3.y - v1.y;
@@ -206,7 +207,7 @@ export class TriangleRasterizer {
     }
 
 
-    fillLongLeftTriangle(v1: Vector3f, v2: Vector3f, v3: Vector3f, color: number): void {
+    fillLongLeftTriangle(v1: Vector4f, v2: Vector4f, v3: Vector4f, color: number): void {
 
         let yDistanceRight = v2.y - v1.y;
         let yDistanceLeft = v3.y - v1.y;

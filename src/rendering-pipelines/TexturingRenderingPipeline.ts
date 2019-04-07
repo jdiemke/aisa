@@ -1,7 +1,7 @@
 import { Matrix4f } from '../math/Matrix4f';
 import { Vector4f } from '../math/Vector4f';
 import { TextureCoordinate } from '../TextureCoordinate';
-import { Vertex } from "../Vertex";
+import { Vertex } from '../Vertex';
 import { AbstractRenderingPipeline } from './AbstractRenderingPipeline';
 import { TexturedMesh } from './TexturedMesh';
 
@@ -119,6 +119,7 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
             return;
         }
 
+        // TODO: remove temp object here
         const projected: Array<Vertex> = output.map<Vertex>((v: Vertex) => {
             v.position = this.project(v.position);
             return v;

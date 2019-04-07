@@ -26,7 +26,7 @@ export class RotatingGearsScene extends AbstractScene {
         const sm: SoundManager = new SoundManager();
         sm.playExtendedModule(require('./starchip.xm'));
 
-        this.gearsMesh = BlenderJsonParser.parse(require('../../assets/gear.json'), false)[0];
+        this.gearsMesh = BlenderJsonParser.parse(require('../../assets/gear.json'), true)[0];
 
         return Promise.all([
             TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(

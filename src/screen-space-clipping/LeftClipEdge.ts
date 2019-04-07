@@ -7,18 +7,20 @@ import { Vector4f } from "../math/Vector4f";
 
 export class LeftClipEdge extends AbstractClipEdge {
 
-    public isInside(p: Vector3f): boolean {
-        return p.x >= 0;
+    public isInside(p: Vertex): boolean {
+        return p.projection.x >= 0;
     }
 
     public isInside2(p: Vertex): boolean {
         return p.position.x >= 0;
     }
 
-    public computeIntersection(p1: Vector3f, p2: Vector3f): Vector3f {
-        return new Vector3f(Framebuffer.minWindow.x,
-            Math.round(p1.y + (p2.y - p1.y) * (Framebuffer.minWindow.x - p1.x) / (p2.x - p1.x)),
-            1 / (1 / p1.z + (1 / p2.z - 1 / p1.z) * (Framebuffer.minWindow.x - p1.x) / (p2.x - p1.x)));
+    public computeIntersection(p1: Vertex, p2: Vertex): Vertex {
+        let vertex = new Vertex();
+        vertex.projection = new Vector4f(Framebuffer.minWindow.x,
+            Math.round(p1.projection.y + (p2.projection.y - p1.projection.y) * (Framebuffer.minWindow.x - p1.projection.x) / (p2.projection.x - p1.projection.x)),
+            1 / (1 / p1.projection.z + (1 / p2.projection.z - 1 / p1.projection.z) * (Framebuffer.minWindow.x - p1.projection.x) / (p2.projection.x - p1.projection.x)));
+        return vertex;
     }
 
     public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {
