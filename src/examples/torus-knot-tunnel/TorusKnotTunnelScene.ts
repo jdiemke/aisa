@@ -35,7 +35,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
 
-        this.torusTunnel(framebuffer, time * 0.02, this.particleTexture);
+        this.torusTunnel(framebuffer, time * 0.019, this.particleTexture);
 
      //   const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
       //  framebuffer.drawTexture(0, 0, texture3, 0.75);
@@ -47,9 +47,10 @@ export class TorusKnotTunnelScene extends AbstractScene {
         framebuffer.clearDepthBuffer();
 
         let scale = 1.0;
+        const lookAhead: number = 0.4;
 
         let frame = this.torusFunction3(elapsedTime * 0.02);
-        let frame2 = this.torusFunction3(elapsedTime * 0.02 + 0.5);
+        let frame2 = this.torusFunction3(elapsedTime * 0.02 + lookAhead);
 
         let tangent = frame2.sub(frame).normalize();
         let up = frame.add(frame2).normalize();

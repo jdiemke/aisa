@@ -22,6 +22,8 @@ Engine from scratch I used this opportunity. Hence this
 project contains a lot of elementary algorithms from then
 field of computer graphics including clipping, triangle rasterization, geometric transformations and so forth.
 ### Demos
+* [Torus Knot Tunnel](https://jdiemke.github.io/aisa/torus-knot-tunnel.html)
+* [Torus Knot](https://jdiemke.github.io/aisa/torus-knot.html)
 * [Quake 2 Model (Dr. Freak)](https://jdiemke.github.io/aisa/md2.html)
 * [Quake 2 Model (Ratamahatta)](https://jdiemke.github.io/aisa/other-md2.html)
 * [Quake 1 Model](https://jdiemke.github.io/aisa/mdl.html)
@@ -66,9 +68,7 @@ field of computer graphics including clipping, triangle rasterization, geometric
 * [Voxel Landscape](https://jdiemke.github.io/aisa/voxel-landscape.html)
 * [Starfield](https://jdiemke.github.io/aisa/starfield.html)
 * [Particle Streams](https://jdiemke.github.io/aisa/particle-streams.html)
-* [Torus Knot](https://jdiemke.github.io/aisa/torus-knot.html)
 * [Bobs](https://jdiemke.github.io/aisa/bobs.html)
-* [Torus Knot Tunnel](https://jdiemke.github.io/aisa/torus-knot-tunnel.html)
 * [Cinematic Scroller](https://jdiemke.github.io/aisa/cinematic-scroller.html)
 * [Scrolling Background](https://jdiemke.github.io/aisa/scrolling-background.html)
 * [Block Fade](https://jdiemke.github.io/aisa/block-fade.html)
@@ -96,6 +96,11 @@ Type the following command into your shell:
 ```
 And open `http://localhost:8080/webpack-dev-server/` in your favourite web browser.
 ### Features
+- Light & Material
+    - Directional Light
+    - Point Light
+    - Spot Light
+    - Ambient / Diffuse / Specular Color Components
 - Model Loading
     - Wavefront OBJ (JSON)
     - MD2 (Quake 2)
@@ -129,11 +134,6 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
     - Key Frame Animated Camera
 - Web Audio API
 ### Backlog
-- Light Sources
-    - Directional
-    - Point Light
-    - Spot Light
-    - Ambient / Diffuse / Specular Color Components
 - Generalized Perspective Correct Vertex Attribute Interpolation
     - https://computergraphics.stackexchange.com/questions/4079/perspective-correct-texture-mapping
     - http://www.flipcode.com/archives/The_Art_of_Demomaking-Issue_14_Perspective_Correct_Texture_Mapping.shtml
