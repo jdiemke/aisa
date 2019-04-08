@@ -6,16 +6,18 @@ import { Material } from '../material/Material';
 
 export class PhongLighting {
 
-    public computeColor(mat: Material, light: PointLight, normal: Vector4f, vertex: Vector4f): Vector4f {
-        let finalColor: Vector4f;
+    public computeColor(mat: Material, lights: Array<PointLight>, normal: Vector4f, vertex: Vector4f): Vector4f {
+        let finalColor: Vector4f = new Vector4f(0, 0, 0);
 
-        const ambientIntensity: Vector4f = this.computeAmbientIntensity(mat, light);
-        const diffuseIntensity: Vector4f = this.computeDiffuseIntensity(mat, light, normal, vertex);
-        const specularIntensity: Vector4f = this.computeSpecularIntensity(mat, light, normal, vertex);
+        lights.forEach((light: PointLight) => {
+            const ambientIntensity: Vector4f = this.computeAmbientIntensity(mat, light);
+            const diffuseIntensity: Vector4f = this.computeDiffuseIntensity(mat, light, normal, vertex);
+            const specularIntensity: Vector4f = this.computeSpecularIntensity(mat, light, normal, vertex);
 
-        finalColor = ambientIntensity
-            .add(diffuseIntensity)
-            .add(specularIntensity);
+            finalColor = finalColor.add(ambientIntensity)
+                .add(diffuseIntensity)
+                .add(specularIntensity);
+        });
 
         return finalColor;
     }
