@@ -1,5 +1,5 @@
 import { Vector4f } from '../math/Vector4f';
-import { FlatShadedFace } from './Face';
+import { FlatShadedFace } from './FlatShadedFace';
 
 export class FlatshadedMesh {
 

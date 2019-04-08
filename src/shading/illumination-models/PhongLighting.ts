@@ -1,6 +1,4 @@
-import { Color } from '../../core/Color';
 import { Vector4f } from '../../math/index';
-import { Light } from '../light/Light';
 import { PointLight } from '../light/PointLight';
 import { Material } from '../material/Material';
 
@@ -9,6 +7,7 @@ export class PhongLighting {
     public computeColor(mat: Material, lights: Array<PointLight>, normal: Vector4f, vertex: Vector4f): Vector4f {
         let finalColor: Vector4f = new Vector4f(0, 0, 0);
 
+        // TODO: optimize and remove forEach
         lights.forEach((light: PointLight) => {
             const ambientIntensity: Vector4f = this.computeAmbientIntensity(mat, light);
             const diffuseIntensity: Vector4f = this.computeDiffuseIntensity(mat, light, normal, vertex);
