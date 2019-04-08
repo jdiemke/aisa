@@ -15,8 +15,14 @@ export class LinearFog extends Fog {
     }
 
     public computeVertexColor(color: Vector4f, vertex: Vector4f): Vector4f {
-        const f: number = Math.max(0.0, Math.min(1.0, (this.zEnd - vertex.z) / (this.zEnd - this.zStart)));
-        return color.mul(f).add(this.fogColor.mul(1 - f));
+        if (vertex.z >= this.zStart) {
+            return color;
+        } else if (vertex.z <= this.zEnd) {
+            return this.fogColor;
+        } else {
+            const f: number = (this.zEnd - vertex.z) / (this.zEnd - this.zStart);
+            return color.mul(f).add(this.fogColor.mul(1 - f));
+        }
     }
 
 }
