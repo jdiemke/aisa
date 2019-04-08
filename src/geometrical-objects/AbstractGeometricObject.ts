@@ -1,5 +1,5 @@
-import { Vector4f } from '../math';
-import { FlatShadedFace } from './Face';
+import { Vector4f } from '../math/index';
+import { FlatShadedFace } from './FlatShadedFace';
 import { FlatshadedMesh } from './FlatshadedMesh';
 
 export class AbstractGeometricObject {
@@ -25,10 +25,12 @@ export class AbstractGeometricObject {
         for (let i = 0; i < index.length; i += 3) {
 
             faces.push({
+                n1: i / 3,
+                n2: i / 3,
+                n3: i / 3,
                 v1: index[0 + i],
                 v2: index[1 + i],
                 v3: index[2 + i],
-                normal: i / 3
             });
         }
 

@@ -1,7 +1,9 @@
 import { Color } from '../core/Color';
+import { Framebuffer } from '../Framebuffer';
 import { FlatshadedMesh } from '../geometrical-objects/FlatshadedMesh';
 import { Vector4f } from '../math/index';
 import { Matrix4f } from '../math/Matrix4f';
+import { TriangleRasterizer } from '../rasterizer/TriangleRasterizer';
 import { SutherlandHodgman2DClipper } from '../screen-space-clipping/SutherlandHodgman2DClipper';
 import { Fog } from '../shading/fog/Fog';
 import { PhongLighting } from '../shading/illumination-models/PhongLighting';
@@ -26,6 +28,12 @@ import { AbstractRenderingPipeline } from './AbstractRenderingPipeline';
 export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
 
     private fog: Fog = null;
+    private lights: Array<PointLight> = null;
+    private material: Material = null;
+
+    // it is possible to change the rasterizer here for
+    // flat, gouroud, texture mapping etc.. should be done with clipper as well!
+    private triangleRasterizer: TriangleRasterizer = null;
 
     private projectedVertices: Array<Vector4f> = new Array<Vector4f>(
         new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1)
@@ -34,6 +42,34 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
     private vertexArray: Array<Vertex> = new Array<Vertex>(
         new Vertex(), new Vertex(), new Vertex()
     );
+
+    public constructor(framebuffer: Framebuffer) {
+        super(framebuffer);
+
+        const light1: PointLight = new PointLight();
+        light1.ambientIntensity = new Vector4f(1, 1, 1, 1);
+        light1.diffuseIntensity = new Vector4f(1, 1, 1, 1);
+        light1.specularIntensity = new Vector4f(1, 1, 1, 1);
+        light1.position = new Vector4f(3, 0, -2, 1);
+
+        const light2: PointLight = new PointLight();
+        light2.ambientIntensity = new Vector4f(0, 0, 1, 1);
+        light2.diffuseIntensity = new Vector4f(0, 0.6, 1, 1);
+        light2.specularIntensity = new Vector4f(0.8, 0.8, 0.8, 1);
+        light2.position = new Vector4f(0, -380, -180, 1);
+
+        this.lights = [light1, light2];
+
+        const mat: Material = new Material();
+        mat.ambientColor = new Vector4f(0.12, 0.14, 0.1, 0);
+        mat.diffuseColor = new Vector4f(0.38, 0.4, 0.4, 1);
+        mat.specularColor = new Vector4f(0.8, 0.5, 0.5, 0);
+        mat.shininess = 2;
+
+        this.material = mat;
+
+        this.triangleRasterizer = new TriangleRasterizer(this.framebuffer);
+    }
 
     public setFog(fog: Fog): void {
         this.fog = fog;
@@ -56,7 +92,7 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
             const v2: Vector4f = mesh.transformedPoints[mesh.faces[i].v2];
             const v3: Vector4f = mesh.transformedPoints[mesh.faces[i].v3];
 
-            const normal: Vector4f = mesh.transformedNormals[mesh.faces[i].normal];
+            const normal: Vector4f = mesh.transformedNormals[mesh.faces[i].n1];
 
             if (this.isInFrontOfNearPlane(v1) &&
                 this.isInFrontOfNearPlane(v2) &&
@@ -183,16 +219,15 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
             return;
         }
 
-        this.triangulateConvexPolygon(clippedPolygon, projected[0].color);
+        this.triangulateConvexPolygon(clippedPolygon);
     }
 
-    private triangulateConvexPolygon(clippedPolygon: Array<Vertex>, color: Color): void {
+    private triangulateConvexPolygon(clippedPolygon: Array<Vertex>): void {
         for (let j: number = 0; j < clippedPolygon.length - 2; j++) {
-            this.framebuffer.triangleRasterizer.drawTriangleDDA(
-                clippedPolygon[0].projection,
-                clippedPolygon[1 + j].projection,
-                clippedPolygon[2 + j].projection,
-                color.toPackedFormat()
+            this.triangleRasterizer.drawTriangleDDA(
+                clippedPolygon[0],
+                clippedPolygon[1 + j],
+                clippedPolygon[2 + j]
             );
         }
     }
@@ -201,29 +236,8 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
 
         // TODO: if lighting is enabled use mat and light
         // else use Color set
-        // do setup in constructor
-        const light1: PointLight = new PointLight();
-        light1.ambientIntensity = new Vector4f(1, 1, 1, 1);
-        light1.diffuseIntensity = new Vector4f(1, 1, 1, 1);
-        light1.specularIntensity = new Vector4f(1, 1, 1, 1);
-        light1.position = new Vector4f(3, 0, -2, 1);
 
-        const light2: PointLight = new PointLight();
-        light2.ambientIntensity = new Vector4f(0, 0, 1, 1);
-        light2.diffuseIntensity = new Vector4f(0, 0.6, 1, 1);
-        light2.specularIntensity = new Vector4f(0.8, 0.8, 0.8, 1);
-        light2.position = new Vector4f(0, -380, -180, 1);
-
-        const lights: Array<PointLight> = [
-            light1, light2
-        ];
-        const mat: Material = new Material();
-        mat.ambientColor = new Vector4f(0.12, 0.14, 0.1, 0);
-        mat.diffuseColor = new Vector4f(0.38, 0.4, 0.4, 1);
-        mat.specularColor = new Vector4f(0.8, 0.5, 0.5, 0);
-        mat.shininess = 2;
-
-        let vertexColor: Vector4f = new PhongLighting().computeColor(mat, lights, normal, vertex);
+        let vertexColor: Vector4f = new PhongLighting().computeColor(this.material, this.lights, normal, vertex);
 
         if (this.fog !== null) {
             vertexColor = this.fog.computeVertexColor(vertexColor, vertex);

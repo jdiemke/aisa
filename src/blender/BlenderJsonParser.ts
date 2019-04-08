@@ -1,4 +1,4 @@
-import { FlatShadedFace } from '../geometrical-objects/Face';
+import { FlatShadedFace } from "../geometrical-objects/FlatShadedFace";
 import { FlatshadedMesh } from '../geometrical-objects/FlatshadedMesh';
 import { Vector4f } from '../math/index';
 import { Face } from './face';
@@ -27,7 +27,9 @@ export class BlenderJsonParser {
             const faces: Array<FlatShadedFace> = [];
             object.faces.forEach((f: Face) => {
                 faces.push({
-                    normal: f.normals[0],
+                    n1: f.normals[0],
+                    n2: f.normals[1],
+                    n3: f.normals[2],
                     v1: f.vertices[0],
                     v2: f.vertices[1],
                     v3: f.vertices[2],
