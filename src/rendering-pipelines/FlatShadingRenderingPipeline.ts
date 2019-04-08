@@ -27,10 +27,6 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
 
     private fog: Fog = null;
 
-    public setFog(fog: Fog): void {
-        this.fog = fog;
-    }
-
     private projectedVertices: Array<Vector4f> = new Array<Vector4f>(
         new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1)
     );
@@ -38,6 +34,10 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
     private vertexArray: Array<Vertex> = new Array<Vertex>(
         new Vertex(), new Vertex(), new Vertex()
     );
+
+    public setFog(fog: Fog): void {
+        this.fog = fog;
+    }
 
     public draw(mesh: FlatshadedMesh, modelViewMartrix: Matrix4f): void {
 
@@ -202,18 +202,28 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
         // TODO: if lighting is enabled use mat and light
         // else use Color set
         // do setup in constructor
-        const pl: PointLight = new PointLight();
-        pl.ambientIntensity = new Vector4f(1, 1, 1, 1);
-        pl.diffuseIntensity = new Vector4f(1, 1, 1, 1);
-        pl.specularIntensity = new Vector4f(1, 1, 1, 1);
-        pl.position = new Vector4f(3, 0, -2, 1);
+        const light1: PointLight = new PointLight();
+        light1.ambientIntensity = new Vector4f(1, 1, 1, 1);
+        light1.diffuseIntensity = new Vector4f(1, 1, 1, 1);
+        light1.specularIntensity = new Vector4f(1, 1, 1, 1);
+        light1.position = new Vector4f(3, 0, -2, 1);
+
+        const light2: PointLight = new PointLight();
+        light2.ambientIntensity = new Vector4f(0, 0, 1, 1);
+        light2.diffuseIntensity = new Vector4f(0, 0.6, 1, 1);
+        light2.specularIntensity = new Vector4f(0.8, 0.8, 0.8, 1);
+        light2.position = new Vector4f(0, -380, -180, 1);
+
+        const lights: Array<PointLight> = [
+            light1, light2
+        ];
         const mat: Material = new Material();
         mat.ambientColor = new Vector4f(0.12, 0.14, 0.1, 0);
         mat.diffuseColor = new Vector4f(0.38, 0.4, 0.4, 1);
         mat.specularColor = new Vector4f(0.8, 0.5, 0.5, 0);
         mat.shininess = 2;
 
-        let vertexColor: Vector4f = new PhongLighting().computeColor(mat, pl, normal, vertex);
+        let vertexColor: Vector4f = new PhongLighting().computeColor(mat, lights, normal, vertex);
 
         if (this.fog !== null) {
             vertexColor = this.fog.computeVertexColor(vertexColor, vertex);
