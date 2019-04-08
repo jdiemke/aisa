@@ -1,9 +1,11 @@
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { TorusKnot } from '../../geometrical-objects/TorusKnot';
+import { Vector4f } from '../../math/index';
 import { Matrix4f } from '../../math/Matrix4f';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { AbstractScene } from '../../scenes/AbstractScene';
+import { LinearFog } from '../../shading/fog/LinearFog';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 
@@ -16,7 +18,8 @@ export class TorusKnotScene extends AbstractScene {
     private startTime: number;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        framebuffer.setCullFace(CullFace.BACK);
+        framebuffer.renderingPipeline.setCullFace(CullFace.BACK);
+        framebuffer.renderingPipeline.setFog(new LinearFog(-160, -380, new Vector4f(0, 0, 0, 1)));
         this.startTime = Date.now();
         return Promise.all([
             TextureUtils.load(require('../../assets/rave.png'), false).then(
