@@ -17,12 +17,13 @@ export class BottomClipEdge extends AbstractClipEdge {
     public computeIntersection(p1: Vertex, p2: Vertex): Vertex {
         const vertex: Vertex = new Vertex();
         // since this is for flat shading no interpolation is required
-        vertex.color = p1.color;
+        const factor: number = (Framebuffer.minWindow.y - p1.projection.y) / (p2.projection.y - p1.projection.y);
+        vertex.color = p2.color.sub(p1.color).mul(factor).add(p1.color);
         vertex.projection = new Vector4f(
-            Math.round(p1.projection.x + (p2.projection.x - p1.projection.x) * (Framebuffer.minWindow.y - p1.projection.y) / (p2.projection.y - p1.projection.y)),
+            Math.round(p1.projection.x + (p2.projection.x - p1.projection.x) * factor),
             Framebuffer.minWindow.y,
-            1 / (1 / p1.projection.z + (1 / p2.projection.z - 1 / p1.projection.z) * (Framebuffer.minWindow.y - p1.projection.y) / (p2.projection.y - p1.projection.y)));
-            return vertex;
+            1 / (1 / p1.projection.z + (1 / p2.projection.z - 1 / p1.projection.z) * factor));
+        return vertex;
     }
 
     public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {

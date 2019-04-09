@@ -1,10 +1,9 @@
-import { Canvas } from '../../Canvas';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Torus } from '../../geometrical-objects/Torus';
-import { Matrix4f, Vector3f } from '../../math';
+import { Matrix4f } from '../../math/index';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
+import { Texture, TextureUtils } from '../../texture/index';
 
 export class MovingTorusScene extends AbstractScene {
 

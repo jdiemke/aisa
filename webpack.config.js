@@ -55,6 +55,7 @@ module.exports = {
         'mdl': './src/examples/mdl/Application.ts',
         '3rd-person-camera': './src/examples/3rd-person-camera/Application.ts',
         'dof-balls': './src/examples/dof-balls/Application.ts',
+        'bunny': './src/examples/bunny/Application.ts',
     },
     mode: 'development',
     output: {
@@ -340,6 +341,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['dof-balls'],
             filename: 'dof-balls.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['bunny'],
+            filename: 'bunny.html'
         })
 
 

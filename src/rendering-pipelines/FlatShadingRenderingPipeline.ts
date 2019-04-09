@@ -3,7 +3,7 @@ import { Framebuffer } from '../Framebuffer';
 import { FlatshadedMesh } from '../geometrical-objects/FlatshadedMesh';
 import { Vector4f } from '../math/index';
 import { Matrix4f } from '../math/Matrix4f';
-import { TriangleRasterizer } from '../rasterizer/TriangleRasterizer';
+import { FlatShadingTriangleRasterizer } from '../rasterizer/FlatShadingTriangleRasterizer';
 import { SutherlandHodgman2DClipper } from '../screen-space-clipping/SutherlandHodgman2DClipper';
 import { Fog } from '../shading/fog/Fog';
 import { PhongLighting } from '../shading/illumination-models/PhongLighting';
@@ -11,6 +11,8 @@ import { PointLight } from '../shading/light/PointLight';
 import { Material } from '../shading/material/Material';
 import { Vertex } from '../Vertex';
 import { AbstractRenderingPipeline } from './AbstractRenderingPipeline';
+import { AbstractTriangleRasterizer } from '../rasterizer/AbstractTriangleRasterizer';
+import { GouraudShadingTriangleRasterizer } from '../rasterizer/GouraudShadingTriangleRasterizer';
 
 /**
  * TODO:
@@ -33,7 +35,7 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
 
     // it is possible to change the rasterizer here for
     // flat, gouroud, texture mapping etc.. should be done with clipper as well!
-    private triangleRasterizer: TriangleRasterizer = null;
+    private triangleRasterizer: AbstractTriangleRasterizer = null;
 
     private projectedVertices: Array<Vector4f> = new Array<Vector4f>(
         new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1)
@@ -68,7 +70,8 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
 
         this.material = mat;
 
-        this.triangleRasterizer = new TriangleRasterizer(this.framebuffer);
+        this.triangleRasterizer = new FlatShadingTriangleRasterizer(this.framebuffer);
+        this.triangleRasterizer = new GouraudShadingTriangleRasterizer(this.framebuffer);
     }
 
     public setFog(fog: Fog): void {
@@ -92,7 +95,9 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
             const v2: Vector4f = mesh.transformedPoints[mesh.faces[i].v2];
             const v3: Vector4f = mesh.transformedPoints[mesh.faces[i].v3];
 
-            const normal: Vector4f = mesh.transformedNormals[mesh.faces[i].n1];
+            const normal1: Vector4f = mesh.transformedNormals[mesh.faces[i].n1];
+            const normal2: Vector4f = mesh.transformedNormals[mesh.faces[i].n2];
+            const normal3: Vector4f = mesh.transformedNormals[mesh.faces[i].n3];
 
             if (this.isInFrontOfNearPlane(v1) &&
                 this.isInFrontOfNearPlane(v2) &&
@@ -104,16 +109,16 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
 
                 this.vertexArray[0].position = v1;
                 this.vertexArray[0].projection = this.projectedVertices[0];
-                this.vertexArray[0].normal = normal;
-                this.vertexArray[0].color = this.computeColor(normal, v1);
+                this.vertexArray[0].normal = normal1;
+                this.vertexArray[0].color =  this.computeColor(normal1, v1);
 
                 this.vertexArray[1].position = v2;
                 this.vertexArray[1].projection = this.projectedVertices[1];
-                this.vertexArray[1].color = this.vertexArray[0].color;
+                this.vertexArray[1].color = this.computeColor(normal2, v2);
 
                 this.vertexArray[2].position = v3;
                 this.vertexArray[2].projection = this.projectedVertices[2];
-                this.vertexArray[2].color = this.vertexArray[0].color;
+                this.vertexArray[2].color = this.computeColor(normal3, v3);
 
                 this.renderConvexPolygon(this.vertexArray);
             } else if (!this.isInFrontOfNearPlane(v1) &&
@@ -122,8 +127,8 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
                 continue;
             } else {
                 this.vertexArray[0].position = v1;
-                this.vertexArray[0].normal = normal;
-                this.vertexArray[0].color = this.computeColor(normal, v1);
+                this.vertexArray[0].normal = normal1;
+                this.vertexArray[0].color = this.computeColor(normal1, v1);
 
                 this.vertexArray[1].position = v2;
                 this.vertexArray[1].color = this.vertexArray[0].color;

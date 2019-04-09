@@ -60,6 +60,14 @@ fs.readFile(fileName, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
             uvOffset = uvCount;
         }
 
+        if (currentObject === null &&
+            (line.startsWith('v ') ||
+            line.startsWith('vn ') ||
+            line.startsWith('vt '))) {
+                console.error('Error: OBJ file does not contain Objects.');
+                process.exit(0);
+            }
+
         if (line.startsWith('v ')) {
             const coords: Array<string> = line.split(' ');
 
