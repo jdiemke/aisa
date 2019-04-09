@@ -9,7 +9,7 @@ import { ComputationalGeometryUtils } from './math/Geometry';
 import { Sphere } from './math/Sphere';
 import RandomNumberGenerator from './RandomNumberGenerator';
 import { TexturedTriangleRasterizer } from './rasterizer/TexturedTriangleRasterizer';
-import { TriangleRasterizer } from './rasterizer/TriangleRasterizer';
+import { FlatShadingTriangleRasterizer } from './rasterizer/FlatShadingTriangleRasterizer';
 import { FlatShadingRenderingPipeline } from './rendering-pipelines/FlatShadingRenderingPipeline';
 import { TexturingRenderingPipeline } from './rendering-pipelines/TexturingRenderingPipeline';
 import { AbstractClipEdge } from './screen-space-clipping/AbstractClipEdge';
@@ -61,7 +61,7 @@ export class Framebuffer {
     private sphereDisp2: any;
 
     private linerClipper = new CohenSutherlandLineClipper(this);
-    public triangleRasterizer = new TriangleRasterizer(this);
+    public triangleRasterizer = new FlatShadingTriangleRasterizer(this);
     public texturedTriangleRasterizer = new TexturedTriangleRasterizer(this);
 
     public scaleClipBlitter = new ScaleClipBlitter(this);

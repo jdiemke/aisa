@@ -1,8 +1,9 @@
 import { Framebuffer } from '../Framebuffer';
 import { Vertex } from '../Vertex';
 import { AbstractTriangleRasterizer } from './AbstractTriangleRasterizer';
+import { ColorInterpolator } from './ColorInterpolator';
 
-export class TriangleRasterizer extends AbstractTriangleRasterizer {
+export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer {
 
     private temp: Vertex = null;
 
@@ -61,12 +62,13 @@ export class TriangleRasterizer extends AbstractTriangleRasterizer {
     }
 
     private fillBottomFlatTriangle(v1: Vertex, v2: Vertex, v3: Vertex): void {
-        const color: number = v1.color.toPackedFormat();
-
         const yDistance: number = v3.projection.y - v1.projection.y;
 
         const slope1: number = (v2.projection.x - v1.projection.x) / yDistance;
         const slope2: number = (v3.projection.x - v1.projection.x) / yDistance;
+
+        const colorInterpolator1: ColorInterpolator = new ColorInterpolator(v1.color, v2.color, yDistance);
+        const colorInterpolator2: ColorInterpolator = new ColorInterpolator(v1.color, v3.color, yDistance);
 
         const zslope1: number = (1 / v2.projection.z - 1 / v1.projection.z) / yDistance;
         const zslope2: number = (1 / v3.projection.z - 1 / v1.projection.z) / yDistance;
@@ -80,21 +82,27 @@ export class TriangleRasterizer extends AbstractTriangleRasterizer {
 
         for (let i = 0; i < yDistance; i++) {
             let length = Math.round(xPosition2) - Math.round(xPosition);
+            const rowColorInterpolator: ColorInterpolator = new ColorInterpolator(
+                colorInterpolator1.getColor(), colorInterpolator2.getColor(), length);
             let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
             let spanzStep = (curz2 - curz1) / length;
             let wStart = curz1;
             for (let j = 0; j < length; j++) {
                 if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
                     this.framebuffer.wBuffer[framebufferIndex] = wStart;
-                    this.framebuffer.framebuffer[framebufferIndex] = color;
+                    this.framebuffer.framebuffer[framebufferIndex] = rowColorInterpolator.getColor().toPackedFormat();
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
+                rowColorInterpolator.advance();
             }
 
             xPosition += slope1;
             xPosition2 += slope2;
             yPosition++;
+
+            colorInterpolator1.advance();
+            colorInterpolator2.advance();
 
             curz1 += zslope1;
             curz2 += zslope2;
@@ -108,6 +116,10 @@ export class TriangleRasterizer extends AbstractTriangleRasterizer {
         let slope1 = (v3.projection.x - v1.projection.x) / yDistance;
         let slope2 = (v3.projection.x - v2.projection.x) / yDistance;
 
+
+        const colorInterpolator1: ColorInterpolator = new ColorInterpolator(v1.color, v3.color, yDistance);
+        const colorInterpolator2: ColorInterpolator = new ColorInterpolator(v2.color, v3.color, yDistance);
+
         let zslope1 = (1 / v3.projection.z - 1 / v1.projection.z) / yDistance;
         let zslope2 = (1 / v3.projection.z - 1 / v2.projection.z) / yDistance;
 
@@ -120,30 +132,38 @@ export class TriangleRasterizer extends AbstractTriangleRasterizer {
 
         for (let i = 0; i < yDistance; i++) {
             let length = Math.round(xPosition2) - Math.round(xPosition);
+            const rowColorInterpolator: ColorInterpolator = new ColorInterpolator(
+                colorInterpolator1.getColor(), colorInterpolator2.getColor(), length);
             let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
             for (let j = 0; j < length; j++) {
                 let wStart = (curz2 - curz1) / (length) * j + curz1;
                 if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
                     this.framebuffer.wBuffer[framebufferIndex] = wStart;
-                    this.framebuffer.framebuffer[framebufferIndex] = color;
+                    this.framebuffer.framebuffer[framebufferIndex] = rowColorInterpolator.getColor().toPackedFormat();
                 }
                 framebufferIndex++;
+                rowColorInterpolator.advance();
             }
 
             xPosition += slope1;
             xPosition2 += slope2;
             yPosition++;
 
+            colorInterpolator1.advance();
+            colorInterpolator2.advance();
+
             curz1 += zslope1;
             curz2 += zslope2;
         }
     }
 
-    fillLongRightTriangle(v1: Vertex, v2: Vertex, v3: Vertex): void {
-        const color: number = v1.color.toPackedFormat();
-
+    private fillLongRightTriangle(v1: Vertex, v2: Vertex, v3: Vertex): void {
         let yDistanceLeft = v2.projection.y - v1.projection.y;
         let yDistanceRight = v3.projection.y - v1.projection.y;
+
+        const colorInterpolator1: ColorInterpolator = new ColorInterpolator(v1.color, v2.color, yDistanceLeft);
+        const colorInterpolator2: ColorInterpolator = new ColorInterpolator(v1.color, v3.color, yDistanceRight);
+
 
         let slope1 = (v2.projection.x - v1.projection.x) / yDistanceLeft;
         let slope2 = (v3.projection.x - v1.projection.x) / yDistanceRight;
@@ -160,27 +180,34 @@ export class TriangleRasterizer extends AbstractTriangleRasterizer {
 
         for (let i = 0; i < yDistanceLeft; i++) {
             let length = Math.round(xPosition2) - Math.round(xPosition);
+            const rowColorInterpolator: ColorInterpolator = new ColorInterpolator(
+                colorInterpolator1.getColor(), colorInterpolator2.getColor(), length);
             let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
             let spanzStep = (curz2 - curz1) / length;
             let wStart = curz1;
             for (let j = 0; j < length; j++) {
                 if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
                     this.framebuffer.wBuffer[framebufferIndex] = wStart;
-                    this.framebuffer.framebuffer[framebufferIndex] = color;
+                    this.framebuffer.framebuffer[framebufferIndex] = rowColorInterpolator.getColor().toPackedFormat();
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
+                rowColorInterpolator.advance();
             }
 
             xPosition += slope1;
             xPosition2 += slope2;
             yPosition++;
 
+            colorInterpolator1.advance();
+            colorInterpolator2.advance();
+
             curz1 += zslope1;
             curz2 += zslope2;
         }
 
         yDistanceLeft = v3.projection.y - v2.projection.y;
+        const colorInterpolator3: ColorInterpolator = new ColorInterpolator(v2.color, v3.color, yDistanceLeft);
         slope1 = (v3.projection.x - v2.projection.x) / yDistanceLeft;
         zslope1 = (1 / v3.projection.z - 1 / v2.projection.z) / yDistanceLeft;
 
@@ -189,22 +216,27 @@ export class TriangleRasterizer extends AbstractTriangleRasterizer {
 
         for (let i = 0; i < yDistanceLeft; i++) {
             let length = Math.round(xPosition2) - Math.round(xPosition);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            const rowColorInterpolator: ColorInterpolator = new ColorInterpolator(
+                colorInterpolator3.getColor(), colorInterpolator2.getColor(), length);
+            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
             let spanzStep = (curz2 - curz1) / length;
             let wStart = curz1;
             for (let j = 0; j < length; j++) {
                 if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
                     this.framebuffer.wBuffer[framebufferIndex] = wStart;
-                    this.framebuffer.framebuffer[framebufferIndex] = color;
+                    this.framebuffer.framebuffer[framebufferIndex] = rowColorInterpolator.getColor().toPackedFormat();
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
+                rowColorInterpolator.advance();
             }
 
             xPosition += slope1;
             xPosition2 += slope2;
             yPosition++;
 
+            colorInterpolator2.advance();
+            colorInterpolator3.advance();
             curz1 += zslope1;
             curz2 += zslope2;
         }
@@ -212,10 +244,12 @@ export class TriangleRasterizer extends AbstractTriangleRasterizer {
 
 
     fillLongLeftTriangle(v1: Vertex, v2: Vertex, v3: Vertex): void {
-        const color: number = v1.color.toPackedFormat();
-
         let yDistanceRight = v2.projection.y - v1.projection.y;
         let yDistanceLeft = v3.projection.y - v1.projection.y;
+
+        const colorInterpolatorRight: ColorInterpolator = new ColorInterpolator(v1.color, v2.color, yDistanceRight);
+        const colorInterpolatorLeft: ColorInterpolator = new ColorInterpolator(v1.color, v3.color, yDistanceLeft);
+
 
         let slope2 = (v2.projection.x - v1.projection.x) / yDistanceRight;
         let slope1 = (v3.projection.x - v1.projection.x) / yDistanceLeft;
@@ -232,27 +266,33 @@ export class TriangleRasterizer extends AbstractTriangleRasterizer {
 
         for (let i = 0; i < yDistanceRight; i++) {
             let length = Math.round(xPosition2) - Math.round(xPosition);
+            const rowColorInterpolator: ColorInterpolator = new ColorInterpolator(
+                colorInterpolatorLeft.getColor(), colorInterpolatorRight.getColor(), length);
             let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
             let spanzStep = (curz2 - curz1) / length;
             let wStart = curz1;
             for (let j = 0; j < length; j++) {
                 if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
                     this.framebuffer.wBuffer[framebufferIndex] = wStart;
-                    this.framebuffer.framebuffer[framebufferIndex] = color;
+                    this.framebuffer.framebuffer[framebufferIndex] = rowColorInterpolator.getColor().toPackedFormat();
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
+                rowColorInterpolator.advance();
             }
 
             xPosition += slope1;
             xPosition2 += slope2;
             yPosition++;
+            colorInterpolatorRight.advance();
+            colorInterpolatorLeft.advance();
 
             curz1 += zslope1;
             curz2 += zslope2;
         }
 
         yDistanceRight = v3.projection.y - v2.projection.y;
+        const colorInterpolator3: ColorInterpolator = new ColorInterpolator(v2.color, v3.color, yDistanceRight);
         slope2 = (v3.projection.x - v2.projection.x) / yDistanceRight;
         zslope2 = (1 / v3.projection.z - 1 / v2.projection.z) / yDistanceRight;
 
@@ -262,21 +302,26 @@ export class TriangleRasterizer extends AbstractTriangleRasterizer {
 
         for (let i = 0; i < yDistanceRight; i++) {
             let length = Math.round(xPosition2) - Math.round(xPosition);
+            const rowColorInterpolator: ColorInterpolator = new ColorInterpolator(
+                colorInterpolatorLeft.getColor(), colorInterpolator3.getColor(), length);
             let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
             let spanzStep = (curz2 - curz1) / length;
             let wStart = curz1;
             for (let j = 0; j < length; j++) {
                 if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
                     this.framebuffer.wBuffer[framebufferIndex] = wStart;
-                    this.framebuffer.framebuffer[framebufferIndex] = color;
+                    this.framebuffer.framebuffer[framebufferIndex] = rowColorInterpolator.getColor().toPackedFormat();
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
+                rowColorInterpolator.advance()
             }
 
             xPosition += slope1;
             xPosition2 += slope2;
             yPosition++;
+            colorInterpolatorLeft.advance();
+            colorInterpolator3.advance();
 
             curz1 += zslope1;
             curz2 += zslope2;
