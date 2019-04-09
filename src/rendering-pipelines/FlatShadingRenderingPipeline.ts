@@ -78,6 +78,14 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
         this.fog = fog;
     }
 
+    public setLights(lights: Array<PointLight>): void {
+        this.lights = lights;
+    }
+
+    public setMaterial(material: Material): void {
+        this.material = material;
+    }
+
     public draw(mesh: FlatshadedMesh, modelViewMartrix: Matrix4f): void {
 
         const normalMatrix: Matrix4f = modelViewMartrix.computeNormalMatrix();

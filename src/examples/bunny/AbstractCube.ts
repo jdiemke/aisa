@@ -2,9 +2,12 @@ import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
+import { Vector4f } from '../../math';
 import { Matrix4f } from '../../math/Matrix4f';
 import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
+import { PointLight } from '../../shading/light/PointLight';
+import { Material } from '../../shading/material/Material';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 
@@ -15,15 +18,14 @@ export class AbstractCube extends AbstractScene {
 
     private blurred: Texture;
     private noise: Texture;
-
-    private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
     private renderingPipeline: FlatShadingRenderingPipeline;
-
     private scene: Array<FlatshadedMesh>;
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.BACK);
+        this.renderingPipeline.setLights(this.constructSceneLights());
+        this.renderingPipeline.setMaterial(this.constructSceneMaterial());
 
         this.scene = BlenderJsonParser.parse(require('../../assets/mybunny.json'), false);
 
@@ -42,36 +44,48 @@ export class AbstractCube extends AbstractScene {
 
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         this.drawBlenderScene2(framebuffer, time);
-        /*
-            [
-                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                { tex: this.texture13, scale: 1.6, alpha: 0.25 },
-                { tex: this.texture13, scale: 0.7, alpha: 0.22 },
-                { tex: this.texture13, scale: -0.4, alpha: 0.22 },
-            ], this.dirt);
-            */
-        //   const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-        //   framebuffer.drawTexture(0, 0, texture3, 0.75);
-        // framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
-
-        // framebuffer.noise(time, this.noise);
+        framebuffer.noise(time, this.noise);
     }
 
     public drawBlenderScene2(framebuffer: Framebuffer, elapsedTime: number): void {
         framebuffer.clearDepthBuffer();
 
-        const camera: Matrix4f = Matrix4f.constructTranslationMatrix(0, 0, -9
-            + Math.sin(elapsedTime * 0.0002) * 5).multiplyMatrix(
+        const camera: Matrix4f = Matrix4f.constructTranslationMatrix(0, 0, -4).multiplyMatrix(
                 Matrix4f.constructYRotationMatrix(elapsedTime * 0.0009)
                     .multiplyMatrix(
                         Matrix4f.constructXRotationMatrix(elapsedTime * 0.0009)
                     ).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, -2, 0))
             );
 
-        let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(10, 10, 10));
-        let model: FlatshadedMesh = this.scene[0];
+        const mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(10, 10, 10));
+        const model: FlatshadedMesh = this.scene[0];
         this.renderingPipeline.draw(model, mv);
+    }
+
+    private constructSceneLights(): Array<PointLight> {
+        const light1: PointLight = new PointLight();
+        light1.ambientIntensity = new Vector4f(1, 1, 1, 1);
+        light1.diffuseIntensity = new Vector4f(.9, 0.5, 0.6, 1);
+        light1.specularIntensity = new Vector4f(0.4, 0.4, 0.4, 1);
+        light1.position = new Vector4f(1, 0, -2, 1);
+
+        const light2: PointLight = new PointLight();
+        light2.ambientIntensity = new Vector4f(0, 0, 1, 1);
+        light2.diffuseIntensity = new Vector4f(0, 0.6, 1, 1);
+        light2.specularIntensity = new Vector4f(0.4, 0.4, 0.4, 1);
+        light2.position = new Vector4f(4, -4, -1, 1);
+
+        return [light1, light2];
+    }
+
+    private constructSceneMaterial(): Material {
+        const mat: Material = new Material();
+        mat.ambientColor = new Vector4f(0.12, 0.14, 0.1, 0);
+        mat.diffuseColor = new Vector4f(0.38, 0.4, 0.4, 1);
+        mat.specularColor = new Vector4f(0.8, 0.5, 0.5, 0);
+        mat.shininess = 2;
+
+        return mat;
     }
 
 }
