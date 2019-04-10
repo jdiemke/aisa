@@ -21,7 +21,7 @@ export class Color {
     public static readonly SLATE_GRAY: Color = new Color(112, 128, 144, 255);
     public static readonly DARK_GRAY: Color = new Color(19, 19, 20, 255);
 
-    constructor(public r: number, public g: number, public b: number, public a: number) {
+    constructor(public r: number = 0, public g: number = 0, public b: number = 0, public a: number = 0) {
     }
 
     public toPackedFormat(): number {
