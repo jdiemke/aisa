@@ -2,20 +2,23 @@ import { Color } from '../core/Color';
 
 export class ColorInterpolator {
 
-    private startColor: Color;
-    private colorSlope: Color;
+    public startColor: Color = new Color();
+    private colorSlope: Color = new Color();
 
-    constructor(c1: Color, c2: Color, distance: number) {
-        this.colorSlope = c2.sub(c1).div(distance);
-        this.startColor = c1;
-    }
+    public setup(c1: Color, c2: Color, distance: number): void {
+        this.colorSlope.r = (c2.r - c1.r) / distance;
+        this.colorSlope.g = (c2.g - c1.g) / distance;
+        this.colorSlope.b = (c2.b - c1.b) / distance;
 
-    public getColor(): Color {
-        return this.startColor;
+        this.startColor.r = c1.r;
+        this.startColor.g = c1.g;
+        this.startColor.b = c1.b;
     }
 
     public advance(): void {
-        this.startColor = this.startColor.add(this.colorSlope);
+        this.startColor.r += this.colorSlope.r;
+        this.startColor.g += this.colorSlope.g;
+        this.startColor.b += this.colorSlope.b;
     }
 
 }
