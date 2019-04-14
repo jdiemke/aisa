@@ -3191,46 +3191,13 @@ export class Framebuffer {
         tex.v = 0.5 - Math.asin(normal.y) / Math.PI;
     }
 
-    private static clipRegion = new Array<AbstractClipEdge>(
+    public static clipRegion = new Array<AbstractClipEdge>(
         new RightClipEdge(),
         new LeftClipEdge(),
         new BottomClipEdge(),
         new TopClipEdge()
     );
 
-    public clipConvexPolygon2(subject: Array<Vertex>): void {
-
-        let output = subject;
-
-        for (let j = 0; j < Framebuffer.clipRegion.length; j++) {
-            let edge = Framebuffer.clipRegion[j];
-            let input = output;
-            output = new Array<Vertex>();
-            let S = input[input.length - 1];
-
-            for (let i = 0; i < input.length; i++) {
-                let point = input[i];
-                if (edge.isInside2(point)) {
-                    if (!edge.isInside2(S)) {
-                        output.push(edge.computeIntersection2(S, point));
-                    }
-                    output.push(point);
-                } else if (edge.isInside2(S)) {
-                    output.push(edge.computeIntersection2(S, point));
-                }
-                S = point;
-            }
-        };
-
-        if (output.length < 3) {
-            return;
-        }
-
-        // triangulate new point set
-        for (let i = 0; i < output.length - 2; i++) {
-            this.texturedTriangleRasterizer.drawTriangleDDA2(output[0], output[1 + i], output[2 + i]);
-        }
-    }
 
     lensFlareVisible: boolean = false;
     lensFlareStart = 0;

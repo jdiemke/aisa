@@ -4,12 +4,17 @@ import { Framebuffer } from '../Framebuffer';
 export class AbstractRenderingPipeline {
 
     public NEAR_PLANE_Z: number = -1.7;
+    public alpha: number;
     private cullMode: CullFace = CullFace.BACK;
 
     constructor(protected framebuffer: Framebuffer) { }
 
     public setCullFace(face: CullFace): void {
         this.cullMode = face;
+    }
+
+    public setAlpha(alpha: number): void {
+        this.alpha = Math.max(Math.min(alpha, 1.0), 0.0);
     }
 
     public isInFrontOfNearPlane(p: { x: number; y: number; z: number }): boolean {
