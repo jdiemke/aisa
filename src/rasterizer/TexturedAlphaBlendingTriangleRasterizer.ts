@@ -1,15 +1,16 @@
 import { Framebuffer } from '../Framebuffer';
 import { Vector3f } from '../math/Vector3f';
 import { Vector4f } from '../math/Vector4f';
+import { AbstractRenderingPipeline } from '../rendering-pipelines/AbstractRenderingPipeline';
 import { Vertex } from '../Vertex';
 
-export class TexturedTriangleRasterizer {
+export class TexturedAlphaBlendingTriangleRasterizer {
 
     private temp: Vertex = null;
 
     // requires
     // bob und wbuffer
-    constructor(private framebuffer: Framebuffer) { }
+    constructor(private framebuffer: Framebuffer, private pipeline: AbstractRenderingPipeline) { }
 
     public drawTriangleDDA(p1: Vertex, p2: Vertex, p3: Vertex): void {
 
@@ -98,6 +99,7 @@ export class TexturedTriangleRasterizer {
             let uStart = curu1;
             let vStart = curv1;
             for (let j = 0; j < length; j++) {
+                const currentColor = this.framebuffer.framebuffer[framebufferIndex];
                 if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
                     this.framebuffer.wBuffer[framebufferIndex] = wStart;
                     let z = 1 / wStart;
@@ -105,8 +107,16 @@ export class TexturedTriangleRasterizer {
                     let u = Math.max(Math.min((uStart * z * this.framebuffer.bob.width), this.framebuffer.bob.width - 1), 0) | 0;
                     let v = Math.max(Math.min((vStart * z * this.framebuffer.bob.height), this.framebuffer.bob.height - 1), 0) | 0;
                     let color2 = this.framebuffer.bob.texture[u + v * this.framebuffer.bob.width];
+                    // TODO: move out of loops!
+                    const alpha = this.pipeline.alpha * (color2 >> 24 & 0xff) / 255;
+                    const inverseAlpha = 1 - alpha;
 
-                    this.framebuffer.framebuffer[framebufferIndex] = color2;
+
+                    let r = (currentColor >> 0 & 0xff) * inverseAlpha + (color2 >> 0 & 0xff) * alpha;
+                    let g = (currentColor >> 8 & 0xff) * inverseAlpha + (color2 >> 8 & 0xff) * alpha;
+                    let b = (currentColor >> 16 & 0xff) * inverseAlpha + (color2 >> 16 & 0xff) * alpha;
+
+                    this.framebuffer.framebuffer[framebufferIndex] =  r | (g << 8) | (b << 16) | (255 << 24);
 
                 }
                 framebufferIndex++;
@@ -168,8 +178,15 @@ export class TexturedTriangleRasterizer {
                     let u = Math.max(Math.min((uStart * z * this.framebuffer.bob.width), this.framebuffer.bob.width - 1), 0) | 0;
                     let v = Math.max(Math.min((vStart * z * this.framebuffer.bob.height), this.framebuffer.bob.height - 1), 0) | 0;
                     let color2 = this.framebuffer.bob.texture[u + v * this.framebuffer.bob.width];
+                    const alpha = this.pipeline.alpha * (color2 >> 24 & 0xff) / 255;
+                    const inverseAlpha = 1 - alpha;
 
-                    this.framebuffer.framebuffer[framebufferIndex] = color2;
+
+                    let r = (this.framebuffer.framebuffer[framebufferIndex] >> 0 & 0xff) * inverseAlpha + (color2 >> 0 & 0xff) * alpha;
+                    let g = (this.framebuffer.framebuffer[framebufferIndex] >> 8 & 0xff) * inverseAlpha + (color2 >> 8 & 0xff) * alpha;
+                    let b = (this.framebuffer.framebuffer[framebufferIndex] >> 16 & 0xff) * inverseAlpha + (color2 >> 16 & 0xff) * alpha;
+
+                    this.framebuffer.framebuffer[framebufferIndex] =  r | (g << 8) | (b << 16) | (255 << 24);
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
@@ -247,8 +264,15 @@ export class TexturedTriangleRasterizer {
                     let u = Math.max(Math.min((uStart * z * this.framebuffer.bob.width), this.framebuffer.bob.width - 1), 0) | 0;
                     let v = Math.max(Math.min((vStart * z * this.framebuffer.bob.height), this.framebuffer.bob.height - 1), 0) | 0;
                     let color2 = this.framebuffer.bob.texture[u + v * this.framebuffer.bob.width];
+                    const alpha = this.pipeline.alpha * (color2 >> 24 & 0xff) / 255;
+                    const inverseAlpha = 1 - alpha;
 
-                    this.framebuffer.framebuffer[framebufferIndex] = color2;
+
+                    let r = (this.framebuffer.framebuffer[framebufferIndex] >> 0 & 0xff) * inverseAlpha + (color2 >> 0 & 0xff) * alpha;
+                    let g = (this.framebuffer.framebuffer[framebufferIndex] >> 8 & 0xff) * inverseAlpha + (color2 >> 8 & 0xff) * alpha;
+                    let b = (this.framebuffer.framebuffer[framebufferIndex] >> 16 & 0xff) * inverseAlpha + (color2 >> 16 & 0xff) * alpha;
+
+                    this.framebuffer.framebuffer[framebufferIndex] =  r | (g << 8) | (b << 16) | (255 << 24);
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
@@ -309,8 +333,15 @@ export class TexturedTriangleRasterizer {
                     let u = Math.max(Math.min((uStart * z * this.framebuffer.bob.width), this.framebuffer.bob.width - 1), 0) | 0;
                     let v = Math.max(Math.min((vStart * z * this.framebuffer.bob.height), this.framebuffer.bob.height - 1), 0) | 0;
                     let color2 = this.framebuffer.bob.texture[u + v * this.framebuffer.bob.width];
+                    const alpha = this.pipeline.alpha * (color2 >> 24 & 0xff) / 255;
+                    const inverseAlpha = 1 - alpha;
 
-                    this.framebuffer.framebuffer[framebufferIndex] = color2;
+
+                    let r = (this.framebuffer.framebuffer[framebufferIndex] >> 0 & 0xff) * inverseAlpha + (color2 >> 0 & 0xff) * alpha;
+                    let g = (this.framebuffer.framebuffer[framebufferIndex] >> 8 & 0xff) * inverseAlpha + (color2 >> 8 & 0xff) * alpha;
+                    let b = (this.framebuffer.framebuffer[framebufferIndex] >> 16 & 0xff) * inverseAlpha + (color2 >> 16 & 0xff) * alpha;
+
+                    this.framebuffer.framebuffer[framebufferIndex] =  r | (g << 8) | (b << 16) | (255 << 24);
                 }
                 framebufferIndex++;
                 wStart += spanzStep;

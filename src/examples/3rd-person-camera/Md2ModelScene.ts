@@ -3,8 +3,7 @@ import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { AisaGamepad } from '../../input/AisaGamepad';
-import { Matrix4f, Vector2f, Vector3f, Vector4f } from '../../math/index';
-import { MD2Animation } from '../../model/md2/MD2AnimationNames';
+import { Matrix4f, Vector3f, Vector4f } from '../../math/index';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
@@ -16,6 +15,7 @@ import { MD2Model } from './../../model/md2/MD2Model';
 import { ModelViewMatrix } from './../md2/ModelViewMatrix';
 import { Player } from './Player';
 import { PlayerStateMachine } from './state-machine/PlayerStateMachine';
+import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 
 /**
  * http://tfc.duke.free.fr/coding/mdl-specs-en.html
@@ -35,6 +35,7 @@ export class Md2ModelScene extends AbstractScene {
     private ogroTexture: Texture;
     private weaponTexture: Texture;
     private texture4: Texture;
+    private glow: Texture;
     private fontred: Texture;
     private ground: Texture;
     private md2: MD2Model;
@@ -59,9 +60,11 @@ export class Md2ModelScene extends AbstractScene {
     private run: boolean = false;
 
     private playerStateMachine: PlayerStateMachine;
+    private texturedRenderingPipeline: TexturingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
+        this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
+        this.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
         this.startTime = Date.now();
         return Promise.all([
             TextureUtils.load(require('../../assets/md2/hueteotl.png'), false).then(
@@ -84,6 +87,8 @@ export class Md2ModelScene extends AbstractScene {
             ,
             TextureUtils.load(require('../../assets/ground.png'), true).then(
                 (texture: Texture) => this.ground = texture),
+            TextureUtils.load(require('../../assets/glow.png'), true).then(
+                (texture: Texture) => this.glow = texture),
         ]);
     }
 
@@ -124,31 +129,31 @@ export class Md2ModelScene extends AbstractScene {
 
     public processInput(deltaTime: number): void {
 
-        if (this.gamepad.isLeft(1, -1)) {
+        if (this.keyboard.isDown(Keyboard.UP)) {
             this.playerStateMachine.upButton();
         }
 
-        if (!this.gamepad.isLeft(1, -1)) {
+        if (!this.keyboard.isDown(Keyboard.UP)) {
             this.playerStateMachine.upButtonNot();
         }
 
-        /*
-        const speed: number = 3.1;
+
+        const speed: number = 4.1;
         const Angspeed: number = 110.0;
 
         if (this.keyboard.isDown(Keyboard.UP) || this.gamepad.isLeft(1, -1)) {
             this.player.moveForward(speed, deltaTime);
         }
 
-        if ( this.gamepad.isLeft(1, -1) && !this.run) {
-            this.md2.setAnim( MD2Animation.RUN, Date.now(), true);
-            this.weapon.setAnim( MD2Animation.RUN, Date.now(), true);
+        if (this.gamepad.isLeft(1, -1) && !this.run) {
+            // this.md2.setAnim( MD2Animation.RUN, Date.now(), true);
+            //  this.weapon.setAnim( MD2Animation.RUN, Date.now(), true);
             this.run = true;
         }
 
         if (!this.gamepad.isLeft(1, -1) && this.run) {
-            this.md2.setAnim( MD2Animation.STAND, Date.now(), true);
-            this.weapon.setAnim( MD2Animation.STAND, Date.now(), true);
+            //   this.md2.setAnim( MD2Animation.STAND, Date.now(), true);
+            //  this.weapon.setAnim( MD2Animation.STAND, Date.now(), true);
             this.run = false;
         }
 
@@ -165,8 +170,8 @@ export class Md2ModelScene extends AbstractScene {
         }
 
         if (this.gamepad.isButtonPressed(3) && !this.attack) {
-            this.md2.setAnim( MD2Animation.ATTACK, Date.now());
-            this.weapon.setAnim( MD2Animation.ATTACK, Date.now());
+            // this.md2.setAnim( MD2Animation.ATTACK, Date.now());
+            // this.weapon.setAnim( MD2Animation.ATTACK, Date.now());
             this.attack = true;
         }
 
@@ -175,15 +180,14 @@ export class Md2ModelScene extends AbstractScene {
         }
 
         if (this.gamepad.isButtonPressed(2) && !this.jump) {
-            this.md2.setAnim( MD2Animation.JUMP, Date.now());
-            this.weapon.setAnim( MD2Animation.JUMP, Date.now());
+            //     this.md2.setAnim( MD2Animation.JUMP, Date.now());
+            //   this.weapon.setAnim( MD2Animation.JUMP, Date.now());
             this.jump = true;
         }
 
         if (!this.gamepad.isButtonPressed(2) && this.jump) {
             this.jump = false;
         }
-        */
     }
 
     public render(framebuffer: Framebuffer): void {
@@ -209,14 +213,22 @@ export class Md2ModelScene extends AbstractScene {
         //
         framebuffer.setTexture(this.ground);
 
-        framebuffer.texturedRenderingPipeline.setCullFace(CullFace.BACK);
+        this.texturedRenderingPipeline.setCullFace(CullFace.BACK);
         this.computeFloorMovement(delta);
-        framebuffer.texturedRenderingPipeline.draw(this.floor, this.modelViewMatrix.getMatrix());
+        this.texturedRenderingPipeline.draw(this.floor, this.modelViewMatrix.getMatrix());
+        this.modelViewMatrix.trans(0, 0.1, 0);
 
-        framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
+        this.computeGlowMovement(delta, currentTime);
+        framebuffer.setTexture(this.glow);
+
+        this.texturedRenderingPipeline.enableAlphaBlending();
+        this.texturedRenderingPipeline.draw(this.floor, this.modelViewMatrix.getMatrix());
+        this.texturedRenderingPipeline.disableAlphaBlending();
+
+        this.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
 
         this.renderPlayer(framebuffer, delta);
-        framebuffer.drawFog(Color.RED, 0.06, 5.0);
+        //framebuffer.drawFog(Color.RED, 0.06, 5.0);
         framebuffer.drawText(8, 8, 'FPS: ' + this.fps.toString(), this.texture4);
         framebuffer.drawText(8, 16, 'TRIANGELS: ' +
             (this.md2.header.numberOfTriangles + this.weapon.header.numberOfTriangles), this.texture4);
@@ -230,13 +242,14 @@ export class Md2ModelScene extends AbstractScene {
         this.computePlayerMovement(time);
 
         framebuffer.setTexture(this.ogroTexture);
-        framebuffer.texturedRenderingPipeline.draw(
+        this.texturedRenderingPipeline.draw(
             this.md2.getMesh2(time * 1000), this.modelViewMatrix.getMatrix()
         );
         framebuffer.setTexture(this.weaponTexture);
-        framebuffer.texturedRenderingPipeline.draw(
+        this.texturedRenderingPipeline.draw(
             this.weapon.getMesh2(time * 1000), this.modelViewMatrix.getMatrix()
         );
+
     }
 
     private computeFloorMovement(elapsedTime: number): void {
@@ -269,6 +282,16 @@ export class Md2ModelScene extends AbstractScene {
         this.modelViewMatrix.yRotate(Math.PI * 2 / 360 * (90 + this.player.angle));
         this.modelViewMatrix.xRotate(Math.PI * 2 / 360 * -90);
         this.modelViewMatrix.scal(0.05, 0.05, 0.05);
+    }
+
+    private computeGlowMovement(delta: number, elapsedTime: number): void {
+        // http://cubeengine.com/wiki/Importing_md2_and_md3_files
+        this.modelViewMatrix.setIdentity();
+        this.modelViewMatrix.multMatrix(this.getCamMatrix(delta));
+        this.modelViewMatrix.trans(this.player.position.x, 0.03, this.player.position.y);
+        const scale = (Math.sin(elapsedTime * 0.006) + 1) * 0.5 * 0.2 + 0.8;
+        this.modelViewMatrix.scal(0.06 * scale, 0.06 * scale, 0.06 * scale);
+        this.texturedRenderingPipeline.setAlpha(scale);
     }
 
 }

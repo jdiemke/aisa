@@ -1,11 +1,17 @@
+import { Framebuffer } from '../Framebuffer';
 import { Matrix4f } from '../math/Matrix4f';
 import { Vector4f } from '../math/Vector4f';
+import { AbstractTriangleRasterizer } from '../rasterizer/AbstractTriangleRasterizer';
+import { TexturedAlphaBlendingTriangleRasterizer } from '../rasterizer/TexturedAlphaBlendingTriangleRasterizer';
+import { TexturedTriangleRasterizer } from '../rasterizer/TexturedTriangleRasterizer';
 import { TextureCoordinate } from '../TextureCoordinate';
 import { Vertex } from '../Vertex';
 import { AbstractRenderingPipeline } from './AbstractRenderingPipeline';
 import { TexturedMesh } from './TexturedMesh';
 
 export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
+
+    private triangleRasterizer: AbstractTriangleRasterizer = null;
 
     private vertexArray: Array<Vertex> = new Array<Vertex>(
         new Vertex(), new Vertex(), new Vertex()
@@ -14,6 +20,20 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
     private projectedVertices: Array<Vector4f> = new Array<Vector4f>(
         new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1)
     );
+
+    constructor(framebuffer: Framebuffer) {
+        super(framebuffer);
+        this.setAlpha(1.0);
+        this.triangleRasterizer = new TexturedTriangleRasterizer(framebuffer);
+    }
+
+    public enableAlphaBlending(): void {
+        this.triangleRasterizer = new TexturedAlphaBlendingTriangleRasterizer(this.framebuffer, this);
+    }
+
+    public disableAlphaBlending(): void {
+        this.triangleRasterizer = new TexturedTriangleRasterizer(this.framebuffer);
+    }
 
     public draw(mesh: TexturedMesh, modelViewMartrix: Matrix4f): void {
 
@@ -44,7 +64,7 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
                     this.vertexArray[2].position = this.projectedVertices[2];
                     this.vertexArray[2].textureCoordinate = mesh.uv[mesh.faces[i].uv[2]];
 
-                    this.framebuffer.clipConvexPolygon2(this.vertexArray);
+                    this.clipConvexPolygon2(this.vertexArray);
                 }
             } else if (!this.isInFrontOfNearPlane(v1) &&
                 !this.isInFrontOfNearPlane(v2) &&
@@ -140,7 +160,42 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
             return;
         }
 
-        this.framebuffer.clipConvexPolygon2(projected);
+        this.clipConvexPolygon2(projected);
+    }
+
+
+    public clipConvexPolygon2(subject: Array<Vertex>): void {
+
+        let output = subject;
+
+        for (let j = 0; j < Framebuffer.clipRegion.length; j++) {
+            let edge = Framebuffer.clipRegion[j];
+            let input = output;
+            output = new Array<Vertex>();
+            let S = input[input.length - 1];
+
+            for (let i = 0; i < input.length; i++) {
+                let point = input[i];
+                if (edge.isInside2(point)) {
+                    if (!edge.isInside2(S)) {
+                        output.push(edge.computeIntersection2(S, point));
+                    }
+                    output.push(point);
+                } else if (edge.isInside2(S)) {
+                    output.push(edge.computeIntersection2(S, point));
+                }
+                S = point;
+            }
+        };
+
+        if (output.length < 3) {
+            return;
+        }
+
+        // triangulate new point set
+        for (let i = 0; i < output.length - 2; i++) {
+            this.triangleRasterizer.drawTriangleDDA(output[0], output[1 + i], output[2 + i]);
+        }
     }
 
 }
