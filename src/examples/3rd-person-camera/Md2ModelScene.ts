@@ -289,9 +289,9 @@ export class Md2ModelScene extends AbstractScene {
         this.modelViewMatrix.setIdentity();
         this.modelViewMatrix.multMatrix(this.getCamMatrix(delta));
         this.modelViewMatrix.trans(this.player.position.x, 0.03, this.player.position.y);
-        const scale = (Math.sin(elapsedTime * 0.006) + 1) * 0.5 * 0.2 + 0.8;
+        const scale = 0.85;
         this.modelViewMatrix.scal(0.06 * scale, 0.06 * scale, 0.06 * scale);
-        this.texturedRenderingPipeline.setAlpha(scale);
+        this.texturedRenderingPipeline.setAlpha(0.70);
     }
 
 }
