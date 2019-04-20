@@ -5,6 +5,7 @@ import { Framebuffer } from '../../Framebuffer';
 import { AisaGamepad } from '../../input/AisaGamepad';
 import { Matrix4f, Vector3f, Vector4f } from '../../math/index';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
+import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
@@ -15,7 +16,6 @@ import { MD2Model } from './../../model/md2/MD2Model';
 import { ModelViewMatrix } from './../md2/ModelViewMatrix';
 import { Player } from './Player';
 import { PlayerStateMachine } from './state-machine/PlayerStateMachine';
-import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 
 /**
  * http://tfc.duke.free.fr/coding/mdl-specs-en.html
