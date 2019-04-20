@@ -1,7 +1,7 @@
 import { FlatShadedFace } from '../geometrical-objects/FlatShadedFace';
 import { FlatshadedMesh } from '../geometrical-objects/FlatshadedMesh';
 import { Vector4f } from '../math/index';
-import { BlenderScene } from './BlenderJson';
+import { BlenderScene } from './BlenderScene';
 import { Face } from './face';
 import { Mesh } from './mesh';
 import { Vector } from './vector';
