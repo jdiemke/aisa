@@ -1,4 +1,4 @@
-import { FlatShadedFace } from "../geometrical-objects/FlatShadedFace";
+import { FlatShadedFace } from '../geometrical-objects/FlatShadedFace';
 import { FlatshadedMesh } from '../geometrical-objects/FlatshadedMesh';
 import { Vector4f } from '../math/index';
 import { Face } from './face';
