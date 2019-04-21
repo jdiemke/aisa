@@ -21,7 +21,11 @@ export class LinearFog extends Fog {
             return this.fogColor;
         } else {
             const f: number = (this.zEnd - vertex.z) / (this.zEnd - this.zStart);
-            return color.mul(f).add(this.fogColor.mul(1 - f));
+            return new Vector4f(
+                color.x * f + this.fogColor.x * (1 - f),
+                color.y * f + this.fogColor.y * (1 - f),
+                color.z * f + this.fogColor.z * (1 - f)
+            );
         }
     }
 
