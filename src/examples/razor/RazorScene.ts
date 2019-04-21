@@ -7,6 +7,7 @@ import { Sphere } from '../../geometrical-objects/Sphere';
 import { Matrix4f, Vector3f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
+import { Color } from '../../core/Color';
 
 /**
  * TODO: extract lens into effect class
@@ -120,6 +121,8 @@ export class RazorScene extends AbstractScene {
         /**
          * SHADOWS
          */
+        framebuffer.renderingPipeline.enableLighting(false);
+        framebuffer.renderingPipeline.setColor(Color.DARK_GRAY);
 
         scale = 2.0;
         modelViewMartrix = Matrix4f.constructYRotationMatrix(elapsedTime * 0.2).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));
@@ -160,6 +163,8 @@ export class RazorScene extends AbstractScene {
             Matrix4f.constructShadowMatrix(modelViewMartrix).multiplyMatrix(modelViewMartrix));
 
         framebuffer.renderingPipeline.draw(this.icosahedron.getMesh(), modelViewMartrix);
+
+        framebuffer.renderingPipeline.enableLighting(true);
 
         let lensflareScreenSpace = framebuffer.project(camera.multiply(new Vector3f(12.0, 4.0, 0)));
 
