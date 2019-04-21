@@ -131,21 +131,14 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
 
                 this.vertexArray[1].position = v2;
                 this.vertexArray[1].projection = this.projectedVertices[1];
+                this.vertexArray[1].normal = normal2;
 
                 this.vertexArray[2].position = v3;
                 this.vertexArray[2].projection = this.projectedVertices[2];
+                this.vertexArray[2].normal = normal3;
 
-                if (this.lighting) {
-                    this.vertexArray[0].color =  this.computeColor(normal1, v1);
-                    this.vertexArray[1].color = this.computeColor(normal2, v2);
-                    this.vertexArray[2].color = this.computeColor(normal3, v3);
-                } else {
-                    this.vertexArray[0].color = this.color;
-                    this.vertexArray[1].color = this.color;
-                    this.vertexArray[2].color = this.color;
-                }
 
-                this.renderConvexPolygon(this.vertexArray);
+                this.renderConvexPolygon(this.vertexArray, true);
             } else if (!this.isInFrontOfNearPlane(v1) &&
                 !this.isInFrontOfNearPlane(v2) &&
                 !this.isInFrontOfNearPlane(v3)) {
@@ -229,13 +222,26 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
         return output;
     }
 
-    private renderConvexPolygon(projected: Array<Vertex>): void {
+    private renderConvexPolygon(projected: Array<Vertex>, late: boolean = false): void {
         if (projected.length === 3 &&
             !this.isTriangleCCW(
                 projected[0].projection,
                 projected[1].projection,
                 projected[2].projection)) {
             return;
+        }
+
+        if (late) {
+            if (this.lighting) {
+                this.vertexArray[0].color =  this.computeColor(this.vertexArray[0].normal, this.vertexArray[0].position);
+                this.vertexArray[1].color = this.computeColor(this.vertexArray[1].normal, this.vertexArray[1].position);
+                this.vertexArray[2].color = this.computeColor(this.vertexArray[2].normal, this.vertexArray[2].position);
+            } else {
+                this.vertexArray[0].color = this.color;
+                this.vertexArray[1].color = this.color;
+                this.vertexArray[2].color = this.color;
+            }
+
         }
 
         if (projected.length === 4 &&
