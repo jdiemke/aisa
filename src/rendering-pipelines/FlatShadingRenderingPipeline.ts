@@ -32,6 +32,8 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
     private fog: Fog = null;
     private lights: Array<PointLight> = null;
     private material: Material = null;
+    private lighting: boolean = true;
+    private color: Color = Color.WHITE;
 
     // it is possible to change the rasterizer here for
     // flat, gouroud, texture mapping etc.. should be done with clipper as well!
@@ -82,8 +84,16 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
         this.lights = lights;
     }
 
+    public enableLighting(enable: boolean): void {
+        this.lighting = enable;
+    }
+
     public setMaterial(material: Material): void {
         this.material = material;
+    }
+
+    public setColor(color: Color): void {
+        this.color = color;
     }
 
     public draw(mesh: FlatshadedMesh, modelViewMartrix: Matrix4f): void {
@@ -118,15 +128,22 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
                 this.vertexArray[0].position = v1;
                 this.vertexArray[0].projection = this.projectedVertices[0];
                 this.vertexArray[0].normal = normal1;
-                this.vertexArray[0].color =  this.computeColor(normal1, v1);
 
                 this.vertexArray[1].position = v2;
                 this.vertexArray[1].projection = this.projectedVertices[1];
-                this.vertexArray[1].color = this.computeColor(normal2, v2);
 
                 this.vertexArray[2].position = v3;
                 this.vertexArray[2].projection = this.projectedVertices[2];
-                this.vertexArray[2].color = this.computeColor(normal3, v3);
+
+                if (this.lighting) {
+                    this.vertexArray[0].color =  this.computeColor(normal1, v1);
+                    this.vertexArray[1].color = this.computeColor(normal2, v2);
+                    this.vertexArray[2].color = this.computeColor(normal3, v3);
+                } else {
+                    this.vertexArray[0].color = this.color;
+                    this.vertexArray[1].color = this.color;
+                    this.vertexArray[2].color = this.color;
+                }
 
                 this.renderConvexPolygon(this.vertexArray);
             } else if (!this.isInFrontOfNearPlane(v1) &&
@@ -135,14 +152,18 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
                 continue;
             } else {
                 this.vertexArray[0].position = v1;
-                this.vertexArray[0].normal = normal1;
-                this.vertexArray[0].color = this.computeColor(normal1, v1);
-
                 this.vertexArray[1].position = v2;
-                this.vertexArray[1].color = this.vertexArray[0].color;
-
                 this.vertexArray[2].position = v3;
-                this.vertexArray[2].color = this.vertexArray[0].color;
+
+                if (this.lighting) {
+                    this.vertexArray[0].color =  this.computeColor(normal1, v1);
+                    this.vertexArray[1].color = this.computeColor(normal2, v2);
+                    this.vertexArray[2].color = this.computeColor(normal3, v3);
+                } else {
+                    this.vertexArray[0].color = this.color;
+                    this.vertexArray[1].color = this.color;
+                    this.vertexArray[2].color = this.color;
+                }
 
                 const output: Array<Vertex> = this.zClipTriangle(this.vertexArray);
 
@@ -175,6 +196,7 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
     }
 
     public computeNearPlaneIntersection(p1: Vertex, p2: Vertex): Vertex {
+        // TODO: interpolate color linear
         const ratio: number = (this.NEAR_PLANE_Z - p1.position.z) / (p2.position.z - p1.position.z);
         const vertex: Vertex = new Vertex();
         vertex.position = new Vector4f(
