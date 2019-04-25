@@ -56,6 +56,7 @@ module.exports = {
         '3rd-person-camera': './src/examples/3rd-person-camera/Application.ts',
         'dof-balls': './src/examples/dof-balls/Application.ts',
         'bunny': './src/examples/bunny/Application.ts',
+        'wavefront': './src/examples/wavefront/Application.ts',
     },
     mode: 'development',
     output: {
@@ -76,7 +77,7 @@ module.exports = {
                 use: 'html-loader'
             },
             {
-                test: /\.(png|jpg|mp3|ogg|md2|mdl|tga|xm)$/,
+                test: /\.(png|jpg|mp3|ogg|md2|mdl|tga|xm|obj)$/,
                 use: 'file-loader'
             }
         ]
@@ -346,6 +347,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['bunny'],
             filename: 'bunny.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['wavefront'],
+            filename: 'wavefront.html'
         })
 
 

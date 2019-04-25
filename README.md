@@ -23,6 +23,7 @@ project contains a lot of elementary algorithms from then
 field of computer graphics including clipping, triangle rasterization, geometric transformations and so forth.
 ### Demos
 * [Stanford Bunny](https://jdiemke.github.io/aisa/bunny.html)
+* [Stanford Dragon](https://jdiemke.github.io/aisa/wavefront.html)
 * [Torus Knot Tunnel](https://jdiemke.github.io/aisa/torus-knot-tunnel.html)
 * [Torus Knot](https://jdiemke.github.io/aisa/torus-knot.html)
 * [Quake 2 Model (Dr. Freak)](https://jdiemke.github.io/aisa/md2.html)

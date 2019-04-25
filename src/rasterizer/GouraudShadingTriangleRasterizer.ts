@@ -100,15 +100,22 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
-                this.rowColorInterpolator.advance();
+                this.rowColorInterpolator.startColor.r += this.rowColorInterpolator.colorSlope.r;
+                this.rowColorInterpolator.startColor.g += this.rowColorInterpolator.colorSlope.g;
+                this.rowColorInterpolator.startColor.b += this.rowColorInterpolator.colorSlope.b;
             }
 
             xPosition += slope1;
             xPosition2 += slope2;
             yPosition++;
 
-            this.colorInterpolator1.advance();
-            this.colorInterpolator2.advance();
+            this.colorInterpolator1.startColor.r += this.colorInterpolator1.colorSlope.r;
+            this.colorInterpolator1.startColor.g += this.colorInterpolator1.colorSlope.g;
+            this.colorInterpolator1.startColor.b += this.colorInterpolator1.colorSlope.b;
+
+            this.colorInterpolator2.startColor.r += this.colorInterpolator2.colorSlope.r;
+            this.colorInterpolator2.startColor.g += this.colorInterpolator2.colorSlope.g;
+            this.colorInterpolator2.startColor.b += this.colorInterpolator2.colorSlope.b;
 
             curz1 += zslope1;
             curz2 += zslope2;
@@ -146,15 +153,22 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
                     this.framebuffer.framebuffer[framebufferIndex] = this.rowColorInterpolator.startColor.toPackedFormat();
                 }
                 framebufferIndex++;
-                this.rowColorInterpolator.advance();
+                this.rowColorInterpolator.startColor.r += this.rowColorInterpolator.colorSlope.r;
+                this.rowColorInterpolator.startColor.g += this.rowColorInterpolator.colorSlope.g;
+                this.rowColorInterpolator.startColor.b += this.rowColorInterpolator.colorSlope.b;
             }
 
             xPosition += slope1;
             xPosition2 += slope2;
             yPosition++;
 
-            this.colorInterpolator1.advance();
-            this.colorInterpolator2.advance();
+            this.colorInterpolator1.startColor.r += this.colorInterpolator1.colorSlope.r;
+            this.colorInterpolator1.startColor.g += this.colorInterpolator1.colorSlope.g;
+            this.colorInterpolator1.startColor.b += this.colorInterpolator1.colorSlope.b;
+
+            this.colorInterpolator2.startColor.r += this.colorInterpolator2.colorSlope.r;
+            this.colorInterpolator2.startColor.g += this.colorInterpolator2.colorSlope.g;
+            this.colorInterpolator2.startColor.b += this.colorInterpolator2.colorSlope.b;
 
             curz1 += zslope1;
             curz2 += zslope2;
@@ -196,15 +210,22 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
-                this.rowColorInterpolator.advance();
+                this.rowColorInterpolator.startColor.r += this.rowColorInterpolator.colorSlope.r;
+                this.rowColorInterpolator.startColor.g += this.rowColorInterpolator.colorSlope.g;
+                this.rowColorInterpolator.startColor.b += this.rowColorInterpolator.colorSlope.b;
             }
 
             xPosition += slope1;
             xPosition2 += slope2;
             yPosition++;
 
-            this.colorInterpolator1.advance();
-            this.colorInterpolator2.advance();
+            this.colorInterpolator1.startColor.r += this.colorInterpolator1.colorSlope.r;
+            this.colorInterpolator1.startColor.g += this.colorInterpolator1.colorSlope.g;
+            this.colorInterpolator1.startColor.b += this.colorInterpolator1.colorSlope.b;
+
+            this.colorInterpolator2.startColor.r += this.colorInterpolator2.colorSlope.r;
+            this.colorInterpolator2.startColor.g += this.colorInterpolator2.colorSlope.g;
+            this.colorInterpolator2.startColor.b += this.colorInterpolator2.colorSlope.b;
 
             curz1 += zslope1;
             curz2 += zslope2;
@@ -232,15 +253,23 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
-                this.rowColorInterpolator.advance();
+                this.rowColorInterpolator.startColor.r += this.rowColorInterpolator.colorSlope.r;
+                this.rowColorInterpolator.startColor.g += this.rowColorInterpolator.colorSlope.g;
+                this.rowColorInterpolator.startColor.b += this.rowColorInterpolator.colorSlope.b;
             }
 
             xPosition += slope1;
             xPosition2 += slope2;
             yPosition++;
 
-            this.colorInterpolator2.advance();
-            this.colorInterpolator3.advance();
+            this.colorInterpolator2.startColor.r += this.colorInterpolator2.colorSlope.r;
+            this.colorInterpolator2.startColor.g += this.colorInterpolator2.colorSlope.g;
+            this.colorInterpolator2.startColor.b += this.colorInterpolator2.colorSlope.b;
+
+            this.colorInterpolator3.startColor.r += this.colorInterpolator3.colorSlope.r;
+            this.colorInterpolator3.startColor.g += this.colorInterpolator3.colorSlope.g;
+            this.colorInterpolator3.startColor.b += this.colorInterpolator3.colorSlope.b;
+
             curz1 += zslope1;
             curz2 += zslope2;
         }
@@ -281,14 +310,21 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
-                this.rowColorInterpolator.advance();
+                this.rowColorInterpolator.startColor.r += this.rowColorInterpolator.colorSlope.r;
+                this.rowColorInterpolator.startColor.g += this.rowColorInterpolator.colorSlope.g;
+                this.rowColorInterpolator.startColor.b += this.rowColorInterpolator.colorSlope.b;
             }
 
             xPosition += slope1;
             xPosition2 += slope2;
             yPosition++;
-            this.colorInterpolator2.advance();
-            this.colorInterpolator1.advance();
+            this.colorInterpolator1.startColor.r += this.colorInterpolator1.colorSlope.r;
+            this.colorInterpolator1.startColor.g += this.colorInterpolator1.colorSlope.g;
+            this.colorInterpolator1.startColor.b += this.colorInterpolator1.colorSlope.b;
+
+            this.colorInterpolator2.startColor.r += this.colorInterpolator2.colorSlope.r;
+            this.colorInterpolator2.startColor.g += this.colorInterpolator2.colorSlope.g;
+            this.colorInterpolator2.startColor.b += this.colorInterpolator2.colorSlope.b;
 
             curz1 += zslope1;
             curz2 += zslope2;
@@ -317,14 +353,22 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
-                this.rowColorInterpolator.advance()
+
+                this.rowColorInterpolator.startColor.r += this.rowColorInterpolator.colorSlope.r;
+                this.rowColorInterpolator.startColor.g += this.rowColorInterpolator.colorSlope.g;
+                this.rowColorInterpolator.startColor.b += this.rowColorInterpolator.colorSlope.b;
             }
 
             xPosition += slope1;
             xPosition2 += slope2;
             yPosition++;
-            this.colorInterpolator1.advance();
-            this.colorInterpolator3.advance();
+            this.colorInterpolator1.startColor.r += this.colorInterpolator1.colorSlope.r;
+            this.colorInterpolator1.startColor.g += this.colorInterpolator1.colorSlope.g;
+            this.colorInterpolator1.startColor.b += this.colorInterpolator1.colorSlope.b;
+
+            this.colorInterpolator3.startColor.r += this.colorInterpolator3.colorSlope.r;
+            this.colorInterpolator3.startColor.g += this.colorInterpolator3.colorSlope.g;
+            this.colorInterpolator3.startColor.b += this.colorInterpolator3.colorSlope.b;
 
             curz1 += zslope1;
             curz2 += zslope2;

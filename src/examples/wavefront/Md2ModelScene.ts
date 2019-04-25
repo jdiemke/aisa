@@ -1,29 +1,20 @@
 import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { MDLLoader } from '../../model/mdl/MDLLoader';
-import { MDLModel } from '../../model/mdl/MDLModel';
+import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
+import { Vector4f } from '../../math';
+import { WavefrontLoader } from '../../model/wavefront-obj/WavefrontLoader';
 import { AbstractScene } from '../../scenes/AbstractScene';
+import { PointLight } from '../../shading/light/PointLight';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
-import { ModelViewMatrix } from './ModelViewMatrix';
-import { WavefrontLoader } from '../../model/wavefront-obj/WavefrontLoader';
-import { ThirdPersonCamera } from '../../camera/ThirdPersonCamera';
-import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
+import { ModelViewMatrix } from '../md2/ModelViewMatrix';
 
-/**
- * http://tfc.duke.free.fr/coding/mdl-specs-en.html
- * http://tfc.duke.free.fr/coding/md2-specs-en.html
- * https://github.com/mrdoob/three.js/tree/dev/examples/models/md2/ogro
- * http://tfc.duke.free.fr/old/models/md2.htm
- */
-export class Md2ModelScene extends AbstractScene {
+export class WavefrontScene extends AbstractScene {
 
     private static readonly CLEAR_COLOR: number = Color.SLATE_GRAY.toPackedFormat();
 
-    private ogroTexture: Texture;
     private texture4: Texture;
-    private mdl: MDLModel;
     private startTime: number;
 
     private modelViewMatrix: ModelViewMatrix = new ModelViewMatrix();
@@ -35,15 +26,24 @@ export class Md2ModelScene extends AbstractScene {
     private meshes: Array<FlatshadedMesh>;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
+        framebuffer.renderingPipeline.setCullFace(CullFace.BACK);
+
+        const light1: PointLight = new PointLight();
+        light1.ambientIntensity = new Vector4f(1, 1, 1, 1);
+        light1.diffuseIntensity = new Vector4f(1, 0.5, 1, 1);
+        light1.specularIntensity = new Vector4f(0.5, 0.5, 0.7, 1);
+        light1.position = new Vector4f(0, -10, -1, 1);
+
+        const light2: PointLight = new PointLight();
+        light2.ambientIntensity = new Vector4f(0, 0, 1, 1);
+        light2.diffuseIntensity = new Vector4f(0, 0.6, 0, 1);
+        light2.specularIntensity = new Vector4f(0.8, 0.8, 0.8, 1);
+        light2.position =  new Vector4f(3, 0, -2, 1);
+
+        framebuffer.renderingPipeline.setLights([light1, light2]);
+
         this.startTime = Date.now();
         return Promise.all([
-         TextureUtils.load(require('../../assets/md2/texture2.jpg'), false).then(
-                (texture: Texture) => this.ogroTexture = texture
-            ),
-            MDLLoader.load(require('../../assets/mdl/gijoe.mdl')).then(
-                (mesh: MDLModel) => this.mdl = mesh
-            ),
             WavefrontLoader.load(require('../../assets/dragon.obj')).then(
                 (value: Array<FlatshadedMesh>) => this.meshes = value
             ),
@@ -64,12 +64,11 @@ export class Md2ModelScene extends AbstractScene {
 
         const time: number = Date.now() - this.startTime;
 
-        framebuffer.clearColorBuffer(Md2ModelScene.CLEAR_COLOR);
+        framebuffer.clearColorBuffer(WavefrontScene.CLEAR_COLOR);
         framebuffer.clearDepthBuffer();
 
         this.computeCameraMovement(time * 0.6);
 
-        framebuffer.setTexture(this.ogroTexture);
         framebuffer.renderingPipeline.draw(this.meshes[0], this.modelViewMatrix.getMatrix());
 
         framebuffer.drawText(8,  8, 'FPS: ' + this.fps.toString(), this.texture4);
@@ -80,6 +79,7 @@ export class Md2ModelScene extends AbstractScene {
         this.modelViewMatrix.setIdentity();
         this.modelViewMatrix.trans(0, 0, -5 );
         this.modelViewMatrix.yRotate(-elapsedTime * 0.002);
+        this.modelViewMatrix.xRotate(-elapsedTime * 0.002);
     }
 
 }

@@ -7,8 +7,8 @@ export class PhongLighting {
     public computeColor(mat: Material, lights: Array<PointLight>, normal: Vector4f, vertex: Vector4f): Vector4f {
         let finalColor: Vector4f = new Vector4f(0, 0, 0);
 
-        // TODO: optimize and remove forEach
-        lights.forEach((light: PointLight) => {
+        for (let x: number = 0; x < lights.length; x++) {
+            const light: PointLight = lights[x];
             const ambientIntensity: Vector4f = this.computeAmbientIntensity(mat, light);
             const diffuseIntensity: Vector4f = this.computeDiffuseIntensity(mat, light, normal, vertex);
             const specularIntensity: Vector4f = this.computeSpecularIntensity(mat, light, normal, vertex);
@@ -16,7 +16,7 @@ export class PhongLighting {
             finalColor = finalColor.add(ambientIntensity)
                 .add(diffuseIntensity)
                 .add(specularIntensity);
-        });
+        }
 
         return finalColor;
     }

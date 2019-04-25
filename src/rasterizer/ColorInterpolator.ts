@@ -3,7 +3,7 @@ import { Color } from '../core/Color';
 export class ColorInterpolator {
 
     public startColor: Color = new Color();
-    private colorSlope: Color = new Color();
+    public colorSlope: Color = new Color();
 
     public setup(c1: Color, c2: Color, distance: number): void {
         this.colorSlope.r = (c2.r - c1.r) / distance;
