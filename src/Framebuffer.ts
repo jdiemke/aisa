@@ -21,6 +21,8 @@ import { TopClipEdge } from './screen-space-clipping/TopClipEdge';
 import { Texture } from './texture/Texture';
 import { TextureCoordinate } from './TextureCoordinate';
 import { Vertex } from "./Vertex";
+import { BlenderScene } from './blender/BlenderScene';
+import { TexturedMesh } from './rendering-pipelines/TexturedMesh';
 
 //let bunnyJson = <any>require('./assets/bunny.json');
 // let roomJson = <any>require('./assets/room.json');
@@ -1387,58 +1389,6 @@ export class Framebuffer {
 
         }
     }
-
-    public getBlenderScene(file: any, disp: boolean = true, flat: boolean = false): any {
-        let scene = [];
-
-        file.forEach(object => {
-            let points: Array<Vector4f> = new Array<Vector4f>();
-            let normals: Array<Vector4f> = new Array<Vector4f>();
-            let faces: Array<{ vertices: number[], normals: number[] }> = new Array();
-            let coords: Array<TextureCoordinate>;
-
-            if (object.uv) {
-                coords = [];
-                object.uv.forEach((v) => {
-                    let uv = new TextureCoordinate();
-                    uv.u = v.u;
-                    uv.v = 1.0 - v.v;
-                    coords.push(uv);
-                });
-            }
-
-            object.vertices.forEach((v) => {
-                // some transformation in order for the vertices to be in worldspace
-                if (disp)
-                    points.push(new Vector4f(v.x, v.y, v.z).mul(2).add(new Vector4f(0, -2.7, 0, 0)));
-                else
-                    points.push(new Vector4f(v.x, v.y, v.z).mul(2));
-            });
-
-            object.normals.forEach((v) => {
-                normals.push(new Vector4f(v.x, v.y, v.z));
-            });
-
-            let sphere = new ComputationalGeometryUtils().computeBoundingSphere(points);
-            sphere.getCenter().w = 1;
-
-            // Create class for objects
-            let obj = {
-                points: points,
-                normals: normals,
-                uv: coords,           // NO!!!
-                faces: object.faces, // NOO!!!
-                points2: points.map(() => new Vector4f(0, 0, 0, 0)),
-                normals2: normals.map(() => new Vector4f(0, 0, 0, 0)),
-                boundingSphere: sphere, // NO!!!
-                name: object.name /// NO!
-            };
-            scene.push(obj);
-        });
-
-        return scene;
-    }
-
     drawPlanedeformationTunnelAnim(elapsedTime: number, texture: Texture) {
 
         let i = 0;

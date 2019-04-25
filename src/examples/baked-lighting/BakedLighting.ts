@@ -6,6 +6,7 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { SkyBox } from '../../SkyBox';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
+import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
 
 /**
  * TODO:
@@ -27,7 +28,7 @@ export class BakedLighting extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         framebuffer.setCullFace(CullFace.BACK);
-        this.blenderObj8 = framebuffer.getBlenderScene(require('../../assets/abstract.json'), false);
+        this.blenderObj8 = BlenderJsonParser.getBlenderScene(require('../../assets/abstract.json'), false);
         this.skyBox = new SkyBox();
 
         return Promise.all([

@@ -5,6 +5,10 @@ import { BlenderScene } from './BlenderScene';
 import { Face } from './face';
 import { Mesh } from './mesh';
 import { Vector } from './vector';
+import { TexturedMesh } from '../rendering-pipelines/TexturedMesh';
+import { TextureCoordinate } from '../TextureCoordinate';
+import { ComputationalGeometryUtils } from '../math/Geometry';
+import { TexCoord } from './tex-coord';
 
 export class BlenderJsonParser {
 
@@ -45,6 +49,57 @@ export class BlenderJsonParser {
                 transformedPoints: points.map(() => new Vector4f(0, 0, 0, 0)),
             };
 
+            scene.push(obj);
+        });
+
+        return scene;
+    }
+
+    public static getBlenderScene(
+        file: BlenderScene, disp: boolean = true, flat: boolean = false): Array<TexturedMesh> {
+        const scene: Array<TexturedMesh> = [];
+
+        file.forEach((object: Mesh) => {
+            const points: Array<Vector4f> = new Array<Vector4f>();
+            const normals: Array<Vector4f> = new Array<Vector4f>();
+            let coords: Array<TextureCoordinate>;
+
+            if (object.uv) {
+                coords = [];
+                object.uv.forEach((v: TexCoord) => {
+                    const uv: TextureCoordinate = new TextureCoordinate();
+                    uv.u = v.u;
+                    uv.v = 1.0 - v.v;
+                    coords.push(uv);
+                });
+            }
+
+            object.vertices.forEach((v: Vector) => {
+                // some transformation in order for the vertices to be in worldspace
+                if (disp)
+                    points.push(new Vector4f(v.x, v.y, v.z).mul(2).add(new Vector4f(0, -2.7, 0, 0)));
+                else
+                    points.push(new Vector4f(v.x, v.y, v.z).mul(2));
+            });
+
+            object.normals.forEach((v: Vector) => {
+                normals.push(new Vector4f(v.x, v.y, v.z));
+            });
+
+            let sphere = new ComputationalGeometryUtils().computeBoundingSphere(points);
+            sphere.getCenter().w = 1;
+
+            // Create class for objects
+            let obj = {
+                points: points,
+                normals: normals,
+                uv: coords,           // NO!!!
+                faces: object.faces, // NOO!!!
+                points2: points.map(() => new Vector4f(0, 0, 0, 0)),
+                normals2: normals.map(() => new Vector4f(0, 0, 0, 0)),
+                boundingSphere: sphere, // NO!!!
+                name: object.name /// NO!
+            };
             scene.push(obj);
         });
 

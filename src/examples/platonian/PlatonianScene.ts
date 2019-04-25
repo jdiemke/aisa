@@ -1,8 +1,7 @@
-import { Canvas } from '../../Canvas';
+import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { Matrix4f, Vector3f } from '../../math';
-import RandomNumberGenerator from '../../RandomNumberGenerator';
+import { Matrix4f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 
@@ -22,7 +21,7 @@ export class PlatonianScene extends AbstractScene {
     public init(framebuffer: Framebuffer): Promise<any> {
         framebuffer.setCullFace(CullFace.BACK);
 
-        this.platonianMesh = framebuffer.getBlenderScene(require('../../assets/platonian_backed.json'), false);
+        this.platonianMesh = BlenderJsonParser.getBlenderScene(require('../../assets/platonian_backed.json'), false);
 
         return Promise.all([
             TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
