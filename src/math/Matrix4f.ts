@@ -128,24 +128,26 @@ export class Matrix4f {
         // - only works when the MV matrix only contains
         // translation and rotation and scaling that is the same in all directions
 
-        let inverseTranslation = Matrix4f.constructIdentityMatrix();
+        const inverseTranslation: Matrix4f = Matrix4f.constructIdentityMatrix();
         inverseTranslation.m14 = -this.m14;
         inverseTranslation.m24 = -this.m24;
         inverseTranslation.m34 = -this.m34;
 
-        let scale = 1.0 / Math.sqrt(this.m11 * this.m11 + this.m12 * this.m12 + this.m13 * this.m13);
-        let inverseRotation = Matrix4f.constructIdentityMatrix();
-        inverseRotation.m11 = this.m11 * scale;
-        inverseRotation.m21 = this.m12 * scale;
-        inverseRotation.m31 = this.m13 * scale;
+        const scale1 = 1.0 / Math.sqrt(this.m11 * this.m11 + this.m12 * this.m12 + this.m13 * this.m13);
+        const scale2 = 1.0 / Math.sqrt(this.m21 * this.m21 + this.m22 * this.m22 + this.m23 * this.m23);
+        const scale3 = 1.0 / Math.sqrt(this.m31 * this.m31 + this.m32 * this.m32 + this.m33 * this.m33);
+        const inverseRotation: Matrix4f  = Matrix4f.constructIdentityMatrix();
+        inverseRotation.m11 = this.m11 * scale1;
+        inverseRotation.m21 = this.m12 * scale1;
+        inverseRotation.m31 = this.m13 * scale1;
 
-        inverseRotation.m12 = this.m21 * scale;
-        inverseRotation.m22 = this.m22 * scale;
-        inverseRotation.m32 = this.m23 * scale;
+        inverseRotation.m12 = this.m21 * scale2;
+        inverseRotation.m22 = this.m22 * scale2;
+        inverseRotation.m32 = this.m23 * scale2;
 
-        inverseRotation.m13 = this.m31 * scale;
-        inverseRotation.m23 = this.m32 * scale;
-        inverseRotation.m33 = this.m33 * scale;
+        inverseRotation.m13 = this.m31 * scale3;
+        inverseRotation.m23 = this.m32 * scale3;
+        inverseRotation.m33 = this.m33 * scale3;
 
         return inverseRotation.multiplyMatrix(inverseTranslation);
     }
