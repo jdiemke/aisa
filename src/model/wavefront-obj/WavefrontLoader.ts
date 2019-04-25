@@ -2,6 +2,7 @@ import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
 import { Mesh } from '../../blender/mesh';
 import { convertToMeshArray } from '../../blender/parseUtils';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
+import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 
 export class WavefrontLoader {
 
@@ -12,6 +13,16 @@ export class WavefrontLoader {
             return convertToMeshArray(text);
         }).then((meshes: Array<Mesh>) => {
             return BlenderJsonParser.parse(meshes);
+        });
+    }
+
+    public static loadWithTexture(filename: string): Promise<Array<TexturedMesh>> {
+        return fetch(filename).then((response: Response) => {
+            return response.text();
+        }).then((text: string): Array<Mesh> => {
+            return convertToMeshArray(text);
+        }).then((meshes: Array<Mesh>) => {
+            return BlenderJsonParser.getBlenderScene(meshes);
         });
     }
 

@@ -4,6 +4,7 @@ import { Matrix4f, Vector3f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { SkyBox } from '../../SkyBox';
 import { Texture, TextureUtils } from '../../texture';
+import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
 
 export class MetalHeadzScene extends AbstractScene {
 
@@ -20,7 +21,7 @@ export class MetalHeadzScene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         framebuffer.setCullFace(CullFace.BACK);
-        this.blenderObjMetal = framebuffer.getBlenderScene(require('../../assets/metalheadz.json'), false);
+        this.blenderObjMetal = BlenderJsonParser.getBlenderScene(require('../../assets/metalheadz.json'), false);
         this.skyBox = new SkyBox();
         // TODO:
         // make classes for assets
@@ -59,7 +60,7 @@ export class MetalHeadzScene extends AbstractScene {
 
         framebuffer.clearDepthBuffer();
         framebuffer.setTexture(this.metalheadz);
-        const scal: number = 1.0;
+
         for (let j: number = 0; j < this.blenderObjMetal.length; j++) {
             framebuffer.texturedRenderingPipeline.draw(this.blenderObjMetal[j], mv);
         }

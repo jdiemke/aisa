@@ -20,7 +20,7 @@ export class HoodlumScene extends AbstractScene {
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.spaceLabMesh = framebuffer.getBlenderScene(require('../../assets/lab2.json'), false);
+        this.spaceLabMesh = BlenderJsonParser.getBlenderScene(require('../../assets/lab2.json'), false);
         this.hoodlumLogoMesh = BlenderJsonParser.parse(require('../../assets/hoodlum2018.json'), false);
         return Promise.all([
             TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(texture => this.blurred = texture),

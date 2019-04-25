@@ -1,3 +1,4 @@
+import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f } from '../../math/Matrix4f';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
@@ -13,7 +14,7 @@ export class PlanedeformationTunnelScene extends AbstractScene {
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.blenderObjMetal = framebuffer.getBlenderScene(require('../../assets/metalheadz.json'), false);
+        this.blenderObjMetal = BlenderJsonParser.getBlenderScene(require('../../assets/metalheadz.json'), false);
         return Promise.all([
             TextureUtils.load(require('../../assets/cyber.png'), false).then(
                 (texture: Texture) => this.metall = texture
