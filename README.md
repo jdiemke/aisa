@@ -24,6 +24,7 @@ field of computer graphics including clipping, triangle rasterization, geometric
 ### Demos
 * [Stanford Bunny](https://jdiemke.github.io/aisa/bunny.html)
 * [Stanford Dragon](https://jdiemke.github.io/aisa/wavefront.html)
+* [Wavefront OBJ with Texture](https://jdiemke.github.io/aisa/wavefront-texture.html)
 * [Torus Knot Tunnel](https://jdiemke.github.io/aisa/torus-knot-tunnel.html)
 * [Torus Knot](https://jdiemke.github.io/aisa/torus-knot.html)
 * [Quake 2 Model (Dr. Freak)](https://jdiemke.github.io/aisa/md2.html)
