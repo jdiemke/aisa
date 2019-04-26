@@ -7,6 +7,9 @@ import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
+import { Vector4f } from '../../math';
+import { Material } from '../../shading/material/Material';
+import { PointLight } from '../../shading/light/PointLight';
 
 /**
  * TODO: use cube mesh and draw using drawObject2
@@ -16,17 +19,29 @@ export class CubeTunnelScene extends AbstractScene {
     private static BACKGROUND_COLOR: number = Color.DARK_GRAY.toPackedFormat();
     private renderingPipeline: FlatShadingRenderingPipeline;
     private cubeMesh: Cube = new Cube();
-    private blurred: Texture;
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
 
     public init(framebuffer: Framebuffer): Promise<any> {
         framebuffer.setCullFace(CullFace.BACK);
         this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
-        return Promise.all([
-            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
-                (texture: Texture) => this.blurred = texture
-            )
-        ]);
+
+        const light1: PointLight = new PointLight();
+        light1.ambientIntensity = new Vector4f(1, 1, 1, 1);
+        light1.diffuseIntensity = new Vector4f(1, 1, 1, 1);
+        light1.specularIntensity = new Vector4f(1, 1, 1, 1);
+        light1.position = new Vector4f(0, 0, -10, 1);
+
+        this.renderingPipeline.setLights([light1]);
+
+        const mat: Material = new Material();
+        mat.ambientColor = new Vector4f(0.12, 0.14, 0.1, 0);
+        mat.diffuseColor = new Vector4f(0.38, 0.4, 0.4, 1);
+        mat.specularColor = new Vector4f(0.8, 0.5, 0.5, 0);
+        mat.shininess = 2;
+
+        this.renderingPipeline.setMaterial(mat);
+
+        return Promise.all([]);
     }
 
     public render(framebuffer: Framebuffer): void {
@@ -68,9 +83,9 @@ export class CubeTunnelScene extends AbstractScene {
         }
 
 
-        const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-        framebuffer.drawTextureFullscreen(texture3, 0.75);
-        framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
+       // const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+      //  framebuffer.drawTextureFullscreen(texture3, 0.75);
+      //  framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
 
     }
 
