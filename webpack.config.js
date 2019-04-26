@@ -57,6 +57,7 @@ module.exports = {
         'dof-balls': './src/examples/dof-balls/Application.ts',
         'bunny': './src/examples/bunny/Application.ts',
         'wavefront': './src/examples/wavefront/Application.ts',
+        'wavefront-texture': './src/examples/wavefront-texture/Application.ts',
     },
     mode: 'development',
     output: {
@@ -352,8 +353,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['wavefront'],
             filename: 'wavefront.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['wavefront-texture'],
+            filename: 'wavefront-texture.html'
         })
-
-
     ]
 }
