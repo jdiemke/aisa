@@ -17,6 +17,8 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
         new Vertex(), new Vertex(), new Vertex()
     );
 
+    private modelViewMatrix: Matrix4f;
+
     private projectedVertices: Array<Vector4f> = new Array<Vector4f>(
         new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1)
     );
@@ -35,10 +37,21 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
         this.triangleRasterizer = new TexturedTriangleRasterizer(this.framebuffer);
     }
 
-    public draw(mesh: TexturedMesh, modelViewMartrix: Matrix4f): void {
+    public setModelViewMatrix(matrix: Matrix4f): void {
+        this.modelViewMatrix = matrix;
+    }
+
+    public drawMeshArray(meshes: Array<TexturedMesh>): void {
+        for (let j: number = 0; j < meshes.length; j++) {
+            const model: TexturedMesh = meshes[j];
+            this.draw(model);
+        }
+    }
+
+    public draw(mesh: TexturedMesh): void {
 
         for (let i: number = 0; i < mesh.points.length; i++) {
-            modelViewMartrix.multiplyHomArr(mesh.points[i], mesh.points2[i]);
+            this.modelViewMatrix.multiplyHomArr(mesh.points[i], mesh.points2[i]);
         }
 
         for (let i: number = 0; i < mesh.faces.length; i++) {
@@ -54,7 +67,11 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
                 this.project2(v2, this.projectedVertices[1]);
                 this.project2(v3, this.projectedVertices[2]);
 
-                if (this.isTriangleCCW(this.projectedVertices[0], this.projectedVertices[1], this.projectedVertices[2])) {
+                if (this.isTriangleCCW(
+                    this.projectedVertices[0],
+                    this.projectedVertices[1],
+                    this.projectedVertices[2])) {
+
                     this.vertexArray[0].position = this.projectedVertices[0]; // p1 is Vector3f
                     this.vertexArray[0].textureCoordinate = mesh.uv[mesh.faces[i].uv[0]];
 

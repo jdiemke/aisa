@@ -58,10 +58,8 @@ export class HoodlumScene extends AbstractScene {
 
         let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(13, 13, 13));
 
-        for (let j = 0; j < this.spaceLabMesh.length; j++) {
-            const mesh: TexturedMesh = this.spaceLabMesh[j];
-            framebuffer.texturedRenderingPipeline.draw(mesh, mv);
-        }
+        framebuffer.texturedRenderingPipeline.setModelViewMatrix(mv);
+        framebuffer.texturedRenderingPipeline.drawMeshArray(this.spaceLabMesh);
 
         mv = camera.multiplyMatrix(
             Matrix4f.constructTranslationMatrix(0, -5.5, 0).multiplyMatrix(

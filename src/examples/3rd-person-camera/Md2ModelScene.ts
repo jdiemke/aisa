@@ -215,20 +215,21 @@ export class Md2ModelScene extends AbstractScene {
 
         this.texturedRenderingPipeline.setCullFace(CullFace.BACK);
         this.computeFloorMovement(delta);
-        this.texturedRenderingPipeline.draw(this.floor, this.modelViewMatrix.getMatrix());
+        this.texturedRenderingPipeline.setModelViewMatrix(this.modelViewMatrix.getMatrix());
+        this.texturedRenderingPipeline.draw(this.floor);
         this.modelViewMatrix.trans(0, 0.1, 0);
 
         this.computeGlowMovement(delta, currentTime);
         framebuffer.setTexture(this.glow);
 
         this.texturedRenderingPipeline.enableAlphaBlending();
-        this.texturedRenderingPipeline.draw(this.floor, this.modelViewMatrix.getMatrix());
+        this.texturedRenderingPipeline.setModelViewMatrix(this.modelViewMatrix.getMatrix());
+        this.texturedRenderingPipeline.draw(this.floor);
         this.texturedRenderingPipeline.disableAlphaBlending();
 
         this.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
 
         this.renderPlayer(framebuffer, delta);
-        //framebuffer.drawFog(Color.RED, 0.06, 5.0);
         framebuffer.drawText(8, 8, 'FPS: ' + this.fps.toString(), this.texture4);
         framebuffer.drawText(8, 16, 'TRIANGELS: ' +
             (this.md2.header.numberOfTriangles + this.weapon.header.numberOfTriangles), this.texture4);
@@ -241,15 +242,13 @@ export class Md2ModelScene extends AbstractScene {
     private renderPlayer(framebuffer: Framebuffer, time: number): void {
         this.computePlayerMovement(time);
 
-        framebuffer.setTexture(this.ogroTexture);
-        this.texturedRenderingPipeline.draw(
-            this.md2.getMesh2(time * 1000), this.modelViewMatrix.getMatrix()
-        );
-        framebuffer.setTexture(this.weaponTexture);
-        this.texturedRenderingPipeline.draw(
-            this.weapon.getMesh2(time * 1000), this.modelViewMatrix.getMatrix()
-        );
+        this.texturedRenderingPipeline.setModelViewMatrix(this.modelViewMatrix.getMatrix());
 
+        framebuffer.setTexture(this.ogroTexture);
+        this.texturedRenderingPipeline.draw(this.md2.getMesh2(time * 1000));
+
+        framebuffer.setTexture(this.weaponTexture);
+        this.texturedRenderingPipeline.draw(this.weapon.getMesh2(time * 1000));
     }
 
     private computeFloorMovement(elapsedTime: number): void {
@@ -289,7 +288,7 @@ export class Md2ModelScene extends AbstractScene {
         this.modelViewMatrix.setIdentity();
         this.modelViewMatrix.multMatrix(this.getCamMatrix(delta));
         this.modelViewMatrix.trans(this.player.position.x, 0.03, this.player.position.y);
-        const scale = 0.85;
+        const scale: number = 0.85;
         this.modelViewMatrix.scal(0.06 * scale, 0.06 * scale, 0.06 * scale);
         this.texturedRenderingPipeline.setAlpha(0.70);
     }
