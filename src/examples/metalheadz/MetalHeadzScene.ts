@@ -5,6 +5,7 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { SkyBox } from '../../SkyBox';
 import { Texture, TextureUtils } from '../../texture';
 import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
+import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 
 export class MetalHeadzScene extends AbstractScene {
 
@@ -61,9 +62,10 @@ export class MetalHeadzScene extends AbstractScene {
         framebuffer.clearDepthBuffer();
         framebuffer.setTexture(this.metalheadz);
 
-        for (let j: number = 0; j < this.blenderObjMetal.length; j++) {
-            framebuffer.texturedRenderingPipeline.draw(this.blenderObjMetal[j], mv);
-        }
+        const renderingPipeline: TexturingRenderingPipeline = framebuffer.texturedRenderingPipeline;
+
+        renderingPipeline.setModelViewMatrix(mv);
+        renderingPipeline.drawMeshArray(this.blenderObjMetal);
 
         const scale: number = 20;
         const lensflareScreenSpace: Vector3f =

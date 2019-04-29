@@ -75,14 +75,11 @@ export class BakedLighting extends AbstractScene {
         const mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(13, 13, 13));
 
         this.skyBox.draw(framebuffer, mv);
+
         framebuffer.clearDepthBuffer();
-
         framebuffer.setTexture(this.baked);
-
-        for (let j: number = 0; j < this.blenderObj8.length; j++) {
-            const mesh: TexturedMesh = this.blenderObj8[j];
-            framebuffer.texturedRenderingPipeline.draw(mesh, mv);
-        }
+        framebuffer.texturedRenderingPipeline.setModelViewMatrix(mv);
+        framebuffer.texturedRenderingPipeline.drawMeshArray(this.blenderObj8);
     }
 
 }

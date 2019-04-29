@@ -46,7 +46,8 @@ export class TexturedTorusScene extends AbstractScene {
             , -45)
             .multiplyMatrix(modelViewMartrix);
 
-        framebuffer.texturedRenderingPipeline.draw(this.torusMesh, modelViewMartrix);
+        framebuffer.texturedRenderingPipeline.setModelViewMatrix(modelViewMartrix);
+        framebuffer.texturedRenderingPipeline.draw(this.torusMesh);
     }
 
 

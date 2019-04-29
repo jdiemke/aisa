@@ -137,7 +137,6 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
                 this.vertexArray[2].projection = this.projectedVertices[2];
                 this.vertexArray[2].normal = normal3;
 
-
                 this.renderConvexPolygon(this.vertexArray, true);
             } else if (!this.isInFrontOfNearPlane(v1) &&
                 !this.isInFrontOfNearPlane(v2) &&
@@ -149,7 +148,7 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
                 this.vertexArray[2].position = v3;
 
                 if (this.lighting) {
-                    this.vertexArray[0].color =  this.computeColor(normal1, v1);
+                    this.vertexArray[0].color = this.computeColor(normal1, v1);
                     this.vertexArray[1].color = this.computeColor(normal2, v2);
                     this.vertexArray[2].color = this.computeColor(normal3, v3);
                 } else {
@@ -163,13 +162,17 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
                 if (output.length < 3) {
                     return;
                 }
-
+/*
                 const projected: Array<Vertex> = output.map<Vertex>((v: Vertex) => {
                     v.projection = this.project(v.position);
                     return v;
-                });
+                });*/
 
-                this.renderConvexPolygon(projected);
+                for (let j: number = 0; j < output.length; j++) {
+                    output[j].projection = this.project(output[j].position);
+                }
+
+                this.renderConvexPolygon(output);
             }
         }
     }
@@ -197,7 +200,7 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
             ratio * (p2.position.y - p1.position.y) + p1.position.y,
             this.NEAR_PLANE_Z
         );
-        vertex.color = p1.color;
+        vertex.color = p2.color.sub(p1.color).mul(ratio).add(p1.color);
         return vertex;
     }
 
@@ -233,7 +236,7 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
 
         if (late) {
             if (this.lighting) {
-                this.vertexArray[0].color =  this.computeColor(this.vertexArray[0].normal, this.vertexArray[0].position);
+                this.vertexArray[0].color = this.computeColor(this.vertexArray[0].normal, this.vertexArray[0].position);
                 this.vertexArray[1].color = this.computeColor(this.vertexArray[1].normal, this.vertexArray[1].position);
                 this.vertexArray[2].color = this.computeColor(this.vertexArray[2].normal, this.vertexArray[2].position);
             } else {

@@ -35,8 +35,7 @@ export class PhongLighting {
         const lightDirection: Vector4f = l.position.sub(vertex).normalize();
         const r: Vector4f = normal.mul(normal.dot(lightDirection) * 2.0).sub(lightDirection);
         const v: Vector4f = vertex.mul(-1).normalize();
-        const scale: number =
-            Math.pow(Math.max(r.dot(v), 0), mat.shininess);
+        const scale: number = Math.pow(Math.max(r.dot(v), 0), mat.shininess);
         return mat.specularColor.componentWiseMul(l.specularIntensity).mul(scale);
     }
 

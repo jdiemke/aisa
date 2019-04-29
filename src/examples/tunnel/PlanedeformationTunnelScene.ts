@@ -35,9 +35,9 @@ export class PlanedeformationTunnelScene extends AbstractScene {
 
         framebuffer.clearDepthBuffer();
         framebuffer.setTexture(this.metalheadz);
-        for (let j: number = 0; j < this.blenderObjMetal.length; j++) {
-            framebuffer.texturedRenderingPipeline.draw(this.blenderObjMetal[j], mv);
-        }
+
+        framebuffer.texturedRenderingPipeline.setModelViewMatrix(mv);
+        framebuffer.texturedRenderingPipeline.drawMeshArray(this.blenderObjMetal);
 
         const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
         framebuffer.drawTexture(0, 0, texture3, 0.75);

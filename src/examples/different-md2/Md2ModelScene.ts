@@ -63,7 +63,8 @@ export class Md2ModelScene extends AbstractScene {
         this.computeCameraMovement(time * 0.6);
 
         framebuffer.setTexture(this.ogroTexture);
-        framebuffer.texturedRenderingPipeline.draw(this.md2.getMesh(), this.modelViewMatrix.getMatrix());
+        framebuffer.texturedRenderingPipeline.setModelViewMatrix(this.modelViewMatrix.getMatrix());
+        framebuffer.texturedRenderingPipeline.draw(this.md2.getMesh());
 
         framebuffer.drawText(8,  8, 'FPS: ' + this.fps.toString(), this.texture4);
         framebuffer.drawText(8, 16, 'TRIANGELS: ' + this.md2.header.numberOfTriangles, this.texture4);
