@@ -1280,7 +1280,7 @@ export class Framebuffer {
     }
 
     public static minWindow: Vector3f = new Vector3f(0, 0, 0);
-    public static maxWindow: Vector3f = new Vector3f(319, 199, 0);
+    public static maxWindow: Vector3f = new Vector3f(319.0, 199.0, 0);
     /*
         public wireFrameTerrain(elapsedTime: number, heightmap: Texture): void {
 

@@ -38,7 +38,7 @@ export class SutherlandHodgman2DClipper {
                     }
                     output.push(point);
                 } else if (edge.isInside(S)) {
-                    output.push(edge.computeIntersection(S, point));
+                    output.push(edge.computeIntersection(point, S));
                 }
                 S = point;
             }

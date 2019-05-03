@@ -1,14 +1,13 @@
 import { Framebuffer } from '../Framebuffer';
-import { Vector3f } from '../math/Vector3f';
-import { TextureCoordinate } from '../TextureCoordinate';
-import { Vertex } from "../Vertex";
-import { AbstractClipEdge } from './AbstractClipEdge';
 import { Vector4f } from '../math/Vector4f';
+import { TextureCoordinate } from '../TextureCoordinate';
+import { Vertex } from '../Vertex';
+import { AbstractClipEdge } from './AbstractClipEdge';
 
 export class RightClipEdge extends AbstractClipEdge {
 
     public isInside(p: Vertex): boolean {
-        return p.projection.x < 320;
+        return p.projection.x <= Framebuffer.maxWindow.x;
     }
 
     public isInside2(p: Vertex): boolean {
@@ -17,10 +16,11 @@ export class RightClipEdge extends AbstractClipEdge {
 
     public computeIntersection(p1: Vertex, p2: Vertex): Vertex {
         const vertex = new Vertex();
-        const factor: number = (Framebuffer.maxWindow.x + 1 - p1.projection.x) / (p2.projection.x - p1.projection.x);
+        const one = 1 / (p2.projection.x - p1.projection.x);
+        const factor: number = (Framebuffer.maxWindow.x - p1.projection.x) * one;
         vertex.color = p2.color.sub(p1.color).mul(factor).add(p1.color);
-        vertex.projection =  new Vector4f(Framebuffer.maxWindow.x + 1,
-            Math.round(p1.projection.y + (p2.projection.y - p1.projection.y) * factor),
+        vertex.projection = new Vector4f(Framebuffer.maxWindow.x,
+            p1.projection.y + (p2.projection.y - p1.projection.y) * factor,
             1 / (1 / p1.projection.z + (1 / p2.projection.z - 1 / p1.projection.z) * factor));
         return vertex;
     }

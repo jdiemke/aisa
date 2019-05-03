@@ -13,6 +13,7 @@ import { Vertex } from '../Vertex';
 import { AbstractRenderingPipeline } from './AbstractRenderingPipeline';
 import { AbstractTriangleRasterizer } from '../rasterizer/AbstractTriangleRasterizer';
 import { GouraudShadingTriangleRasterizer } from '../rasterizer/GouraudShadingTriangleRasterizer';
+import { SubPixelFlatShadingTriangleRasterizer } from '../rasterizer/SubPixelFlatShadingTriangleRasterizer';
 
 /**
  * TODO:
@@ -72,8 +73,8 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
 
         this.material = mat;
 
-        this.triangleRasterizer = new FlatShadingTriangleRasterizer(this.framebuffer);
-        this.triangleRasterizer = new GouraudShadingTriangleRasterizer(this.framebuffer);
+        this.triangleRasterizer = new SubPixelFlatShadingTriangleRasterizer(this.framebuffer);
+        // this.triangleRasterizer = new GouraudShadingTriangleRasterizer(this.framebuffer);
     }
 
     public setFog(fog: Fog): void {
@@ -179,15 +180,15 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
 
     public project(t1: { x: number, y: number, z: number }): Vector4f {
         return new Vector4f(
-            Math.round((320 / 2) + (292 * t1.x / (-t1.z))),
-            Math.round((200 / 2) - (t1.y * 292 / (-t1.z))),
+            (320 / 2) + (292 * t1.x / (-t1.z)),
+            (200 / 2) - (t1.y * 292 / (-t1.z)),
             t1.z
         );
     }
 
     public project2(t1: { x: number, y: number, z: number }, result: Vector4f): void {
-        result.x = Math.round((320 / 2) + (292 * t1.x / (-t1.z)));
-        result.y = Math.round((200 / 2) - (t1.y * 292 / (-t1.z)));
+        result.x = (320 / 2) + (292 * t1.x / (-t1.z));
+        result.y = (200 / 2) - (t1.y * 292 / (-t1.z));
         result.z = t1.z;
     }
 
