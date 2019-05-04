@@ -1,12 +1,30 @@
-import { Color } from '../core/Color';
 import { Framebuffer } from '../Framebuffer';
 import { Vertex } from '../Vertex';
 import { AbstractTriangleRasterizer } from './AbstractTriangleRasterizer';
-import { Vector2f, Vector4f } from '../math';
 
 // http://www.hugi.scene.org/online/coding/hugi%2017%20-%20cotriang.htm
 // TODO:
 // debug clipper and rasterizer
+// https://web.archive.org/web/20160311235624/http://freespace.virgin.net/hugo.elias/graphics/x_lines.htm
+// https://web.archive.org/web/20160406022253/http://freespace.virgin.net/hugo.elias/graphics/x_polygo.htm
+// https://web.archive.org/web/20160417204209/http://freespace.virgin.net/hugo.elias/graphics/x_stars.htm
+// https://web.archive.org/web/20160409195406/http://freespace.virgin.net/hugo.elias/graphics/x_polyph.htm
+// https://web.archive.org/web/20160311235629/http://freespace.virgin.net/hugo.elias/graphics/x_polyp2.htm
+// https://web.archive.org/web/20160311235808/http://freespace.virgin.net/hugo.elias/graphics/x_polyb2.htm
+// https://web.archive.org/web/20160303195040/http://freespace.virgin.net/hugo.elias/graphics/x_polybm.htm
+// https://web.archive.org/web/20160311235824/http://freespace.virgin.net/hugo.elias/graphics/x_polyop.htm
+// https://github.com/niklasekstrom/blitter-subpixel-line/blob/master/Sub-pixel%20accurate%20rasterization%20of%20polygons%20using%20the%20Amiga%20blitter.pdf
+// https://web.archive.org/web/20160310034558/http://freespace.virgin.net/hugo.elias/graphics/x_main.htm
+// https://web.archive.org/web/20160408133525/http://freespace.virgin.net/hugo.elias/graphics/x_wuline.htm
+// https://web.archive.org/web/20160417165227/http://freespace.virgin.net/hugo.elias/graphics/x_wupixl.htm
+// https://web.archive.org/web/20160325025208/http://freespace.virgin.net/hugo.elias/graphics/x_polysc.htm
+// http://www.hugi.scene.org/online/coding/hugi%2017%20-%20cotriang.htm
+// http://www.hugi.scene.org/online/coding/hugi%20se%204%20-%20index%20sorted%20by%20topic.htm
+// http://www.flipcode.com/archives/High_Speed_Software_Rendering.shtml
+// https://dokumen.tips/documents/cs602-computer-graphics-pdf-handouts-virtual-university.html
+// http://www-users.mat.uni.torun.pl/~wrona/3d_tutor/tri_fillers.html
+// https://www.coursehero.com/file/23655884/Lecture-22/
+// https://www.coursehero.com/file/pqood7/The-idea-of-sub-pixel-accuracy-is-to-pre-step-the-x-coordinate-of-each-of-the/
 export class SubPixelFlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
 
     private leftX: number;
@@ -22,17 +40,24 @@ export class SubPixelFlatShadingTriangleRasterizer extends AbstractTriangleRaste
      */
     public drawTriangleDDA(p1: Vertex, p2: Vertex, p3: Vertex): void {
         const color: number = p1.color.toPackedFormat();
+        let temp: Vertex;
 
         if (p1.projection.y > p2.projection.y) {
-            [p1, p2] = [p2, p1];
+            temp = p1;
+            p1 = p2;
+            p2 = temp;
         }
 
         if (p1.projection.y > p3.projection.y) {
-            [p1, p3] = [p3, p1];
+            temp = p1;
+            p1 = p3;
+            p3 = temp;
         }
 
         if (p2.projection.y > p3.projection.y) {
-            [p2, p3] = [p3, p2];
+            temp = p2;
+            p2 = p3;
+            p3 = temp;
         }
 
         const y1i: number = Math.ceil(p1.projection.y);
@@ -46,8 +71,6 @@ export class SubPixelFlatShadingTriangleRasterizer extends AbstractTriangleRaste
         const dXdYV1V3: number = (p3.projection.y - p1.projection.y) > 0 ? (p3.projection.x - p1.projection.x) / (p3.projection.y - p1.projection.y) : 0;
         const dXdYV2V3: number = (p3.projection.y - p2.projection.y) > 0 ? (p3.projection.x - p2.projection.x) / (p3.projection.y - p2.projection.y) : 0;
         const dXdYV1V2: number = (p2.projection.y - p1.projection.y) > 0 ? (p2.projection.x - p1.projection.x) / (p2.projection.y - p1.projection.y) : 0;
-
-
 
         const isRightSideLong: boolean = dXdYV1V3 > dXdYV1V2;
 
@@ -111,14 +134,6 @@ export class SubPixelFlatShadingTriangleRasterizer extends AbstractTriangleRaste
             this.leftX += leftdXdY;
             this.rightX += rightdXdY;
         }
-    }
-
-    private drawVertex(v: Vertex): void {
-        this.framebuffer.drawPixel(
-            Math.ceil(v.projection.x),
-            Math.ceil(v.projection.y),
-            Color.GREEN.toPackedFormat()
-        );
     }
 
 }

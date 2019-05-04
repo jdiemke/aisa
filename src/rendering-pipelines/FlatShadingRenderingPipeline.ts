@@ -163,11 +163,6 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
                 if (output.length < 3) {
                     return;
                 }
-/*
-                const projected: Array<Vertex> = output.map<Vertex>((v: Vertex) => {
-                    v.projection = this.project(v.position);
-                    return v;
-                });*/
 
                 for (let j: number = 0; j < output.length; j++) {
                     output[j].projection = this.project(output[j].position);
@@ -264,13 +259,24 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
             return;
         }
 
-        this.triangulateConvexPolygon(clippedPolygon);
+        if (clippedPolygon.length === 3) {
+            this.triangleRasterizer.drawTriangleDDA(
+                clippedPolygon[0],
+                clippedPolygon[1],
+                clippedPolygon[2]
+            );
+        } else {
+            this.triangulateConvexPolygon(clippedPolygon);
+        }
     }
 
     private triangulateConvexPolygon(clippedPolygon: Array<Vertex>): void {
-        for (let j: number = 0; j < clippedPolygon.length - 2; j++) {
+        const vertex: Vertex = clippedPolygon[0];
+        const triCount: number = clippedPolygon.length - 2;
+
+        for (let j: number = 0; j < triCount; j++) {
             this.triangleRasterizer.drawTriangleDDA(
-                clippedPolygon[0],
+                vertex,
                 clippedPolygon[1 + j],
                 clippedPolygon[2 + j]
             );

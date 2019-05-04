@@ -1,16 +1,18 @@
 
+import { BlenderScene } from './blender/BlenderScene';
 import { ScaleClipBlitter } from './blitter/ScaleClipBlitter';
 import { ControllableCamera } from './camera';
 import { Color } from './core/Color';
 import { CullFace } from './CullFace';
 import { Torus } from './geometrical-objects/Torus';
-import { Matrix3f, Matrix4f, Vector3f, Vector4f } from './math';
+import { Matrix3f, Matrix4f, Vector2f, Vector3f, Vector4f } from './math';
 import { ComputationalGeometryUtils } from './math/Geometry';
 import { Sphere } from './math/Sphere';
 import RandomNumberGenerator from './RandomNumberGenerator';
-import { TexturedTriangleRasterizer } from './rasterizer/TexturedTriangleRasterizer';
 import { FlatShadingTriangleRasterizer } from './rasterizer/FlatShadingTriangleRasterizer';
+import { TexturedTriangleRasterizer } from './rasterizer/TexturedTriangleRasterizer';
 import { FlatShadingRenderingPipeline } from './rendering-pipelines/FlatShadingRenderingPipeline';
+import { TexturedMesh } from './rendering-pipelines/TexturedMesh';
 import { TexturingRenderingPipeline } from './rendering-pipelines/TexturingRenderingPipeline';
 import { AbstractClipEdge } from './screen-space-clipping/AbstractClipEdge';
 import { BottomClipEdge } from './screen-space-clipping/BottomClipEdge';
@@ -21,8 +23,6 @@ import { TopClipEdge } from './screen-space-clipping/TopClipEdge';
 import { Texture } from './texture/Texture';
 import { TextureCoordinate } from './TextureCoordinate';
 import { Vertex } from "./Vertex";
-import { BlenderScene } from './blender/BlenderScene';
-import { TexturedMesh } from './rendering-pipelines/TexturedMesh';
 
 //let bunnyJson = <any>require('./assets/bunny.json');
 // let roomJson = <any>require('./assets/room.json');
@@ -602,7 +602,82 @@ export class Framebuffer {
                 if (this.wBuffer[index2] > z) {
 
                     let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, spritH - 1) * texture.width +
-                    spritH * texture.width * imgNum;
+                        spritH * texture.width * imgNum;
+
+                    let alpha = (texture.texture[textureIndex] >> 24 & 0xff) * alphaScale;
+                    let inverseAlpha = 1 - alpha;
+                    let framebufferPixel = this.framebuffer[index2];
+                    let texturePixel = texture.texture[textureIndex];
+
+                    let r = (framebufferPixel >> 0 & 0xff) * inverseAlpha + (texturePixel >> 0 & 0xff) * alpha;
+                    let g = (framebufferPixel >> 8 & 0xff) * inverseAlpha + (texturePixel >> 8 & 0xff) * alpha;
+                    let b = (framebufferPixel >> 16 & 0xff) * inverseAlpha + (texturePixel >> 16 & 0xff) * alpha;
+
+                    this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
+                }
+                xx += xStep;
+                index2++;
+            }
+            yy += yStep;
+            xx = xTextureStart;
+            index2 += -newWidth + 320;
+        }
+    }
+
+    public drawParticle2Sub(
+        xp: number, yp: number, width: number, height: number, texture: Texture, z: number, alphaBlend: number,
+        imgNum: number = 0, spritH: number): void {
+        let xStep = texture.width / width;
+        let yStep = spritH / height;
+        let xx = 0;
+        let yy = 0;
+
+        let newHeight: number;
+        let newWidth: number
+        let yStart: number;
+        let xStart: number;
+
+        if (yp + height < 0 ||
+            yp > 199 ||
+            xp + width < 0 ||
+            xp > 319) {
+            return;
+        }
+
+        if (yp < 0) {
+            yy = yStep * -yp;
+            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            yStart = 0;
+        } else {
+            yStart = yp;
+            newHeight = height - Math.max(yp + height - 200, 0);
+        }
+
+        let xTextureStart: number;
+
+        if (xp < 0) {
+            xTextureStart = xx = xStep * -xp;
+            newWidth = Math.ceil((width + xp) - Math.max(xp + width - 320, 0));
+            xStart = 0;
+        } else {
+            xTextureStart = 0;
+            xStart = xp;
+            newWidth = Math.ceil(width - Math.max(xp + width - 320, 0));
+        }
+
+        const sub: number = Math.ceil(xp) - xp;
+        const suby: number = Math.ceil(yp) - yp;
+        xTextureStart += sub * xStep;
+        yy += suby * yStep;
+
+        const alphaScale = 1 / 255 * alphaBlend;
+        let index2 = Math.ceil(xStart) + Math.ceil(yStart) * 320;
+        for (let y = 0; y < newHeight; y++) {
+            for (let x = 0; x < newWidth; x++) {
+                if (this.wBuffer[index2] > z) {
+
+                    let textureIndex = Math.min(Math.round(xx) | 0, texture.width - 1) + Math.min(Math.round(yy) | 0, spritH - 1) * texture.width +
+                        spritH * texture.width * imgNum;
 
                     let alpha = (texture.texture[textureIndex] >> 24 & 0xff) * alphaScale;
                     let inverseAlpha = 1 - alpha;
@@ -970,9 +1045,9 @@ export class Framebuffer {
                 let framebufferPixel = this.framebuffer[index2];
                 let texturePixel = texture.texture[textureIndex];
 
-                let r = Math.min((framebufferPixel >> 0 & 0xff) + (texturePixel >> 0 & 0xff)*alpha, 255);
-                let g = Math.min((framebufferPixel >> 8 & 0xff) + (texturePixel >> 8 & 0xff)*alpha, 255);
-                let b = Math.min((framebufferPixel >> 16 & 0xff) + (texturePixel >> 16 & 0xff)*alpha, 255);
+                let r = Math.min((framebufferPixel >> 0 & 0xff) + (texturePixel >> 0 & 0xff) * alpha, 255);
+                let g = Math.min((framebufferPixel >> 8 & 0xff) + (texturePixel >> 8 & 0xff) * alpha, 255);
+                let b = Math.min((framebufferPixel >> 16 & 0xff) + (texturePixel >> 16 & 0xff) * alpha, 255);
 
                 this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
                 xx += xStep;
@@ -1279,8 +1354,8 @@ export class Framebuffer {
         }
     }
 
-    public static minWindow: Vector3f = new Vector3f(0, 0, 0);
-    public static maxWindow: Vector3f = new Vector3f(319.0, 199.0, 0);
+    public static minWindow: Vector2f = new Vector2f(0, 0);
+    public static maxWindow: Vector2f = new Vector2f(319.0, 199.0);
     /*
         public wireFrameTerrain(elapsedTime: number, heightmap: Texture): void {
 
