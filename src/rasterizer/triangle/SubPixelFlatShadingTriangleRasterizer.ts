@@ -1,5 +1,5 @@
-import { Framebuffer } from '../Framebuffer';
-import { Vertex } from '../Vertex';
+import { Framebuffer } from '../../Framebuffer';
+import { Vertex } from '../../Vertex';
 import { AbstractTriangleRasterizer } from './AbstractTriangleRasterizer';
 
 // http://www.hugi.scene.org/online/coding/hugi%2017%20-%20cotriang.htm

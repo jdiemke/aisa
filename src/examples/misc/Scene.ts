@@ -3,6 +3,7 @@ import { Framebuffer } from '../../Framebuffer';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
+import { Color } from '../../core/Color';
 
 export class Scene extends AbstractScene {
 
@@ -235,22 +236,6 @@ export class Scene extends AbstractScene {
         this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
         this.framebuffer.glitchScreen(time, this.noise);
         this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
-    } else if (time < 450000) {
-        this.framebuffer.drawVoxelLandscape3(this.heightmap, time);
-        let tempTexture = new Texture();
-        tempTexture.texture = new Uint32Array(256 * 256);
-        for (let y = 0; y < 256; y++) {
-            for (let x = 0; x < 256; x++) {
-                let ypos = Math.round(200 / 256 * x);
-                let xpos = Math.round(320 / 256 * y);
-                tempTexture.texture[x + y * 256] = this.framebuffer.framebuffer[xpos + ypos * 320];
-            }
-        }
-        this.framebuffer.drawPolarDistotion(time, tempTexture);
-    } else if (time < 490000) {
-        */
-
-        /*
     } else if (time < 520000) {
         this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
         this.framebuffer.noise(time, this.noise);
@@ -863,6 +848,7 @@ export class Scene extends AbstractScene {
 
         //this.framebuffer.drawBlenderScene(time*0.5, this.texture4, null);
 
+
         // TODO:
         // * build level in code (portals and areas)
         // * use controllable camera to move
@@ -891,7 +877,6 @@ export class Scene extends AbstractScene {
          * TODO:
          * - Stripe landscape: http://farm3.static.flickr.com/2653/5710494901_2ca6ddbfb2_b.jpg
          *   maybe with sync to bass and fft
-         * - Blender modells (Flat, textured, GI baked)
          * - particle tunnel
          * - ribbons on curves
          * - dof
@@ -899,31 +884,8 @@ export class Scene extends AbstractScene {
 
         // this.framebuffer.drawRadialBlur();
 
-
         //framebuffer.shadingSphereClip(time*0.005);
         // framebuffer.scene8(time*0.02);
-        // framebuffer.debug(time*0.003);
-        /*
-          framebuffer.setCullFace(CullFace.BACK);
-          framebuffer.setTexture(this.envmap);
-
-          framebuffer.drawBlenderScene6(time, this.particleTexture2,
-              [
-                  { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                  { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                  { tex: this.texture13, scale: 1.6, alpha: 0.25 },
-                  { tex: this.texture13, scale: 0.7, alpha: 0.22 },
-                  { tex: this.texture13, scale: -0.4, alpha: 0.22 },
-              ], this.dirt);
-
-          const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-          framebuffer.drawTexture(0, 0, texture3, 0.85);
-          framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
-
-          framebuffer.noise(time, this.noise);
-  */
-
-        framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
 
         // TS SoftSynth Project
         // http://natureofcode.com/book/

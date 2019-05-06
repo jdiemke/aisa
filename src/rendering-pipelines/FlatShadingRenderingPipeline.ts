@@ -3,7 +3,7 @@ import { Framebuffer } from '../Framebuffer';
 import { FlatshadedMesh } from '../geometrical-objects/FlatshadedMesh';
 import { Vector4f } from '../math/index';
 import { Matrix4f } from '../math/Matrix4f';
-import { FlatShadingTriangleRasterizer } from '../rasterizer/FlatShadingTriangleRasterizer';
+import { FlatShadingTriangleRasterizer } from '../rasterizer/triangle/FlatShadingTriangleRasterizer';
 import { SutherlandHodgman2DClipper } from '../screen-space-clipping/SutherlandHodgman2DClipper';
 import { Fog } from '../shading/fog/Fog';
 import { PhongLighting } from '../shading/illumination-models/PhongLighting';
@@ -11,9 +11,9 @@ import { PointLight } from '../shading/light/PointLight';
 import { Material } from '../shading/material/Material';
 import { Vertex } from '../Vertex';
 import { AbstractRenderingPipeline } from './AbstractRenderingPipeline';
-import { AbstractTriangleRasterizer } from '../rasterizer/AbstractTriangleRasterizer';
-import { GouraudShadingTriangleRasterizer } from '../rasterizer/GouraudShadingTriangleRasterizer';
-import { SubPixelFlatShadingTriangleRasterizer } from '../rasterizer/SubPixelFlatShadingTriangleRasterizer';
+import { AbstractTriangleRasterizer } from '../rasterizer/triangle/AbstractTriangleRasterizer';
+import { GouraudShadingTriangleRasterizer } from '../rasterizer/triangle/GouraudShadingTriangleRasterizer';
+import { SubPixelFlatShadingTriangleRasterizer } from '../rasterizer/triangle/SubPixelFlatShadingTriangleRasterizer';
 
 /**
  * TODO:

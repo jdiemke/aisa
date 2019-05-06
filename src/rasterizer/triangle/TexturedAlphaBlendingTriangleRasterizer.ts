@@ -1,8 +1,8 @@
-import { Framebuffer } from '../Framebuffer';
-import { Vector3f } from '../math/Vector3f';
-import { Vector4f } from '../math/Vector4f';
-import { AbstractRenderingPipeline } from '../rendering-pipelines/AbstractRenderingPipeline';
-import { Vertex } from '../Vertex';
+import { Framebuffer } from '../../Framebuffer';
+import { Vector3f } from '../../math/Vector3f';
+import { Vector4f } from '../../math/Vector4f';
+import { AbstractRenderingPipeline } from '../../rendering-pipelines/AbstractRenderingPipeline';
+import { Vertex } from '../../Vertex';
 
 export class TexturedAlphaBlendingTriangleRasterizer {
 
