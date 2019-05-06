@@ -58,6 +58,9 @@ module.exports = {
         'bunny': './src/examples/bunny/Application.ts',
         'wavefront': './src/examples/wavefront/Application.ts',
         'wavefront-texture': './src/examples/wavefront-texture/Application.ts',
+        'voxel-tunnel': './src/examples/voxel-tunnel/Application.ts',
+        'lab-scene': './src/examples/lab-scene/Application.ts',
+        'reflection-bunny': './src/examples/reflection-bunny/Application.ts',
     },
     mode: 'development',
     output: {
@@ -358,6 +361,22 @@ module.exports = {
             template: './src/index.html',
             chunks: ['wavefront-texture'],
             filename: 'wavefront-texture.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['voxel-tunnel'],
+            filename: 'voxel-tunnel.html'
+        }), new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['lab-scene'],
+            filename: 'lab-scene.html'
+        }), new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['reflection-bunny'],
+            filename: 'reflection-bunny.html'
         })
+
+
+
     ]
 }

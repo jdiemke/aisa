@@ -3,7 +3,7 @@ import { Framebuffer } from '../Framebuffer';
 import { FlatshadedMesh } from '../geometrical-objects/FlatshadedMesh';
 import { Vector4f } from '../math/index';
 import { Matrix4f } from '../math/Matrix4f';
-import { FlatShadingTriangleRasterizer } from '../rasterizer/FlatShadingTriangleRasterizer';
+import { FlatShadingTriangleRasterizer } from '../rasterizer/triangle/FlatShadingTriangleRasterizer';
 import { SutherlandHodgman2DClipper } from '../screen-space-clipping/SutherlandHodgman2DClipper';
 import { Fog } from '../shading/fog/Fog';
 import { PhongLighting } from '../shading/illumination-models/PhongLighting';
@@ -11,8 +11,9 @@ import { PointLight } from '../shading/light/PointLight';
 import { Material } from '../shading/material/Material';
 import { Vertex } from '../Vertex';
 import { AbstractRenderingPipeline } from './AbstractRenderingPipeline';
-import { AbstractTriangleRasterizer } from '../rasterizer/AbstractTriangleRasterizer';
-import { GouraudShadingTriangleRasterizer } from '../rasterizer/GouraudShadingTriangleRasterizer';
+import { AbstractTriangleRasterizer } from '../rasterizer/triangle/AbstractTriangleRasterizer';
+import { GouraudShadingTriangleRasterizer } from '../rasterizer/triangle/GouraudShadingTriangleRasterizer';
+import { SubPixelFlatShadingTriangleRasterizer } from '../rasterizer/triangle/SubPixelFlatShadingTriangleRasterizer';
 
 /**
  * TODO:
@@ -72,8 +73,8 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
 
         this.material = mat;
 
-        this.triangleRasterizer = new FlatShadingTriangleRasterizer(this.framebuffer);
-        this.triangleRasterizer = new GouraudShadingTriangleRasterizer(this.framebuffer);
+        this.triangleRasterizer = new SubPixelFlatShadingTriangleRasterizer(this.framebuffer);
+        // this.triangleRasterizer = new GouraudShadingTriangleRasterizer(this.framebuffer);
     }
 
     public setFog(fog: Fog): void {
@@ -162,11 +163,6 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
                 if (output.length < 3) {
                     return;
                 }
-/*
-                const projected: Array<Vertex> = output.map<Vertex>((v: Vertex) => {
-                    v.projection = this.project(v.position);
-                    return v;
-                });*/
 
                 for (let j: number = 0; j < output.length; j++) {
                     output[j].projection = this.project(output[j].position);
@@ -179,15 +175,15 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
 
     public project(t1: { x: number, y: number, z: number }): Vector4f {
         return new Vector4f(
-            Math.round((320 / 2) + (292 * t1.x / (-t1.z))),
-            Math.round((200 / 2) - (t1.y * 292 / (-t1.z))),
+            (320 / 2) + (292 * t1.x / (-t1.z)),
+            (200 / 2) - (t1.y * 292 / (-t1.z)),
             t1.z
         );
     }
 
     public project2(t1: { x: number, y: number, z: number }, result: Vector4f): void {
-        result.x = Math.round((320 / 2) + (292 * t1.x / (-t1.z)));
-        result.y = Math.round((200 / 2) - (t1.y * 292 / (-t1.z)));
+        result.x = (320 / 2) + (292 * t1.x / (-t1.z));
+        result.y = (200 / 2) - (t1.y * 292 / (-t1.z));
         result.z = t1.z;
     }
 
@@ -263,13 +259,24 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
             return;
         }
 
-        this.triangulateConvexPolygon(clippedPolygon);
+        if (clippedPolygon.length === 3) {
+            this.triangleRasterizer.drawTriangleDDA(
+                clippedPolygon[0],
+                clippedPolygon[1],
+                clippedPolygon[2]
+            );
+        } else {
+            this.triangulateConvexPolygon(clippedPolygon);
+        }
     }
 
     private triangulateConvexPolygon(clippedPolygon: Array<Vertex>): void {
-        for (let j: number = 0; j < clippedPolygon.length - 2; j++) {
+        const vertex: Vertex = clippedPolygon[0];
+        const triCount: number = clippedPolygon.length - 2;
+
+        for (let j: number = 0; j < triCount; j++) {
             this.triangleRasterizer.drawTriangleDDA(
-                clippedPolygon[0],
+                vertex,
                 clippedPolygon[1 + j],
                 clippedPolygon[2 + j]
             );
