@@ -61,6 +61,7 @@ module.exports = {
         'voxel-tunnel': './src/examples/voxel-tunnel/Application.ts',
         'lab-scene': './src/examples/lab-scene/Application.ts',
         'reflection-bunny': './src/examples/reflection-bunny/Application.ts',
+        'distorted-sphere': './src/examples/distorted-sphere/Application.ts',
     },
     mode: 'development',
     output: {
@@ -374,6 +375,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['reflection-bunny'],
             filename: 'reflection-bunny.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['distorted-sphere'],
+            filename: 'distorted-sphere.html'
         })
 
 
