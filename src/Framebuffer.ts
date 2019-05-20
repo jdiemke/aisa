@@ -1211,6 +1211,10 @@ export class Framebuffer {
         this.wBuffer.fill(-1 / 900);
     }
 
+    public clearDepthBuffer2(): void {
+        this.wBuffer.fill(-900);
+    }
+
     private sphereFunction2(theta: number, phi: number): Vector4f {
 
         let pos = new Vector4f(Math.cos(theta) * Math.cos(phi),

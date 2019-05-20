@@ -29,6 +29,8 @@ export class SubPixelFlatShadingTriangleRasterizer extends AbstractTriangleRaste
 
     private leftX: number;
     private rightX: number;
+    private leftZ: number;
+    private rightZ: number;
 
     constructor(private framebuffer: Framebuffer) {
         super();
@@ -72,48 +74,62 @@ export class SubPixelFlatShadingTriangleRasterizer extends AbstractTriangleRaste
         const dXdYV2V3: number = (p3.projection.y - p2.projection.y) > 0 ? (p3.projection.x - p2.projection.x) / (p3.projection.y - p2.projection.y) : 0;
         const dXdYV1V2: number = (p2.projection.y - p1.projection.y) > 0 ? (p2.projection.x - p1.projection.x) / (p2.projection.y - p1.projection.y) : 0;
 
+        const dZdYV1V3: number = (p3.projection.y - p1.projection.y) > 0 ? (1 / p3.projection.z - 1 / p1.projection.z) / (p3.projection.y - p1.projection.y): 0;
+        const dZdYV2V3: number = (p3.projection.y - p2.projection.y) > 0 ? (1 / p3.projection.z - 1 / p2.projection.z) / (p3.projection.y - p2.projection.y): 0 ;
+        const dZdYV1V2: number = (p2.projection.y - p1.projection.y) > 0 ? (1 / p2.projection.z - 1 / p1.projection.z) / (p2.projection.y - p1.projection.y): 0;
+
         const isRightSideLong: boolean = dXdYV1V3 > dXdYV1V2;
 
         if (y1i === y2i && p2.projection.x !== p1.projection.x) {
             if (p2.projection.x < p1.projection.x) {
                 let correction: number = Math.ceil(p1.projection.y) - p1.projection.y;
                 this.rightX = p1.projection.x + correction * dXdYV1V3;
+                this.rightZ = 1 / p1.projection.z + correction * dZdYV1V3;
                 correction = Math.ceil(p2.projection.y) - p2.projection.y;
                 this.leftX = p2.projection.x + correction * dXdYV2V3;
-                this.drawSegement(y2i, y3i, dXdYV2V3, dXdYV1V3, color);
+                this.leftZ = 1 / p2.projection.z + correction * dZdYV2V3;
+                this.drawSegement2(y2i, y3i, dXdYV2V3, dXdYV1V3, dZdYV2V3, dZdYV1V3, color);
             } else {
                 let correction: number = Math.ceil(p1.projection.y) - p1.projection.y;
                 this.leftX = p1.projection.x + correction * dXdYV1V3;
+                this.leftZ = 1 / p1.projection.z + correction * dZdYV1V3;
                 correction = Math.ceil(p2.projection.y) - p2.projection.y;
                 this.rightX = p2.projection.x + correction * dXdYV2V3;
-                this.drawSegement(y2i, y3i, dXdYV1V3, dXdYV2V3, color);
+                this.rightZ = 1 / p2.projection.z + correction * dZdYV2V3;
+                this.drawSegement2(y2i, y3i, dXdYV1V3, dXdYV2V3, dZdYV1V3, dZdYV2V3, color);
             }
         } else if (isRightSideLong) {
             const correction: number = Math.ceil(p1.projection.y) - p1.projection.y;
             this.rightX = p1.projection.x + correction * dXdYV1V3;
+            this.rightZ = 1 / p1.projection.z + correction * dZdYV1V3;
             if (y1i < y2i) {
 
                 this.leftX = p1.projection.x + correction * dXdYV1V2;
+                this.leftZ = 1 / p1.projection.z + correction * dZdYV1V2;
 
-                this.drawSegement(y1i, y2i, dXdYV1V2, dXdYV1V3, color);
+                this.drawSegement2(y1i, y2i, dXdYV1V2, dXdYV1V3, dZdYV1V2, dZdYV1V3, color);
             }
             if (y2i < y3i) {
                 const correction: number = Math.ceil(p2.projection.y) - p2.projection.y;
                 this.leftX = p2.projection.x + correction * dXdYV2V3;
-                this.drawSegement(y2i, y3i, dXdYV2V3, dXdYV1V3, color);
+                this.leftZ = 1 / p2.projection.z + correction * dZdYV2V3;
+                this.drawSegement2(y2i, y3i, dXdYV2V3, dXdYV1V3, dZdYV2V3, dZdYV1V3, color);
             }
         } else {
             const correction: number = Math.ceil(p1.projection.y) - p1.projection.y;
             this.leftX = p1.projection.x + correction * dXdYV1V3;
+            this.leftZ = 1 / p1.projection.z + correction * dZdYV1V3;
             if (y1i < y2i) {
 
                 this.rightX = p1.projection.x + correction * dXdYV1V2;
-                this.drawSegement(y1i, y2i, dXdYV1V3, dXdYV1V2, color);
+                this.rightZ = 1 / p1.projection.z + correction * dZdYV1V2;
+                this.drawSegement2(y1i, y2i, dXdYV1V3, dXdYV1V2, dZdYV1V3, dZdYV1V2, color);
             }
             if (y2i < y3i) {
                 const correction: number = Math.ceil(p2.projection.y) - p2.projection.y;
                 this.rightX = p2.projection.x + correction * dXdYV2V3;
-                this.drawSegement(y2i, y3i, dXdYV1V3, dXdYV2V3, color);
+                this.rightZ = 1 / p2.projection.z + correction * dZdYV2V3;
+                this.drawSegement2(y2i, y3i, dXdYV1V3, dXdYV2V3, dZdYV1V3, dZdYV2V3, color);
             }
         }
     }
@@ -133,6 +149,34 @@ export class SubPixelFlatShadingTriangleRasterizer extends AbstractTriangleRaste
 
             this.leftX += leftdXdY;
             this.rightX += rightdXdY;
+        }
+    }
+
+    private drawSegement2(
+        yStart: number,
+        yEnd: number,
+        leftdXdY: number,
+        rightdXdY: number, leftdZdY: number,
+        rightdZdY: number, color: number): void {
+        for (let i: number = yStart; i < yEnd; i++) {
+            const x1: number = Math.ceil(this.leftX);
+            const x2: number = Math.ceil(this.rightX);
+            const zDelta: number = (this.rightZ - this.leftZ) / (this.rightX - this.leftX);
+            let z: number = this.leftZ + zDelta * (x1 - this.leftX);
+            let index: number = 320 * i + x1;
+            for (let x: number = x1; x < x2; x++) {
+                if (this.framebuffer.wBuffer[index] >= z) {
+                    this.framebuffer.wBuffer[index] = z;
+                    this.framebuffer.framebuffer[index] = color;
+                }
+                z += zDelta;
+                index++;
+            }
+
+            this.leftX += leftdXdY;
+            this.rightX += rightdXdY;
+            this.leftZ += leftdZdY;
+            this.rightZ += rightdZdY;
         }
     }
 
