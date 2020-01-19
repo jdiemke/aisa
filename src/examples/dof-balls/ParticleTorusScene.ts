@@ -89,10 +89,10 @@ export class ParticleTorusScene extends AbstractScene {
             const size: number = -(2.9 * 292 / (element.z));
             const spriteNum: number = Math.round(this.computeDepthBlur(0, -15, -70, element.z) * 13);
 
-            framebuffer.drawParticle2Sub(
-               element.x - size / 2,
-                element.y - size / 2,
-                size, size, texture, 1 / element.z, 1.0, spriteNum, 128
+            framebuffer.drawParticle2(
+                Math.round(element.x) - Math.round(size / 2),
+                Math.round(element.y) - Math.round(size / 2),
+                Math.round(size), Math.round(size), texture, 1 / element.z, 1.0, spriteNum, 128
             );
         });
     }

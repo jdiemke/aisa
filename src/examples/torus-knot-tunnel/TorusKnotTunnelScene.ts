@@ -36,14 +36,14 @@ export class TorusKnotTunnelScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
-        this.torusTunnel(framebuffer, time * 0.0019, this.particleTexture);
-      /*  framebuffer.drawScaledTextureClipAdd(
+        this.torusTunnel(framebuffer, time * 0.019, this.particleTexture);
+        framebuffer.drawScaledTextureClipAdd(
             320 / 2 - this.cocoon.width / 2,
             200 / 2 - this.cocoon.height / 2,
             this.cocoon.width, this.cocoon.height, this.cocoon, 0.67);
-*/
+
        // framebuffer.noise(time, this.noise);
-      //  this.glitchScreen(framebuffer, time*5, this.noise);
+        this.glitchScreen(framebuffer, time*5, this.noise);
     }
 
     public glitchScreen(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, noise: boolean = true): void {

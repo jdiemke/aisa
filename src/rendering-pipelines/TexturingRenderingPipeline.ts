@@ -1,9 +1,9 @@
 import { Framebuffer } from '../Framebuffer';
 import { Matrix4f } from '../math/Matrix4f';
 import { Vector4f } from '../math/Vector4f';
-import { AbstractTriangleRasterizer } from '../rasterizer/triangle/AbstractTriangleRasterizer';
-import { TexturedAlphaBlendingTriangleRasterizer } from '../rasterizer/triangle/TexturedAlphaBlendingTriangleRasterizer';
-import { TexturedTriangleRasterizer } from '../rasterizer/triangle/TexturedTriangleRasterizer';
+import { AbstractTriangleRasterizer } from '../rasterizer/AbstractTriangleRasterizer';
+import { TexturedAlphaBlendingTriangleRasterizer } from '../rasterizer/TexturedAlphaBlendingTriangleRasterizer';
+import { TexturedTriangleRasterizer } from '../rasterizer/TexturedTriangleRasterizer';
 import { TextureCoordinate } from '../TextureCoordinate';
 import { Vertex } from '../Vertex';
 import { AbstractRenderingPipeline } from './AbstractRenderingPipeline';

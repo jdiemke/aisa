@@ -7,7 +7,7 @@ import { AbstractClipEdge } from "./AbstractClipEdge";
 export class TopClipEdge extends AbstractClipEdge {
 
     public isInside(p: Vertex): boolean {
-        return p.projection.y <= Framebuffer.maxWindow.y;
+        return p.projection.y < Framebuffer.maxWindow.y + 1;
     }
 
     public isInside2(p: Vertex): boolean {
@@ -16,12 +16,12 @@ export class TopClipEdge extends AbstractClipEdge {
 
     public computeIntersection(p1: Vertex, p2: Vertex): Vertex {
         let vertex = new Vertex();
-        const factor: number = (Framebuffer.maxWindow.y - p1.projection.y) / (p2.projection.y - p1.projection.y);
+        const factor: number = (Framebuffer.maxWindow.y + 1 - p1.projection.y) / (p2.projection.y - p1.projection.y);
         // this interpolation is not perspective correct but linear!!
         vertex.color = p2.color.sub(p1.color).mul(factor).add(p1.color);
         vertex.projection =new Vector4f(
-            p1.projection.x + (p2.projection.x - p1.projection.x) * factor,
-            Framebuffer.maxWindow.y,
+            Math.round(p1.projection.x + (p2.projection.x - p1.projection.x) * factor),
+            Framebuffer.maxWindow.y + 1,
             1 / (1 / p1.projection.z + (1 / p2.projection.z - 1 / p1.projection.z) * factor));
             return vertex;
     }

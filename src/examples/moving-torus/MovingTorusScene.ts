@@ -12,7 +12,7 @@ export class MovingTorusScene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         framebuffer.setCullFace(CullFace.BACK);
-        //framebuffer.renderingPipeline.enableLighting(false);
+
         return Promise.all([
             TextureUtils.load(require('../../assets/atlantis.png'), true).then(
                 (texture: Texture) => this.background = texture
@@ -24,7 +24,7 @@ export class MovingTorusScene extends AbstractScene {
         const time: number = Date.now();
 
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.background.texture);
-        this.shadingTorus2(framebuffer, time * 0.0005);
+        this.shadingTorus2(framebuffer, time * 0.02);
     }
 
     /**
@@ -41,7 +41,7 @@ export class MovingTorusScene extends AbstractScene {
         let modelViewMartrix: Matrix4f = Matrix4f.constructYRotationMatrix(elapsedTime * 0.09);
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.08));
         modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.04) * 25,
-            Math.sin(elapsedTime * 0.05) * 9 * 0, -24).multiplyMatrix(modelViewMartrix);
+            Math.sin(elapsedTime * 0.05) * 9, -24).multiplyMatrix(modelViewMartrix);
 
         framebuffer.renderingPipeline.draw(this.torus.getMesh(), modelViewMartrix);
     }
