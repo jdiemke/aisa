@@ -98,7 +98,7 @@ export class Framebuffer {
         //this.cylinder = this.createCylinder();
         //this.cylinder2 = this.createCylinder2(texture);
         //this.sphereDisp = this.createSphereDistplaced(texture);
-
+        //this.sphereDisp2 = this.createSphereDistplaced(texture2);
     }
 
     public getImageData(): ImageData {
@@ -107,7 +107,7 @@ export class Framebuffer {
     }
 
     public clear() {
-        let color: number = Color.BLACK.toPackedFormat();
+        let color: number = this.toColor(0);
         let count: number = this.width * this.height;
         for (let i = 0; i < count; i++) {
             this.framebuffer[i] = color;
@@ -154,6 +154,13 @@ export class Framebuffer {
 
     public readPixel(x: number, y: number, color: number): number {
         return this.framebuffer[x + y * this.width];
+    }
+
+    public toColor(red: number): number {
+        return (255 << 24) |
+            (red << 16) |
+            (red << 8) |
+            (red);
     }
 
     public drawRect(x, y, width, color) {
@@ -1855,6 +1862,110 @@ export class Framebuffer {
         }
     }
 */
+    public divideSphere(points: Array<Vector3f>, index: Array<number>, steps: number) {
+
+        let points2: Array<Vector3f> = [];
+        let normals2: Array<Vector3f> = [];
+        let index2: Array<number> = [];
+
+        let c = 0;
+        for (let i = 0; i < index.length; i += 3) {
+            let v1 = points[index[i]];
+            let v2 = points[index[i + 1]];
+            let v3 = points[index[i + 2]];
+
+            let vn1 = v2.sub(v1).mul(0.5).add(v1).normalize();
+            let vn2 = v3.sub(v2).mul(0.5).add(v2).normalize();
+            let vn3 = v1.sub(v3).mul(0.5).add(v3).normalize();
+
+            points2.push(v1); points2.push(vn1); points2.push(vn3);
+            normals2.push(v1); normals2.push(vn1); normals2.push(vn3);
+            index2.push(c++); index2.push(c++); index2.push(c++);
+
+            points2.push(vn1); points2.push(v2); points2.push(vn2);
+            normals2.push(vn1); normals2.push(v2); normals2.push(vn2);
+            index2.push(c++); index2.push(c++); index2.push(c++);
+
+            points2.push(vn1); points2.push(vn2); points2.push(vn3);
+            normals2.push(vn1); normals2.push(vn2); normals2.push(vn3);
+            index2.push(c++); index2.push(c++); index2.push(c++);
+
+            points2.push(vn3); points2.push(vn2); points2.push(v3);
+            normals2.push(vn3); normals2.push(vn2); normals2.push(v3);
+            index2.push(c++); index2.push(c++); index2.push(c++);
+        }
+
+        if (steps > 0) {
+            return this.divideSphere(points2, index2, --steps);
+        } else {
+            return {
+                points: points2,
+                normals: normals2,
+                index: index2
+            }
+        }
+    }
+
+    public createSphere() {
+
+        let pointsA: Array<Vector3f> = [
+            new Vector3f(0.0, -1.0, 0.0),
+            new Vector3f(1.0, 0.0, 0.0),
+            new Vector3f(0.0, 0.0, 1.0),
+            new Vector3f(-1.0, 0.0, 0.0),
+            new Vector3f(0.0, 0.0, -1.0),
+            new Vector3f(0.0, 1.0, 0.0)
+        ];
+
+        let indexA: Array<number> = [
+            0, 1, 2,
+            0, 2, 3,
+            0, 3, 4,
+            0, 4, 1,
+            1, 5, 2,
+            2, 5, 3,
+            3, 5, 4,
+            4, 5, 1
+        ];
+
+        let k = this.divideSphere(pointsA, indexA, 4);
+
+        // optimize
+        let points: Array<Vector3f> = [];
+        let points2: Array<Vector3f> = [];
+        let normals: Array<Vector3f> = [];
+        let normals2: Array<Vector3f> = [];
+
+        let index: Array<number> = [];
+
+        k.index.forEach(i => {
+            let p = k.points[i];
+
+            let point = points.find(point => point.sub(p).length() < 0.001);
+
+            if (point) {
+                let idx = points.indexOf(point);
+                index.push(idx);
+            } else {
+                index.push(points.push(p) - 1);
+            }
+        });
+
+        points.forEach(p => {
+            normals.push(new Vector3f(0, 0, 0));
+            normals2.push(new Vector3f(0, 0, 0));
+            points2.push(new Vector3f(0, 0, 0));
+        })
+
+        return {
+            points,
+            points2,
+            normals,
+            normals2,
+            index
+        }
+    }
+
 
     public createPlane() {
 
@@ -1971,6 +2082,28 @@ export class Framebuffer {
         }
     }
 
+    public createSphereDistplaced(texture: Texture) {
+        let sphere: {
+            points: Array<Vector3f>,
+            points2: Array<Vector3f>,
+            normals: Array<Vector3f>,
+            normals2: Array<Vector3f>,
+            index: Array<number>
+        } = this.createSphere();
+        let newPoints: Array<Vector3f> = new Array<Vector3f>();
+        sphere.points.forEach((point) => {
+            let x = point.x;
+            let y = point.y;
+            let z = point.z;
+            const radius = 1.0;
+            let u = Math.floor((0.5 + Math.atan2(z, x) / (2 * Math.PI)) * 255);
+            let v = Math.floor((0.5 - Math.asin(y) / Math.PI) * 255);
+            let disp = 1 + 1.4 * ((texture.texture[u + v * 256] & 0xff) / 255);
+            newPoints.push(point.mul(disp));
+        });
+        sphere.points = newPoints;
+        return sphere;
+    }
 
     public createCylinder2(texture: Texture) {
         let k = {
@@ -2708,9 +2841,120 @@ export class Framebuffer {
         }
     }
 */
+    /*
+        public shadingSphereEnvDisp2(elapsedTime: number, modelViewMartrix: Matrix4f): void {
+            let result = this.sphereDisp2;
+
+            let scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
+            for (let i = 0; i < result.points.length; i++) {
+                let y = result.points[i].z;
+                let x = result.points[i].x;
+                let length = Math.sqrt(x * x + y * y);
+                let rot = Math.sin(result.points[i].y * 0.539 + (10 - length) * 0.05 + elapsedTime * 0.9) * 4.5;
+                rot *= Math.sin(elapsedTime * 0.25) * 0.5 + 0.5;
+                result.points2[i].y = result.points[i].y;
+                result.points2[i].x = result.points[i].x * Math.cos(rot) - result.points[i].z * Math.sin(rot);
+                result.points2[i].z = result.points[i].x * Math.sin(rot) + result.points[i].z * Math.cos(rot);
+
+                result.normals[i].x = 0;
+                result.normals[i].y = 0;
+                result.normals[i].z = 0;
+            }
+
+            let points = result.points2;
+            let index = result.index;
+            let normals = result.normals;
+
+            let norm: Vector3f = new Vector3f(0, 0, 0);
+            let norm2: Vector3f = new Vector3f(0, 0, 0);
+            let cross: Vector3f = new Vector3f(0, 0, 0);
+            for (let i = 0; i < index.length; i += 3) {
+                let v1: Vector3f = points[index[i]];
+                let v2: Vector3f = points[index[i + 1]];
+                let v3: Vector3f = points[index[i + 2]];
+                norm.sub2(v2, v1);
+                norm2.sub2(v3, v1);
+                cross.cross2(norm, norm2);
+                let normal = cross;
+                normals[index[i]].add2(normals[index[i]], normal);
+                normals[index[i + 1]].add2(normals[index[i + 1]], normal);
+                normals[index[i + 2]].add2(normals[index[i + 2]], normal);
+            }
+
+            for (let i = 0; i < normals.length; i++) {
+                normals[i].normalize2();
+            }
+
+            let points2: Array<Vector3f> = result.points2;
+            let normals2: Array<Vector3f> = result.normals2;
+
+            let normalMatrix = modelViewMartrix.computeNormalMatrix();
+
+            for (let n = 0; n < normals.length; n++) {
+                normalMatrix.multiplyArr(normals[n], normals2[n]);
+            }
+
+            for (let p = 0; p < points.length; p++) {
+                let transformed = modelViewMartrix.multiply(points[p]);
+
+                points2[p].x = Math.round((320 * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
+                points2[p].y = Math.round((200 * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
+                points2[p].z = transformed.z;
+            }
+
+            let vertex1 = new Vertex();
+            vertex1.textureCoordinate = new TextureCoordinate();
+            let vertex2 = new Vertex();
+            vertex2.textureCoordinate = new TextureCoordinate();
+            let vertex3 = new Vertex();
+            vertex3.textureCoordinate = new TextureCoordinate();
+            let vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
+            for (let i = 0; i < index.length; i += 3) {
+
+                let v1 = points2[index[i]];
+                let n1 = normals2[index[i]];
+
+                let v2 = points2[index[i + 1]];
+                let n2 = normals2[index[i + 1]];
+
+                let v3 = points2[index[i + 2]];
+                let n3 = normals2[index[i + 2]];
+
+                if (this.isTriangleCCW(v1, v2, v3)) {
+
+                    let color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
+
+                    vertexArray[0].position = v1;
+                    this.fakeSphere(n1, vertex1);
+
+                    vertexArray[1].position = v2;
+                    this.fakeSphere(n2, vertex2);
+
+                    vertexArray[2].position = v3;
+                    this.fakeSphere(n3, vertex3);
+
+                    if (v1.x < Framebuffer.minWindow.x ||
+                        v2.x < Framebuffer.minWindow.x ||
+                        v3.x < Framebuffer.minWindow.x ||
+                        v1.x > Framebuffer.maxWindow.x ||
+                        v2.x > Framebuffer.maxWindow.x ||
+                        v3.x > Framebuffer.maxWindow.x ||
+                        v1.y < Framebuffer.minWindow.y ||
+                        v2.y < Framebuffer.minWindow.y ||
+                        v3.y < Framebuffer.minWindow.y ||
+                        v1.y > Framebuffer.maxWindow.y ||
+                        v2.y > Framebuffer.maxWindow.y ||
+                        v3.y > Framebuffer.maxWindow.y) {
 
 
-
+                        this.clipConvexPolygon2(vertexArray, color);
+                    } else {
+                        this.texturedTriangleRasterizer.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], color);
+                    }
+                }
+            }
+        }
+    */
 
     public fakeSphere(normal: Vector4f, vertex: Vertex): void {
         // https://www.mvps.org/directx/articles/spheremap.htm
