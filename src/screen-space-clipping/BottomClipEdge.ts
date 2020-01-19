@@ -20,7 +20,7 @@ export class BottomClipEdge extends AbstractClipEdge {
         const factor: number = (Framebuffer.minWindow.y - p1.projection.y) / (p2.projection.y - p1.projection.y);
         vertex.color = p2.color.sub(p1.color).mul(factor).add(p1.color);
         vertex.projection = new Vector4f(
-            p1.projection.x + (p2.projection.x - p1.projection.x) * factor,
+            Math.round(p1.projection.x + (p2.projection.x - p1.projection.x) * factor),
             Framebuffer.minWindow.y,
             1 / (1 / p1.projection.z + (1 / p2.projection.z - 1 / p1.projection.z) * factor));
         return vertex;

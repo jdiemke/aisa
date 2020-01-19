@@ -1,4 +1,4 @@
-import { Vertex } from '../../Vertex';
+import { Vertex } from '../Vertex';
 
 export abstract class AbstractTriangleRasterizer {
 

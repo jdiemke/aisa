@@ -23,7 +23,6 @@ project contains a lot of elementary algorithms from then
 field of computer graphics including clipping, triangle rasterization, geometric transformations and so forth.
 ### Demos
 * [Stanford Bunny](https://jdiemke.github.io/aisa/bunny.html)
-* [Reflection Bunny](https://jdiemke.github.io/aisa/reflection-bunny.html)
 * [Stanford Dragon](https://jdiemke.github.io/aisa/wavefront.html)
 * [Wavefront OBJ with Texture](https://jdiemke.github.io/aisa/wavefront-texture.html)
 * [Torus Knot Tunnel](https://jdiemke.github.io/aisa/torus-knot-tunnel.html)
@@ -35,7 +34,6 @@ field of computer graphics including clipping, triangle rasterization, geometric
 * [DOF Balls](https://jdiemke.github.io/aisa/dof-balls.html)
 * [Cubes](https://jdiemke.github.io/aisa/voxel-balls.html)
 * [Polar Voxel Landscape](https://jdiemke.github.io/aisa/polar-voxels.html)
-* [Voxel Tunnel](https://jdiemke.github.io/aisa/voxel-tunnel.html)
 * [Cube Tunnel](https://jdiemke.github.io/aisa/cube-tunnel.html)
 * [Particle System](https://jdiemke.github.io/aisa/particle-system.html)
 * [TRISTAR](https://jdiemke.github.io/aisa/floor.html)

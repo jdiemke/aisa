@@ -24,8 +24,7 @@ export class SutherlandHodgman2DClipper {
 
         let output = subject;
 
-        const clipRegionLength: number = SutherlandHodgman2DClipper.clipRegion.length;
-        for (let j = 0; j < clipRegionLength; j++) {
+        for (let j = 0; j < SutherlandHodgman2DClipper.clipRegion.length; j++) {
             const edge: AbstractClipEdge = SutherlandHodgman2DClipper.clipRegion[j];
             const input = output;
             output = new Array<Vertex>();
@@ -39,7 +38,7 @@ export class SutherlandHodgman2DClipper {
                     }
                     output.push(point);
                 } else if (edge.isInside(S)) {
-                    output.push(edge.computeIntersection(point, S));
+                    output.push(edge.computeIntersection(S, point));
                 }
                 S = point;
             }
