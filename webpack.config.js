@@ -58,6 +58,7 @@ module.exports = {
         'bunny': './src/examples/bunny/Application.ts',
         'wavefront': './src/examples/wavefront/Application.ts',
         'wavefront-texture': './src/examples/wavefront-texture/Application.ts',
+        'distorted-sphere': './src/examples/distorted-sphere/Application.ts',
     },
     mode: 'development',
     output: {
@@ -358,6 +359,11 @@ module.exports = {
             template: './src/index.html',
             chunks: ['wavefront-texture'],
             filename: 'wavefront-texture.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['distorted-sphere'],
+            filename: 'distorted-sphere.html'
         })
     ]
 }
