@@ -22,6 +22,7 @@ Engine from scratch I used this opportunity. Hence this
 project contains a lot of elementary algorithms from then
 field of computer graphics including clipping, triangle rasterization, geometric transformations and so forth.
 ### Demos
+* [Distorted Sphere](https://jdiemke.github.io/aisa/distorted-sphere.html)
 * [Stanford Bunny](https://jdiemke.github.io/aisa/bunny.html)
 * [Stanford Dragon](https://jdiemke.github.io/aisa/wavefront.html)
 * [Wavefront OBJ with Texture](https://jdiemke.github.io/aisa/wavefront-texture.html)

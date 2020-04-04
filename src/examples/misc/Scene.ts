@@ -669,51 +669,6 @@ export class Scene extends AbstractScene {
                     this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
 
                     this.framebuffer.noise(time, this.noise);
-                } else if (time < 100000) {
-                    this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-                    this.framebuffer.setCullFace(CullFace.BACK);
-                    // this.framebuffer.setBob(this.spheremap);
-                    this.framebuffer.setBob(this.envmap);
-
-                    let scale: number = 3.7;
-                    let elapsedTime: number = (time - 50000) * 0.0002;
-
-                    let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.35)
-                        .multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3)));
-
-                    modelViewMartrix = Matrix4f.constructTranslationMatrix(-0, -0,
-                        -10 - (Math.sin(elapsedTime * 0.3) * 0.5 + 0.5) * 6)
-                        .multiplyMatrix(modelViewMartrix);
-                    this.framebuffer.clearDepthBuffer();
-                    this.framebuffer.shadingSphereEnvDisp2((time - 50000) * 0.0002, modelViewMartrix);
-
-                    // Motion Blur
-                    const tmpGlitch: Uint32Array = new Uint32Array(320 * 200);
-                    this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
-
-                    const texture: Texture = new Texture();
-                    texture.texture = tmpGlitch;
-                    texture.width = 320;
-                    texture.height = 200;
-
-                    const ukBasslineBpm: number = 140;
-                    const ukBasslineClapMs: number = 60000 / ukBasslineBpm * 2;
-                    const smashTime: number = (Date.now() - this.start) % ukBasslineClapMs;
-                    const smash: number = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
-                        this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
-                    const width: number = Math.round(320 + smash * 320 / 100);
-                    const height: number = Math.round(200 + smash * 200 / 100);
-
-                    this.framebuffer.drawScaledTextureClipBi(
-                        Math.round(320 / 2 - width / 2),
-                        Math.round(200 / 2 - height / 2),
-                        width, height, texture, 1.0);
-
-                    const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-                    this.framebuffer.drawTexture(0, 0, texture3, 0.85);
-                    this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-
-                    this.framebuffer.noise(time, this.noise);
                 } else if (time < 200000) {
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
                     this.framebuffer.setCullFace(CullFace.BACK);
