@@ -22,6 +22,8 @@ Engine from scratch I used this opportunity. Hence this
 project contains a lot of elementary algorithms from then
 field of computer graphics including clipping, triangle rasterization, geometric transformations and so forth.
 ### Demos
+* [Reflection Bunny](https://jdiemke.github.io/aisa/reflection-bunny.html)
+* [Voxel Tunnel](https://jdiemke.github.io/aisa/voxel-tunnel.html)
 * [Distorted Sphere](https://jdiemke.github.io/aisa/distorted-sphere.html)
 * [Stanford Bunny](https://jdiemke.github.io/aisa/bunny.html)
 * [Stanford Dragon](https://jdiemke.github.io/aisa/wavefront.html)

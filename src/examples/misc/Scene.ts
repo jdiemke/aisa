@@ -117,7 +117,7 @@ export class Scene extends AbstractScene {
         ]).then(() => {
             // Web Audio API
             // FIXME: put this into a Player Class
-            framebuffer.precompute(this.heightmap, this.heightmapSphere);
+            framebuffer.precompute();
 
             let audioContext = new AudioContext();
             let request = new XMLHttpRequest();

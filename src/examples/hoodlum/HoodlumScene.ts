@@ -22,8 +22,11 @@ export class HoodlumScene extends AbstractScene {
     public init(framebuffer: Framebuffer): Promise<any> {
         this.spaceLabMesh = BlenderJsonParser.getBlenderScene(require('../../assets/lab2.json'), false);
         this.hoodlumLogoMesh = BlenderJsonParser.parse(require('../../assets/hoodlum2018.json'), false);
+
         return Promise.all([
-            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(texture => this.blurred = texture),
+            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
+                (texture: Texture) => this.blurred = texture
+            ),
             TextureUtils.load(require('../../assets/lab2.png'), false).then(texture => this.lab2 = texture),
             TextureUtils.generateProceduralNoise().then(texture => this.noise = texture),
             this.createProceduralTexture3().then(texture => this.particleTexture2 = texture),
@@ -49,7 +52,7 @@ export class HoodlumScene extends AbstractScene {
     public drawBlenderScene9(framebuffer: Framebuffer, elapsedTime: number, texture3: Texture): void {
         framebuffer.clearDepthBuffer();
 
-        let camera: Matrix4f =
+        const camera: Matrix4f =
             Matrix4f.constructTranslationMatrix(0, 0, -34 + (Math.sin(elapsedTime * 0.00007) * 0.5 + 0.5) * 7).multiplyMatrix(
                 Matrix4f.constructXRotationMatrix((Math.sin(elapsedTime * 0.00014) * 0.5 + 0.5) * 0.5 - 0.2).multiplyMatrix(
                     Matrix4f.constructYRotationMatrix(-elapsedTime * 0.0002).multiplyMatrix(
