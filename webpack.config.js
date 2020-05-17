@@ -13,6 +13,7 @@ module.exports = {
         'razor': './src/examples/razor/Application.ts',
         'roto-zoomer': './src/examples/roto-zoomer/Application.ts',
         'voxel-landscape': './src/examples/voxel-landscape/Application.ts',
+        'voxel-landscape-fade': './src/examples/voxel-landscape-fade/Application.ts',
         'cube': './src/examples/cube/Application.ts',
         'bobs': './src/examples/bobs/Application.ts',
         'starfield': './src/examples/starfield/Application.ts',
@@ -135,6 +136,11 @@ module.exports = {
             chunks: ['voxel-landscape'],
             filename: 'voxel-landscape.html'
         }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            chunks: ['voxel-landscape-fade'],
+            filename: 'voxel-landscape-fade.html'
+        }),        
         new HtmlWebpackPlugin({
             template: './src/index.html',
             chunks: ['cube'],
