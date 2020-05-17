@@ -72,6 +72,7 @@ field of computer graphics including clipping, triangle rasterization, geometric
 * [Portal Engine](https://jdiemke.github.io/aisa/portals.html)
 * [Torus](https://jdiemke.github.io/aisa/torus.html)
 * [Voxel Landscape](https://jdiemke.github.io/aisa/voxel-landscape.html)
+* [Voxel Landscape Fade](https://jdiemke.github.io/aisa/voxel-landscape-fade.html)
 * [Starfield](https://jdiemke.github.io/aisa/starfield.html)
 * [Particle Streams](https://jdiemke.github.io/aisa/particle-streams.html)
 * [Bobs](https://jdiemke.github.io/aisa/bobs.html)
