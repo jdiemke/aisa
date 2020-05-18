@@ -6,8 +6,12 @@ export class FontRenderer {
     private fontTexture: Texture;
     private charToIndex: Map<number, number>;
 
-    constructor(private framebuffer: Framebuffer, private width: number,
-        private height: number, fonts: string, private file: string) {
+    constructor(
+        private framebuffer: Framebuffer,
+        private width: number,
+        private height: number,
+        fonts: string,
+        private file: any) {
         this.charToIndex = new Map<number, number>();
 
         for (let x: number = 0; x < fonts.length; x++) {

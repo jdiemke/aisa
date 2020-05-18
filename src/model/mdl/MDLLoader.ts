@@ -11,8 +11,8 @@ import { MDLTexCoord } from './MDLTexCoord';
  */
 export class MDLLoader {
 
-    public static load(filename: string): Promise<MDLModel> {
-        return fetch(filename).then((response: Response) => {
+    public static load(filename: any): Promise<MDLModel> {
+        return fetch(filename.default).then((response: Response) => {
             return response.arrayBuffer();
         }).then((arrayBuffer: ArrayBuffer) => {
             try {

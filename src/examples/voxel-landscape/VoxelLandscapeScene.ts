@@ -46,23 +46,22 @@ export class VoxelLandscapeScene extends AbstractScene {
      *
      * @memberof Framebuffer
      */
-    drawVoxelLandscape2(framebuffer: Framebuffer, texture: Texture, time: number) {
+    public drawVoxelLandscape2(framebuffer: Framebuffer, texture: Texture, time: number) {
         framebuffer.clearColorBuffer(255 << 24);
 
         const MIN_DIST = 45;
         const MAX_DIST = 200;
 
-        let camX = time * 0.008;
-        let camY = 0;
+        const camX = time * 0.008;
+        const camY = 0;
 
         const focus = 125.7;
         const center = 300;
         const eye = 260;
 
         for (let x = 0; x < 320; x++) {
-            let dirX = Math.cos(time * 0.0005 + x * 0.005) * 0.4;
-            let dirY = Math.sin(time * 0.0005 + x * 0.005) * 0.4;
-
+            const dirX = Math.cos(time * 0.0005 + x * 0.005) * 0.4;
+            const dirY = Math.sin(time * 0.0005 + x * 0.005) * 0.4;
 
             let highestPoint = 0;
 
@@ -71,14 +70,14 @@ export class VoxelLandscapeScene extends AbstractScene {
 
             for (let dist = MIN_DIST; dist < MAX_DIST; dist++) {
 
-                let height = texture.getBilinearFilteredPixel(rayX, rayY);
-                let projHeight = Math.round((height - eye) * focus / dist + center);
-                let color = Math.round(height) * Math.min(1.0, (1 - (dist - MIN_DIST) / (MAX_DIST - MIN_DIST)) * 10);
-                let packedRGB = 255 << 24 | (color + 10) << 16 | (color + 20) << 8 | (color + 13);
+                const height = texture.getBilinearFilteredPixel(rayX, rayY);
+                const projHeight = Math.round((height - eye) * focus / dist + center);
+                const color = Math.round(height) * Math.min(1.0, (1 - (dist - MIN_DIST) / (MAX_DIST - MIN_DIST)) * 10);
+                const packedRGB = 255 << 24 | (color + 10) << 16 | (color + 20) << 8 | (color + 13);
 
                 if (projHeight > highestPoint) {
                     let index = x + (199 - highestPoint) * 320;
-                    let max = Math.min(projHeight, 200);
+                    const max = Math.min(projHeight, 200);
 
                     for (let i = highestPoint; i < max; i++) {
                         framebuffer.framebuffer[index] = packedRGB;
@@ -98,23 +97,22 @@ export class VoxelLandscapeScene extends AbstractScene {
         }
     }
 
-    drawVoxelLandscape3(framebuffer: Framebuffer, texture: Texture, time: number) {
+    public drawVoxelLandscape3(framebuffer: Framebuffer, texture: Texture, time: number) {
         framebuffer.clearColorBuffer(255 << 24);
 
         const MIN_DIST = 35;
         const MAX_DIST = 300;
 
-        let camX = time * 0.008;
-        let camY = 0;
+        const camX = time * 0.008;
+        const camY = 0;
 
         const focus = 45;
         const center = 300;
         const eye = 480;
 
         for (let x = 0; x < 320; x++) {
-            let dirX = Math.cos(time * 0.0005 + x * 0.0018) * 0.4;
-            let dirY = Math.sin(time * 0.0005 + x * 0.0018) * 0.4;
-
+            const dirX = Math.cos(time * 0.0005 + x * 0.0018) * 0.4;
+            const dirY = Math.sin(time * 0.0005 + x * 0.0018) * 0.4;
 
             let highestPoint = 0;
 
@@ -123,9 +121,9 @@ export class VoxelLandscapeScene extends AbstractScene {
 
             for (let dist = MIN_DIST; dist < MAX_DIST; dist++) {
 
-                let height = texture.getPixel(texture, rayX, rayY) & 0xff;
-                let projHeight = Math.round((height - eye) * focus / dist + center);
-                let packedRGB = texture.getPixel(this.abstract, rayX, rayY) | 255 << 24;
+                const height = texture.getPixel(texture, rayX, rayY) & 0xff;
+                const projHeight = Math.round((height - eye) * focus / dist + center);
+                const packedRGB = texture.getPixel(this.abstract, rayX, rayY) | 255 << 24;
 
                 if (projHeight > highestPoint) {
                     let index = x + (199 - highestPoint) * 320;
