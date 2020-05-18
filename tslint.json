@@ -10,7 +10,7 @@
         "array-type": [true, "generic"],
         "linebreak-style": [true, "LF"],
         "typedef": [
-            true,
+            false,
             "call-signature",
             "arrow-call-signature",
             "parameter",
@@ -25,7 +25,7 @@
         "trailing-comma": false,
         "no-console": false,
         "prefer-for-of": false,
-        "no-empty": false
-    },
-    "rulesDirectory": []
+        "no-empty": false,
+        "max-line-length": false
+    }
 }

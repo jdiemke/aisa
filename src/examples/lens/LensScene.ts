@@ -44,7 +44,7 @@ export class LensScene extends AbstractScene {
         this.calculateTransformation(20);
 
         return Promise.all([
-            TextureUtils.load(require('./assets/atlantis.png'), false).then(
+            TextureUtils.load(require('../../assets/atlantis.png'), false).then(
                 (texture: Texture) => this.textureBackground = texture
             ),
             TextureUtils.load(require('./assets/blueLens.png'), true).then(

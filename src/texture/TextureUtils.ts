@@ -57,17 +57,17 @@ export class TextureUtils {
             const texture = new Texture();
             texture.texture = new Uint32Array(256 * 256);
 
-            let rng = new RandomNumberGenerator();
+            const rng = new RandomNumberGenerator();
             rng.setSeed(100);
 
             for (let y = 0; y < 256; y++) {
                 for (let x = 0; x < 256; x++) {
-                    let dx = 127 - x
-                    let dy = 127 - y
-                    let r = Math.sqrt(dx * dx + dy * dy) / 127;
+                    const dx = 127 - x;
+                    const dy = 127 - y;
+                    const r = Math.sqrt(dx * dx + dy * dy) / 127;
                     let c = 1 - r;
                     c = c * c;
-                    if (r > 1) c = 0;
+                    if (r > 1) { c = 0; }
                     c = Math.min(1, c * 40);
                     texture.texture[x + y * 256] = 255 | 205 << 8 | 255 << 16 | (c * 255) << 24;
                 }
@@ -79,7 +79,7 @@ export class TextureUtils {
         });
     }
 
-    public static load(filename: string, transparency: boolean): Promise<Texture> {
+    public static load(filename: any, transparency: boolean): Promise<Texture> {
         return new Promise<Texture>((resolve: (texture?: Texture) => void): void => {
             const image: HTMLImageElement = new Image();
             image.onload = (): void => {
@@ -90,7 +90,7 @@ export class TextureUtils {
                 resolve(texture);
             };
             image.onerror = (): void => resolve();
-            image.src = filename;
+            image.src = filename.default;
         });
     }
 

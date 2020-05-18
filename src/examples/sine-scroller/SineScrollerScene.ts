@@ -57,7 +57,7 @@ export class SineScrollerScene extends AbstractScene {
                     require('./assets/dragonsFont.png')
                 );*/
         return Promise.all([
-            TextureUtils.load(require('./assets/hoodlumLogo.png'), true).then(
+            TextureUtils.load(require('../../assets/hoodlumLogo.png'), true).then(
                 (texture: Texture) => this.texture2 = texture
             ),
             this.fontRenderer.init(),

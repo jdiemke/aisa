@@ -13,8 +13,8 @@ import { StreamReader } from './StreamReader';
  */
 export class MD2Loader {
 
-    public static load(filename: string): Promise<MD2Model> {
-        return fetch(filename).then((response: Response) => {
+    public static load(filename: any): Promise<MD2Model> {
+        return fetch(filename.default).then((response: Response) => {
             return response.arrayBuffer();
         }).then((arrayBuffer: ArrayBuffer) => {
             try {

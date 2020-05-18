@@ -6,8 +6,8 @@ import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 
 export class WavefrontLoader {
 
-    public static load(filename: string): Promise<Array<FlatshadedMesh>> {
-        return fetch(filename).then((response: Response) => {
+    public static load(filename: any): Promise<Array<FlatshadedMesh>> {
+        return fetch(filename.default).then((response: Response) => {
             return response.text();
         }).then((text: string): Array<Mesh> => {
             return convertToMeshArray(text);
@@ -16,8 +16,8 @@ export class WavefrontLoader {
         });
     }
 
-    public static loadWithTexture(filename: string): Promise<Array<TexturedMesh>> {
-        return fetch(filename).then((response: Response) => {
+    public static loadWithTexture(filename: any): Promise<Array<TexturedMesh>> {
+        return fetch(filename.default).then((response: Response) => {
             return response.text();
         }).then((text: string): Array<Mesh> => {
             return convertToMeshArray(text);
