@@ -1838,7 +1838,7 @@ export class Framebuffer {
         k.points.forEach((i) => {
             const p = i;
 
-            const point = points.find((point) => point.sub(p).length() < 0.001);
+            const point = points.find((pointVar) => pointVar.sub(p).length() < 0.001);
 
             if (point) {
                 const idx = points.indexOf(point);
@@ -1898,7 +1898,7 @@ export class Framebuffer {
         k.points.forEach((i) => {
             const p = i;
 
-            const point = points.find((point) => point.sub(p).length() < 0.001);
+            const point = points.find((pointVar) => pointVar.sub(p).length() < 0.001);
 
             if (point) {
                 const idx = points.indexOf(point);
@@ -1970,7 +1970,7 @@ export class Framebuffer {
         k.points.forEach((i) => {
             const p = i;
 
-            const point = points.find((point) => point.sub(p).length() < 0.001);
+            const point = points.find((pointVar) => pointVar.sub(p).length() < 0.001);
 
             if (point) {
                 const idx = points.indexOf(point);
@@ -2683,7 +2683,7 @@ export class Framebuffer {
         }
 
         let scale = this.interpolate(this.lensFlareStart, this.lensFlareStart + 100, elapsedTime);
-        if (this.lensFlareVisible != true) {
+        if (this.lensFlareVisible !== true) {
             scale *= (1 - this.interpolate(this.lensFlareEnd, this.lensFlareEnd + 100, elapsedTime));
         }
         const dir = new Vector3f(320 / 2, 200 / 2, 0).sub(pos);

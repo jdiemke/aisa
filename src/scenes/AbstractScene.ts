@@ -10,6 +10,6 @@ export abstract class AbstractScene {
 
     }
 
-    public abstract render(framebuffer: Framebuffer): void;
+    public abstract render(framebuffer: Framebuffer, time: number): void;
 
 }
