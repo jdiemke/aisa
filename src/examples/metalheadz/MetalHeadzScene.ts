@@ -48,8 +48,7 @@ export class MetalHeadzScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
-        const time: number = Date.now();
+    public render(framebuffer: Framebuffer, time: number): void {
         const elapsedTime: number = 0.2 * time;
 
         framebuffer.clearDepthBuffer();
