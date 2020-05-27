@@ -33,6 +33,7 @@ field of computer graphics including clipping, triangle rasterization, geometric
 * [Cube Tunnel](https://jdiemke.github.io/aisa/cube-tunnel.html)
 * [Cube](https://jdiemke.github.io/aisa/cube.html)
 * [Cubes](https://jdiemke.github.io/aisa/voxel-balls.html)
+* [Demo](https://jdiemke.github.io/aisa/demo.html)
 * [Distorted Sphere](https://jdiemke.github.io/aisa/distorted-sphere.html)
 * [DOF Balls](https://jdiemke.github.io/aisa/dof-balls.html)
 * [Flood Fill](https://jdiemke.github.io/aisa/flood-fill.html)
@@ -42,7 +43,8 @@ field of computer graphics including clipping, triangle rasterization, geometric
 * [LED Plasma](https://jdiemke.github.io/aisa/led-plasma.html)
 * [Lens](https://jdiemke.github.io/aisa/lens.html)
 * [Metaballs](https://jdiemke.github.io/aisa/metaballs.html)
-* [Metalheadz](https://jdiemke.github.io/aisa/metalheadz.html)
+* [Metalheadz](https://jdiemke.github.io/aisa/meta
+* [Misc](https://jdiemke.github.io/aisa/misc.html)lheadz.html)
 * [Moving Torus](https://jdiemke.github.io/aisa/moving-torus.html)
 * [Particle Streams](https://jdiemke.github.io/aisa/particle-streams.html)
 * [Particle System](https://jdiemke.github.io/aisa/particle-system.html)
