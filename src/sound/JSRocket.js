@@ -1,11 +1,10 @@
 (function (window) {
+
 	if (!window.JSRocket) {
 		window.JSRocket = {};
-		console.info('create')
 	}
-
+	
 	// var JSRocket = {};
-
 
 	JSRocket.SyncData = function () {
 
@@ -515,4 +514,5 @@
 		};
 	};
 
-});
+})(window);
+

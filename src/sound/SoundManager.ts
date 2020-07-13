@@ -1,6 +1,6 @@
 import 'jsxm/xm';
 import 'jsxm/xmeffects';
-import 'jsRocket/src/jsRocket';
+import './JSRocket'
 
 export class SoundManager {
 

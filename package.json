@@ -38,7 +38,6 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
-    "jsRocket": "file:src/assets/lib/jsRocket/jsRocket-0.0.1.tgz",
     "jsxm": "1.0.1"
   }
 }
