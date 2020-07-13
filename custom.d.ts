@@ -22,3 +22,8 @@ declare module '*.ogg' {
     const content: string;
     export default content;
 }
+
+declare module '*.rocket' {
+    const content: string;
+    export default content;
+}

@@ -81,7 +81,7 @@ module.exports = {
 				use: 'html-loader'
 			},
 			{
-				test: /\.(png|jpg|mp3|ogg|md2|mdl|tga|xm|obj)$/,
+				test: /\.(png|jpg|mp3|ogg|md2|mdl|tga|xm|obj|rocket)$/,
 				use: 'file-loader'
 			}
 		]

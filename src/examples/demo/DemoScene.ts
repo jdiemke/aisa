@@ -181,7 +181,7 @@ export class DemoScene extends AbstractScene {
 		if (this._demoMode) {
 			this.sm._syncDevice.setConfig({
 				'rocketXML':
-					'./src/assets/sound/alpha_c_-_euh.rocket'
+					require('../../assets/sound/alpha_c_-_euh.rocket').default
 			});
 			this.sm._syncDevice.init('demo');
 
@@ -226,7 +226,7 @@ export class DemoScene extends AbstractScene {
 		// this.sm.playOgg(require('../../assets/sound/alpha_c_-_euh.ogg').default);
 		// this.sm.audioContext.createMediaElementSource(this._audio);
 
-		this.sm._audio.src = './src/assets/sound/alpha_c_-_euh.ogg';
+		this.sm._audio.src = require('../../assets/sound/alpha_c_-_euh.ogg').default;
 		this.sm._audio.load();
 		this.sm._audio.preload = 'true';
 		this.sm._audio.loop = true;
