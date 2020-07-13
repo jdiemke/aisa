@@ -1,20 +1,24 @@
-export class JSRocket {
-
-	private _syncData;
-
-	public constructor() {
-
+(function (window) {
+	if (!window.JSRocket) {
+		window.JSRocket = {};
+		console.info('create')
 	}
 
-	SyncData(): void {
-		const _track = [];
+	// var JSRocket = {};
 
-		function getTrack(index: number) {
+
+	JSRocket.SyncData = function () {
+
+		"use strict";
+
+		var _track = [];
+
+		function getTrack(index) {
 			return _track[index];
 		}
 
 		function getIndexForName(name) {
-			for (let i = 0; i < _track.length; i++) {
+			for (var i = 0; i < _track.length; i++) {
 
 				if (_track[i].name === name) {
 					return i;
@@ -29,104 +33,138 @@ export class JSRocket {
 		}
 
 		function createIndex(varName) {
-			const track = new JSRocket().Track();
-			this.track.name = varName;
-			this._track.push(track);
+			var track = new JSRocket.Track();
+			track.name = varName;
+
+			_track.push(track);
 		}
+
+		return {
+			getTrack: getTrack,
+			getIndexForName: getIndexForName,
+			getTrackLength: getTrackLength,
+			createIndex: createIndex
+		};
 	};
+	JSRocket.Track = function () {
 
+		"use strict";
 
-	Track() {
+		var STEP = 0,
+			LINEAR = 1,
+			SMOOTH = 2,
+			RAMP = 3;
 
-		const STEP = 0;
-		const LINEAR = 1;
-		const SMOOTH = 2;
-		const RAMP = 3;
-
-		let data = [];
-
-		function findKeyIndex(keys, row) {
-			let lo = 0
-			let hi = keys.length;
-			while (lo < hi) {
-				const mi = ((hi + lo) / 2) | 0;
-
-				if (keys[mi] < row) {
-					lo = mi + 1;
-				} else if (keys[mi] > row) {
-					hi = mi;
-				} else {
-					return mi;
-				}
-			}
-			return lo - 1;
-		}
+		var _track = [],
+			_index = [];
 
 		function getValue(row) {
-			let keys = Object.keys(data);
+			var intRow = Math.floor(row),
+				bound = getBound(intRow),
+				lower = bound.low,
+				upper = bound.high,
+				v;
 
-			if (!keys.length) {
-				return 0.0;
+			if (isNaN(lower)) {
+
+				return NaN;
+
+			} else if ((isNaN(upper)) || (_track[lower].interpolation === STEP)) {
+
+				return _track[lower].value;
+
+			} else {
+
+				switch (_track[lower].interpolation) {
+
+					case LINEAR:
+						v = (row - lower) / (upper - lower);
+						return _track[lower].value + (_track[upper].value - _track[lower].value) * v;
+
+					case SMOOTH:
+						v = (row - lower) / (upper - lower);
+						v = v * v * (3 - 2 * v);
+						return (_track[upper].value * v) + (_track[lower].value * (1 - v));
+
+					case RAMP:
+						v = Math.pow((row - lower) / (upper - lower), 2);
+						return _track[lower].value + (_track[upper].value - _track[lower].value) * v;
+				}
 			}
 
-			let idx = findKeyIndex(keys, Math.floor(row));
-			if (idx < 0) {
-				return data[keys[0]].value;
-			}
-			if (idx > keys.length - 2) {
-				return data[keys[keys.length - 1]].value;
-			}
-
-			// lookup keys and values
-			let k0 = keys[idx]
-			let k1 = keys[idx + 1];
-			let a = data[k0].value;
-			let b = data[k1].value;
-
-			// interpolate
-			let t = (row - Number(k0)) / (Number(k1) - Number(k0));
-			switch (data[k0].interpolation) {
-				case 0:
-					return a;
-				case 1:
-					return a + (b - a) * t;
-				case 2:
-					return a + (b - a) * t * t * (3 - 2 * t);
-				case 3:
-					return a + (b - a) * Math.pow(t, 2.0);
-			}
+			return NaN;
 		}
 
-		function add(row, value, interpolation) {
-			data[row] = {
+		function getBound(rowIndex) {
+			var lower = NaN,
+				upper = NaN;
+
+			for (var i = 0; i < _index.length; i++) {
+
+				if (_index[i] <= rowIndex) {
+
+					lower = _index[i];
+
+				} else if (_index[i] >= rowIndex) {
+
+					upper = _index[i];
+					break;
+				}
+			}
+
+			return { "low": lower, "high": upper };
+		}
+
+		function add(row, value, interpolation, delaySort) {
+
+			remove(row);
+
+			//index lookup table
+			_index.push(row);
+			_track[row] = {
 				"value": value,
 				"interpolation": interpolation
 			};
+
+			//parser calls this quite often, so we sort later
+			if (delaySort !== true) {
+				sortIndex();
+			}
+		}
+
+		function sortIndex() {
+
+			_index = _index.sort(function (a, b) {
+				return a - b;
+			});
 		}
 
 		function remove(row) {
-			delete data[row];
+			if (_index.indexOf(row) > -1) {
+				_index.splice(_index.indexOf(row), 1);
+				delete _track[row];
+			}
 		}
 
 		return {
 			getValue: getValue,
+			sortIndex: sortIndex,
 			add: add,
 			remove: remove
 		};
 	};
+	JSRocket.SyncDevicePlayer = function (cfg) {
 
-	SyncDevicePlayer(cfg) {
+		"use strict";
 
-		let _urlRequest;
-		let _syncData = new JSRocket().SyncData();
-		let _eventHandler = {
-			'ready': function () {
-			},
-			'error': function () {
-			}
-		};
-
-
+		var _urlRequest,
+			_syncData = new JSRocket.SyncData(),
+			_eventHandler = {
+				'ready': function () {
+				},
+				'error': function () {
+				}
+			};
 
 		function load(url) {
 
@@ -155,45 +193,43 @@ export class JSRocket {
 		}
 
 		function readXML(xmlString) {
-			let key;
-			let tLen = 0;
-			let k = 0;
-			let kLen = 0;
-			let xml = (new DOMParser()).parseFromString(xmlString, 'text/xml');
-			let tracks = xml.getElementsByTagName('tracks');
+			var key,
+				t = 0, tLen, k = 0, kLen,
+				xml = (new DOMParser()).parseFromString(xmlString, 'text/xml'),
+				tracks = xml.getElementsByTagName('tracks');
 
-			// <tracks>
+			//<tracks>
 			var trackList = tracks[0].getElementsByTagName('track');
 
-			for (let t = 0, tLen = trackList.length; t < tLen; t++) {
+			for (t, tLen = trackList.length; t < tLen; t++) {
 
-				let track = getTrack(trackList[t].getAttribute('name'));
-				let keyList = trackList[t].getElementsByTagName('key');
+				var track = getTrack(trackList[t].getAttribute('name')),
+					keyList = trackList[t].getElementsByTagName('key');
 
 				for (k = 0, kLen = keyList.length; k < kLen; k++) {
 					key = keyList[k];
 					track.add(parseInt(key.getAttribute('row'), 10),
 						parseFloat(key.getAttribute('value')),
-						parseInt(key.getAttribute('interpolation'), 10));
+						parseInt(key.getAttribute('interpolation'), 10),
+						true);
 
 				}
+				track.sortIndex();
 			}
 
 			_eventHandler.ready();
 		}
 
 		function getTrack(name) {
-			console.info('track name', name)
-			console.info('this._syncData', _syncData)
 
-			const index = this._syncData.getIndexForName(name);
+			var index = _syncData.getIndexForName(name);
 
 			if (index > -1) {
-				return this._syncData.getTrack(index);
+				return _syncData.getTrack(index);
 			}
 
-			this._syncData.createIndex(name);
-			return this._syncData.getTrack(this._syncData.getTrackLength() - 1);
+			_syncData.createIndex(name);
+			return _syncData.getTrack(_syncData.getTrackLength() - 1);
 		}
 
 		function setEvent(evt, handler) {
@@ -204,31 +240,36 @@ export class JSRocket {
 
 		}
 
-		if (cfg.rocketXML === '' || cfg.rocketXML === undefined || cfg.rocketXML === undefined) {
+		if (cfg.rocketXML === "" || cfg.rocketXML === undefined || cfg.rocketXML === undefined) {
 			throw ("[jsRocket] rocketXML is not set, try _syncDevice.setConfig({'rocketXML':'url/To/RocketXML.rocket'})");
 		} else {
 			load(cfg.rocketXML);
 		}
 
+		return {
+			load: load,
+			getTrack: getTrack,
+			update: nop,
+			on: setEvent
+		};
 	};
+	JSRocket.SyncDeviceClient = function (cfg) {
 
+		"use strict";
 
-
-	SyncDeviceClient(cfg) {
-
-		const CMD_SET_KEY = 0;
-		const CMD_DELETE_KEY = 1;
-		const CMD_GET_TRACK = 2;
-		const CMD_SET_ROW = 3;
-		const CMD_PAUSE = 4;
-		const CMD_SAVE_TRACKS = 5;
+		var CMD_SET_KEY = 0,
+			CMD_DELETE_KEY = 1,
+			CMD_GET_TRACK = 2,
+			CMD_SET_ROW = 3,
+			CMD_PAUSE = 4,
+			CMD_SAVE_TRACKS = 5;
 
 		var _ws = new WebSocket(cfg.socketURL),
-			_syncData = this.SyncData(),
+			_syncData = new JSRocket.SyncData(),
 			_eventHandler = {
 				'ready': function () {
 				},
-				'update': function (j) {
+				'update': function () {
 				},
 				'play': function () {
 				},
@@ -250,12 +291,12 @@ export class JSRocket {
 				cmd = queue[0],
 				track, row, value, interpolation;
 
-			// Handshake
+			//Handshake
 			if (cmd === 104) {
 
 				_eventHandler.ready();
 
-				// PAUSE
+				//PAUSE
 			} else if (CMD_PAUSE === cmd) {
 
 				if (queue[1] === 1) {
@@ -264,45 +305,50 @@ export class JSRocket {
 					_eventHandler.play();
 				}
 
-				// SET_ROW
+				//SET_ROW
 			} else if (CMD_SET_ROW === cmd) {
 
 				row = toInt(queue.subarray(1, 5));
 
 				_eventHandler.update(row);
 
-				// SET_KEY
+				//SET_KEY
 			} else if (CMD_SET_KEY === cmd) {
 
 				track = toInt(queue.subarray(1, 5));
 				row = toInt(queue.subarray(5, 9));
 
-				// value = Math.round(toFloat(queue.subarray(9, 13)) * 100) / 100; //round to what's seen in Rocket tracks
-				value = toFloat(queue.subarray(9, 13)); // use the values you see in Rocket statusbar
+				//value = Math.round(toFloat(queue.subarray(9, 13)) * 100) / 100; //round to what's seen in Rocket tracks
+				value = toFloat(queue.subarray(9, 13)); //use the values you see in Rocket statusbar
 
 				interpolation = toInt(queue.subarray(13, 14));
-				this._syncData.getTrack(track).add(row, value, interpolation);
+				_syncData.getTrack(track).add(row, value, interpolation);
 
-				// DELETE
+				//don't set row, as this could also be a interpolation change
+				_eventHandler.update();
+
+				//DELETE
 			} else if (CMD_DELETE_KEY === cmd) {
 
 				track = toInt(queue.subarray(1, 5));
 				row = toInt(queue.subarray(5, 9));
 
-				this._syncData.getTrack(track).remove(row);
+				_syncData.getTrack(track).remove(row);
 
-				// SAVE
+				_eventHandler.update();
+
+				//SAVE
 			} else if (CMD_SAVE_TRACKS === cmd) {
 				_eventHandler.save();
 			}
 		}
 
 		function onClose(e) {
-			console.warn('>> connection closed', e);
+			console.warn(">> connection closed", e);
 		}
 
 		function onError(e) {
-			console.error('>> connection error', e);
+			console.error(">> connection error'd", e);
 		}
 
 		_ws.onopen = onOpen;
@@ -312,31 +358,23 @@ export class JSRocket {
 
 		function getTrack(name) {
 
-			const index = this._syncData.getIndexForName(name);
+			var index = _syncData.getIndexForName(name);
 
 			if (index > -1) {
-				return this._syncData.getTrack(index);
+				return _syncData.getTrack(index);
 			}
 
-			const utf8Name = encodeURIComponent(name).replace(/%([\dA-F]{2})/g, function (m, c) {
-				return String.fromCharCode(parseInt('0x' + c, 16));
-			});
-			const message = [CMD_GET_TRACK,
-				(utf8Name.length >> 24) & 0xFF, (utf8Name.length >> 16) & 0xFF,
-				(utf8Name.length >> 8) & 0xFF, (utf8Name.length) & 0xFF];
+			_ws.send(new Uint8Array([CMD_GET_TRACK, 0, 0, 0, name.length]).buffer);
+			_ws.send(name);
 
-			for (let i = 0; i < utf8Name.length; i++) {
-				message.push(utf8Name.charCodeAt(i));
-			}
+			_syncData.createIndex(name);
 
-			_ws.send(new Uint8Array(message).buffer);
-
-			this._syncData.createIndex(name);
-			return this._syncData.getTrack(this._syncData.getTrackLength() - 1);
+			return _syncData.getTrack(_syncData.getTrackLength() - 1);
 		}
 
 		function setRow(row) {
-			const streamInt = [(row >> 24) & 0xFF,
+
+			var streamInt = [(row >> 24) & 0xFF,
 			(row >> 16) & 0xFF,
 			(row >> 8) & 0xFF,
 			(row) & 0xFF];
@@ -344,11 +382,10 @@ export class JSRocket {
 			_ws.send(new Uint8Array([CMD_SET_ROW, streamInt[0], streamInt[1], streamInt[2], streamInt[3]]).buffer);
 		}
 
-
 		function toInt(arr) {
 
-			let i = 0;
-			const view = new DataView(new ArrayBuffer(arr.length));
+			var i = 0,
+				view = new DataView(new ArrayBuffer(arr.length));
 
 			for (; i < arr.length; i++) {
 				view.setUint8(i, arr[i]);
@@ -362,7 +399,7 @@ export class JSRocket {
 		}
 
 		function toFloat(arr) {
-			const view = new DataView(new ArrayBuffer(4));
+			var view = new DataView(new ArrayBuffer(4));
 			view.setUint8(0, arr[0]);
 			view.setUint8(1, arr[1]);
 			view.setUint8(2, arr[2]);
@@ -375,21 +412,28 @@ export class JSRocket {
 			_eventHandler[evt] = handler;
 		}
 
+		return {
+			getTrack: getTrack,
+			update: setRow,
+			on: setEvent
+		};
 	};
 
-	SyncDevice() {
+	JSRocket.SyncDevice = function () {
+
+		"use strict";
 
 		var _connected = false,
 			_device,
 			_previousIntRow,
 			_config = {
-				"socketURL": "ws://localhost:1339",
+				"socketURL": "ws://localhost:1338",
 				"rocketXML": ""
 			},
 			_eventHandler = {
 				'ready': function () {
 				},
-				'update': function (j) {
+				'update': function () {
 				},
 				'play': function () {
 				},
@@ -397,12 +441,11 @@ export class JSRocket {
 				}
 			};
 
-
 		function init(mode) {
-			if (mode === 'demo') {
-				_device = new JSRocket().SyncDevicePlayer(_config);
+			if (mode === "demo") {
+				_device = new JSRocket.SyncDevicePlayer(_config);
 			} else {
-				_device = new JSRocket().SyncDeviceClient(_config);
+				_device = new JSRocket.SyncDeviceClient(_config);
 			}
 
 			_device.on('ready', deviceReady);
@@ -416,7 +459,7 @@ export class JSRocket {
 		}
 
 		function setConfig(cfg) {
-			for (const option in cfg) {
+			for (var option in cfg) {
 				if (cfg.hasOwnProperty(option)) {
 					_config[option] = cfg[option];
 				}
@@ -451,7 +494,7 @@ export class JSRocket {
 		}
 
 		function update(row) {
-			// no need to update rocket on float rows
+			//no need to update rocket on float rows
 			if (Math.floor(row) !== _previousIntRow) {
 				_previousIntRow = Math.floor(row);
 				_device.update(_previousIntRow);
@@ -470,11 +513,6 @@ export class JSRocket {
 			update: update,
 			on: setEvent
 		};
-
-
 	};
 
-
-
-
-}
+});
