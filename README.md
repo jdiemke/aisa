@@ -43,8 +43,8 @@ field of computer graphics including clipping, triangle rasterization, geometric
 * [LED Plasma](https://jdiemke.github.io/aisa/led-plasma.html)
 * [Lens](https://jdiemke.github.io/aisa/lens.html)
 * [Metaballs](https://jdiemke.github.io/aisa/metaballs.html)
-* [Metalheadz](https://jdiemke.github.io/aisa/meta
-* [Misc](https://jdiemke.github.io/aisa/misc.html)lheadz.html)
+* [Metalheadz](https://jdiemke.github.io/aisa/metalheadz.html)
+* [Misc](https://jdiemke.github.io/aisa/misc.html)
 * [Moving Torus](https://jdiemke.github.io/aisa/moving-torus.html)
 * [Particle Streams](https://jdiemke.github.io/aisa/particle-streams.html)
 * [Particle System](https://jdiemke.github.io/aisa/particle-system.html)

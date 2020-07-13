@@ -29,7 +29,6 @@
     "file-loader": "6.0.0",
     "html-loader": "1.1.0",
     "html-webpack-plugin": "4.3.0",
-    "jsxm": "1.0.1",
     "ts-loader": "7.0.4",
     "ts-node": "8.10.1",
     "tslint": "6.1.2",
@@ -37,5 +36,9 @@
     "webpack": "4.43.0",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.11.0"
+  },
+  "dependencies": {
+    "jsRocket": "file:src/assets/lib/jsRocket/jsRocket-0.0.1.tgz",
+    "jsxm": "1.0.1"
   }
 }
