@@ -114,6 +114,12 @@ export class DemoScene extends AbstractScene {
 	}
 
 	public render(framebuffer: Framebuffer): void {
+
+		// show message if rocket app is not running in background
+		if (!this.sm._syncDevice.connected && !this._demoMode) {
+			framebuffer.drawText(8, 18, 'Rocket not connected'.toUpperCase(), this.texture4);
+			return;
+		}
 		const currentTime: number = Date.now();
 
 		if (currentTime > this.fpsStartTime + 1000) {
@@ -204,6 +210,8 @@ export class DemoScene extends AbstractScene {
 
 	onSyncReady() {
 		console.info('onSyncReady', this.sm._syncDevice)
+
+		this.sm._syncDevice.connected = true;
 		this._clearR = this.sm._syncDevice.getTrack('clearR');
 		this._clearG = this.sm._syncDevice.getTrack('clearG');
 		this._clearB = this.sm._syncDevice.getTrack('clearB');
@@ -225,16 +233,6 @@ export class DemoScene extends AbstractScene {
 		this.sm._audio.load();
 		this.sm._audio.preload = 'true';
 		this.sm._audio.loop = true;
-
-		// debug - resume audio after reload
-		this.sm._audio.addEventListener('canplay', () => this.onAudioReady());
-	}
-
-	onAudioReady() {
-		// console.info('onAudioReady');
-		if (this._demoMode) {
-			this.sm._audio.play();
-		};
 	}
 
 	// row is only given if you navigate, or change a value on the row in Rocket

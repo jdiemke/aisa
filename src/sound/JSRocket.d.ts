@@ -1,3 +1,5 @@
+// tslint:disable:no-namespace
+
 // Type definitions for jsRocket 1.0.1
 // https://github.com/rocket/rocket/tree/master/js
 
@@ -30,4 +32,7 @@ declare namespace JSRocket {
 	function Track(): void;
 
 	function SyncDevicePlayer(): void;
+
+	function SyncDeviceClient(): void;
+
 }
