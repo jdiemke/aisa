@@ -24,13 +24,13 @@ export class RotoZoomerScene extends AbstractScene {
     }
 
     drawRotoZoomer(framebuffer: Framebuffer, texture: Texture) {
-        let scale = Math.sin(Date.now() * 0.0005) + 1.1;
+        const scale = Math.sin(Date.now() * 0.0005) + 1.1;
 
-        let yStepX = Math.sin(Date.now() * 0.0003) * scale;
-        let yStepY = Math.cos(Date.now() * 0.0003) * scale;
+        const yStepX = Math.sin(Date.now() * 0.0003) * scale;
+        const yStepY = Math.cos(Date.now() * 0.0003) * scale;
 
-        let xStepX = yStepY;
-        let xStepY = -yStepX;
+        const xStepX = yStepY;
+        const xStepY = -yStepX;
 
         let texYCoord = Math.sin(Date.now() * 0.0002) * 512;
         let texXCoord = Math.cos(Date.now() * 0.0002) * 512;

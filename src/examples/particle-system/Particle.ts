@@ -33,7 +33,7 @@ export class Particle {
     public update(elapsedTime: number, deltaTime: number): void {
         this.position = this.position.add(this.velocity.mul(deltaTime / 1000));
         this.alpha = 1 - (elapsedTime - this.start) / this.lifespan;
-        //this.velocity = this.velocity.sub(new Vector3f(0, +0.005 * deltaTime / 1000, 0));
+        // this.velocity = this.velocity.sub(new Vector3f(0, +0.005 * deltaTime / 1000, 0));
         if ((this.start + this.lifespan) < elapsedTime) {
             this.dead = true;
         }

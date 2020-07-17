@@ -23,10 +23,10 @@ export class Sphere extends AbstractGeometricObject {
             for (let i = 0; i < STEPS2; i++) {
                 index.push(((STEPS2 * j) + (1 + i) % STEPS2)); // 2
                 index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 1
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); //3
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); // 3
 
-                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2)); //4
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); //3
+                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2)); // 4
+                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); // 3
                 index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 5
             }
         }

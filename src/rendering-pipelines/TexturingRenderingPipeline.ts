@@ -186,13 +186,13 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
         let output = subject;
 
         for (let j = 0; j < Framebuffer.clipRegion.length; j++) {
-            let edge = Framebuffer.clipRegion[j];
-            let input = output;
+            const edge = Framebuffer.clipRegion[j];
+            const input = output;
             output = new Array<Vertex>();
             let S = input[input.length - 1];
 
             for (let i = 0; i < input.length; i++) {
-                let point = input[i];
+                const point = input[i];
                 if (edge.isInside2(point)) {
                     if (!edge.isInside2(S)) {
                         output.push(edge.computeIntersection2(S, point));

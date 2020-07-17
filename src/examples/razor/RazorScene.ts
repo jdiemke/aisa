@@ -23,7 +23,7 @@ export class RazorScene extends AbstractScene {
     private cube: Cube;
     private dodecahedron: Dodecahedron;
     private pyramid: Pyramid;
-    private icosahedron: Sphere; //Icosahedron;
+    private icosahedron: Sphere; // Icosahedron;
 
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
 
@@ -61,7 +61,7 @@ export class RazorScene extends AbstractScene {
         framebuffer.noise(time, this.noise, 0.04);
     }
 
-    public reproduceRazorScene(framebuffer: Framebuffer, elapsedTime: number, texture: { tex: Texture, scale: number, alpha: number }[], dirt: Texture): void {
+    public reproduceRazorScene(framebuffer: Framebuffer, elapsedTime: number, texture: Array<{ tex: Texture, scale: number, alpha: number }>, dirt: Texture): void {
         // camerea:
         // http://graphicsrunner.blogspot.de/search/label/Water
         framebuffer.clearColorBuffer(72 | 56 << 8 | 48 << 16 | 255 << 24);
@@ -69,7 +69,7 @@ export class RazorScene extends AbstractScene {
 
         let modelViewMartrix: Matrix4f;
 
-        let camera = Matrix4f.constructTranslationMatrix(0, 0, -6.4 - 5 * (Math.sin(elapsedTime * 0.06) * 0.5 + 0.5)).multiplyMatrix(
+        const camera = Matrix4f.constructTranslationMatrix(0, 0, -6.4 - 5 * (Math.sin(elapsedTime * 0.06) * 0.5 + 0.5)).multiplyMatrix(
             Matrix4f.constructXRotationMatrix((Math.sin(elapsedTime * 0.08) * 0.5 + 0.5) * 0.5).multiplyMatrix(
                 Matrix4f.constructYRotationMatrix(elapsedTime * 0.1)));
 
@@ -83,8 +83,8 @@ export class RazorScene extends AbstractScene {
         let model = this.dodecahedron.getMesh();
         framebuffer.renderingPipeline.draw(model, modelViewMartrix);
 
-        let yDisplacement = -1.5;
-        let distance = 2.8;
+        const yDisplacement = -1.5;
+        const distance = 2.8;
         scale = 1.0;
         modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale);
         modelViewMartrix = Matrix4f.constructTranslationMatrix(distance, yDisplacement + 1.0, distance).multiplyMatrix(modelViewMartrix);
@@ -166,7 +166,7 @@ export class RazorScene extends AbstractScene {
 
         framebuffer.renderingPipeline.enableLighting(true);
 
-        let lensflareScreenSpace = framebuffer.project(camera.multiply(new Vector3f(12.0, 4.0, 0)));
+        const lensflareScreenSpace = framebuffer.project(camera.multiply(new Vector3f(12.0, 4.0, 0)));
 
         framebuffer.drawLensFlare(lensflareScreenSpace, elapsedTime * 100, texture, dirt);
     }

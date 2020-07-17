@@ -15,10 +15,10 @@ export class Matrix3f {
     public m33: number;
 
     static constructXRotationMatrix(angle: number) {
-        let matrix = new Matrix3f();
+        const matrix = new Matrix3f();
 
-        let cos = Math.cos(angle);
-        let sin = Math.sin(angle);
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
 
         matrix.m11 = 1.0;
         matrix.m12 = 0.0;
@@ -36,7 +36,7 @@ export class Matrix3f {
     }
 
     static constructYRotationMatrix(angle: number) {
-        let matrix = new Matrix3f();
+        const matrix = new Matrix3f();
 
         matrix.m11 = Math.cos(angle);
         matrix.m12 = 0.0;
@@ -54,7 +54,7 @@ export class Matrix3f {
     }
 
     static constructZRotationMatrix(angle: number) {
-        let matrix = new Matrix3f();
+        const matrix = new Matrix3f();
 
         matrix.m11 = Math.cos(angle);
         matrix.m12 = -Math.sin(angle);
@@ -72,7 +72,7 @@ export class Matrix3f {
     }
 
     static constructScaleMatrix(xScale: number, yScale: number, zScale: number) {
-        let matrix = new Matrix3f();
+        const matrix = new Matrix3f();
 
         matrix.m11 = xScale;
         matrix.m12 = 0.0;
@@ -90,7 +90,7 @@ export class Matrix3f {
     }
 
     public multiplyMatrix(matrix: Matrix3f): Matrix3f {
-        let result = new Matrix3f();
+        const result = new Matrix3f();
 
         result.m11 = this.m11 * matrix.m11 + this.m12 * matrix.m21 + this.m13 * matrix.m31;
         result.m21 = this.m21 * matrix.m11 + this.m22 * matrix.m21 + this.m23 * matrix.m31;

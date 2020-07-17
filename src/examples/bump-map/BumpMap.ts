@@ -17,13 +17,13 @@ export class BumpMap extends AbstractScene {
         this.phong = new Texture(new Uint32Array(256 * 256), 256, 256);
         for (let i = 0; i < 255; i++) {
             for (let j = 0; j < 255; j++) {
-                let nX = (i - 128) / 128;
-                let nY = (j - 128) / 128;
+                const nX = (i - 128) / 128;
+                const nY = (j - 128) / 128;
                 let nZ = 1 - Math.sqrt(nX * nX + nY * nY);
                 if (nZ < 0) {
                     nZ = 0;
                 }
-                let inten = Math.round(nZ * 255) & 0xff;
+                const inten = Math.round(nZ * 255) & 0xff;
                 this.phong.texture[i + 256 * j] = inten |
                     inten << 8 | inten << 16 | 255 << 24;
             }
@@ -42,8 +42,8 @@ export class BumpMap extends AbstractScene {
          let framebufferIndex: number = 0;
          for (let y = 0; y < 200; y++) {
              for (let x = 0; x < 320; x++) {
-                 let nx = ((this.bump.getPixel3(this.bump, x - 1, y) & 0xff) - (this.bump.getPixel3(this.bump, x + 1, y) & 0xff));
-                 let ny = ((this.bump.getPixel3(this.bump, x, y - 1) & 0xff) - (this.bump.getPixel3(this.bump, x, y + 1) & 0xff));
+                 const nx = ((this.bump.getPixel3(this.bump, x - 1, y) & 0xff) - (this.bump.getPixel3(this.bump, x + 1, y) & 0xff));
+                 const ny = ((this.bump.getPixel3(this.bump, x, y - 1) & 0xff) - (this.bump.getPixel3(this.bump, x, y + 1) & 0xff));
                  this.normals[framebufferIndex++] = [nx, ny];
              }
          }
@@ -59,21 +59,21 @@ export class BumpMap extends AbstractScene {
         for (let y = 0; y < 200; y++) {
             for (let x = 0; x < 320; x++) {
 
-                let lx = x + lightPosX;
-                let ly = y + lightPosY;
+                const lx = x + lightPosX;
+                const ly = y + lightPosY;
 
                 const normal = this.normals[framebufferIndex];
 
-                let nx = ((-normal[0] - lx) + 128) | 0;
-                let ny = ((-normal[1] - ly) + 128) | 0;
-                let pixel = this.phong.getPixel2(this.phong,
+                const nx = ((-normal[0] - lx) + 128) | 0;
+                const ny = ((-normal[1] - ly) + 128) | 0;
+                const pixel = this.phong.getPixel2(this.phong,
                     Math.max(0, Math.min(nx, 255)), Math.max(0, Math.min((ny), 255)));
-                let scale = Math.min((pixel & 0xff) + 80, 255) / 255;
+                const scale = Math.min((pixel & 0xff) + 80, 255) / 255;
 
-                let texel = this.map.texture[framebufferIndex];
-                let red = (texel >> 0) & 0xff;
-                let green = (texel >> 8) & 0xff;
-                let blue = (texel >> 16) & 0xff;
+                const texel = this.map.texture[framebufferIndex];
+                const red = (texel >> 0) & 0xff;
+                const green = (texel >> 8) & 0xff;
+                const blue = (texel >> 16) & 0xff;
                 framebuffer.framebuffer[framebufferIndex++] =
                     Math.round(red * scale) |
                     Math.round(green * scale) << 8 |

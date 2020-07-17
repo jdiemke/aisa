@@ -15,7 +15,7 @@ export class MetaballsScene extends AbstractScene {
     }
 
     private drawMetaballs(framebuffer: Framebuffer): void {
-        let balls: Array<Vector3f> = [
+        const balls: Array<Vector3f> = [
             new Vector3f(Math.sin(Date.now() * 0.002) * 100 + 150,
                 Math.cos(Date.now() * 0.0035) * 70 + 100, 0),
             new Vector3f(Math.sin(Date.now() * 0.0015) * 100 + 150,
@@ -30,9 +30,9 @@ export class MetaballsScene extends AbstractScene {
             for (let x = 0; x < 320; x++) {
                 let intensity = 0;
                 for (let b = 0; b < 3; b++) {
-                    let xx = (balls[b].x - x);
-                    let yy = (balls[b].y - y);
-                    let length = Math.sqrt(xx * xx + yy * yy);
+                    const xx = (balls[b].x - x);
+                    const yy = (balls[b].y - y);
+                    const length = Math.sqrt(xx * xx + yy * yy);
                     intensity += 5500 / length;
                 }
                 framebuffer.framebuffer[index++] = 255 << 24 | this.mapColor(intensity);
@@ -41,10 +41,10 @@ export class MetaballsScene extends AbstractScene {
     }
 
     private interpolateColor(start: number, end: number, value: number, color1: number, color2: number): number {
-        let scale = this.interpolate(start, end, value);
-        let red = (color1 >> 0 & 0xff) * (1 - scale) + scale * (color2 >> 0 & 0xff);
-        let green = (color1 >> 8 & 0xff) * (1 - scale) + scale * (color2 >> 8 & 0xff);
-        let blue = (color1 >> 16 & 0xff) * (1 - scale) + scale * (color2 >> 16 & 0xff);
+        const scale = this.interpolate(start, end, value);
+        const red = (color1 >> 0 & 0xff) * (1 - scale) + scale * (color2 >> 0 & 0xff);
+        const green = (color1 >> 8 & 0xff) * (1 - scale) + scale * (color2 >> 8 & 0xff);
+        const blue = (color1 >> 16 & 0xff) * (1 - scale) + scale * (color2 >> 16 & 0xff);
         return red | green << 8 | blue << 16;
     }
 

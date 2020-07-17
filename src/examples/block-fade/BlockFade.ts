@@ -25,8 +25,8 @@ export class BlockFade extends AbstractScene {
     }
 
     public blockFace(framebuffer: Framebuffer, texture: Texture, time: number, startTime: number) {
-        let fadeArray = new Array<number>(16 * 10);
-        let rng = new RandomNumberGenerator();
+        const fadeArray = new Array<number>(16 * 10);
+        const rng = new RandomNumberGenerator();
         rng.setSeed(366);
         // TODO: different fadeArray algorithms
         for (let y = 0; y < 10; y++) {

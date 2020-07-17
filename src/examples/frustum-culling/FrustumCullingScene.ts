@@ -41,7 +41,7 @@ export class FrustumCullingScene extends AbstractScene {
         framebuffer.clearColorBuffer(72 | 56 << 8 | 48 << 16 | 255 << 24);
         framebuffer.clearDepthBuffer();
 
-        let keyFrames: Array<CameraKeyFrame> = [
+        const keyFrames: Array<CameraKeyFrame> = [
             new CameraKeyFrame(new Vector3f(-5, 3, 10), new Vector3f(0, 0, 0)),
             new CameraKeyFrame(new Vector3f(5, 10, 10), new Vector3f(0, 0, 0.1)),
             new CameraKeyFrame(new Vector3f(5, 10, 0), new Vector3f(1.5, -1, -0.2)),
@@ -54,13 +54,13 @@ export class FrustumCullingScene extends AbstractScene {
             new CameraKeyFrame(new Vector3f(5, 7, -10), new Vector3f(2.5, 0, -0.09)),
         ];
 
-        let cameraAnimator = new CameraAnimator();
+        const cameraAnimator = new CameraAnimator();
         cameraAnimator.setKeyFrames(keyFrames);
 
-        let modelViewMartrix: Matrix4f = cameraAnimator.getViewMatrix(elapsedTime);
+        const modelViewMartrix: Matrix4f = cameraAnimator.getViewMatrix(elapsedTime);
 
 
-        let frustumCuller = new FrustumCuller();
+        const frustumCuller = new FrustumCuller();
         frustumCuller.updateFrustum(modelViewMartrix, cameraAnimator.pos);
 
         for (let j = 0; j <  this.world.length; j++) {
@@ -69,22 +69,22 @@ export class FrustumCullingScene extends AbstractScene {
 
             if (frustumCuller.isPotentiallyVisible(model[1])) {
                 this.renderingPipeline.draw(model[0], modelViewMartrix);
-                let colLine = 255 << 24 | 255 << 8;
+                const colLine = 255 << 24 | 255 << 8;
                 framebuffer.drawBoundingSphere(model[1], modelViewMartrix, colLine);
               //  count++;
             } else {
-                let colLine = 255 << 24 | 255;
+                const colLine = 255 << 24 | 255;
                 framebuffer.drawBoundingSphere(model[1], modelViewMartrix, colLine);
             }
         }
 
         if (texture2) {
-            let points: Array<Vector3f> = new Array<Vector3f>();
+            const points: Array<Vector3f> = new Array<Vector3f>();
 
-            let rng = new RandomNumberGenerator();
+            const rng = new RandomNumberGenerator();
             rng.setSeed(66);
             for (let i = 0; i < 640; i++) {
-                //points.push(new Vector3f(rng.getFloat() * 30 - 15, rng.getFloat() * 10 - 1, rng.getFloat() * 30 - 15));
+                // points.push(new Vector3f(rng.getFloat() * 30 - 15, rng.getFloat() * 10 - 1, rng.getFloat() * 30 - 15));
                 let x = rng.getFloat() * 30 - 15;
                 x += Math.sin(elapsedTime * 0.0008 + x) * 2;
                 let y = rng.getFloat() * 30 - 15;
@@ -94,18 +94,18 @@ export class FrustumCullingScene extends AbstractScene {
                 points.push(new Vector3f(x, y, z));
             }
 
-            let points2: Array<Vector3f> = new Array<Vector3f>(points.length);
+            const points2: Array<Vector3f> = new Array<Vector3f>(points.length);
             points.forEach(element => {
-                let transformed = framebuffer.project(modelViewMartrix.multiply(element));
+                const transformed = framebuffer.project(modelViewMartrix.multiply(element));
                 points2.push(transformed);
             });
 
-            points2.sort(function (a, b) {
+            points2.sort( (a, b) => {
                 return a.z - b.z;
             });
 
             points2.forEach(element => {
-                let size = -(3.1 * 192 / (element.z));
+                const size = -(3.1 * 192 / (element.z));
                 framebuffer.drawSoftParticle(
                     Math.round(element.x - size * 0.5),
                     Math.round(element.y - size * 0.5),

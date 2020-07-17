@@ -75,12 +75,12 @@ export class CinematicScroller extends AbstractScene {
         ];
         time = time * 0.6;
 
-        let scrollerOffset = Math.round(framebuffer.interpolate(0, 250, time & 0xff) * 8);
+        const scrollerOffset = Math.round(framebuffer.interpolate(0, 250, time & 0xff) * 8);
 
         for (let i = 1; i < 200 / 8; i++) {
-            let text = scrollText[Math.floor((i + (time / 256))) % scrollText.length];
-            let x = (320 / 2 - text.length * 8 / 2) | 0;
-            let y = 8 * i - scrollerOffset;
+            const text = scrollText[Math.floor((i + (time / 256))) % scrollText.length];
+            const x = (320 / 2 - text.length * 8 / 2) | 0;
+            const y = 8 * i - scrollerOffset;
             // TODO: proper text clipping to rect
             // maybe just for first and last row
             framebuffer.drawText(x, y, text, texture);

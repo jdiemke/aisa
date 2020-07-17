@@ -1,12 +1,12 @@
-import { Framebuffer } from "../Framebuffer";
-import { Matrix4f, Vector4f, Vector3f } from "../math";
-import { Area } from "./Area";
-import { Plane } from "../math/Plane";
-import { Portal } from "./Portal";
-import { SutherlandHodgmanClipper } from "./SutherlandHodgmanClipper";
-import { Color } from "../core/Color";
-import { ControllableCamera } from "../camera";
-import { Polygon } from "./Polygon";
+import { Framebuffer } from '../Framebuffer';
+import { Matrix4f, Vector4f, Vector3f } from '../math';
+import { Area } from './Area';
+import { Plane } from '../math/Plane';
+import { Portal } from './Portal';
+import { SutherlandHodgmanClipper } from './SutherlandHodgmanClipper';
+import { Color } from '../core/Color';
+import { ControllableCamera } from '../camera';
+import { Polygon } from './Polygon';
 
 export class PortalRenderer {
 
@@ -33,7 +33,7 @@ export class PortalRenderer {
             // 1.  check if we already visited the portal (or portal?) the portal leads to
             //     visitedAreas.forEach(a => a === portal.intoArea) continue;
             //     otherwise leads to an infinite loop. check portal or area??
-            // 2.  
+            // 2.
 
             const clippedPortalGeometry = SutherlandHodgmanClipper.clip(portal.geometry, clipPlanes);
 
@@ -48,19 +48,19 @@ export class PortalRenderer {
 
     public drawPolygon(framebuffer: Framebuffer, elapsedTime: number, polygon: Polygon, matrix: Matrix4f, color: Color): void {
         framebuffer.clearDepthBuffer();
-        let points: Array<Vector4f> = polygon.vertices;
+        const points: Array<Vector4f> = polygon.vertices;
 
-        let scale = 0.8;
+        const scale = 0.8;
 
-        let modelViewMartrix = matrix;
+        const modelViewMartrix = matrix;
 
-        let points2: Array<Vector3f> = new Array<Vector3f>();
+        const points2: Array<Vector3f> = new Array<Vector3f>();
         points.forEach(element => {
-            let transformed = modelViewMartrix.multiplyHom(element);
+            const transformed = modelViewMartrix.multiplyHom(element);
 
-            let x = transformed.x;
-            let y = transformed.y;
-            let z = transformed.z; // TODO: use translation matrix!
+            const x = transformed.x;
+            const y = transformed.y;
+            const z = transformed.z; // TODO: use translation matrix!
 
             points2.push(new Vector3f(x, y, z));
         });

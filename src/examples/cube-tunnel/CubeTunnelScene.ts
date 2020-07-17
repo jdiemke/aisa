@@ -51,18 +51,18 @@ export class CubeTunnelScene extends AbstractScene {
         framebuffer.clearColorBuffer(CubeTunnelScene.BACKGROUND_COLOR);
         framebuffer.clearDepthBuffer();
 
-        let xSteps = 40;
-        let xsteps = 5;
-        let rot = 25;
-        let rand = new RandomNumberGenerator();
+        const xSteps = 40;
+        const xsteps = 5;
+        const rot = 25;
+        const rand = new RandomNumberGenerator();
         rand.setSeed(22);
 
         for (let x = 0; x < xSteps; x++) {
-            let rotSpeed = rand.getFloat() * 0.3 + 0.2;
+            const rotSpeed = rand.getFloat() * 0.3 + 0.2;
             for (let z = 0; z < rot; z++) {
 
-                let scale = rand.getFloat() * 2.3 + 0.7 + 0.2*(Math.sin(Date.now() * 0.0044 + rand.getFloat() * 3));
-                let size = (xSteps - 1) * 0.7;
+                const scale = rand.getFloat() * 2.3 + 0.7 + 0.2*(Math.sin(Date.now() * 0.0044 + rand.getFloat() * 3));
+                const size = (xSteps - 1) * 0.7;
                 const mat =
                     Matrix4f.constructXRotationMatrix(0.2 * Math.sin(Date.now() * 0.00044)).multiplyMatrix(
                         Matrix4f.constructYRotationMatrix(0.2 * Math.sin(Date.now() * 0.0004)).multiplyMatrix(
@@ -73,7 +73,7 @@ export class CubeTunnelScene extends AbstractScene {
                                 Matrix4f.constructZRotationMatrix(Math.PI * 2 / rot * z + Date.now() * rotSpeed * 0.002 + x * 0.2).multiplyMatrix(
                                     Matrix4f.constructTranslationMatrix(+ 3, 0, 0)
                                         .multiplyMatrix(
-                                            Matrix4f.constructScaleMatrix(scale, 0.5, 0.5)))))); //.multiplyMatrix(
+                                            Matrix4f.constructScaleMatrix(scale, 0.5, 0.5)))))); // .multiplyMatrix(
                 //       Matrix4f.constructYRotationMatrix(elapsedTime * 0.05)).multiplyMatrix(
                 //           Matrix4f.constructXRotationMatrix(elapsedTime * 0.08)));
 

@@ -86,13 +86,13 @@ export class BlenderJsonParser {
                 normals.push(new Vector4f(v.x, v.y, v.z));
             });
 
-            let sphere = new ComputationalGeometryUtils().computeBoundingSphere(points);
+            const sphere = new ComputationalGeometryUtils().computeBoundingSphere(points);
             sphere.getCenter().w = 1;
 
             // Create class for objects
-            let obj = {
-                points: points,
-                normals: normals,
+            const obj = {
+                points,
+                normals,
                 uv: coords,           // NO!!!
                 faces: object.faces, // NOO!!!
                 points2: points.map(() => new Vector4f(0, 0, 0, 0)),

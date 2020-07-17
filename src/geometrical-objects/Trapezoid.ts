@@ -7,8 +7,8 @@ export class Trapezoid extends AbstractGeometricObject {
     public constructor() {
         super();
 
-        let a = 0.5;
-        let b = 0.05;
+        const a = 0.5;
+        const b = 0.05;
 
         const points: Array<Vector4f> = [
             new Vector4f(-b, a, -b),

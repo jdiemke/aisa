@@ -1,5 +1,5 @@
-import { AbstractGeometricObject } from "./AbstractGeometricObject";
-import { Vector4f } from "../math/Vector4f";
+import { AbstractGeometricObject } from './AbstractGeometricObject';
+import { Vector4f } from '../math/Vector4f';
 
 export class Dodecahedron extends AbstractGeometricObject {
 
@@ -8,10 +8,10 @@ export class Dodecahedron extends AbstractGeometricObject {
         super();
 
         // https://github.com/chiptune/lol3d/blob/master/index.html
-        let phi = (1 + Math.sqrt(5)) * 0.5;
-        let a = 1;
-        let b = 1 / phi;
-        let c = 2 - phi;
+        const phi = (1 + Math.sqrt(5)) * 0.5;
+        const a = 1;
+        const b = 1 / phi;
+        const c = 2 - phi;
 
         const points: Array<Vector4f> = [
             new Vector4f(c, 0, a), new Vector4f(-c, 0, a), new Vector4f(-b, b, b), new Vector4f(0, a, c),

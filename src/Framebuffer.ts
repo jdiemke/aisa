@@ -1086,8 +1086,8 @@ export class Framebuffer {
 
         const mHeight = Math.floor(height * Math.max(Math.min(1, time), 0));
 
-        for (let y: number = 0; y < mHeight; y++) {
-            for (let x: number = 0; x < width; x++) {
+        for (let yHeight: number = 0; yHeight < mHeight; yHeight++) {
+            for (let xWidth: number = 0; xWidth < width; xWidth++) {
                 const alpha = (texture.texture[textureIndex] >> 24 & 0xff) * div;
                 const inverseAlpha = 1 - alpha;
 
@@ -1112,8 +1112,8 @@ export class Framebuffer {
 
         const framebufferRowOffset = this.width - texture.width;
 
-        for (let y = 0; y < texture.height; y++) {
-            for (let x = 0; x < texture.width; x++) {
+        for (let yHeight = 0; yHeight < texture.height; yHeight++) {
+            for (let xWidth = 0; xWidth < texture.width; xWidth++) {
                 const color = texture.texture[textureIndex];
 
                 if (color & 0xff000000) {
@@ -1939,10 +1939,10 @@ export class Framebuffer {
                 const ypos = (y * 0.9 / LOOPY * 256) & 0xff;
                 const ypos2 = ((y + 1) * 0.9 / LOOPY * 256) & 0xff;
 
-                const disp_x0y0 = 1 + 0.9 * ((texture.texture[xpos + ypos * 256] & 0xff) / 255);
-                const disp_x1y0 = 1 + 0.9 * ((texture.texture[xpos2 + ypos * 256] & 0xff) / 255);
-                const disp_x0y1 = 1 + 0.9 * ((texture.texture[xpos + ypos2 * 256] & 0xff) / 255);
-                const disp_x1y1 = 1 + 0.9 * ((texture.texture[xpos2 + ypos2 * 256] & 0xff) / 255);
+                const x0y0 = 1 + 0.9 * ((texture.texture[xpos + ypos * 256] & 0xff) / 255);
+                const x1y0 = 1 + 0.9 * ((texture.texture[xpos2 + ypos * 256] & 0xff) / 255);
+                const x0y1 = 1 + 0.9 * ((texture.texture[xpos + ypos2 * 256] & 0xff) / 255);
+                const x1y1 = 1 + 0.9 * ((texture.texture[xpos2 + ypos2 * 256] & 0xff) / 255);
 
                 const x0 = Math.sin(2 * Math.PI / LOOPX * x) * 30;
                 const z0 = Math.cos(2 * Math.PI / LOOPX * x) * 30;
@@ -1950,13 +1950,13 @@ export class Framebuffer {
                 const x1 = Math.sin(2 * Math.PI / LOOPX * (x + 1)) * 30;
                 const z1 = Math.cos(2 * Math.PI / LOOPX * (x + 1)) * 30;
 
-                k.points.push(new Vector3f(x0 * disp_x0y0, 0 + y, z0 * disp_x0y0));
-                k.points.push(new Vector3f(x0 * disp_x0y1, 1 + y, z0 * disp_x0y1));
-                k.points.push(new Vector3f(x1 * disp_x1y0, 0 + y, z1 * disp_x1y0));
+                k.points.push(new Vector3f(x0 * x0y0, 0 + y, z0 * x0y0));
+                k.points.push(new Vector3f(x0 * x0y1, 1 + y, z0 * x0y1));
+                k.points.push(new Vector3f(x1 * x1y0, 0 + y, z1 * x1y0));
 
-                k.points.push(new Vector3f(x1 * disp_x1y0, 0 + y, z1 * disp_x1y0));
-                k.points.push(new Vector3f(x0 * disp_x0y1, 1 + y, z0 * disp_x0y1));
-                k.points.push(new Vector3f(x1 * disp_x1y1, 1 + y, z1 * disp_x1y1));
+                k.points.push(new Vector3f(x1 * x1y0, 0 + y, z1 * x1y0));
+                k.points.push(new Vector3f(x0 * x0y1, 1 + y, z0 * x0y1));
+                k.points.push(new Vector3f(x1 * x1y1, 1 + y, z1 * x1y1));
             }
         }
         // optimize

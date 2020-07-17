@@ -44,8 +44,8 @@ export class FloodFillScene extends AbstractScene {
         this.framebuffer.setBob(this.envmap);
 */
         framebuffer.setTexture(this.env);
-        let scale: number = 3.7;
-        let elapsedTime: number = (time ) * 0.002;
+        const scale: number = 3.7;
+        const elapsedTime: number = (time ) * 0.002;
 
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale)
             .multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.35)
@@ -86,7 +86,7 @@ export class FloodFillScene extends AbstractScene {
 
     public createSphere() {
 
-        let pointsA: Array<Vector4f> = [
+        const pointsA: Array<Vector4f> = [
             new Vector4f(0.0, -1.0, 0.0),
             new Vector4f(1.0, 0.0, 0.0),
             new Vector4f(0.0, 0.0, 1.0),
@@ -95,7 +95,7 @@ export class FloodFillScene extends AbstractScene {
             new Vector4f(0.0, 1.0, 0.0)
         ];
 
-        let indexA: Array<number> = [
+        const indexA: Array<number> = [
             0, 1, 2,
             0, 2, 3,
             0, 3, 4,
@@ -106,23 +106,23 @@ export class FloodFillScene extends AbstractScene {
             4, 5, 1
         ];
 
-        let k = this.divideSphere(pointsA, indexA, 4);
+        const k = this.divideSphere(pointsA, indexA, 4);
 
         // optimize
-        let points: Array<Vector4f> = [];
-        let points2: Array<Vector4f> = [];
-        let normals: Array<Vector4f> = [];
-        let normals2: Array<Vector4f> = [];
+        const points: Array<Vector4f> = [];
+        const points2: Array<Vector4f> = [];
+        const normals: Array<Vector4f> = [];
+        const normals2: Array<Vector4f> = [];
 
-        let index: Array<number> = [];
+        const index: Array<number> = [];
 
         k.index.forEach(i => {
-            let p = k.points[i];
+            const p = k.points[i];
 
-            let point = points.find(point => point.sub(p).length() < 0.001);
+            const point = points.find(findPoint => findPoint.sub(p).length() < 0.001);
 
             if (point) {
-                let idx = points.indexOf(point);
+                const idx = points.indexOf(point);
                 index.push(idx);
             } else {
                 index.push(points.push(p) - 1);
@@ -146,19 +146,19 @@ export class FloodFillScene extends AbstractScene {
 
     public divideSphere(points: Array<Vector4f>, index: Array<number>, steps: number) {
 
-        let points2: Array<Vector4f> = [];
-        let normals2: Array<Vector4f> = [];
-        let index2: Array<number> = [];
+        const points2: Array<Vector4f> = [];
+        const normals2: Array<Vector4f> = [];
+        const index2: Array<number> = [];
 
         let c = 0;
         for (let i = 0; i < index.length; i += 3) {
-            let v1 = points[index[i]];
-            let v2 = points[index[i + 1]];
-            let v3 = points[index[i + 2]];
+            const v1 = points[index[i]];
+            const v2 = points[index[i + 1]];
+            const v3 = points[index[i + 2]];
 
-            let vn1 = v2.sub(v1).mul(0.5).add(v1).normalize();
-            let vn2 = v3.sub(v2).mul(0.5).add(v2).normalize();
-            let vn3 = v1.sub(v3).mul(0.5).add(v3).normalize();
+            const vn1 = v2.sub(v1).mul(0.5).add(v1).normalize();
+            const vn2 = v3.sub(v2).mul(0.5).add(v2).normalize();
+            const vn3 = v1.sub(v3).mul(0.5).add(v3).normalize();
 
             points2.push(v1); points2.push(vn1); points2.push(vn3);
             normals2.push(v1); normals2.push(vn1); normals2.push(vn3);
@@ -190,22 +190,22 @@ export class FloodFillScene extends AbstractScene {
 
 
     public createSphereDistplaced(texture: Texture) {
-        let sphere: {
+        const sphere: {
             points: Array<Vector4f>,
             points2: Array<Vector4f>,
             normals: Array<Vector4f>,
             normals2: Array<Vector4f>,
             index: Array<number>
         } = this.createSphere();
-        let newPoints: Array<Vector4f> = new Array<Vector4f>();
+        const newPoints: Array<Vector4f> = new Array<Vector4f>();
         sphere.points.forEach((point) => {
-            let x = point.x;
-            let y = point.y;
-            let z = point.z;
+            const x = point.x;
+            const y = point.y;
+            const z = point.z;
             const radius = 1.0;
-            let u = Math.floor((0.5 + Math.atan2(z, x) / (2 * Math.PI)) * 255);
-            let v = Math.floor((0.5 - Math.asin(y) / Math.PI) * 255);
-            let disp = 1 + 1.4 * ((texture.texture[u + v * 256] & 0xff) / 255);
+            const u = Math.floor((0.5 + Math.atan2(z, x) / (2 * Math.PI)) * 255);
+            const v = Math.floor((0.5 - Math.asin(y) / Math.PI) * 255);
+            const disp = 1 + 1.4 * ((texture.texture[u + v * 256] & 0xff) / 255);
             newPoints.push(point.mul(disp));
         });
         sphere.points = newPoints;
@@ -213,13 +213,13 @@ export class FloodFillScene extends AbstractScene {
     }
 
     public shadingSphereEnvDisp2(framebuffer: Framebuffer, elapsedTime: number, modelViewMartrix: Matrix4f): void {
-        let result = this.obj;
+        const result = this.obj;
 
-        let scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
+        const scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
         for (let i = 0; i < result.points.length; i++) {
-            let y = result.points[i].z;
-            let x = result.points[i].x;
-            let length = Math.sqrt(x * x + y * y);
+            const y = result.points[i].z;
+            const x = result.points[i].x;
+            const length = Math.sqrt(x * x + y * y);
             let rot = Math.sin(result.points[i].y * 0.539 + (10 - length) * 0.05 + elapsedTime * 0.9) * 4.5;
             rot *= Math.sin(elapsedTime * 0.25) * 0.5 + 0.5;
             result.points2[i].y = result.points[i].y;
@@ -231,20 +231,20 @@ export class FloodFillScene extends AbstractScene {
             result.normals[i].z = 0;
         }
 
-        let points = result.points2;
-        let index = result.index;
-        let normals = result.normals;
+        const points = result.points2;
+        const index = result.index;
+        const normals = result.normals;
 
-        let norm: Vector4f = new Vector4f(0, 0, 0);
-        let norm2: Vector4f = new Vector4f(0, 0, 0);
-        let cross: Vector4f = new Vector4f(0, 0, 0);
+        const norm: Vector4f = new Vector4f(0, 0, 0);
+        const norm2: Vector4f = new Vector4f(0, 0, 0);
+        const cross: Vector4f = new Vector4f(0, 0, 0);
         for (let i = 0; i < index.length; i += 3) {
-            let v1: Vector4f = points[index[i]];
-            let v2: Vector4f = points[index[i + 1]];
-            let v3: Vector4f = points[index[i + 2]];
+            const v1: Vector4f = points[index[i]];
+            const v2: Vector4f = points[index[i + 1]];
+            const v3: Vector4f = points[index[i + 2]];
 
 
-            let normal = v2.sub(v1).cross(v3.sub(v1));
+            const normal = v2.sub(v1).cross(v3.sub(v1));
             normals[index[i]] = normals[index[i]].add(normal);
             normals[index[i + 1]] = normals[index[i + 1]].add(normal);
             normals[index[i + 2]] = normals[index[i + 2]].add(normal);
@@ -254,44 +254,44 @@ export class FloodFillScene extends AbstractScene {
             normals[i] = normals[i].normalize();
         }
 
-        let points2: Array<Vector4f> = result.points2;
-        let normals2: Array<Vector4f> = result.normals2;
+        const points2: Array<Vector4f> = result.points2;
+        const normals2: Array<Vector4f> = result.normals2;
 
-        let normalMatrix = modelViewMartrix.computeNormalMatrix();
+        const normalMatrix = modelViewMartrix.computeNormalMatrix();
 
         for (let n = 0; n < normals.length; n++) {
             normalMatrix.multiplyHomArr(normals[n], normals2[n]);
         }
 
         for (let p = 0; p < points.length; p++) {
-            let transformed = modelViewMartrix.multiplyHom(points[p]);
+            const transformed = modelViewMartrix.multiplyHom(points[p]);
 
             points2[p].x = Math.round((320 * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
             points2[p].y = Math.round((200 * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
             points2[p].z = transformed.z;
         }
 
-        let vertex1 = new Vertex();
+        const vertex1 = new Vertex();
         vertex1.textureCoordinate = new TextureCoordinate();
-        let vertex2 = new Vertex();
+        const vertex2 = new Vertex();
         vertex2.textureCoordinate = new TextureCoordinate();
-        let vertex3 = new Vertex();
+        const vertex3 = new Vertex();
         vertex3.textureCoordinate = new TextureCoordinate();
-        let vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
+        const vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
         for (let i = 0; i < index.length; i += 3) {
 
-            let v1 = points2[index[i]];
-            let n1 = normals2[index[i]];
+            const v1 = points2[index[i]];
+            const n1 = normals2[index[i]];
 
-            let v2 = points2[index[i + 1]];
-            let n2 = normals2[index[i + 1]];
+            const v2 = points2[index[i + 1]];
+            const n2 = normals2[index[i + 1]];
 
-            let v3 = points2[index[i + 2]];
-            let n3 = normals2[index[i + 2]];
+            const v3 = points2[index[i + 2]];
+            const n3 = normals2[index[i + 2]];
 
             if (framebuffer.isTriangleCCW(v1, v2, v3)) {
 
-                let color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
+                const color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
 
                 vertexArray[0].position = v1;
                 framebuffer.fakeSphere(n1, vertex1);

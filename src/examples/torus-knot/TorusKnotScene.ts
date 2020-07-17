@@ -68,9 +68,9 @@ export class TorusKnotScene extends AbstractScene {
     public glitchScreen(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, noise: boolean = true): void {
 
         const glitchFactor = (Math.sin(elapsedTime * 0.0003) * 0.5 + 0.5);
-        let rng = new RandomNumberGenerator();
+        const rng = new RandomNumberGenerator();
         rng.setSeed((elapsedTime / 250) | 0);
-        let texture2 = new Texture();
+        const texture2 = new Texture();
         texture2.height = 200;
         texture2.width = 320;
         texture2.texture = framebuffer.framebuffer;
@@ -96,14 +96,14 @@ export class TorusKnotScene extends AbstractScene {
 
         // now distort the tmpGlitch buffer and render to framebuffer again
 
-        let rng2 = new RandomNumberGenerator();
+        const rng2 = new RandomNumberGenerator();
 
         for (let k = 0; k < 8; k++) {
             let yStart = Math.round(rng.getFloat() * 180);
             const size = 3 + Math.round(rng.getFloat() * 20);
             rng2.setSeed((elapsedTime / 250) | 0);
-            let scale = rng2.getFloat() * glitchFactor;
-            let off = rng.getFloat() * glitchFactor;
+            const scale = rng2.getFloat() * glitchFactor;
+            const off = rng.getFloat() * glitchFactor;
             for (let y = 0; y < size; y++) {
                 const offset = Math.abs(Math.round(off * 25) + Math.round(rng2.getFloat() * 3)
                     + Math.round(Math.cos(y * 0.01 + elapsedTime * 0.002 + off) * scale * 5));
@@ -116,7 +116,7 @@ export class TorusKnotScene extends AbstractScene {
                 }
 
                 glIndex = yStart * 320;
-                let count = 320 - offset;
+                const count = 320 - offset;
 
                 for (let i = 0; i < count; i++) {
                     framebuffer.framebuffer[index++] = framebuffer.tmpGlitch[glIndex++];
@@ -130,15 +130,15 @@ export class TorusKnotScene extends AbstractScene {
     private shadingTorus5(framebuffer: Framebuffer, time: number) {
         framebuffer.clearDepthBuffer();
 
-        let scale = 1.0;
+        const scale = 1.0;
 
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(time * 0.035));
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(time * 0.04));
 
-        let ukBasslineBpm = 130 / 2;
-        let ukBasslineClapMs = 60000 / ukBasslineBpm;
-        let smashTime = (time * 10) % ukBasslineClapMs;
-        let smash = (framebuffer.cosineInterpolate(0, 15, smashTime) - framebuffer.cosineInterpolate(15, 200, smashTime) +
+        const ukBasslineBpm = 130 / 2;
+        const ukBasslineClapMs = 60000 / ukBasslineBpm;
+        const smashTime = (time * 10) % ukBasslineClapMs;
+        const smash = (framebuffer.cosineInterpolate(0, 15, smashTime) - framebuffer.cosineInterpolate(15, 200, smashTime) +
             0.4 * framebuffer.cosineInterpolate(200, 300, smashTime) - 0.4 * framebuffer.cosineInterpolate(300, 400, smashTime)
         )
             * 12;

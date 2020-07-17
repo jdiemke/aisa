@@ -1,7 +1,7 @@
 import { Framebuffer } from '../Framebuffer';
 import { Vector3f, Vector4f } from '../math';
 import { TextureCoordinate } from '../TextureCoordinate';
-import { Vertex } from "../Vertex";
+import { Vertex } from '../Vertex';
 import { AbstractClipEdge } from './AbstractClipEdge';
 
 export class BottomClipEdge extends AbstractClipEdge {
