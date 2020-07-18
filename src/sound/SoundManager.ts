@@ -1,6 +1,6 @@
 import 'jsxm/xm';
 import 'jsxm/xmeffects';
-import './JSRocket'
+import './JSRocket';
 
 export class SoundManager {
 
@@ -17,6 +17,7 @@ export class SoundManager {
 
 		// Initialize JS Rocket
 		this._syncDevice = new JSRocket.SyncDevice();
+		this._syncDevice.connected = false;
 	}
 
 	public playExtendedModule(filename: string): Promise<void> {

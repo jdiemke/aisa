@@ -1,4 +1,13 @@
 {
+	"search.exclude": {
+		"**/.git": true,
+		"**/dist": true,
+		"**/node_modules": true
+	},
+	"files.exclude" : {
+		"**/node_modules": true,
+		"**/dist": true
+     },
 	"editor.tabSize": 4,
 	"editor.insertSpaces": false,
 	"editor.detectIndentation": false,
