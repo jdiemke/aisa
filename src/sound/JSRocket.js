@@ -3,9 +3,6 @@
 	if (!window.JSRocket) {
 		window.JSRocket = {};
 	}
-	
-	// var JSRocket = {};
-
 	JSRocket.SyncData = function () {
 
 		"use strict";
@@ -54,100 +51,71 @@
 			SMOOTH = 2,
 			RAMP = 3;
 
-		var _track = [],
-			_index = [];
+		var data = [];
+
+		function findKeyIndex(keys, row) {
+			var lo = 0, hi = keys.length;
+			while (lo < hi) {
+				var mi = ((hi + lo) / 2) | 0;
+
+				if (keys[mi] < row) {
+					lo = mi + 1;
+				} else if (keys[mi] > row) {
+					hi = mi;
+				} else {
+					return mi;
+				}
+			}
+			return lo - 1;
+		}
 
 		function getValue(row) {
-			var intRow = Math.floor(row),
-				bound = getBound(intRow),
-				lower = bound.low,
-				upper = bound.high,
-				v;
+			var keys = Object.keys(data);
 
-			if (isNaN(lower)) {
-
-				return NaN;
-
-			} else if ((isNaN(upper)) || (_track[lower].interpolation === STEP)) {
-
-				return _track[lower].value;
-
-			} else {
-
-				switch (_track[lower].interpolation) {
-
-					case LINEAR:
-						v = (row - lower) / (upper - lower);
-						return _track[lower].value + (_track[upper].value - _track[lower].value) * v;
-
-					case SMOOTH:
-						v = (row - lower) / (upper - lower);
-						v = v * v * (3 - 2 * v);
-						return (_track[upper].value * v) + (_track[lower].value * (1 - v));
-
-					case RAMP:
-						v = Math.pow((row - lower) / (upper - lower), 2);
-						return _track[lower].value + (_track[upper].value - _track[lower].value) * v;
-				}
+			if (!keys.length) {
+				return 0.0;
 			}
 
-			return NaN;
-		}
-
-		function getBound(rowIndex) {
-			var lower = NaN,
-				upper = NaN;
-
-			for (var i = 0; i < _index.length; i++) {
-
-				if (_index[i] <= rowIndex) {
-
-					lower = _index[i];
-
-				} else if (_index[i] >= rowIndex) {
-
-					upper = _index[i];
-					break;
-				}
+			var idx = findKeyIndex(keys, Math.floor(row));
+			if (idx < 0) {
+				return data[keys[0]].value;
+			}
+			if (idx > keys.length - 2) {
+				return data[keys[keys.length - 1]].value;
 			}
 
-			return { "low": lower, "high": upper };
+			// lookup keys and values
+			var k0 = keys[idx], k1 = keys[idx + 1];
+			var a = data[k0].value;
+			var b = data[k1].value;
+
+			// interpolate
+			var t = (row - k0) / (k1 - k0);
+			switch (data[k0].interpolation) {
+				case 0:
+					return a;
+				case 1:
+					return a + (b - a) * t;
+				case 2:
+					return a + (b - a) * t * t * (3 - 2 * t);
+				case 3:
+					return a + (b - a) * Math.pow(t, 2.0);
+			}
 		}
 
-		function add(row, value, interpolation, delaySort) {
-
-			remove(row);
-
-			//index lookup table
-			_index.push(row);
-			_track[row] = {
+		function add(row, value, interpolation) {
+			data[row] = {
 				"value": value,
 				"interpolation": interpolation
 			};
-
-			//parser calls this quite often, so we sort later
-			if (delaySort !== true) {
-				sortIndex();
-			}
-		}
-
-		function sortIndex() {
-
-			_index = _index.sort(function (a, b) {
-				return a - b;
-			});
 		}
 
 		function remove(row) {
-			if (_index.indexOf(row) > -1) {
-				_index.splice(_index.indexOf(row), 1);
-				delete _track[row];
-			}
+			delete data[row];
 		}
 
 		return {
 			getValue: getValue,
-			sortIndex: sortIndex,
 			add: add,
 			remove: remove
 		};
@@ -209,11 +177,9 @@
 					key = keyList[k];
 					track.add(parseInt(key.getAttribute('row'), 10),
 						parseFloat(key.getAttribute('value')),
-						parseInt(key.getAttribute('interpolation'), 10),
-						true);
+						parseInt(key.getAttribute('interpolation'), 10));
 
 				}
-				track.sortIndex();
 			}
 
 			_eventHandler.ready();
@@ -323,9 +289,6 @@
 				interpolation = toInt(queue.subarray(13, 14));
 				_syncData.getTrack(track).add(row, value, interpolation);
 
-				//don't set row, as this could also be a interpolation change
-				_eventHandler.update();
-
 				//DELETE
 			} else if (CMD_DELETE_KEY === cmd) {
 
@@ -333,8 +296,6 @@
 				row = toInt(queue.subarray(5, 9));
 
 				_syncData.getTrack(track).remove(row);
-
-				_eventHandler.update();
 
 				//SAVE
 			} else if (CMD_SAVE_TRACKS === cmd) {
@@ -363,11 +324,20 @@
 				return _syncData.getTrack(index);
 			}
 
-			_ws.send(new Uint8Array([CMD_GET_TRACK, 0, 0, 0, name.length]).buffer);
-			_ws.send(name);
+			var utf8Name = encodeURIComponent(name).replace(/%([\dA-F]{2})/g, function (m, c) {
+				return String.fromCharCode('0x' + c);
+			});
+			var message = [CMD_GET_TRACK,
+				(utf8Name.length >> 24) & 0xFF, (utf8Name.length >> 16) & 0xFF,
+				(utf8Name.length >> 8) & 0xFF, (utf8Name.length) & 0xFF];
+
+			for (var i = 0; i < utf8Name.length; i++) {
+				message.push(utf8Name.charCodeAt(i));
+			}
+
+			_ws.send(new Uint8Array(message).buffer);
 
 			_syncData.createIndex(name);
-
 			return _syncData.getTrack(_syncData.getTrackLength() - 1);
 		}
 
@@ -426,7 +396,7 @@
 			_device,
 			_previousIntRow,
 			_config = {
-				"socketURL": "ws://localhost:1338",
+				"socketURL": "ws://localhost:1339",
 				"rocketXML": ""
 			},
 			_eventHandler = {
