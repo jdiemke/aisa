@@ -7,9 +7,9 @@ export class Icosahedron extends AbstractGeometricObject {
     public constructor() {
         super();
 
-        let phi = (1 + Math.sqrt(5)) * 0.5;
-        let a = 0.5;
-        let b = a * 2 / (2 * phi);
+        const phi = (1 + Math.sqrt(5)) * 0.5;
+        const a = 0.5;
+        const b = a * 2 / (2 * phi);
 
         const points: Array<Vector4f> = [
             new Vector4f(-b, 0, a), new Vector4f(b, 0, a), new Vector4f(-b, 0, -a), new Vector4f(b, 0, -a),

@@ -136,7 +136,7 @@ export class MiscScene extends AbstractScene {
       }
       this.fpsCount++;
 
-      let time: number = (Date.now() - this.start);
+      const time: number = (Date.now() - this.start);
 
 
       // framebuffer.setCullFace(CullFace.FRONT);
@@ -802,7 +802,7 @@ export class MiscScene extends AbstractScene {
            */
 
 
-      //this.framebuffer.drawBlenderScene(time*0.5, this.texture4, null);
+      // this.framebuffer.drawBlenderScene(time*0.5, this.texture4, null);
 
       // TODO:
       // * build level in code (portals and areas)
@@ -841,7 +841,7 @@ export class MiscScene extends AbstractScene {
       // this.framebuffer.drawRadialBlur();
 
 
-      //framebuffer.shadingSphereClip(time*0.005);
+      // framebuffer.shadingSphereClip(time*0.005);
       // framebuffer.scene8(time*0.02);
       // framebuffer.debug(time*0.003);
       /*
@@ -882,7 +882,7 @@ export class MiscScene extends AbstractScene {
       // https://developer.mozilla.org/en-US/docs/Games/Techniques/Audio_for_Web_Games
       // https://www.html5rocks.com/en/tutorials/webaudio/intro/
 
-      //this.framebuffer.drawTexture(0, 0, this.displacementMap, 0.8);
+      // this.framebuffer.drawTexture(0, 0, this.displacementMap, 0.8);
       /*
       this.framebuffer.drawPolarDistotion3(time, this.revision);
       this.framebuffer.setCullFace(CullFace.FRONT);
@@ -967,7 +967,7 @@ export class MiscScene extends AbstractScene {
           */
 
 
-      //this.framebuffer.noise(time, this.noise);
+      // this.framebuffer.noise(time, this.noise);
 
       // https://github.com/ninjadev/nin/blob/38e80381415934136c7bd97233a2792df2bffa8d/nin/dasBoot/shims.js
       /*****/
@@ -1086,9 +1086,9 @@ export class MiscScene extends AbstractScene {
       // this.framebuffer.shadingTorus2(time * 0.02);
       // this.framebuffer.drawTexture(32, 60, this.texture2, 1.0);
 
-      //this.framebuffer.clear();
+      // this.framebuffer.clear();
 
-      //this.framebuffer.wireFrameTerrain(time*0.01, this.texture3);
+      // this.framebuffer.wireFrameTerrain(time*0.01, this.texture3);
       // this.framebuffer.pixelate();
 
 
@@ -1125,7 +1125,7 @@ export class MiscScene extends AbstractScene {
          const texture = new Texture();
          texture.texture = new Uint32Array(256 * 256);
 
-         let rng = new RandomNumberGenerator();
+         const rng = new RandomNumberGenerator();
          rng.setSeed(100);
 
          for (let y = 0; y < 256; y++) {
@@ -1146,14 +1146,14 @@ export class MiscScene extends AbstractScene {
          const texture = new Texture();
          texture.texture = new Uint32Array(256 * 256);
 
-         let rng = new RandomNumberGenerator();
+         const rng = new RandomNumberGenerator();
          rng.setSeed(100);
 
          for (let y = 0; y < 256; y++) {
             for (let x = 0; x < 256; x++) {
-               let dx = 127 - x
-               let dy = 127 - y
-               let r = Math.sqrt(dx * dx + dy * dy) / 127;
+               const dx = 127 - x
+               const dy = 127 - y
+               const r = Math.sqrt(dx * dx + dy * dy) / 127;
                let c = 1 - r;
                c = c * c;
                if (r > 1) c = 0;
@@ -1174,14 +1174,14 @@ export class MiscScene extends AbstractScene {
          const texture = new Texture();
          texture.texture = new Uint32Array(256 * 256);
 
-         let rng = new RandomNumberGenerator();
+         const rng = new RandomNumberGenerator();
          rng.setSeed(100);
 
          for (let y = 0; y < 256; y++) {
             for (let x = 0; x < 256; x++) {
-               let dx = 127 - x
-               let dy = 127 - y
-               let r = Math.sqrt(dx * dx + dy * dy) / 127;
+               const dx = 127 - x
+               const dy = 127 - y
+               const r = Math.sqrt(dx * dx + dy * dy) / 127;
                let c = 1 - r;
                c = c * c * c;
                if (r > 1) c = 0;
@@ -1211,9 +1211,9 @@ export class MiscScene extends AbstractScene {
 
          for (let y = 0; y < 256; y++) {
             for (let x = 0; x < 256; x++) {
-               let dx = 127 - x
-               let dy = 127 - y
-               let r = Math.sqrt(dx * dx + dy * dy) / 127;
+               const dx = 127 - x
+               const dy = 127 - y
+               const r = Math.sqrt(dx * dx + dy * dy) / 127;
                let c = 1 - r;
                c = c * c * c;
                if (r > 1) c = 0;

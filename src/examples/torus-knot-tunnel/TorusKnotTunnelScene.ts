@@ -49,9 +49,9 @@ export class TorusKnotTunnelScene extends AbstractScene {
     public glitchScreen(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, noise: boolean = true): void {
 
         const glitchFactor = (Math.sin(elapsedTime * 0.00002) * 0.9 + 0.1);
-        let rng = new RandomNumberGenerator();
+        const rng = new RandomNumberGenerator();
         rng.setSeed((elapsedTime / 250) | 0);
-        let texture2 = new Texture();
+        const texture2 = new Texture();
         texture2.height = 200;
         texture2.width = 320;
         texture2.texture = framebuffer.framebuffer;
@@ -77,14 +77,14 @@ export class TorusKnotTunnelScene extends AbstractScene {
 
         // now distort the tmpGlitch buffer and render to framebuffer again
 
-        let rng2 = new RandomNumberGenerator();
+        const rng2 = new RandomNumberGenerator();
 
         for (let k = 0; k < 8; k++) {
             let yStart = Math.round(rng.getFloat() * 180);
             const size = 3 + Math.round(rng.getFloat() * 20);
             rng2.setSeed((elapsedTime / 250) | 0);
-            let scale = rng2.getFloat() * glitchFactor;
-            let off = rng.getFloat() * glitchFactor;
+            const scale = rng2.getFloat() * glitchFactor;
+            const off = rng.getFloat() * glitchFactor;
             for (let y = 0; y < size; y++) {
                 const offset = Math.abs(Math.round(off * 25) + Math.round(rng2.getFloat() * 3)
                     + Math.round(Math.cos(y * 0.01 + elapsedTime * 0.002 + off) * scale * 5));
@@ -97,7 +97,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
                 }
 
                 glIndex = yStart * 320;
-                let count = 320 - offset;
+                const count = 320 - offset;
 
                 for (let i = 0; i < count; i++) {
                     framebuffer.framebuffer[index++] = framebuffer.tmpGlitch[glIndex++];
@@ -110,24 +110,24 @@ export class TorusKnotTunnelScene extends AbstractScene {
     public torusTunnel(framebuffer: Framebuffer, elapsedTime: number, texture: Texture): void {
         framebuffer.clearDepthBuffer();
 
-        let scale = 1.0;
+        const scale = 1.0;
         const lookAhead: number = 0.4;
 
-        let frame = this.torusFunction3(elapsedTime * 0.02);
-        let frame2 = this.torusFunction3(elapsedTime * 0.02 + lookAhead);
+        const frame = this.torusFunction3(elapsedTime * 0.02);
+        const frame2 = this.torusFunction3(elapsedTime * 0.02 + lookAhead);
 
-        let tangent = frame2.sub(frame).normalize();
+        const tangent = frame2.sub(frame).normalize();
         let up = frame.add(frame2).normalize();
-        let right = tangent.cross(up).normalize();
+        const right = tangent.cross(up).normalize();
         up = right.cross(tangent).normalize();
 
-        let translation = Matrix4f.constructIdentityMatrix();
+        const translation = Matrix4f.constructIdentityMatrix();
         // translation vector
         translation.m14 = -frame.x;
         translation.m24 = -frame.y;
         translation.m34 = -frame.z;
 
-        let rotation = Matrix4f.constructIdentityMatrix();
+        const rotation = Matrix4f.constructIdentityMatrix();
         // x vector
         rotation.m11 = right.x;
         rotation.m21 = right.y;
@@ -143,7 +143,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
         rotation.m23 = -tangent.y;
         rotation.m33 = -tangent.z;
 
-        let finalMatrix = rotation.transpose().multiplyMatrix(translation);
+        const finalMatrix = rotation.transpose().multiplyMatrix(translation);
 
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.035));
         modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -10).multiplyMatrix(modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.04)));
@@ -153,8 +153,9 @@ export class TorusKnotTunnelScene extends AbstractScene {
     }
 
     private torusFunction3(alpha: number): Vector4f {
-        let p = 2, q = 3;
-        let r = 0.5 * (2 + Math.sin(q * alpha));
+		const p = 2;
+		const q = 3;
+        const r = 0.5 * (2 + Math.sin(q * alpha));
         return new Vector4f(r * Math.cos(p * alpha),
             r * Math.cos(q * alpha),
             r * Math.sin(p * alpha)).mul(70);

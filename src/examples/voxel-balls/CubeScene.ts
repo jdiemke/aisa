@@ -35,9 +35,9 @@ export class CubeScene extends AbstractScene {
         //  framebuffer.clearColorBuffer(CubeScene.BACKGROUND_COLOR);
         framebuffer.clearDepthBuffer();
 
-        let xSteps = 5;
-        let xsteps = 5;
-        let zsteps = 5;
+        const xSteps = 5;
+        const xsteps = 5;
+        const zsteps = 5;
         for (let x = 0; x < xSteps; x++) {
             for (let y = 0; y < xsteps; y++) {
                 for (let z = 0; z < zsteps; z++) {
@@ -55,7 +55,7 @@ export class CubeScene extends AbstractScene {
                                     Matrix4f.constructZRotationMatrix(Date.now() * 0.0004).multiplyMatrix(
                                         Matrix4f.constructTranslationMatrix(x - xSteps / 2 + 0.5, y - xsteps / 2 + 0.5, z - zsteps / 2 + 0.5)
                                             .multiplyMatrix(
-                                                Matrix4f.constructScaleMatrix(scale, scale, scale)))))); //.multiplyMatrix(
+                                                Matrix4f.constructScaleMatrix(scale, scale, scale)))))); // .multiplyMatrix(
                     //       Matrix4f.constructYRotationMatrix(elapsedTime * 0.05)).multiplyMatrix(
                     //           Matrix4f.constructXRotationMatrix(elapsedTime * 0.08)));
 

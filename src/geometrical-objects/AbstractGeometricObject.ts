@@ -15,12 +15,12 @@ export class AbstractGeometricObject {
         // compute normal and check wheter the normal already exists. then reuse inded
         // maybe have a similarity faktor to reuse similar normals
         for (let i = 0; i < index.length; i += 3) {
-            let normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
+            const normal = points[index[i + 1]].sub(points[index[i]]).cross(points[index[i + 2]].sub(points[index[i]]));
             normals.push(this.inverse ? normal.normalize().mul(-1) : normal.normalize()); // normalize?
         }
 
 
-        let faces: Array<FlatShadedFace> = new Array<FlatShadedFace>();
+        const faces: Array<FlatShadedFace> = new Array<FlatShadedFace>();
 
         for (let i = 0; i < index.length; i += 3) {
 
@@ -36,9 +36,9 @@ export class AbstractGeometricObject {
 
         // Create class for objects
         this.mesh = {
-            points: points,
-            normals: normals,
-            faces: faces,
+            points,
+            normals,
+            faces,
             transformedPoints: points.map(() => new Vector4f(0, 0, 0, 0)),
             transformedNormals: normals.map(() => new Vector4f(0, 0, 0, 0))
         };

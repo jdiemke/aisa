@@ -13,14 +13,14 @@ export class StarfieldScene extends AbstractScene {
     }
 
     public drawStarField(frambuffer: Framebuffer, elapsedTime: number): void {
-        let darkStarColor = 255 << 24 | 128 << 16 | 128 << 8 | 128;
-        let lightStarColor = 255 << 24 | 255 << 16 | 255 << 8 | 255;
-        let backgroundColor = 255 << 24 | 87 << 16 | 62 << 8 | 47;
+        const darkStarColor = 255 << 24 | 128 << 16 | 128 << 8 | 128;
+        const lightStarColor = 255 << 24 | 255 << 16 | 255 << 8 | 255;
+        const backgroundColor = 255 << 24 | 87 << 16 | 62 << 8 | 47;
 
-        let rng = new RandomNumberGenerator();
+        const rng = new RandomNumberGenerator();
         rng.setSeed(666);
-        let stars = new Array<Vector3f>();
-        let stars2 = new Array<Vector3f>();
+        const stars = new Array<Vector3f>();
+        const stars2 = new Array<Vector3f>();
 
         for (let i = 0; i < 100; i++) {
             stars.push(new Vector3f(rng.getFloat() * 320, Math.round(rng.getFloat() * 200), 0));

@@ -18,13 +18,13 @@ export class Torus extends AbstractGeometricObject {
         this.inverse = invert;
 
         for (let i = 0; i < STEPS; i++) {
-            let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
-            let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
-            let up = new Vector3f(0.0, 4.0, 0);
-            let right = frame2.sub(frame).cross(up);
+            const frame = this.torusFunction(i * 2 * Math.PI / STEPS);
+            const frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
+            const up = new Vector3f(0.0, 4.0, 0);
+            const right = frame2.sub(frame).cross(up);
 
             for (let r = 0; r < STEPS2; r++) {
-                let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
+                const pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
                 points.push(new Vector4f(pos.x, pos.y, pos.z, 1.0));
             }
         }

@@ -87,7 +87,7 @@ export class ParticleTorusScene extends AbstractScene {
             points2.push(transformed);
         });
 
-        points2.sort(function(a, b) {
+        points2.sort((a, b) => {
             return a.z - b.z;
         });
 

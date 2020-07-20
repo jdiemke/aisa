@@ -67,23 +67,23 @@ export class MetaballsScene extends AbstractScene {
 
 
             for (let x = 0; x < 320; x++) {
-                let xdist = (x - (320 / 2)) / 160;
-                let ydist = (y - 200 / 2) / 100;
-                let alpha = 1;//1 - Math.min(1, (1 / Math.abs(ydist / 10)));
+                const xdist = (x - (320 / 2)) / 160;
+                const ydist = (y - 200 / 2) / 100;
+                const alpha = 1;// 1 - Math.min(1, (1 / Math.abs(ydist / 10)));
                 const a = Math.atan2(ydist, xdist) + Date.now() * 0.0004;
-                let v = (a * 3 / Math.PI + Date.now() * 0.0004) * 128 % 256;
+                const v = (a * 3 / Math.PI + Date.now() * 0.0004) * 128 % 256;
                 const d = Math.sqrt(xdist * xdist + ydist * ydist);
 
-                let u = (1 / (d + 0.5 + 0.5 * Math.sin(5 * a)) * 32 + Date.now() * 0.03) % 256;
+                const u = (1 / (d + 0.5 + 0.5 * Math.sin(5 * a)) * 32 + Date.now() * 0.03) % 256;
 
-                let color1 = texture2.texture[(u | 0) + (v | 0) * 256];
-
-
+                const color1 = texture2.texture[(u | 0) + (v | 0) * 256];
 
 
-                let r = (((color1 >> 0) & 0xff) * (alpha)) | 0;
-                let g = (((color1 >> 8) & 0xff) * (alpha)) | 0;
-                let b = (((color1 >> 16) & 0xff) * (alpha)) | 0;
+
+
+                const r = (((color1 >> 0) & 0xff) * (alpha)) | 0;
+                const g = (((color1 >> 8) & 0xff) * (alpha)) | 0;
+                const b = (((color1 >> 16) & 0xff) * (alpha)) | 0;
 
                 framebuffer.framebuffer[i++] = r | g << 8 | b << 16 | 255 << 24;
             }

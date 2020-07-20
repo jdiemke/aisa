@@ -1,5 +1,4 @@
 // tslint:disable:no-namespace
-
 // Type definitions for jsxm 1.0.1
 // Project: https://www.npmjs.org/package/jsxm
 // Definitions by: Johannes Diemke <https://github.com/jdiemke>

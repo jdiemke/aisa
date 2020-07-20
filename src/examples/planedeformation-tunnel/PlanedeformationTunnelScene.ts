@@ -59,23 +59,23 @@ export class PlanedeformationTunnelScene extends AbstractScene {
         let i = 0;
         for (let y = 0; y < 200; y++) {
             for (let x = 0; x < 320; x++) {
-                let xdist = (x - 320 / 2);
-                let ydist = (y - 200 / 2);
+                const xdist = (x - 320 / 2);
+                const ydist = (y - 200 / 2);
                 let dist = 256 * 20 / Math.max(1.0, Math.sqrt(xdist * xdist + ydist * ydist));
                 let dist2 = dist;
                 dist += elapsedTime * 0.02;
                 dist2 += elapsedTime * 0.039;
-                let angle = (Math.atan2(xdist, ydist) / Math.PI + 1.0) * 128 + elapsedTime * 0.0069;
+                const angle = (Math.atan2(xdist, ydist) / Math.PI + 1.0) * 128 + elapsedTime * 0.0069;
 
-                let color1 = texture.texture[(dist2 & 0xff) + (angle & 0xff) * 255];
-                let color2 = texture2.texture[(dist & 0xff) + (angle & 0xff) * 255];
+                const color1 = texture.texture[(dist2 & 0xff) + (angle & 0xff) * 255];
+                const color2 = texture2.texture[(dist & 0xff) + (angle & 0xff) * 255];
 
-                let alpha = 0.4;
-                let inverseAlpha = 1 - alpha;
+                const alpha = 0.4;
+                const inverseAlpha = 1 - alpha;
 
-                let r = (((color1 >> 0) & 0xff) * (inverseAlpha) + (((color2) >> 0) & 0xff) * (alpha)) | 0;
-                let g = (((color1 >> 8) & 0xff) * (inverseAlpha) + (((color2) >> 8) & 0xff) * (alpha)) | 0;
-                let b = (((color1 >> 16) & 0xff) * (inverseAlpha) + ((color2 >> 16) & 0xff) * (alpha)) | 0;
+                const r = (((color1 >> 0) & 0xff) * (inverseAlpha) + (((color2) >> 0) & 0xff) * (alpha)) | 0;
+                const g = (((color1 >> 8) & 0xff) * (inverseAlpha) + (((color2) >> 8) & 0xff) * (alpha)) | 0;
+                const b = (((color1 >> 16) & 0xff) * (inverseAlpha) + ((color2 >> 16) & 0xff) * (alpha)) | 0;
 
                 framebuffer.framebuffer[i++] = r | g << 8 | b << 16 | 255 << 24;
             }

@@ -56,7 +56,7 @@ export class MetaballsScene extends AbstractScene {
         for (let x = 0; x < this.hoodlumLogo.width; x++) {
         for (let y = 0; y < this.hoodlumLogo.height; y++) {
 
-                let pixel = this.hoodlumLogo.getPixel2(this.hoodlumLogo, x, y);
+                const pixel = this.hoodlumLogo.getPixel2(this.hoodlumLogo, x, y);
                 if (((pixel >> 24) & 0xff) === 255) {
                     this.pixels.push(new PixelInterpolator(
                         new Vector2f(
@@ -84,7 +84,7 @@ export class MetaballsScene extends AbstractScene {
         for (let x = 0; x < this.pixels.length; x++) {
             const pos = this.pixels[x].getPos((Date.now() - this.startTime - this.pixels[x].startTime) * 0.0002, x);
             if (pos.x < 0 || pos.x > 319 || pos.y < 0 || pos.y > 199) continue;
-            let alpha =
+            const alpha =
                 Math.max(0, Math.min(1, (Date.now() - this.startTime - this.pixels[x].startTime) * 0.001));
             framebuffer.drawPixel4(pos.x, pos.y, this.pixels[x].pixel, alpha);
         }
@@ -102,22 +102,22 @@ export class MetaballsScene extends AbstractScene {
 
         let i = 0;
         for (let y = 0; y < 200; y++) {
-            let ydist = (y - 200 / 2);
-            let v = (((1 / Math.abs(ydist / 100 * 0.02) + elapsedTime * 0.069) % 256) + 256) % 256;
-            let alpha = 1 - Math.min(1, (1 / Math.abs(ydist / 10)));
+            const ydist = (y - 200 / 2);
+            const v = (((1 / Math.abs(ydist / 100 * 0.02) + elapsedTime * 0.069) % 256) + 256) % 256;
+            const alpha = 1 - Math.min(1, (1 / Math.abs(ydist / 10)));
             for (let x = 0; x < 320; x++) {
-                let xdist = (x - (320 / 2));
+                const xdist = (x - (320 / 2));
 
 
-                let u = (((((xdist / 160) / Math.abs(ydist / 100 * 0.02))) % 256) + 256) % 256;
+                const u = (((((xdist / 160) / Math.abs(ydist / 100 * 0.02))) % 256) + 256) % 256;
 
-                let color1 = texture2.texture[(u | 0) + (v | 0) * 256];
+                const color1 = texture2.texture[(u | 0) + (v | 0) * 256];
 
 
 
-                let r = (((color1 >> 0) & 0xff) * (alpha)) | 0;
-                let g = (((color1 >> 8) & 0xff) * (alpha)) | 0;
-                let b = (((color1 >> 16) & 0xff) * (alpha)) | 0;
+                const r = (((color1 >> 0) & 0xff) * (alpha)) | 0;
+                const g = (((color1 >> 8) & 0xff) * (alpha)) | 0;
+                const b = (((color1 >> 16) & 0xff) * (alpha)) | 0;
 
                 framebuffer.framebuffer[i++] = r | g << 8 | b << 16 | 255 << 24;
             }

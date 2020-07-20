@@ -71,43 +71,43 @@ export class HoodlumScene extends AbstractScene {
                 )
             ));
 
-        let model = this.hoodlumLogoMesh[0];
+        const model = this.hoodlumLogoMesh[0];
         framebuffer.renderingPipeline.draw(model, mv);
 
-        let points: Array<Vector3f> = new Array<Vector3f>();
+        const points: Array<Vector3f> = new Array<Vector3f>();
         const num = 10;
         const num2 = 6;
 
         for (let i = 0; i < num; i++) {
 
             for (let j = 0; j < num2; j++) {
-                let y = ((i + elapsedTime * 0.001) % 10) * 2.5 - 12;
-                let scale2 = (1 + 4 * framebuffer.interpolate(-10, 10, y)) *
+                const y = ((i + elapsedTime * 0.001) % 10) * 2.5 - 12;
+                const scale2 = (1 + 4 * framebuffer.interpolate(-10, 10, y)) *
 
                     ((Math.sin(elapsedTime * 0.0012 + Math.PI * 2 / num * i * 2) * 0.5 + 0.5) * 0.5 + 0.5);
-                let x = scale2 * Math.sin(Math.PI * 2 / num2 * j + elapsedTime * 0.0008);
+                const x = scale2 * Math.sin(Math.PI * 2 / num2 * j + elapsedTime * 0.0008);
 
-                let z = scale2 * Math.cos(Math.PI * 2 / num2 * j + elapsedTime * 0.0008);
+                const z = scale2 * Math.cos(Math.PI * 2 / num2 * j + elapsedTime * 0.0008);
 
                 points.push(new Vector3f(x, y, z));
             }
         }
 
-        let modelViewMartrix = camera.multiplyMatrix(Matrix4f.constructTranslationMatrix(0, -0.0, 0));
+        const modelViewMartrix = camera.multiplyMatrix(Matrix4f.constructTranslationMatrix(0, -0.0, 0));
 
-        let points2: Array<Vector3f> = new Array<Vector3f>(points.length);
+        const points2: Array<Vector3f> = new Array<Vector3f>(points.length);
 
         points.forEach(element => {
-            let transformed = framebuffer.project(modelViewMartrix.multiply(element));
+            const transformed = framebuffer.project(modelViewMartrix.multiply(element));
             points2.push(transformed);
         });
 
-        points2.sort(function (a, b) {
+        points2.sort( (a, b) => {
             return a.z - b.z;
         });
 
         points2.forEach(element => {
-            let size = -(4.3 * 192 / (element.z));
+            const size = -(4.3 * 192 / (element.z));
             framebuffer.drawSoftParticle(
                 Math.round(element.x - size / 2),
                 Math.round(element.y - size / 2),
@@ -120,14 +120,14 @@ export class HoodlumScene extends AbstractScene {
             const texture = new Texture();
             texture.texture = new Uint32Array(256 * 256);
 
-            let rng = new RandomNumberGenerator();
+            const rng = new RandomNumberGenerator();
             rng.setSeed(100);
 
             for (let y = 0; y < 256; y++) {
                 for (let x = 0; x < 256; x++) {
-                    let dx = 127 - x
-                    let dy = 127 - y
-                    let r = Math.sqrt(dx * dx + dy * dy) / 127;
+                    const dx = 127 - x
+                    const dy = 127 - y
+                    const r = Math.sqrt(dx * dx + dy * dy) / 127;
                     let c = 1 - r;
                     c = c * c * c;
                     if (r > 1) c = 0;

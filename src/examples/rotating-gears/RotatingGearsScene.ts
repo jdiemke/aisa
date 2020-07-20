@@ -64,7 +64,7 @@ export class RotatingGearsScene extends AbstractScene {
 
         framebuffer.clearDepthBuffer();
 
-        let camera: Matrix4f = Matrix4f.constructTranslationMatrix(0, 0, -5).multiplyMatrix(
+        const camera: Matrix4f = Matrix4f.constructTranslationMatrix(0, 0, -5).multiplyMatrix(
             Matrix4f.constructYRotationMatrix(elapsedTime * 0.0002)
                 .multiplyMatrix(
                     Matrix4f.constructXRotationMatrix(elapsedTime * 0.0002)
@@ -73,7 +73,7 @@ export class RotatingGearsScene extends AbstractScene {
 
         for (let i: number = 0; i < 10; i++) {
             const scale = Math.sin(Math.PI * 2 / 10 * i + elapsedTime * 0.002) * 0.2 + 0.2 + 0.3;
-            let mv: Matrix4f = camera.multiplyMatrix(
+            const mv: Matrix4f = camera.multiplyMatrix(
                 Matrix4f.constructTranslationMatrix(0, ((i + elapsedTime * 0.0008) % 10) - 5, 0).multiplyMatrix(
                     Matrix4f.constructYRotationMatrix((i * 0.36 + elapsedTime * 0.0016)).multiplyMatrix(
                         Matrix4f.constructScaleMatrix(scale, 1, scale)

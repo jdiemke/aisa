@@ -48,10 +48,10 @@ export class TorusScene extends AbstractScene {
         for (let x = 0; x < horizontalNum; x++) {
             for (let y = 0; y < verticalNum; y++) {
 
-                let scale = ((Math.sin(Date.now() * 0.004 + x * 0.7 + y * 0.4) + 1) / 2);
-                let size = Math.round(scale * 8 + 1) * 2;
-                let offset = (20 / 2 - size / 2) | 0;
-                let color = 255 << 24 | (85 * scale) << 16 | (55 * scale) << 8 | (55 * scale);
+                const scale = ((Math.sin(Date.now() * 0.004 + x * 0.7 + y * 0.4) + 1) / 2);
+                const size = Math.round(scale * 8 + 1) * 2;
+                const offset = (20 / 2 - size / 2) | 0;
+                const color = 255 << 24 | (85 * scale) << 16 | (55 * scale) << 8 | (55 * scale);
                 framebuffer.drawBox2(x * 20 + offset, y * 20 + offset, size, size, color);
             }
         }

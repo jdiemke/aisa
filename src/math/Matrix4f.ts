@@ -40,7 +40,7 @@ export class Matrix4f {
     public m44: number;
 
     static constructIdentityMatrix(): Matrix4f {
-        let matrix: Matrix4f = new Matrix4f();
+        const matrix: Matrix4f = new Matrix4f();
 
         matrix.m11 = 1.0;
         matrix.m12 = 0.0;
@@ -153,8 +153,8 @@ export class Matrix4f {
     }
 
     public getInverseRotation(): Matrix4f {
-        let scale = 1.0 ;
-        let inverseRotation = Matrix4f.constructIdentityMatrix();
+        const scale = 1.0 ;
+        const inverseRotation = Matrix4f.constructIdentityMatrix();
         inverseRotation.m11 = this.m11 * scale;
         inverseRotation.m21 = this.m12 * scale;
         inverseRotation.m31 = this.m13 * scale;
@@ -172,7 +172,7 @@ export class Matrix4f {
 
     public getRotation(): Matrix4f {
 
-        let inverseRotation = Matrix4f.constructIdentityMatrix();
+        const inverseRotation = Matrix4f.constructIdentityMatrix();
         inverseRotation.m11 = this.m11;
         inverseRotation.m21 = this.m21 ;
         inverseRotation.m31 = this.m31 ;
@@ -189,17 +189,17 @@ export class Matrix4f {
     }
 
     static constructShadowMatrix(modelView: Matrix4f): Matrix4f {
-        let planePoint: Vector3f = new Vector3f(0, -1.5, 0);
-        let planeNormal: Vector3f = new Vector3f(0, 1, 0);
-        let lightPosition: Vector3f =new Vector3f(0, 11, 0);
-        //modelView.multiplyArr(new Vector3f(20, 8, 20),lightPosition);
+        const planePoint: Vector3f = new Vector3f(0, -1.5, 0);
+        const planeNormal: Vector3f = new Vector3f(0, 1, 0);
+        const lightPosition: Vector3f =new Vector3f(0, 11, 0);
+        // modelView.multiplyArr(new Vector3f(20, 8, 20),lightPosition);
 
-        let d = -planePoint.dot(planeNormal);
-        let NdotL = planeNormal.x * lightPosition.x +
+        const d = -planePoint.dot(planeNormal);
+        const NdotL = planeNormal.x * lightPosition.x +
             planeNormal.y * lightPosition.y +
             planeNormal.z * lightPosition.z;
 
-        let shadowMatrix: Matrix4f = new Matrix4f();
+        const shadowMatrix: Matrix4f = new Matrix4f();
 
         shadowMatrix.m11 = NdotL + d - lightPosition.x * planeNormal.x;
         shadowMatrix.m12 = - lightPosition.x * planeNormal.y;
@@ -226,7 +226,7 @@ export class Matrix4f {
     }
 
     static constructTranslationMatrix(tx: number, ty: number, tz: number): Matrix4f {
-        let matrix: Matrix4f = new Matrix4f();
+        const matrix: Matrix4f = new Matrix4f();
 
         matrix.m11 = 1.0;
         matrix.m12 = 0.0;
@@ -274,7 +274,7 @@ export class Matrix4f {
     }
 
     static constructXRotationMatrix(alpha: number): Matrix4f {
-        let matrix: Matrix4f = new Matrix4f();
+        const matrix: Matrix4f = new Matrix4f();
 
         matrix.m11 = 1.0;
         matrix.m12 = 0.0;
@@ -366,7 +366,7 @@ export class Matrix4f {
     }
 
     static constructYRotationMatrix(alpha: number): Matrix4f {
-        let matrix: Matrix4f = new Matrix4f();
+        const matrix: Matrix4f = new Matrix4f();
 
         matrix.m11 = Math.cos(alpha);
         matrix.m12 = 0.0;
@@ -392,7 +392,7 @@ export class Matrix4f {
     }
 
     static constructZRotationMatrix(alpha: number): Matrix4f {
-        let matrix: Matrix4f = new Matrix4f();
+        const matrix: Matrix4f = new Matrix4f();
 
         matrix.m11 = Math.cos(alpha);
         matrix.m12 = -Math.sin(alpha);
@@ -418,7 +418,7 @@ export class Matrix4f {
     }
 
     static constructScaleMatrix(sx: number, sy: number = sx, sz: number = sy): Matrix4f {
-        let matrix: Matrix4f = new Matrix4f();
+        const matrix: Matrix4f = new Matrix4f();
 
         matrix.m11 = sx;
         matrix.m12 = 0.0;
@@ -444,7 +444,7 @@ export class Matrix4f {
     }
 
     public multiplyMatrix(matrix: Matrix4f): Matrix4f {
-        let result = new Matrix4f();
+        const result = new Matrix4f();
 
         result.m11 = this.m11 * matrix.m11 + this.m12 * matrix.m21 + this.m13 * matrix.m31 + this.m14 * matrix.m41;
         result.m21 = this.m21 * matrix.m11 + this.m22 * matrix.m21 + this.m23 * matrix.m31 + this.m24 * matrix.m41;

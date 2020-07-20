@@ -19,15 +19,15 @@ export class CameraAnimator {
     }
 
     public getViewMatrix(elapsedTime: number): Matrix4f {
-        let keyFrameDuration = 5000;
+        const keyFrameDuration = 5000;
 
-        let first = ((elapsedTime / keyFrameDuration) | 0) % this.keyFrames.length;
-        let zero = ((first - 1) + this.keyFrames.length) % this.keyFrames.length;
-        let second = (first + 1) % this.keyFrames.length;
-        let third = (first + 2) % this.keyFrames.length;
-        let fraction = ((elapsedTime / keyFrameDuration) % this.keyFrames.length) - first;
+        const first = ((elapsedTime / keyFrameDuration) | 0) % this.keyFrames.length;
+        const zero = ((first - 1) + this.keyFrames.length) % this.keyFrames.length;
+        const second = (first + 1) % this.keyFrames.length;
+        const third = (first + 2) % this.keyFrames.length;
+        const fraction = ((elapsedTime / keyFrameDuration) % this.keyFrames.length) - first;
 
-        let mu2 = (1 - Math.cos(fraction * Math.PI)) / 2;
+        const mu2 = (1 - Math.cos(fraction * Math.PI)) / 2;
         let position = new Vector3f(
             CosineInterpolate(this.keyFrames[first].position.x, this.keyFrames[second].position.x, fraction),
             CosineInterpolate(this.keyFrames[first].position.y, this.keyFrames[second].position.y, fraction),

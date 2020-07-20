@@ -15,11 +15,11 @@ export class BasicCamera {
     }
 
     public getViewMatrix(): Matrix4f {
-        let roll  = Matrix4f.constructZRotationMatrix(-this.roll);
-        let pitch = Matrix4f.constructXRotationMatrix(-this.pitch);
-        let yaw   = Matrix4f.constructYRotationMatrix(-this.yaw);
+        const roll  = Matrix4f.constructZRotationMatrix(-this.roll);
+        const pitch = Matrix4f.constructXRotationMatrix(-this.pitch);
+        const yaw   = Matrix4f.constructYRotationMatrix(-this.yaw);
 
-        let translation = Matrix4f.constructTranslationMatrix(-this.position.x, -this.position.y, -this.position.z);
+        const translation = Matrix4f.constructTranslationMatrix(-this.position.x, -this.position.y, -this.position.z);
 
         return roll.multiplyMatrix(pitch).multiplyMatrix(yaw).multiplyMatrix(translation);
     }

@@ -38,7 +38,7 @@ export class TexturedTorusScene extends AbstractScene {
 
         framebuffer.clearDepthBuffer();
 
-        let scale = 2.1;
+        const scale = 2.1;
 
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.25));
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3));
@@ -56,21 +56,21 @@ export class TexturedTorusScene extends AbstractScene {
     }
 
     private computeTexturedTorusMesh(): any {
-        let points: Array<Vector4f> = [];
-        let textCoords: Array<TextureCoordinate> = [];
+        const points: Array<Vector4f> = [];
+        const textCoords: Array<TextureCoordinate> = [];
 
         const STEPS = 15;
         const STEPS2 = 8;
         for (let i = 0; i < STEPS + 1; i++) {
-            let frame = this.torusFunction(i * 2 * Math.PI / STEPS);
-            let frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
-            let up = new Vector3f(0.0, 4.0, 0);
-            let right = frame2.sub(frame).cross(up);
+            const frame = this.torusFunction(i * 2 * Math.PI / STEPS);
+            const frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
+            const up = new Vector3f(0.0, 4.0, 0);
+            const right = frame2.sub(frame).cross(up);
 
             for (let r = 0; r < STEPS2 + 1; r++) {
-                let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
+                const pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
                 points.push(new Vector4f(pos.x, pos.y, pos.z));
-                let t = new TextureCoordinate();
+                const t = new TextureCoordinate();
                 t.u = 1 / (STEPS2) * r;
                 t.v = 1 / (STEPS) * i;
                 textCoords.push(t);
@@ -124,7 +124,7 @@ export class TexturedTorusScene extends AbstractScene {
     }
 
     public cinematicScroller(framebuffer: Framebuffer, texture: Texture, time: number) {
-        let scrollText: Array<string> = [
+        const scrollText: Array<string> = [
             '', '', '', '', '', '', '', '', '', '',
             '', '', '', '', '', '', '', '', '', '',
             '', '', '', '', '',
@@ -148,12 +148,12 @@ export class TexturedTorusScene extends AbstractScene {
         ];
         time = time * 0.6;
 
-        let scrollerOffset = Math.round(framebuffer.interpolate(0, 250, time & 0xff) * 8);
+        const scrollerOffset = Math.round(framebuffer.interpolate(0, 250, time & 0xff) * 8);
 
         for (let i = 1; i < 200 / 8; i++) {
-            let text = scrollText[Math.floor((i + (time / 256))) % scrollText.length];
-            let x = (320 / 2 - text.length * 8 / 2) | 0;
-            let y = 8 * i - scrollerOffset;
+            const text = scrollText[Math.floor((i + (time / 256))) % scrollText.length];
+            const x = (320 / 2 - text.length * 8 / 2) | 0;
+            const y = 8 * i - scrollerOffset;
             // TODO: proper text clipping to rect
             // maybe just for first and last row
             framebuffer.drawText(x, y, text, texture);

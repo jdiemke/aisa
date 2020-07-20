@@ -24,7 +24,7 @@ export class FloodFillScene extends AbstractScene {
     }
 
     public floodFill(framebuffer: Framebuffer, texture: Texture, time: number) {
-        let pos = Math.floor(time * 0.02) % 200;
+        const pos = Math.floor(time * 0.02) % 200;
         let index = 320 * 200;
 
         for (let y = 0; y < pos; y++) {

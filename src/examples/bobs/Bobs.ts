@@ -32,8 +32,8 @@ export class Bobs extends AbstractScene {
         const BALL_SIZE: number = 16;
 
         for (let i = 0; i < 30; i++) {
-            let x = (Math.cos(3 * scaledTime * 0.002 + i * 0.11) * (320 / 2 - BALL_SIZE / 2)) | 0;
-            let y = (Math.sin(4 * scaledTime * 0.002 + i * 0.11) * (200 / 2 - BALL_SIZE / 2)) | 0;
+            const x = (Math.cos(3 * scaledTime * 0.002 + i * 0.11) * (320 / 2 - BALL_SIZE / 2)) | 0;
+            const y = (Math.sin(4 * scaledTime * 0.002 + i * 0.11) * (200 / 2 - BALL_SIZE / 2)) | 0;
 
             framebuffer.drawTextureNoClipAlpha(
                 320 / 2 - BALL_SIZE / 2 + x,

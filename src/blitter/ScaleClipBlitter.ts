@@ -8,8 +8,8 @@ export class ScaleClipBlitter {
     }
 
     public drawScaledTextureClip(xp: number, yp: number, width: number, height: number, texture: Texture, alphaBlend: number): void {
-        let xStep = texture.width / width;
-        let yStep = texture.height / height;
+        const xStep = texture.width / width;
+        const yStep = texture.height / height;
         let xx = 0;
         let yy = 0;
 
@@ -50,17 +50,17 @@ export class ScaleClipBlitter {
         let index2 = (xStart) + (yStart) * 320;
         for (let y = 0; y < newHeight; y++) {
             for (let x = 0; x < newWidth; x++) {
-                let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
+                const textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
 
-                let alpha = (texture.texture[textureIndex] >> 24 & 0xff) * alphaScale;
-                let inverseAlpha = 1 - alpha;
+                const alpha = (texture.texture[textureIndex] >> 24 & 0xff) * alphaScale;
+                const inverseAlpha = 1 - alpha;
 
-                let framebufferPixel = this.framebuffer.framebuffer[index2];
-                let texturePixel = texture.texture[textureIndex];
+                const framebufferPixel = this.framebuffer.framebuffer[index2];
+                const texturePixel = texture.texture[textureIndex];
 
-                let r = (framebufferPixel >> 0 & 0xff) * inverseAlpha + (texturePixel >> 0 & 0xff) * alpha;
-                let g = (framebufferPixel >> 8 & 0xff) * inverseAlpha + (texturePixel >> 8 & 0xff) * alpha;
-                let b = (framebufferPixel >> 16 & 0xff) * inverseAlpha + (texturePixel >> 16 & 0xff) * alpha;
+                const r = (framebufferPixel >> 0 & 0xff) * inverseAlpha + (texturePixel >> 0 & 0xff) * alpha;
+                const g = (framebufferPixel >> 8 & 0xff) * inverseAlpha + (texturePixel >> 8 & 0xff) * alpha;
+                const b = (framebufferPixel >> 16 & 0xff) * inverseAlpha + (texturePixel >> 16 & 0xff) * alpha;
 
                 this.framebuffer.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
                 xx += xStep;

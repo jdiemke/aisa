@@ -1,4 +1,4 @@
-import { Vector2f } from "../../math/index";
+import { Vector2f } from '../../math/index';
 
 export class PixelInterpolator {
     constructor(public start: Vector2f, public end: Vector2f, public pixel: number, public startTime: number = 0) {
