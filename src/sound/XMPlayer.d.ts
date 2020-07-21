@@ -16,32 +16,32 @@ declare namespace XMPlayer {
     /**
      * AudioContext of the player.
      */
-	const audioctx: AudioContext;
+    const audioctx: AudioContext;
 
     /**
      * Initialize the player and starts up audio context; it's available as XMPlayer.audioctx
      */
-	function init(): void;
+    function init(): void;
 
     /**
      * Load a XM into the player. Returns true if loaded, otherwise barfs randomly.
      * @param {ArrayBuffer} arrayBuffer An ArrayBuffer containing a XM file
      */
-	function load(file: ArrayBuffer): boolean;
+    function load(file: ArrayBuffer): boolean;
 
     /**
      * Start the playback.
      */
-	function play(): void;
+    function play(): void;
 
     /**
      * Pauses the playback.
      */
-	function pause(): void;
+    function pause(): void;
 
     /**
      * Stops the playback. Call this before loading a new song.
      */
-	function stop(): void;
+    function stop(): void;
 
 }

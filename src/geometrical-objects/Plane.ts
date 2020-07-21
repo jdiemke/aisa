@@ -9,7 +9,7 @@ export class Plane extends AbstractGeometricObject {
 
         const a = 0.5;
 
-        const points: Array<Vector4f> =  [
+        const points: Array<Vector4f> = [
             new Vector4f(-a, 0, a),
             new Vector4f(a, 0, a),
             new Vector4f(a, 0, -a),

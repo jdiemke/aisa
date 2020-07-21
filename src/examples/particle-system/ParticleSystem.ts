@@ -24,7 +24,7 @@ export class ParticleSystem {
     }
 
     public drawParticleStreams(framebuffer: Framebuffer, elapsedTime: number, texture: Texture,
-                               matrix: Matrix4f): void {
+        matrix: Matrix4f): void {
 
         const deltaTime: number = elapsedTime - this.lastTime;
         this.lastTime = elapsedTime;

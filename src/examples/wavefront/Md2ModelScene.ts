@@ -38,7 +38,7 @@ export class WavefrontScene extends AbstractScene {
         light2.ambientIntensity = new Vector4f(0, 0, 1, 1);
         light2.diffuseIntensity = new Vector4f(0, 0.6, 0, 1);
         light2.specularIntensity = new Vector4f(0.8, 0.8, 0.8, 1);
-        light2.position =  new Vector4f(3, 0, -2, 1);
+        light2.position = new Vector4f(3, 0, -2, 1);
 
         framebuffer.renderingPipeline.setLights([light1, light2]);
 
@@ -71,13 +71,13 @@ export class WavefrontScene extends AbstractScene {
 
         framebuffer.renderingPipeline.draw(this.meshes[0], this.modelViewMatrix.getMatrix());
 
-        framebuffer.drawText(8,  8, 'FPS: ' + this.fps.toString(), this.texture4);
-        framebuffer.drawText(8,  16, 'FACES: ' + this.meshes[0].faces.length, this.texture4);
+        framebuffer.drawText(8, 8, 'FPS: ' + this.fps.toString(), this.texture4);
+        framebuffer.drawText(8, 16, 'FACES: ' + this.meshes[0].faces.length, this.texture4);
     }
 
     private computeCameraMovement(elapsedTime: number): void {
         this.modelViewMatrix.setIdentity();
-        this.modelViewMatrix.trans(0, 0, -5 );
+        this.modelViewMatrix.trans(0, 0, -5);
         this.modelViewMatrix.yRotate(-elapsedTime * 0.002);
         this.modelViewMatrix.xRotate(-elapsedTime * 0.002);
     }

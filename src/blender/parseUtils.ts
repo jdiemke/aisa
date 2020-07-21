@@ -35,11 +35,11 @@ export function convertToMeshArray(data: string): Array<Mesh> {
 
         if (currentObject === null &&
             (line.startsWith('v ') ||
-            line.startsWith('vn ') ||
-            line.startsWith('vt '))) {
-                console.error('Error: OBJ file does not contain Objects.');
-                throw Error();
-            }
+                line.startsWith('vn ') ||
+                line.startsWith('vt '))) {
+            console.error('Error: OBJ file does not contain Objects.');
+            throw Error();
+        }
 
         if (line.startsWith('v ')) {
             const coords: Array<string> = line.split(' ');

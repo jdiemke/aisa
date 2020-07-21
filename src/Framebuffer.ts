@@ -1292,8 +1292,8 @@ export class Framebuffer {
     }
 
     public isTriangleCCW(v1: { x: number, y: number, z: number },
-                         v2: { x: number, y: number, z: number },
-                         v3: { x: number, y: number, z: number }): boolean {
+        v2: { x: number, y: number, z: number },
+        v3: { x: number, y: number, z: number }): boolean {
         const det: number =
             v1.x * v2.y - v2.x * v1.y +
             v2.x * v3.y - v3.x * v2.y +
@@ -1521,7 +1521,7 @@ export class Framebuffer {
             points2.push(transformed);
         });
 
-        points2.sort( (a, b) => {
+        points2.sort((a, b) => {
             return a.z - b.z;
         });
 

@@ -22,16 +22,16 @@
  */
 declare namespace JSRocket {
 
-	function init(): void;
+    function init(): void;
 
-	function SyncData(): void;
+    function SyncData(): void;
 
-	function SyncDevice(): void;
+    function SyncDevice(): void;
 
-	function Track(): void;
+    function Track(): void;
 
-	function SyncDevicePlayer(): void;
+    function SyncDevicePlayer(): void;
 
-	function SyncDeviceClient(): void;
+    function SyncDeviceClient(): void;
 
 }

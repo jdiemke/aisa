@@ -7,7 +7,7 @@ export class Sphere extends AbstractGeometricObject {
     public constructor(xSteps: number = 16, ySteps: number = 16) {
         super();
 
-        const points: Array<Vector4f> =  [];
+        const points: Array<Vector4f> = [];
 
         const STEPS = xSteps;
         const STEPS2 = ySteps;

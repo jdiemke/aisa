@@ -54,14 +54,14 @@ export class MetaballsScene extends AbstractScene {
     public onInit(): void {
         let count = 0;
         for (let x = 0; x < this.hoodlumLogo.width; x++) {
-        for (let y = 0; y < this.hoodlumLogo.height; y++) {
+            for (let y = 0; y < this.hoodlumLogo.height; y++) {
 
                 const pixel = this.hoodlumLogo.getPixel2(this.hoodlumLogo, x, y);
                 if (((pixel >> 24) & 0xff) === 255) {
                     this.pixels.push(new PixelInterpolator(
                         new Vector2f(
-                            Math.round(Math.sin(4*count * 0.0004 * Math.PI * 2) * 150 + 160),
-                            Math.round(Math.cos(3*count * 0.0004 * Math.PI * 2) * 90 + 100)),
+                            Math.round(Math.sin(4 * count * 0.0004 * Math.PI * 2) * 150 + 160),
+                            Math.round(Math.cos(3 * count * 0.0004 * Math.PI * 2) * 90 + 100)),
                         new Vector2f(x, y + 67),
                         pixel,
                         count * 3

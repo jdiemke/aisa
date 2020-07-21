@@ -14,7 +14,7 @@ export class Texture {
         return texture.texture[(x & 0xff) + (y & 0xff) * 256];
     }
 
-    public getBilinearFilteredPixel( x: number, y: number): number {
+    public getBilinearFilteredPixel(x: number, y: number): number {
         const x0 = (((x | 0) % 256) + 256) % 256;
         const x1 = ((((x + 1) | 0) % 256) + 256) % 256;
         const y0 = (((y | 0) % 256) + 256) % 256;

@@ -61,7 +61,7 @@ export class CubeTunnelScene extends AbstractScene {
             const rotSpeed = rand.getFloat() * 0.3 + 0.2;
             for (let z = 0; z < rot; z++) {
 
-                const scale = rand.getFloat() * 2.3 + 0.7 + 0.2*(Math.sin(Date.now() * 0.0044 + rand.getFloat() * 3));
+                const scale = rand.getFloat() * 2.3 + 0.7 + 0.2 * (Math.sin(Date.now() * 0.0044 + rand.getFloat() * 3));
                 const size = (xSteps - 1) * 0.7;
                 const mat =
                     Matrix4f.constructXRotationMatrix(0.2 * Math.sin(Date.now() * 0.00044)).multiplyMatrix(
@@ -83,9 +83,9 @@ export class CubeTunnelScene extends AbstractScene {
         }
 
 
-       // const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-      //  framebuffer.drawTextureFullscreen(texture3, 0.75);
-      //  framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
+        // const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+        //  framebuffer.drawTextureFullscreen(texture3, 0.75);
+        //  framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
 
     }
 

@@ -20,7 +20,7 @@ export class BlockFade extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer): void {
-        const time: number =  Date.now() - this.startTime;
+        const time: number = Date.now() - this.startTime;
         this.blockFace(framebuffer, this.ledTexture, time, 0);
     }
 

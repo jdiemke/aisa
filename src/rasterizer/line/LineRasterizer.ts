@@ -14,9 +14,9 @@ export class LineRasterizerDda {
         const xDistance: number = end.x - start.x;
         const yDistance: number = end.y - start.y;
 
-		let dx: number;
-		let dy: number;
-		let length: number;
+        let dx: number;
+        let dy: number;
+        let length: number;
 
         if (Math.abs(xDistance) > Math.abs(yDistance)) {
             dx = Math.sign(xDistance);

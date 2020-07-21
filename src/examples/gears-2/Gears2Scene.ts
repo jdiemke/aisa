@@ -63,13 +63,13 @@ export class Gears2Scene extends AbstractScene {
     public drawBlenderScene4(framebuffer: Framebuffer): void {
         framebuffer.clearDepthBuffer();
         const mat =
-        Matrix4f.constructTranslationMatrix(0, 0, -14)
-        .multiplyMatrix(Matrix4f.constructXRotationMatrix(Date.now() * 0.0007)
+            Matrix4f.constructTranslationMatrix(0, 0, -14)
+                .multiplyMatrix(Matrix4f.constructXRotationMatrix(Date.now() * 0.0007)
 
-                .multiplyMatrix(Matrix4f.constructZRotationMatrix(-Date.now() * 0.0007 + Math.PI * 2 / 360 * 13).
-                    multiplyMatrix(Matrix4f.constructXRotationMatrix(Math.PI * 2 / 360 * 90))));
-        const mat2 = Matrix4f.constructTranslationMatrix(0-4.8, 0, -14)
-        .multiplyMatrix(Matrix4f.constructXRotationMatrix(Date.now() * 0.0007)
+                    .multiplyMatrix(Matrix4f.constructZRotationMatrix(-Date.now() * 0.0007 + Math.PI * 2 / 360 * 13).
+                        multiplyMatrix(Matrix4f.constructXRotationMatrix(Math.PI * 2 / 360 * 90))));
+        const mat2 = Matrix4f.constructTranslationMatrix(0 - 4.8, 0, -14)
+            .multiplyMatrix(Matrix4f.constructXRotationMatrix(Date.now() * 0.0007)
 
                 .multiplyMatrix(Matrix4f.constructZRotationMatrix(Date.now() * 0.0007).
                     multiplyMatrix(Matrix4f.constructXRotationMatrix(Math.PI * 2 / 360 * 90))));

@@ -51,11 +51,11 @@ export class AbstractCube extends AbstractScene {
         framebuffer.clearDepthBuffer();
 
         const camera: Matrix4f = Matrix4f.constructTranslationMatrix(0, 0, -4).multiplyMatrix(
-                Matrix4f.constructYRotationMatrix(elapsedTime * 0.0009)
-                    .multiplyMatrix(
-                        Matrix4f.constructXRotationMatrix(elapsedTime * 0.0009)
-                    ).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, -2, 0))
-            );
+            Matrix4f.constructYRotationMatrix(elapsedTime * 0.0009)
+                .multiplyMatrix(
+                    Matrix4f.constructXRotationMatrix(elapsedTime * 0.0009)
+                ).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, -2, 0))
+        );
 
         const mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(10, 10, 10));
         const model: FlatshadedMesh = this.scene[0];
