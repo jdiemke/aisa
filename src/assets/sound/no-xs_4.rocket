@@ -1,0 +1,108 @@
+<sync rows="1024">
+	<tracks>
+		<track name="effect">
+			<key value="1" row="0" interpolation="0"/>
+			<key value="2" row="80" interpolation="0"/>
+			<key value="3" row="160" interpolation="0"/>
+		</track>
+		<track name="clearG">
+			<key value="166" row="0" interpolation="0"/>
+			<key value="166" row="11" interpolation="2"/>
+			<key value="242" row="14" interpolation="0"/>
+			<key value="98" row="25" interpolation="3"/>
+			<key value="179" row="29" interpolation="3"/>
+			<key value="41" row="34" interpolation="0"/>
+			<key value="41" row="48" interpolation="2"/>
+			<key value="255" row="50" interpolation="3"/>
+			<key value="41" row="51" interpolation="0"/>
+			<key value="255" row="52" interpolation="3"/>
+			<key value="41" row="53" interpolation="0"/>
+			<key value="41" row="58" interpolation="2"/>
+			<key value="255" row="60" interpolation="3"/>
+			<key value="41" row="62" interpolation="0"/>
+			<key value="98" row="90" interpolation="3"/>
+			<key value="179" row="94" interpolation="3"/>
+			<key value="41" row="99" interpolation="0"/>
+			<key value="41" row="113" interpolation="2"/>
+			<key value="255" row="115" interpolation="3"/>
+			<key value="41" row="116" interpolation="0"/>
+			<key value="255" row="117" interpolation="3"/>
+			<key value="41" row="118" interpolation="0"/>
+			<key value="41" row="123" interpolation="2"/>
+			<key value="255" row="125" interpolation="3"/>
+			<key value="41" row="127" interpolation="0"/>
+		</track>
+		<track name="clearB">
+			<key value="154" row="0" interpolation="0"/>
+			<key value="154" row="11" interpolation="2"/>
+			<key value="242" row="14" interpolation="0"/>
+			<key value="0" row="25" interpolation="0"/>
+			<key value="0" row="29" interpolation="3"/>
+			<key value="44" row="34" interpolation="0"/>
+			<key value="44" row="48" interpolation="2"/>
+			<key value="255" row="50" interpolation="3"/>
+			<key value="44" row="51" interpolation="0"/>
+			<key value="255" row="52" interpolation="3"/>
+			<key value="44" row="53" interpolation="0"/>
+			<key value="44" row="58" interpolation="2"/>
+			<key value="255" row="60" interpolation="3"/>
+			<key value="44" row="62" interpolation="0"/>
+			<key value="0" row="90" interpolation="0"/>
+			<key value="0" row="94" interpolation="3"/>
+			<key value="44" row="99" interpolation="0"/>
+			<key value="44" row="113" interpolation="2"/>
+			<key value="255" row="115" interpolation="3"/>
+			<key value="44" row="116" interpolation="0"/>
+			<key value="255" row="117" interpolation="3"/>
+			<key value="44" row="118" interpolation="0"/>
+			<key value="44" row="123" interpolation="2"/>
+			<key value="255" row="125" interpolation="3"/>
+			<key value="44" row="127" interpolation="0"/>
+		</track>
+		<track name="rotation">
+			<key value="0" row="0" interpolation="2"/>
+			<key value="45" row="5" interpolation="0"/>
+			<key value="20" row="11" interpolation="3"/>
+			<key value="122" row="14" interpolation="0"/>
+			<key value="496" row="25" interpolation="2"/>
+			<key value="315" row="29" interpolation="0"/>
+			<key value="315" row="34" interpolation="3"/>
+			<key value="300" row="38" interpolation="0"/>
+			<key value="300" row="46" interpolation="3"/>
+			<key value="330" row="48" interpolation="0"/>
+			<key value="40" row="68" interpolation="2"/>
+			<key value="45" row="72" interpolation="0"/>
+			<key value="50" row="76" interpolation="2"/>
+			<key value="64" row="80" interpolation="0"/>
+			<key value="496" row="90" interpolation="2"/>
+			<key value="315" row="94" interpolation="0"/>
+			<key value="315" row="99" interpolation="3"/>
+			<key value="300" row="103" interpolation="0"/>
+			<key value="300" row="111" interpolation="3"/>
+			<key value="330" row="113" interpolation="0"/>
+			<key value="40" row="133" interpolation="2"/>
+			<key value="45" row="137" interpolation="0"/>
+			<key value="50" row="141" interpolation="2"/>
+			<key value="64" row="145" interpolation="0"/>
+		</track>
+		<track name="distance">
+			<key value="400" row="0" interpolation="0"/>
+			<key value="130" row="5" interpolation="0"/>
+			<key value="400" row="11" interpolation="3"/>
+			<key value="130" row="14" interpolation="0"/>
+		</track>
+		<track name="FOV">
+			<key value="35" row="0" interpolation="3"/>
+			<key value="90" row="5" interpolation="0"/>
+			<key value="35" row="11" interpolation="3"/>
+			<key value="90" row="14" interpolation="0"/>
+			<key value="120" row="25" interpolation="2"/>
+			<key value="90" row="46" interpolation="2"/>
+			<key value="120" row="90" interpolation="2"/>
+			<key value="90" row="111" interpolation="2"/>
+		</track>
+		<track name="snare"/>
+		<track name="bass"/>
+	</tracks>
+	<bookmarks/>
+</sync>

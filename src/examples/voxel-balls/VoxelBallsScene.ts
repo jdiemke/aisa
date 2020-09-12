@@ -10,7 +10,7 @@ import { TextureUtils, Texture } from '../../texture/index';
 /**
  * TODO: use cube mesh and draw using drawObject2
  */
-export class CubeScene extends AbstractScene {
+export class VoxelBallsScene extends AbstractScene {
 
     private static BACKGROUND_COLOR: number = Color.YELLOW.toPackedFormat();
     private renderingPipeline: FlatShadingRenderingPipeline;

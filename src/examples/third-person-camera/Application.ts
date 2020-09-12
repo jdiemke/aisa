@@ -1,10 +1,10 @@
 import { Canvas } from '../../Canvas';
-import { Md2ModelScene } from './Md2ModelScene';
+import { ThirdPersonCameraScene } from './ThirdPersonCameraScene';
 
 class Application {
 
     public main(): void {
-        const canvas: Canvas = new Canvas(320, 200, new Md2ModelScene());
+        const canvas: Canvas = new Canvas(320, 200, new ThirdPersonCameraScene());
         canvas.appendTo(document.getElementById('aisa'));
         canvas.init();
     }

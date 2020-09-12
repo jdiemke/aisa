@@ -6,6 +6,8 @@ import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
+import { BlenderLoader } from './../../model/blender/BlenderLoader';
+import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 
 export class HoodlumScene extends AbstractScene {
 
@@ -14,18 +16,21 @@ export class HoodlumScene extends AbstractScene {
     private noise: Texture;
     private particleTexture2: Texture;
 
-    private spaceLabMesh: Array<TexturedMesh>; // Create Type for Modells!
-    private hoodlumLogoMesh: any;
+    private spaceLabMesh: Array<TexturedMesh>;
+    private hoodlumLogoMesh: Array<FlatshadedMesh>;
 
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.spaceLabMesh = BlenderJsonParser.getBlenderScene(require('../../assets/lab2.json'), false);
-        this.hoodlumLogoMesh = BlenderJsonParser.parse(require('../../assets/hoodlum2018.json'), false);
-
         return Promise.all([
             TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
+            ),
+            BlenderLoader.loadWithTexture(require('../../assets/jsx/lab2.jsx')).then(
+                (mesh: Array<TexturedMesh>) => this.spaceLabMesh = mesh
+            ),
+            BlenderLoader.load(require('../../assets/jsx/hoodlum2018.jsx')).then(
+                (mesh: Array<FlatshadedMesh>) => this.hoodlumLogoMesh = mesh
             ),
             TextureUtils.load(require('../../assets/lab2.png'), false).then(texture => this.lab2 = texture),
             TextureUtils.generateProceduralNoise().then(texture => this.noise = texture),
@@ -102,7 +107,7 @@ export class HoodlumScene extends AbstractScene {
             points2.push(transformed);
         });
 
-        points2.sort( (a, b) => {
+        points2.sort((a, b) => {
             return a.z - b.z;
         });
 

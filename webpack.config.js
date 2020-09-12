@@ -3,7 +3,7 @@ var path = require('path');
 
 module.exports = {
 	entry: {
-		'3rd-person-camera': './src/examples/3rd-person-camera/Application.ts',
+		'third-person-camera': './src/examples/third-person-camera/Application.ts',
 		'abstract-cube': './src/examples/abstract-cube/Application.ts',
 		'baked-lighting': './src/examples/baked-lighting/Application.ts',
 		'block-fade': './src/examples/block-fade/Application.ts',
@@ -69,7 +69,12 @@ module.exports = {
 	},
 	resolve: {
 		extensions: ['.ts', '.js']
-	},
+    },
+    performance: {
+        hints: 'warning',
+        maxAssetSize: 250000,
+        maxEntrypointSize: 250000
+    },
 	module: {
 		rules: [
 			{
@@ -81,7 +86,7 @@ module.exports = {
 				use: 'html-loader'
 			},
 			{
-				test: /\.(png|jpg|mp3|ogg|md2|mdl|tga|xm|obj|rocket)$/,
+				test: /\.(png|jpg|mp3|ogg|md2|mdl|tga|xm|obj|rocket|jsx)$/,
 				use: 'file-loader'
 			}
 		]
@@ -349,8 +354,8 @@ module.exports = {
 		}),
 		new HtmlWebpackPlugin({
 			template: './src/index.html',
-			chunks: ['3rd-person-camera'],
-			filename: '3rd-person-camera.html'
+			chunks: ['third-person-camera'],
+			filename: 'third-person-camera.html'
 		}),
 		new HtmlWebpackPlugin({
 			template: './src/index.html',

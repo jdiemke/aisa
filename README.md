@@ -23,7 +23,7 @@ project contains a lot of elementary algorithms from then
 field of computer graphics including clipping, triangle rasterization, geometric transformations and so forth.
 ### Demos
 * [2D Bump Mapping](https://jdiemke.github.io/aisa/bump.html)
-* [3rd Person Camera](https://jdiemke.github.io/aisa/3rd-person-camera.html)
+* [Third Person Camera](https://jdiemke.github.io/aisa/third-person-camera.html)
 * [4th Dimension](https://jdiemke.github.io/aisa/planedeformation-abstract.html)
 * [Abstract Cube](https://jdiemke.github.io/aisa/abstract-cube.html)
 * [Baked Lighting](https://jdiemke.github.io/aisa/baked-lighting.html)
@@ -180,6 +180,8 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Material
 - Shadow Mapping
 - Pixel Shaders (Bump Mapping, Parallax Mapping)
+- Upgrade to Typescript 4
+- Transition Effects
 ### References
 - Portals & PVS
     - Doom 3 Portal Rendering Code: https://github.com/id-Software/DOOM-3-BFG/blob/1caba1979589971b5ed44e315d9ead30b278d8b4/neo/renderer/RenderWorld_portals.cpp

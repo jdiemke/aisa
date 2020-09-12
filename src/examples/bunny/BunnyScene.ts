@@ -14,7 +14,7 @@ import { TextureUtils } from '../../texture/TextureUtils';
 /**
  * TODO: use cube mesh and draw using drawObject2
  */
-export class AbstractCube extends AbstractScene {
+export class BunnyScene extends AbstractScene {
 
     private blurred: Texture;
     private noise: Texture;

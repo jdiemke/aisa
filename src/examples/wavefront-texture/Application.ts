@@ -1,10 +1,10 @@
 import { Canvas } from '../../Canvas';
-import { PlatonianScene } from './PlatonianScene';
+import { WaveFrontTextureScene } from './WaveFrontTextureScene';
 
 class Application {
 
     public static main(): void {
-        const canvas: Canvas = new Canvas(320, 200, new PlatonianScene());
+        const canvas: Canvas = new Canvas(320, 200, new WaveFrontTextureScene());
         canvas.appendTo(document.getElementById('aisa'));
         canvas.init();
     }

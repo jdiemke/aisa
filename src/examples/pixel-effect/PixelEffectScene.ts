@@ -13,7 +13,7 @@ import { Vector2f } from '../../math/index';
 /**
  * TODO: extract lens into effect class
  */
-export class MetaballsScene extends AbstractScene {
+export class PixelEffectScene extends AbstractScene {
 
     private heightmap: Texture;
     private metall: Texture;

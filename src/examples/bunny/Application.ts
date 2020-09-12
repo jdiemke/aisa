@@ -1,10 +1,10 @@
 import { Canvas } from '../../Canvas';
-import { AbstractCube } from './AbstractCube';
+import { BunnyScene } from './BunnyScene';
 
 class Application {
 
     public static main(): void {
-        const canvas: Canvas = new Canvas(320, 200, new AbstractCube());
+        const canvas: Canvas = new Canvas(320, 200, new BunnyScene());
         canvas.appendTo(document.getElementById('aisa'));
         canvas.init();
     }

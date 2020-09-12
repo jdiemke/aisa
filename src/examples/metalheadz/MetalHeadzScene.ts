@@ -4,8 +4,9 @@ import { Matrix4f, Vector3f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { SkyBox } from '../../SkyBox';
 import { Texture, TextureUtils } from '../../texture';
-import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
+import { BlenderLoader } from '../../model/blender/BlenderLoader';
+import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 
 export class MetalHeadzScene extends AbstractScene {
 
@@ -22,7 +23,6 @@ export class MetalHeadzScene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         framebuffer.setCullFace(CullFace.BACK);
-        this.blenderObjMetal = BlenderJsonParser.getBlenderScene(require('../../assets/metalheadz.json'), false);
         this.skyBox = new SkyBox();
         // TODO:
         // make classes for assets
@@ -30,6 +30,9 @@ export class MetalHeadzScene extends AbstractScene {
 
         return Promise.all([
             this.skyBox.init(),
+            BlenderLoader.loadWithTexture(require('../../assets/jsx/metalheadz.jsx')).then(
+                (mesh: Array<TexturedMesh>) => this.blenderObjMetal = mesh
+            ),
             TextureUtils.load(require('../../assets/metalheadz.png'), false).then(
                 (texture: Texture) => this.metalheadz = texture
             ),

@@ -1,5 +1,5 @@
 import { Canvas } from '../../Canvas';
-import { WavefrontScene } from './Md2ModelScene';
+import { WavefrontScene } from './WavefrontScene';
 
 class Application {
 
