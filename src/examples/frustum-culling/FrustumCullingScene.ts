@@ -12,6 +12,7 @@ import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture';
+import { BlenderLoader } from '../../model/blender/BlenderLoader';
 
 export class FrustumCullingScene extends AbstractScene {
 
@@ -23,9 +24,10 @@ export class FrustumCullingScene extends AbstractScene {
         this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.BACK);
 
-        this.world = BoundingVolumeExpander.expand(BlenderJsonParser.parse(require('../../assets/world2.json')));
-
         return Promise.all([
+            BlenderLoader.load(require('../../assets/jsx/world2.jsx')).then(
+                (mesh: Array<FlatshadedMesh>) => this.world = BoundingVolumeExpander.expand(mesh)
+            )
         ]);
     }
 

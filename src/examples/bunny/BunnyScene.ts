@@ -10,6 +10,7 @@ import { PointLight } from '../../shading/light/PointLight';
 import { Material } from '../../shading/material/Material';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
+import { BlenderLoader } from '../../model/blender/BlenderLoader';
 
 /**
  * TODO: use cube mesh and draw using drawObject2
@@ -27,9 +28,10 @@ export class BunnyScene extends AbstractScene {
         this.renderingPipeline.setLights(this.constructSceneLights());
         this.renderingPipeline.setMaterial(this.constructSceneMaterial());
 
-        this.scene = BlenderJsonParser.parse(require('../../assets/mybunny.json'), false);
-
         return Promise.all([
+            BlenderLoader.load(require('../../assets/jsx/mybunny.jsx')).then(
+                (mesh: Array<FlatshadedMesh>) => this.scene = mesh
+            ),
             TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
             ),

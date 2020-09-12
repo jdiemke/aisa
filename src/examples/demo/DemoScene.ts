@@ -256,6 +256,7 @@ export class DemoScene extends AbstractScene {
         this.WaveFrontTextureScene = new WaveFrontTextureScene();
 
         // initialize effects
+        // TODO: dynamically init each effect so everything isnt loaded at once
         return Promise.all([
             // load music
             // this.sm.playExtendedModule(require('../../assets/sound/dubmood_-_cromenu1_haschkaka.xm').default),
@@ -342,7 +343,7 @@ export class DemoScene extends AbstractScene {
 
         this._row = timeSeconds * this.ROW_RATE;
 
-        this._currentEffect = this._effect.getValue(this._row).toFixed(0);
+        this._currentEffect = this._effect.getValue(this._row).toFixed(1);
 
         // update JS rocket
         if (this.sm._audio.paused === false) {
@@ -388,7 +389,7 @@ export class DemoScene extends AbstractScene {
         // this.WaveFrontTextureScene.render(framebuffer);
 
         // TODO: add transition effects as effect N.5
-        // at 5-10 seconds per effect is ideal
+        // 5-10 seconds per effect is ideal
         // max of 30 effects at 10 seconds each for 5 min demo
 
         // use values from JS Rocket to determine which scene to show
@@ -396,6 +397,8 @@ export class DemoScene extends AbstractScene {
             case 1:
                 this.metalHeadzScene.render(framebuffer, time);
                 break;
+            case 1.5:
+                this.BlockFade.render(framebuffer);  // Transition!
             case 2:
                 this.abscractCubeScene.render(framebuffer, time);
                 break;
@@ -519,7 +522,10 @@ export class DemoScene extends AbstractScene {
                 this.VoxelBallsScene.render(framebuffer);
                 break;
             case 42:
-                this.VoxelLandscapeScene.render(framebuffer)
+                this.VoxelLandscapeScene.render(framebuffer);
+                break;
+            case 43:
+                this.sineScrollerScene.render(framebuffer, time);
                 break;
             default:
                 this.sineScrollerScene.render(framebuffer, time);
