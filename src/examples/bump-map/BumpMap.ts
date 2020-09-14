@@ -37,16 +37,16 @@ export class BumpMap extends AbstractScene {
     }
 
     public onInit(): void {
-         // precompute normal map
+        // precompute normal map
 
-         let framebufferIndex: number = 0;
-         for (let y = 0; y < 200; y++) {
-             for (let x = 0; x < 320; x++) {
-                 const nx = ((this.bump.getPixel3(this.bump, x - 1, y) & 0xff) - (this.bump.getPixel3(this.bump, x + 1, y) & 0xff));
-                 const ny = ((this.bump.getPixel3(this.bump, x, y - 1) & 0xff) - (this.bump.getPixel3(this.bump, x, y + 1) & 0xff));
-                 this.normals[framebufferIndex++] = [nx, ny];
-             }
-         }
+        let framebufferIndex: number = 0;
+        for (let y = 0; y < 200; y++) {
+            for (let x = 0; x < 320; x++) {
+                const nx = ((this.bump.getPixel3(this.bump, x - 1, y) & 0xff) - (this.bump.getPixel3(this.bump, x + 1, y) & 0xff));
+                const ny = ((this.bump.getPixel3(this.bump, x, y - 1) & 0xff) - (this.bump.getPixel3(this.bump, x, y + 1) & 0xff));
+                this.normals[framebufferIndex++] = [nx, ny];
+            }
+        }
     }
 
     public render(framebuffer: Framebuffer): void {

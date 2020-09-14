@@ -136,16 +136,16 @@ export class TexturedTriangleRasterizer {
             return;
         }
 
-         slope1 = (v3.position.x - v2.position.x) / yDistanceLeft;
-         zslope1 = (1 / v3.position.z - 1 / v2.position.z) / yDistanceLeft;
-         tslope1u = (v3.textureCoordinate.u / v3.position.z - v2.textureCoordinate.u / v2.position.z) / yDistanceLeft;
-         tslope1v = (v3.textureCoordinate.v / v3.position.z - v2.textureCoordinate.v / v2.position.z) / yDistanceLeft;
+        slope1 = (v3.position.x - v2.position.x) / yDistanceLeft;
+        zslope1 = (1 / v3.position.z - 1 / v2.position.z) / yDistanceLeft;
+        tslope1u = (v3.textureCoordinate.u / v3.position.z - v2.textureCoordinate.u / v2.position.z) / yDistanceLeft;
+        tslope1v = (v3.textureCoordinate.v / v3.position.z - v2.textureCoordinate.v / v2.position.z) / yDistanceLeft;
 
-         curz1 = 1.0 / v2.position.z;
-         curu1 = v2.textureCoordinate.u / v2.position.z;
-         curv1 = v2.textureCoordinate.v / v2.position.z;
-         xPosition = v2.position.x;
-         yPosition = v2.position.y;
+        curz1 = 1.0 / v2.position.z;
+        curu1 = v2.textureCoordinate.u / v2.position.z;
+        curv1 = v2.textureCoordinate.v / v2.position.z;
+        xPosition = v2.position.x;
+        yPosition = v2.position.y;
 
         for (let i = 0; i < yDistanceLeft; i++) {
             const length = Math.round(xPosition2) - Math.round(xPosition);

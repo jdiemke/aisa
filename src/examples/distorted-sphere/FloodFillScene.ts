@@ -21,12 +21,12 @@ export class FloodFillScene extends AbstractScene {
         console.log('hello');
 
         return Promise.all([
-           TextureUtils.load(require('../../assets/heightmapSphere.png'), false).then(
+            TextureUtils.load(require('../../assets/heightmapSphere.png'), false).then(
                 texture => this.heightmapSphere = texture
-           ),
-           TextureUtils.load(require('../../assets/envmap.png'), false).then(
-            texture => this.env = texture
-       ),
+            ),
+            TextureUtils.load(require('../../assets/envmap.png'), false).then(
+                texture => this.env = texture
+            ),
         ]);
     }
 
@@ -45,7 +45,7 @@ export class FloodFillScene extends AbstractScene {
 */
         framebuffer.setTexture(this.env);
         const scale: number = 3.7;
-        const elapsedTime: number = (time ) * 0.002;
+        const elapsedTime: number = (time) * 0.002;
 
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale)
             .multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.35)

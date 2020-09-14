@@ -8,7 +8,7 @@ export class Torus extends AbstractGeometricObject {
     public constructor(invert: boolean = false) {
         super();
 
-        const points: Array<Vector4f> =  [];
+        const points: Array<Vector4f> = [];
 
         const STEPS = 15;
         const STEPS2 = 12;

@@ -42,8 +42,8 @@ export class TorusKnotTunnelScene extends AbstractScene {
             200 / 2 - this.cocoon.height / 2,
             this.cocoon.width, this.cocoon.height, this.cocoon, 0.67);
 
-       // framebuffer.noise(time, this.noise);
-        this.glitchScreen(framebuffer, time*5, this.noise);
+        // framebuffer.noise(time, this.noise);
+        this.glitchScreen(framebuffer, time * 5, this.noise);
     }
 
     public glitchScreen(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, noise: boolean = true): void {
@@ -153,8 +153,8 @@ export class TorusKnotTunnelScene extends AbstractScene {
     }
 
     private torusFunction3(alpha: number): Vector4f {
-		const p = 2;
-		const q = 3;
+        const p = 2;
+        const q = 3;
         const r = 0.5 * (2 + Math.sin(q * alpha));
         return new Vector4f(r * Math.cos(p * alpha),
             r * Math.cos(q * alpha),

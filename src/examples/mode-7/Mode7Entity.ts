@@ -11,7 +11,7 @@ export abstract class Mode7Entity {
     public offset: number;
 
     public constructor(position: Vector2f, height: number = 0,
-                       priority: number = 0, scale: number = 1.0, offset: number = 0) {
+        priority: number = 0, scale: number = 1.0, offset: number = 0) {
         this.position = position;
         this.height = height;
         this.priority = priority;

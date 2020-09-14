@@ -10,8 +10,8 @@ export class PixelInterpolator {
         if (time >= 1) return this.end;
 
         return new Vector2f(
-            Math.round(CosineInterpolate(this.start.x, this.end.x, time) + Math.sin(time*55+count*0.15) * 40*(1-time)),
-            Math.round(CosineInterpolate(this.start.y, this.end.y, time) + Math.cos(time*55+count*0.15) * 40*(1-time)));
+            Math.round(CosineInterpolate(this.start.x, this.end.x, time) + Math.sin(time * 55 + count * 0.15) * 40 * (1 - time)),
+            Math.round(CosineInterpolate(this.start.y, this.end.y, time) + Math.cos(time * 55 + count * 0.15) * 40 * (1 - time)));
     }
 }
 

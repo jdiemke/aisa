@@ -40,12 +40,12 @@ export class MDLLoader {
         }
 
         console.log(coords);
-    /*
-  fread (mdl->texcoords, sizeof (struct mdl_texcoord_t),
-  mdl->header.num_verts, fp);
-fread (mdl->triangles, sizeof (struct mdl_triangle_t),
-  mdl->header.num_tris, fp);
-  */
+        /*
+      fread (mdl->texcoords, sizeof (struct mdl_texcoord_t),
+      mdl->header.num_verts, fp);
+    fread (mdl->triangles, sizeof (struct mdl_triangle_t),
+      mdl->header.num_tris, fp);
+      */
 
         return new MDLModel();
     }

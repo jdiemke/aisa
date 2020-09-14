@@ -3,37 +3,37 @@ import { Vector3f } from '../../math';
 
 export class LineRasterizerNoZ {
 
-	constructor(private framebuffer: Framebuffer) { }
+    constructor(private framebuffer: Framebuffer) { }
 
-	public drawLineDDANoZ(start: Vector3f, end: Vector3f, color: number): void {
-		const xDistance: number = end.x - start.x;
-		const yDistance: number = end.y - start.y;
+    public drawLineDDANoZ(start: Vector3f, end: Vector3f, color: number): void {
+        const xDistance: number = end.x - start.x;
+        const yDistance: number = end.y - start.y;
 
-		let dx: number;
-		let dy: number;
-		let length: number;
+        let dx: number;
+        let dy: number;
+        let length: number;
 
-		if (Math.abs(xDistance) > Math.abs(yDistance)) {
-			dx = Math.sign(xDistance);
-			dy = yDistance / Math.abs(xDistance);
-			length = Math.abs(xDistance);
-		} else {
-			dx = xDistance / Math.abs(yDistance);
-			dy = Math.sign(yDistance);
-			length = Math.abs(yDistance);
-		}
+        if (Math.abs(xDistance) > Math.abs(yDistance)) {
+            dx = Math.sign(xDistance);
+            dy = yDistance / Math.abs(xDistance);
+            length = Math.abs(xDistance);
+        } else {
+            dx = xDistance / Math.abs(yDistance);
+            dy = Math.sign(yDistance);
+            length = Math.abs(yDistance);
+        }
 
-		let xPosition: number = start.x;
-		let yPosition: number = start.y;
+        let xPosition: number = start.x;
+        let yPosition: number = start.y;
 
-		for (let i = 0; i <= length; i++) {
+        for (let i = 0; i <= length; i++) {
 
-			this.framebuffer.drawPixel(Math.round(xPosition), Math.round(yPosition), color);
+            this.framebuffer.drawPixel(Math.round(xPosition), Math.round(yPosition), color);
 
-			xPosition += dx;
-			yPosition += dy;
+            xPosition += dx;
+            yPosition += dy;
 
-		}
-	}
+        }
+    }
 
 }

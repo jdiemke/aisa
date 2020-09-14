@@ -63,15 +63,15 @@ export class FrustumCullingScene extends AbstractScene {
         const frustumCuller = new FrustumCuller();
         frustumCuller.updateFrustum(modelViewMartrix, cameraAnimator.pos);
 
-        for (let j = 0; j <  this.world.length; j++) {
+        for (let j = 0; j < this.world.length; j++) {
 
-            const model: [FlatshadedMesh, Sphere] =  this.world[j];
+            const model: [FlatshadedMesh, Sphere] = this.world[j];
 
             if (frustumCuller.isPotentiallyVisible(model[1])) {
                 this.renderingPipeline.draw(model[0], modelViewMartrix);
                 const colLine = 255 << 24 | 255 << 8;
                 framebuffer.drawBoundingSphere(model[1], modelViewMartrix, colLine);
-              //  count++;
+                //  count++;
             } else {
                 const colLine = 255 << 24 | 255;
                 framebuffer.drawBoundingSphere(model[1], modelViewMartrix, colLine);
@@ -100,7 +100,7 @@ export class FrustumCullingScene extends AbstractScene {
                 points2.push(transformed);
             });
 
-            points2.sort( (a, b) => {
+            points2.sort((a, b) => {
                 return a.z - b.z;
             });
 

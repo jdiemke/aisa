@@ -79,7 +79,7 @@ export class ParticleStreamsScene extends AbstractScene {
                 points2.push(transformed);
             });
 
-            points2.sort( (a, b) => {
+            points2.sort((a, b) => {
                 return a.z - b.z;
             });
 

@@ -15,9 +15,9 @@ export class BasicCamera {
     }
 
     public getViewMatrix(): Matrix4f {
-        const roll  = Matrix4f.constructZRotationMatrix(-this.roll);
+        const roll = Matrix4f.constructZRotationMatrix(-this.roll);
         const pitch = Matrix4f.constructXRotationMatrix(-this.pitch);
-        const yaw   = Matrix4f.constructYRotationMatrix(-this.yaw);
+        const yaw = Matrix4f.constructYRotationMatrix(-this.yaw);
 
         const translation = Matrix4f.constructTranslationMatrix(-this.position.x, -this.position.y, -this.position.z);
 

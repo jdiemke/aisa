@@ -54,9 +54,9 @@ export class PlatonianScene extends AbstractScene {
 
         const camera: Matrix4f =
             Matrix4f.constructTranslationMatrix(0, 0, -64 + (Math.sin(elapsedTime * 0.00007) * 0.5 + 0.5) * 17)
-            .multiplyMatrix(
-                Matrix4f.constructXRotationMatrix(elapsedTime * 0.00035).multiplyMatrix(
-                    Matrix4f.constructYRotationMatrix(-elapsedTime * 0.0003)));
+                .multiplyMatrix(
+                    Matrix4f.constructXRotationMatrix(elapsedTime * 0.00035).multiplyMatrix(
+                        Matrix4f.constructYRotationMatrix(-elapsedTime * 0.0003)));
 
         const mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(13, 13, 13));
 

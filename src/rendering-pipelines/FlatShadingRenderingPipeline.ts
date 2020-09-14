@@ -162,11 +162,11 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
                 if (output.length < 3) {
                     return;
                 }
-/*
-                const projected: Array<Vertex> = output.map<Vertex>((v: Vertex) => {
-                    v.projection = this.project(v.position);
-                    return v;
-                });*/
+                /*
+                                const projected: Array<Vertex> = output.map<Vertex>((v: Vertex) => {
+                                    v.projection = this.project(v.position);
+                                    return v;
+                                });*/
 
                 for (let j: number = 0; j < output.length; j++) {
                     output[j].projection = this.project(output[j].position);

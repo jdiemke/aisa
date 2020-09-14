@@ -50,7 +50,7 @@ export class TitanEffectScene extends AbstractScene {
     }
 
     public drawVerticalSpan(framebuffer: Framebuffer, texture: Texture, x: number, y1: number,
-                            y2: number, scale: number = 1.0): void {
+        y2: number, scale: number = 1.0): void {
         const delta: number = Math.abs(y2 - y1);
         const textureStep: number = texture.height / delta;
         let texpos: number = 0;
