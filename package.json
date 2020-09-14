@@ -1,45 +1,45 @@
 {
-  "name": "aisa",
-  "version": "1.0.0",
-  "description": "A Software 3D Engine written in TypeScript",
-  "scripts": {
-    "build": "webpack-cli --mode production",
-    "build:dev": "webpack-cli",
-    "serve": "webpack-dev-server --no-inline --open",
-    "lint": "tslint -c tslint.json 'src/**/*.ts'",
-    "lint:fix": "tslint -c tslint.json 'src/**/*.ts' --fix",
-    "obj2json": "ts-node src/blender/obj2json.ts"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jdiemke/aisa.git"
-  },
-  "keywords": [
-    "Software Rendering",
-    "3D Computer Graphics",
-    "TypeScript",
-    "Canvas",
-    "HTML5"
-  ],
-  "author": "Johannes Diemke",
-  "license": "MIT",
-  "devDependencies": {
-    "@types/node": "14.0.1",
-    "babel-minify-webpack-plugin": "0.3.1",
-    "file-loader": "6.0.0",
-    "html-loader": "1.1.0",
-    "html-webpack-plugin": "4.3.0",
-    "stats.js": "^0.17.0",
-    "ts-loader": "7.0.4",
-    "ts-node": "8.10.1",
-    "tslint": "6.1.2",
-    "typescript": "3.9.2",
-    "webpack": "4.43.0",
-    "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "^3.11.0"
-  },
-  "dependencies": {
-    "@types/stats": "^0.16.30",
-    "jsxm": "1.0.1"
-  }
+    "name": "aisa",
+    "version": "1.0.0",
+    "description": "A Software 3D Engine written in TypeScript",
+    "scripts": {
+        "build": "webpack-cli --mode production",
+        "build:dev": "webpack-cli",
+        "serve": "webpack-dev-server --no-inline --open",
+        "lint": "tslint -c tslint.json 'src/**/*.ts'",
+        "lint:fix": "tslint -c tslint.json 'src/**/*.ts' --fix",
+        "obj2json": "ts-node src/blender/obj2json.ts"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/jdiemke/aisa.git"
+    },
+    "keywords": [
+        "Software Rendering",
+        "3D Computer Graphics",
+        "TypeScript",
+        "Canvas",
+        "HTML5"
+    ],
+    "author": "Johannes Diemke",
+    "license": "MIT",
+    "devDependencies": {
+        "@types/node": "14.0.1",
+        "babel-minify-webpack-plugin": "0.3.1",
+        "file-loader": "6.0.0",
+        "html-loader": "1.1.0",
+        "html-webpack-plugin": "4.3.0",
+        "stats.js": "^0.17.0",
+        "ts-loader": "7.0.4",
+        "ts-node": "8.10.1",
+        "tslint": "6.1.2",
+        "typescript": "3.9.2",
+        "webpack": "4.43.0",
+        "webpack-cli": "^3.3.12",
+        "webpack-dev-server": "^3.11.0"
+    },
+    "dependencies": {
+        "@types/stats": "^0.16.30",
+        "jsxm": "1.0.1"
+    }
 }
