@@ -11,7 +11,7 @@ export class BumpMap extends AbstractScene {
     private map: Texture;
     private bump: Texture;
     private phong: Texture;
-    private normalsBump: Array<[number, number]> = Array<[number, number]>(320 * 200);
+    private normals: Array<[number, number]> = Array<[number, number]>(320 * 200);
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.phong = new Texture(new Uint32Array(256 * 256), 256, 256);
@@ -39,19 +39,17 @@ export class BumpMap extends AbstractScene {
     public onInit(): void {
         // precompute normal map
 
-         let framebufferIndex: number = 0;
-         for (let y = 0; y < 200; y++) {
-             for (let x = 0; x < 320; x++) {
-                 const nx = ((this.bump.getPixel3(this.bump, x - 1, y) & 0xff) - (this.bump.getPixel3(this.bump, x + 1, y) & 0xff));
-                 const ny = ((this.bump.getPixel3(this.bump, x, y - 1) & 0xff) - (this.bump.getPixel3(this.bump, x, y + 1) & 0xff));
-                 this.normalsBump[framebufferIndex++] = [nx, ny];
-             }
-         }
+        let framebufferIndex: number = 0;
+        for (let y = 0; y < 200; y++) {
+            for (let x = 0; x < 320; x++) {
+                const nx = ((this.bump.getPixel3(this.bump, x - 1, y) & 0xff) - (this.bump.getPixel3(this.bump, x + 1, y) & 0xff));
+                const ny = ((this.bump.getPixel3(this.bump, x, y - 1) & 0xff) - (this.bump.getPixel3(this.bump, x, y + 1) & 0xff));
+                this.normals[framebufferIndex++] = [nx, ny];
+            }
+        }
     }
 
     public render(framebuffer: Framebuffer): void {
-
-
         const elapsedTime: number = Date.now();
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.bump.texture);
 
@@ -64,10 +62,10 @@ export class BumpMap extends AbstractScene {
                 const lx = x + lightPosX;
                 const ly = y + lightPosY;
 
-                const normalBump = this.normalsBump[framebufferIndex];
-//
-                const nx = ((-normalBump[0] - lx) + 128) | 0;
-                const ny = ((-normalBump[1] - ly) + 128) | 0;
+                const normal = this.normals[framebufferIndex];
+
+                const nx = ((-normal[0] - lx) + 128) | 0;
+                const ny = ((-normal[1] - ly) + 128) | 0;
                 const pixel = this.phong.getPixel2(this.phong,
                     Math.max(0, Math.min(nx, 255)), Math.max(0, Math.min((ny), 255)));
                 const scale = Math.min((pixel & 0xff) + 80, 255) / 255;
