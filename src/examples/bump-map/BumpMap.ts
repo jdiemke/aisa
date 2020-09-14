@@ -37,7 +37,7 @@ export class BumpMap extends AbstractScene {
     }
 
     public onInit(): void {
-         // precompute normal map
+        // precompute normal map
 
          let framebufferIndex: number = 0;
          for (let y = 0; y < 200; y++) {

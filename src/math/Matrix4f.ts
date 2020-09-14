@@ -136,7 +136,7 @@ export class Matrix4f {
         const scale1 = 1.0 / Math.sqrt(this.m11 * this.m11 + this.m12 * this.m12 + this.m13 * this.m13);
         const scale2 = 1.0 / Math.sqrt(this.m21 * this.m21 + this.m22 * this.m22 + this.m23 * this.m23);
         const scale3 = 1.0 / Math.sqrt(this.m31 * this.m31 + this.m32 * this.m32 + this.m33 * this.m33);
-        const inverseRotation: Matrix4f  = Matrix4f.constructIdentityMatrix();
+        const inverseRotation: Matrix4f = Matrix4f.constructIdentityMatrix();
         inverseRotation.m11 = this.m11 * scale1;
         inverseRotation.m21 = this.m12 * scale1;
         inverseRotation.m31 = this.m13 * scale1;
@@ -153,7 +153,7 @@ export class Matrix4f {
     }
 
     public getInverseRotation(): Matrix4f {
-        const scale = 1.0 ;
+        const scale = 1.0;
         const inverseRotation = Matrix4f.constructIdentityMatrix();
         inverseRotation.m11 = this.m11 * scale;
         inverseRotation.m21 = this.m12 * scale;
@@ -174,16 +174,16 @@ export class Matrix4f {
 
         const inverseRotation = Matrix4f.constructIdentityMatrix();
         inverseRotation.m11 = this.m11;
-        inverseRotation.m21 = this.m21 ;
-        inverseRotation.m31 = this.m31 ;
+        inverseRotation.m21 = this.m21;
+        inverseRotation.m31 = this.m31;
 
-        inverseRotation.m12 = this.m12 ;
-        inverseRotation.m22 = this.m22 ;
-        inverseRotation.m32 = this.m32 ;
+        inverseRotation.m12 = this.m12;
+        inverseRotation.m22 = this.m22;
+        inverseRotation.m32 = this.m32;
 
-        inverseRotation.m13 = this.m13 ;
-        inverseRotation.m23 = this.m23 ;
-        inverseRotation.m33 = this.m33 ;
+        inverseRotation.m13 = this.m13;
+        inverseRotation.m23 = this.m23;
+        inverseRotation.m33 = this.m33;
 
         return inverseRotation;
     }
@@ -191,7 +191,7 @@ export class Matrix4f {
     static constructShadowMatrix(modelView: Matrix4f): Matrix4f {
         const planePoint: Vector3f = new Vector3f(0, -1.5, 0);
         const planeNormal: Vector3f = new Vector3f(0, 1, 0);
-        const lightPosition: Vector3f =new Vector3f(0, 11, 0);
+        const lightPosition: Vector3f = new Vector3f(0, 11, 0);
         // modelView.multiplyArr(new Vector3f(20, 8, 20),lightPosition);
 
         const d = -planePoint.dot(planeNormal);

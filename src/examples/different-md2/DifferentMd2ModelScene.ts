@@ -34,7 +34,7 @@ export class DifferentMd2ModelScene extends AbstractScene {
         framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
         this.startTime = Date.now();
         return Promise.all([
-         TextureUtils.load(require('../../assets/md2/hueteotl.png'), false).then(
+            TextureUtils.load(require('../../assets/md2/hueteotl.png'), false).then(
                 (texture: Texture) => this.ogroTexture = texture
             ),
             MD2Loader.load(require('../../assets/md2/tris.md2')).then(
@@ -66,7 +66,7 @@ export class DifferentMd2ModelScene extends AbstractScene {
         framebuffer.texturedRenderingPipeline.setModelViewMatrix(this.modelViewMatrix.getMatrix());
         framebuffer.texturedRenderingPipeline.draw(this.md2.getMesh());
 
-        framebuffer.drawText(8,  8, 'FPS: ' + this.fps.toString(), this.texture4);
+        framebuffer.drawText(8, 8, 'FPS: ' + this.fps.toString(), this.texture4);
         framebuffer.drawText(8, 16, 'TRIANGELS: ' + this.md2.header.numberOfTriangles, this.texture4);
     }
 

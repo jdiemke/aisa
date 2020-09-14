@@ -19,11 +19,11 @@ export class TopClipEdge extends AbstractClipEdge {
         const factor: number = (Framebuffer.maxWindow.y + 1 - p1.projection.y) / (p2.projection.y - p1.projection.y);
         // this interpolation is not perspective correct but linear!!
         vertex.color = p2.color.sub(p1.color).mul(factor).add(p1.color);
-        vertex.projection =new Vector4f(
+        vertex.projection = new Vector4f(
             Math.round(p1.projection.x + (p2.projection.x - p1.projection.x) * factor),
             Framebuffer.maxWindow.y + 1,
             1 / (1 / p1.projection.z + (1 / p2.projection.z - 1 / p1.projection.z) * factor));
-            return vertex;
+        return vertex;
     }
 
     public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {

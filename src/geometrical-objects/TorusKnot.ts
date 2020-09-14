@@ -45,8 +45,8 @@ export class TorusKnot extends AbstractGeometricObject {
     }
 
     private torusFunction3(alpha: number): Vector4f {
-		const p = 2
-		const q = 3;
+        const p = 2
+        const q = 3;
         const r = 0.5 * (2 + Math.sin(q * alpha));
         return new Vector4f(r * Math.cos(p * alpha),
             r * Math.cos(q * alpha),

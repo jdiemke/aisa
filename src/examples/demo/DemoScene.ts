@@ -79,7 +79,7 @@ export class DemoScene extends AbstractScene {
 
     // Set to true when using *.rocket
     // set to false when using rocket editor using websocket
-    private _demoMode = false;
+    private _demoMode = true;
 
     // scene variables | things you set through jsRocket
     private FOV = 50;

@@ -38,7 +38,7 @@ export class Md2ModelScene extends AbstractScene {
         framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
         this.startTime = Date.now();
         return Promise.all([
-         TextureUtils.load(require('../../assets/md2/texture2.jpg'), false).then(
+            TextureUtils.load(require('../../assets/md2/texture2.jpg'), false).then(
                 (texture: Texture) => this.ogroTexture = texture
             ),
             MDLLoader.load(require('../../assets/mdl/gijoe.mdl')).then(
@@ -72,13 +72,13 @@ export class Md2ModelScene extends AbstractScene {
         framebuffer.setTexture(this.ogroTexture);
         framebuffer.renderingPipeline.draw(this.meshes[0], this.modelViewMatrix.getMatrix());
 
-        framebuffer.drawText(8,  8, 'FPS: ' + this.fps.toString(), this.texture4);
-        framebuffer.drawText(8,  16, 'FACES: ' + this.meshes[0].faces.length, this.texture4);
+        framebuffer.drawText(8, 8, 'FPS: ' + this.fps.toString(), this.texture4);
+        framebuffer.drawText(8, 16, 'FACES: ' + this.meshes[0].faces.length, this.texture4);
     }
 
     private computeCameraMovement(elapsedTime: number): void {
         this.modelViewMatrix.setIdentity();
-        this.modelViewMatrix.trans(0, 0, -5 );
+        this.modelViewMatrix.trans(0, 0, -5);
         this.modelViewMatrix.yRotate(-elapsedTime * 0.002);
     }
 

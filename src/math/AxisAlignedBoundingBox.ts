@@ -14,7 +14,7 @@ export class AxisAlignedBoundingBox implements BoundingVolume {
 
     public intersects(aabb: AxisAlignedBoundingBox): boolean {
         return (this.min.x < aabb.max.x && this.min.y < aabb.max.y && this.min.z < aabb.max.z &&
-                this.max.x > aabb.min.x && this.max.y > aabb.min.y && this.max.z < aabb.min.z);
+            this.max.x > aabb.min.x && this.max.y > aabb.min.y && this.max.z < aabb.min.z);
     }
 
     /**

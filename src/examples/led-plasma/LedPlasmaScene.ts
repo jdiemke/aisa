@@ -23,8 +23,8 @@ export class LedPlasmaScene extends AbstractScene {
         this.led(framebuffer, Date.now(), this.ledTexture);
     }
 
-     // TODO: create interesting pattern!
-     public led(framebuffer: Framebuffer, elapsedTime: number, texture: Texture): void {
+    // TODO: create interesting pattern!
+    public led(framebuffer: Framebuffer, elapsedTime: number, texture: Texture): void {
         const time = elapsedTime * 0.0007 * 1.0;
         const lineDirection = new Vector3f(Math.sin(time), Math.cos(time), 0);
         const radialWaveCenter = new Vector3f(40.0 / 2.0, 35.0 / 2.0, 0).add(new Vector3f(40.0 / 2.0 *

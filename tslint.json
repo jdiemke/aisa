@@ -5,10 +5,22 @@
     ],
     "jsRules": {},
     "rules": {
-        "quotemark": [true, "single"],
-        "interface-name": [true, "never-prefix"],
-        "array-type": [true, "generic"],
-        "linebreak-style": [true, "LF"],
+        "quotemark": [
+            true,
+            "single"
+        ],
+        "interface-name": [
+            true,
+            "never-prefix"
+        ],
+        "array-type": [
+            true,
+            "generic"
+        ],
+        "linebreak-style": [
+            true,
+            "LF"
+        ],
         "typedef": [
             false,
             "call-signature",

@@ -116,7 +116,7 @@ export class TexturedAlphaBlendingTriangleRasterizer {
                     const g = (currentColor >> 8 & 0xff) * inverseAlpha + (color2 >> 8 & 0xff) * alpha;
                     const b = (currentColor >> 16 & 0xff) * inverseAlpha + (color2 >> 16 & 0xff) * alpha;
 
-                    this.framebuffer.framebuffer[framebufferIndex] =  r | (g << 8) | (b << 16) | (255 << 24);
+                    this.framebuffer.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | (255 << 24);
 
                 }
                 framebufferIndex++;
@@ -146,16 +146,16 @@ export class TexturedAlphaBlendingTriangleRasterizer {
             return;
         }
 
-         slope1 = (v3.position.x - v2.position.x) / yDistanceLeft;
-         zslope1 = (1 / v3.position.z - 1 / v2.position.z) / yDistanceLeft;
-         tslope1u = (v3.textureCoordinate.u / v3.position.z - v2.textureCoordinate.u / v2.position.z) / yDistanceLeft;
-         tslope1v = (v3.textureCoordinate.v / v3.position.z - v2.textureCoordinate.v / v2.position.z) / yDistanceLeft;
+        slope1 = (v3.position.x - v2.position.x) / yDistanceLeft;
+        zslope1 = (1 / v3.position.z - 1 / v2.position.z) / yDistanceLeft;
+        tslope1u = (v3.textureCoordinate.u / v3.position.z - v2.textureCoordinate.u / v2.position.z) / yDistanceLeft;
+        tslope1v = (v3.textureCoordinate.v / v3.position.z - v2.textureCoordinate.v / v2.position.z) / yDistanceLeft;
 
-         curz1 = 1.0 / v2.position.z;
-         curu1 = v2.textureCoordinate.u / v2.position.z;
-         curv1 = v2.textureCoordinate.v / v2.position.z;
-         xPosition = v2.position.x;
-         yPosition = v2.position.y;
+        curz1 = 1.0 / v2.position.z;
+        curu1 = v2.textureCoordinate.u / v2.position.z;
+        curv1 = v2.textureCoordinate.v / v2.position.z;
+        xPosition = v2.position.x;
+        yPosition = v2.position.y;
 
         for (let i = 0; i < yDistanceLeft; i++) {
             const length = Math.round(xPosition2) - Math.round(xPosition);
@@ -186,7 +186,7 @@ export class TexturedAlphaBlendingTriangleRasterizer {
                     const g = (this.framebuffer.framebuffer[framebufferIndex] >> 8 & 0xff) * inverseAlpha + (color2 >> 8 & 0xff) * alpha;
                     const b = (this.framebuffer.framebuffer[framebufferIndex] >> 16 & 0xff) * inverseAlpha + (color2 >> 16 & 0xff) * alpha;
 
-                    this.framebuffer.framebuffer[framebufferIndex] =  r | (g << 8) | (b << 16) | (255 << 24);
+                    this.framebuffer.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | (255 << 24);
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
@@ -272,7 +272,7 @@ export class TexturedAlphaBlendingTriangleRasterizer {
                     const g = (this.framebuffer.framebuffer[framebufferIndex] >> 8 & 0xff) * inverseAlpha + (color2 >> 8 & 0xff) * alpha;
                     const b = (this.framebuffer.framebuffer[framebufferIndex] >> 16 & 0xff) * inverseAlpha + (color2 >> 16 & 0xff) * alpha;
 
-                    this.framebuffer.framebuffer[framebufferIndex] =  r | (g << 8) | (b << 16) | (255 << 24);
+                    this.framebuffer.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | (255 << 24);
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
@@ -341,7 +341,7 @@ export class TexturedAlphaBlendingTriangleRasterizer {
                     const g = (this.framebuffer.framebuffer[framebufferIndex] >> 8 & 0xff) * inverseAlpha + (color2 >> 8 & 0xff) * alpha;
                     const b = (this.framebuffer.framebuffer[framebufferIndex] >> 16 & 0xff) * inverseAlpha + (color2 >> 16 & 0xff) * alpha;
 
-                    this.framebuffer.framebuffer[framebufferIndex] =  r | (g << 8) | (b << 16) | (255 << 24);
+                    this.framebuffer.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | (255 << 24);
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
