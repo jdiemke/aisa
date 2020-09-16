@@ -10,7 +10,7 @@ import { Color } from '../../core/Color';
 /**
  * TODO: extract lens into effect class
  */
-export class FloodFillScene extends AbstractScene {
+export class DistortedSphereScene extends AbstractScene {
 
     private heightmapSphere: Texture;
 
@@ -18,8 +18,6 @@ export class FloodFillScene extends AbstractScene {
     private obj: any;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        console.log('hello');
-
         return Promise.all([
             TextureUtils.load(require('../../assets/heightmapSphere.png'), false).then(
                 texture => this.heightmapSphere = texture

@@ -7,6 +7,7 @@ import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShad
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
+import { BlenderLoader } from './../../model/blender/BlenderLoader';
 
 /**
  * TODO: use cube mesh and draw using drawObject2
@@ -25,9 +26,10 @@ export class AbstractCube extends AbstractScene {
         this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.BACK);
 
-        this.scene = BlenderJsonParser.parse(require('../../assets/stravaganza.json'), false);
-
         return Promise.all([
+            BlenderLoader.load(require('../../assets/jsx/stravaganza.jsx')).then(
+                (mesh: Array<FlatshadedMesh>) => this.scene = mesh
+            ),
             TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
             ),

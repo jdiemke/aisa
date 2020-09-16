@@ -1,4 +1,3 @@
-import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
@@ -7,12 +6,14 @@ import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShad
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
+import { BlenderLoader } from '../../model/blender/BlenderLoader';
 
 export class GearsScene extends AbstractScene {
 
     private blurred: Texture;
     private noise: Texture;
-    private gearsMesh: FlatshadedMesh;
+    private gearsMesh: Array<FlatshadedMesh>;
+
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
     private renderingPipeline: FlatShadingRenderingPipeline;
 
@@ -20,9 +21,10 @@ export class GearsScene extends AbstractScene {
         this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.FRONT);
 
-        this.gearsMesh = BlenderJsonParser.parse(require('../../assets/gear.json'), false)[0];
-
         return Promise.all([
+            BlenderLoader.load(require('../../assets/jsx/gear.jsx')).then(
+                (mesh: Array<FlatshadedMesh>) => this.gearsMesh = mesh
+            ),
             TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
             ),
@@ -71,7 +73,7 @@ export class GearsScene extends AbstractScene {
 
             const mv: Matrix4f = this.getModelViewMatrix(camera, dampFactor, scale, i, elapsedTime);
 
-            this.renderingPipeline.draw(this.gearsMesh, mv);
+            this.renderingPipeline.draw(this.gearsMesh[0], mv);
         }
         // let lensflareScreenSpace = framebuffer.project(camera.multiply(new Vector3f(16.0 * 20, 16.0 * 20, 0)));
         // framebuffer.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.3, texture, dirt);

@@ -10,7 +10,7 @@ import { Texture, TextureUtils } from '../../texture';
 /**
  * TODO: extract lens into effect class
  */
-export class PlatonianScene extends AbstractScene {
+export class WaveFrontTextureScene extends AbstractScene {
 
     private platonian: Texture;
     private platonianMesh: Array<TexturedMesh>;

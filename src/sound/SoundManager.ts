@@ -55,4 +55,14 @@ export class SoundManager {
             });
     }
 
+    public loadOgg(filename: string): Promise<void> {
+        return fetch(filename)
+            .then((response: Response) => {
+                this._audio.src = filename;
+                this._audio.load();
+                this._audio.preload = 'true';
+                this._audio.loop = true;
+            })
+    }
+
 }

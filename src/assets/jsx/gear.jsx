@@ -1,6 +1,6 @@
 [
     {
-        "name": "Torus",
+        "name": "Gear",
         "vertices": [
             {
                 "x": 0.875,

@@ -10,7 +10,7 @@ import { FontRenderer } from '../sine-scroller/FontRenderer';
 /**
  * TODO: extract lens into effect class
  */
-export class MetaballsScene extends AbstractScene {
+export class PlaneDeformationAbstractScene extends AbstractScene {
 
     private heightmap: Texture;
     private metall: Texture;

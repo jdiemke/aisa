@@ -5,6 +5,7 @@ import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
+import { BlenderLoader } from '../../model/blender/BlenderLoader';
 
 export class PlanedeformationTunnelScene extends AbstractScene {
 
@@ -14,8 +15,10 @@ export class PlanedeformationTunnelScene extends AbstractScene {
     private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.blenderObjMetal = BlenderJsonParser.getBlenderScene(require('../../assets/metalheadz.json'), false);
         return Promise.all([
+            BlenderLoader.loadWithTexture(require('../../assets/jsx/metalheadz.jsx')).then(
+                (mesh: Array<TexturedMesh>) => this.blenderObjMetal = mesh
+            ),
             TextureUtils.load(require('../../assets/cyber.png'), false).then(
                 (texture: Texture) => this.metall = texture
             ),

@@ -5,7 +5,7 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 
-export class ParticleTorusScene extends AbstractScene {
+export class DofBallsScene extends AbstractScene {
 
     private blurred: Texture;
     private particleTexture2: Texture;

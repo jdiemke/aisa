@@ -11,9 +11,9 @@ import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { TextureCoordinate } from '../../TextureCoordinate';
 import { Keyboard } from '../mode-7/Keyboard';
-import { MD2Loader } from './../../model/md2/MD2Loader';
-import { MD2Model } from './../../model/md2/MD2Model';
-import { ModelViewMatrix } from './../md2/ModelViewMatrix';
+import { MD2Loader } from '../../model/md2/MD2Loader';
+import { MD2Model } from '../../model/md2/MD2Model';
+import { ModelViewMatrix } from '../md2/ModelViewMatrix';
 import { Player } from './Player';
 import { PlayerStateMachine } from './state-machine/PlayerStateMachine';
 
@@ -23,7 +23,7 @@ import { PlayerStateMachine } from './state-machine/PlayerStateMachine';
  * https://github.com/mrdoob/three.js/tree/dev/examples/models/md2/ogro
  * http://tfc.duke.free.fr/old/models/md2.htm
  */
-export class Md2ModelScene extends AbstractScene {
+export class ThirdPersonCameraScene extends AbstractScene {
 
     private static readonly CLEAR_COLOR: number = Color.SLATE_GRAY.toPackedFormat();
 
@@ -207,7 +207,7 @@ export class Md2ModelScene extends AbstractScene {
 
         this.processInput(delta);
 
-        framebuffer.clearColorBuffer(Md2ModelScene.CLEAR_COLOR);
+        framebuffer.clearColorBuffer(ThirdPersonCameraScene.CLEAR_COLOR);
         framebuffer.clearDepthBuffer();
 
         //

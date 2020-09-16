@@ -1,13 +1,67 @@
+// Core
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { SoundManager } from '../../sound/SoundManager';
 
 // Effects
-import { LensScene } from '../lens/LensScene';
-import { SineScrollerScene } from '../sine-scroller/SineScrollerScene';
 import { AbstractCube } from '../abstract-cube/AbstractCube';
+import { BakedLighting } from '../baked-lighting/BakedLighting';
+import { BlockFade } from '../block-fade/BlockFade';
+import { Bobs } from '../bobs/Bobs';
+import { BumpMap } from '../bump-map/BumpMap';
+import { BunnyScene } from '../bunny/BunnyScene';
+import { CinematicScroller } from '../cinematic-scroller/CinematicScroller';
+import { CubeScene } from '../cube/CubeScene';
+import { CubeTunnelScene } from '../cube-tunnel/CubeTunnelScene';
+import { DifferentMd2ModelScene } from '../different-md2/DifferentMd2ModelScene';
+import { DistortedSphereScene } from '../distorted-sphere/DistortedSphereScene';
+import { DofBallsScene } from '../dof-balls/DofBallsScene';
+import { FloodFillScene } from '../flood-fill/FloodFillScene';
+import { FloorScene } from '../floor/FloorScene';
+import { FrustumCullingScene } from '../frustum-culling/FrustumCullingScene';
+import { Gears2Scene } from '../gears-2/Gears2Scene';
+import { GearsScene } from '../gears/GearsScene';
+import { HoodlumScene } from '../hoodlum/HoodlumScene';
+import { LedPlasmaScene } from '../led-plasma/LedPlasmaScene';
+import { LensScene } from '../lens/LensScene';
+import { Md2ModelScene } from '../md2/Md2ModelScene';
+import { MetaballsScene } from '../metaballs/MetaballsScene';
 import { MetalHeadzScene } from '../metalheadz/MetalHeadzScene';
+import { Mode7Scene } from '../mode-7/Mode7Scene';
+import { MovingTorusScene } from '../moving-torus/MovingTorusScene';
+import { ParticleStreamsScene } from '../particle-streams/ParticleStreamsScene';
+import { ParticleSystemScene } from '../particle-system/ParticleSystemScene';
+import { ParticleTorusScene } from '../particle-torus/ParticleTorusScene';
+import { PixelEffectScene } from '../pixel-effect/PixelEffectScene';
+import { PlaneDeformationAbstractScene } from '../planedeformation-abstract/PlaneDeformationAbstractScene';
+import { PlanedeformationTunnelScene } from '../planedeformation-tunnel/PlanedeformationTunnelScene';
+import { PlasmaScene } from '../plasma/PlasmaScene';
+import { PlatonianScene } from '../platonian/PlatonianScene';
+import { PolarVoxelsScene } from '../polar-voxels/PolarVoxelsScene';
+import { PortalScene } from '../portals/PortalScene';
+import { RazorScene } from '../razor/RazorScene';
+import { RotatingGearsScene } from '../rotating-gears/RotatingGearsScene';
+import { RotoZoomerScene } from '../roto-zoomer/RotoZoomerScene';
+import { ScrollingBackgroundScene } from '../scrolling-background/ScrollingBackgroundScene';
+import { SineScrollerScene } from '../sine-scroller/SineScrollerScene';
+import { StarfieldScene } from '../starfield/StarfieldScene';
+import { TexturedTorusScene } from '../textured-torus/TexturedTorusScene';
+import { ThirdPersonCameraScene } from '../third-person-camera/ThirdPersonCameraScene';
+import { TitanEffectScene } from '../titan-effect/TitanEffectScene';
+import { TorusKnotScene } from '../torus-knot/TorusKnotScene';
+import { TorusKnotTunnelScene } from '../torus-knot-tunnel/TorusKnotTunnelScene';
+import { TorusScene } from '../torus/TorusScene';
+import { ToxicDotsScene } from '../toxic-dots/ToxicDotsScene';
+import { TwisterScene } from '../twister/TwisterScene';
+import { VoxelBallsScene } from '../voxel-balls/VoxelBallsScene';
+import { VoxelLandScapeFadeScene } from '../voxel-landscape-fade/VoxelLandcapeFadeScene';
+import { VoxelLandscapeScene } from '../voxel-landscape/VoxelLandscapeScene';
+import { WavefrontScene } from '../wavefront/WavefrontScene';
+import { WaveFrontTextureScene } from '../wavefront-texture/WaveFrontTextureScene';
+
+// Stats
+import Stats = require('stats.js');
 
 export class DemoScene extends AbstractScene {
 
@@ -31,36 +85,92 @@ export class DemoScene extends AbstractScene {
     private FOV = 50;
     private _cameraRotation;
     private _cameraDistance;
-    private _clearR;
-    private _clearG;
-    private _clearB;
+    private _effect;
+    private _snare;
+    private _bass;
     private _fov;
 
     // the current row we're on
     private _row = 0;
+    private _currentEffect: number;
 
     private tickerPointer = document.getElementById('ticker_pointer');
 
-    // move
-    private start: number;
-
-    // move
-    private texture4: Texture;
-
-    // move
-    private fpsStartTime: number = Date.now();
-    private fpsCount: number = 0;
-    private fps: number = 0;
-
-
     // effects
-    private lensScene: LensScene;
-    private sineScrollerScene: SineScrollerScene;
     private abscractCubeScene: AbstractCube;
+    private BakedLighting: BakedLighting;
+    private BlockFade: BlockFade;
+    private Bobs: Bobs;
+    private BumpMap: BumpMap;
+    private BunnyScene: BunnyScene;
+    private CinematicScroller: CinematicScroller;
+    private CubeScene: CubeScene;
+    private CubeTunnelScene: CubeTunnelScene;
+    private DifferentMd2ModelScene: DifferentMd2ModelScene;
+    private DistortedSphereScene: DistortedSphereScene;
+    private DofBallsScene: DofBallsScene;
+    private FloodFillScene: FloodFillScene;
+    private FloorScene: FloorScene;
+    private FrustumCullingScene: FrustumCullingScene;
+    private Gears2Scene: Gears2Scene;
+    private GearsScene: GearsScene;
+    private HoodlumScene: HoodlumScene;
+    private LedPlasmaScene: LedPlasmaScene;
+    private lensScene: LensScene;
+    private Md2ModelScene: Md2ModelScene;
+    private MetaballsScene: MetaballsScene;
     private metalHeadzScene: MetalHeadzScene
+    private Mode7Scene: Mode7Scene;
+    private MovingTorusScene: MovingTorusScene;
+    private ParticleStreamsScene: ParticleStreamsScene;
+    private ParticleSystemScene: ParticleSystemScene;
+    private ParticleTorusScene: ParticleTorusScene;
+    private PixelEffectScene: PixelEffectScene;
+    private PlaneDeformationAbstractScene: PlaneDeformationAbstractScene;
+    private PlanedeformationTunnelScene: PlanedeformationTunnelScene;
+    private PlasmaScene: PlasmaScene;
+    private PlatonianScene: PlatonianScene;
+    private PolarVoxelsScene: PolarVoxelsScene;
+    private PortalScene: PortalScene;
+    private RazorScene: RazorScene;
+    private RotatingGearsScene: RotatingGearsScene;
+    private RotoZoomerScene: RotoZoomerScene;
+    private ScrollingBackgroundScene: ScrollingBackgroundScene;
+    private sineScrollerScene: SineScrollerScene;
+    private StarfieldScene: StarfieldScene;
+    private TexturedTorusScene: TexturedTorusScene;
+    private ThirdPersonCameraScene: ThirdPersonCameraScene;
+    private TitanEffectScene: TitanEffectScene;
+    private TorusKnotScene: TorusKnotScene;
+    private TorusKnotTunnelScene: TorusKnotTunnelScene;
+    private TorusScene: TorusScene;
+    private ToxicDotsScene: ToxicDotsScene;
+    private TwisterScene: TwisterScene;
+    private VoxelBallsScene: VoxelBallsScene;
+    private VoxelLandScapeFadeScene: VoxelLandScapeFadeScene;
+    private VoxelLandscapeScene: VoxelLandscapeScene;
+    private WavefrontScene: WavefrontScene;
+    private WaveFrontTextureScene: WaveFrontTextureScene;
+
+    // stats
+    private bmpFont: Texture;
+    private statsFPS: Stats;
+    private statsMEM: Stats;
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.sm = new SoundManager();
+
+        // Stats - Memory in Megabytes stats
+        this.statsMEM = new Stats();
+        this.statsMEM.showPanel(0);
+        this.statsMEM.dom.style.cssText = `position:absolute;top:0px;left:640px;`;
+        document.body.appendChild(this.statsMEM.dom);
+
+        // Stats - Frames per Seconds
+        this.statsFPS = new Stats();
+        this.statsFPS.showPanel(2);
+        this.statsFPS.dom.style.cssText = 'position:absolute;top:50px;left:640px;';
+        document.body.appendChild(this.statsFPS.dom);
 
         // Scene Playback Controls
         const tickerRef = document.getElementById('ticker');
@@ -89,27 +199,131 @@ export class DemoScene extends AbstractScene {
         });
 
         // Effects
-        this.lensScene = new LensScene();
-        this.sineScrollerScene = new SineScrollerScene();
         this.abscractCubeScene = new AbstractCube();
+        this.BakedLighting = new BakedLighting();
+        this.BlockFade = new BlockFade();
+        this.Bobs = new Bobs();
+        this.BumpMap = new BumpMap();
+        this.BunnyScene = new BunnyScene();
+        this.CinematicScroller = new CinematicScroller();
+        this.CubeScene = new CubeScene();
+        this.CubeTunnelScene = new CubeTunnelScene();
+        this.DifferentMd2ModelScene = new DifferentMd2ModelScene();
+        this.DistortedSphereScene = new DistortedSphereScene();
+        this.DofBallsScene = new DofBallsScene();
+        this.FloodFillScene = new FloodFillScene();
+        this.FloorScene = new FloorScene();
+        this.FrustumCullingScene = new FrustumCullingScene();
+        this.Gears2Scene = new Gears2Scene();
+        this.GearsScene = new GearsScene();
+        this.HoodlumScene = new HoodlumScene();
+        this.LedPlasmaScene = new LedPlasmaScene();
+        this.lensScene = new LensScene();
+        this.Md2ModelScene = new Md2ModelScene();
+        this.MetaballsScene = new MetaballsScene();
         this.metalHeadzScene = new MetalHeadzScene();
+        this.Mode7Scene = new Mode7Scene();
+        this.MovingTorusScene = new MovingTorusScene();
+        this.ParticleStreamsScene = new ParticleStreamsScene();
+        this.ParticleSystemScene = new ParticleSystemScene();
+        this.ParticleTorusScene = new ParticleTorusScene();
+        this.PixelEffectScene = new PixelEffectScene();
+        this.PlaneDeformationAbstractScene = new PlaneDeformationAbstractScene();
+        this.PlanedeformationTunnelScene = new PlanedeformationTunnelScene();
+        this.PlanedeformationTunnelScene = new PlanedeformationTunnelScene();
+        this.PlasmaScene = new PlasmaScene();
+        this.PlatonianScene = new PlatonianScene();
+        this.PolarVoxelsScene = new PolarVoxelsScene();
+        this.PortalScene = new PortalScene();
+        this.RazorScene = new RazorScene();
+        this.RotatingGearsScene = new RotatingGearsScene();
+        this.RotoZoomerScene = new RotoZoomerScene();
+        this.ScrollingBackgroundScene = new ScrollingBackgroundScene();
+        this.sineScrollerScene = new SineScrollerScene();
+        this.StarfieldScene = new StarfieldScene();
+        this.TexturedTorusScene = new TexturedTorusScene();
+        this.ThirdPersonCameraScene = new ThirdPersonCameraScene();
+        this.TitanEffectScene = new TitanEffectScene();
+        this.TorusKnotScene = new TorusKnotScene();
+        this.TorusKnotTunnelScene = new TorusKnotTunnelScene();
+        this.TorusScene = new TorusScene();
+        this.ToxicDotsScene = new ToxicDotsScene();
+        this.TwisterScene = new TwisterScene();
+        this.VoxelBallsScene = new VoxelBallsScene();
+        this.VoxelLandScapeFadeScene = new VoxelLandScapeFadeScene();
+        this.VoxelLandscapeScene = new VoxelLandscapeScene();
+        this.WavefrontScene = new WavefrontScene();
+        this.WaveFrontTextureScene = new WaveFrontTextureScene();
 
+        // initialize effects
+        // TODO: dynamically init each effect so everything isnt loaded at once
         return Promise.all([
             // load music
             // this.sm.playExtendedModule(require('../../assets/sound/dubmood_-_cromenu1_haschkaka.xm').default),
-            // this.sm.playOgg(require('../../assets/sound/alpha_c_-_euh.ogg').default),
+            this.sm.loadOgg(require('../../assets/sound/no-xs_4.ogg').default),
             this.prepareSync(),
-            // initialize effects
+
+            // these two cause the background of metalheadz to go black
+            // this.Md2ModelScene.init(framebuffer),
+            // this.DifferentMd2ModelScene.init(framebuffer),
             this.abscractCubeScene.init(framebuffer),
             this.lensScene.init(framebuffer),
             this.sineScrollerScene.init(framebuffer),
             this.metalHeadzScene.init(framebuffer),
-
+            this.ScrollingBackgroundScene.init(framebuffer),
+            this.BumpMap.init(framebuffer),
+            this.BakedLighting.init(framebuffer),
+            this.BlockFade.init(framebuffer),
+            this.Bobs.init(framebuffer),
+            this.BunnyScene.init(framebuffer),
+            this.CinematicScroller.init(framebuffer),
+            this.CubeScene.init(framebuffer),
+            this.CubeTunnelScene.init(framebuffer),
+            this.ThirdPersonCameraScene.init(framebuffer),
+            this.DistortedSphereScene.init(framebuffer),
+            this.DofBallsScene.init(framebuffer),
+            this.FloodFillScene.init(framebuffer),
+            this.FloorScene.init(framebuffer),
+            this.FrustumCullingScene.init(framebuffer),
+            this.GearsScene.init(framebuffer),
+            this.Gears2Scene.init(framebuffer),
+            this.HoodlumScene.init(framebuffer),
+            this.LedPlasmaScene.init(framebuffer),
+            this.MetaballsScene.init(framebuffer),
+            this.Mode7Scene.init(framebuffer),
+            this.MovingTorusScene.init(framebuffer),
+            this.ParticleStreamsScene.init(framebuffer),
+            this.ParticleSystemScene.init(framebuffer),
+            this.ParticleTorusScene.init(framebuffer),
+            this.PixelEffectScene.init(framebuffer),
+            this.PlaneDeformationAbstractScene.init(framebuffer),
+            this.PlanedeformationTunnelScene.init(framebuffer),
+            this.PlasmaScene.init(framebuffer),
+            this.PlatonianScene.init(framebuffer),
+            this.PolarVoxelsScene.init(framebuffer),
+            this.PortalScene.init(framebuffer),
+            this.RazorScene.init(framebuffer),
+            this.RotatingGearsScene.init(framebuffer),
+            this.RotoZoomerScene.init(framebuffer),
+            this.ScrollingBackgroundScene.init(framebuffer),
+            this.StarfieldScene.init(framebuffer),
+            this.TexturedTorusScene.init(framebuffer),
+            this.TitanEffectScene.init(framebuffer),
+            this.TorusScene.init(framebuffer),
+            this.TorusKnotScene.init(framebuffer),
+            this.TorusKnotTunnelScene.init(framebuffer),
+            this.ToxicDotsScene.init(framebuffer),
+            this.PlanedeformationTunnelScene.init(framebuffer),
+            this.TwisterScene.init(framebuffer),
+            this.VoxelBallsScene.init(framebuffer),
+            this.VoxelLandscapeScene.init(framebuffer),
+            this.VoxelLandScapeFadeScene.init(framebuffer),
+            this.WavefrontScene.init(framebuffer),
+            this.WaveFrontTextureScene.init(framebuffer),
 
             TextureUtils.load(require('../../assets/font.png'), true).then(
-                (texture: Texture) => this.texture4 = texture),
+                (texture: Texture) => this.bmpFont = texture),
         ]).then(() => {
-            this.start = Date.now();
         });
     }
 
@@ -117,17 +331,9 @@ export class DemoScene extends AbstractScene {
 
         // show message if rocket app is not running in background
         if (!this.sm._syncDevice.connected && !this._demoMode) {
-            framebuffer.drawText(8, 18, 'Rocket not connected'.toUpperCase(), this.texture4);
+            framebuffer.drawText(8, 18, 'Rocket not connected'.toUpperCase(), this.bmpFont);
             return;
         }
-        const currentTime: number = Date.now();
-
-        if (currentTime > this.fpsStartTime + 1000) {
-            this.fpsStartTime = currentTime;
-            this.fps = this.fpsCount;
-            this.fpsCount = 0;
-        }
-        this.fpsCount++;
 
         // use audio time otherwise use date
         // const time: number = (Date.now() - this.start);
@@ -136,6 +342,8 @@ export class DemoScene extends AbstractScene {
         const time: number = timeSeconds * 1000;
 
         this._row = timeSeconds * this.ROW_RATE;
+
+        this._currentEffect = this._effect.getValue(this._row).toFixed(1);
 
         // update JS rocket
         if (this.sm._audio.paused === false) {
@@ -150,38 +358,193 @@ export class DemoScene extends AbstractScene {
 
         // empty the screen
         framebuffer.clearColorBuffer(0);
+
         // BEGIN DEMO ************************************
 
-        // todo - use values from JS Rocket to determine which scene to show instead of time < 10
-        switch (true) {
-            // SCENE 1
-            case (timeSeconds < 10):
+        // error - normal not found (works in standalone)
+        // this.BumpMap.render(framebuffer);
+
+        // error - upButtonNot not defined (works in standalone)
+        // this.ThirdPersonCameraScene.render(framebuffer);
+
+        // error - points undefined (works in standalone)
+        // this.DistortedSphereScene.render(framebuffer);
+
+        // error - angle undefined (works in standalone)
+        // this.Mode7Scene.render(framebuffer);
+
+        // debug effect?
+        // this.PortalScene.render(framebuffer);
+
+        // missing bloom effect (works in standalone)
+        // this.ToxicDotsScene.render(framebuffer);
+
+        // black screen
+        // this.VoxelLandScapeFadeScene.render(framebuffer);
+
+        // duplicate
+        // this.WavefrontScene.render(framebuffer);
+
+        // duplicate
+        // this.WaveFrontTextureScene.render(framebuffer);
+
+        // TODO: add transition effects as effect N.5
+        // 5-10 seconds per effect is ideal
+        // max of 30 effects at 10 seconds each for 5 min demo
+
+        // use values from JS Rocket to determine which scene to show
+        switch (Number(this._currentEffect)) {
+            case 1:
+                this.metalHeadzScene.render(framebuffer, time);
+                break;
+            case 1.5:
+                this.BlockFade.render(framebuffer);  // Transition!
+            case 2:
                 this.abscractCubeScene.render(framebuffer, time);
                 break;
-            // SCENE 2
-            case timeSeconds < 15:
-                this.abscractCubeScene.render(framebuffer, time);
+            case 3:
                 this.sineScrollerScene.render(framebuffer, time);
                 framebuffer.fastFramebufferCopy(this.lensScene.textureBackground.texture, framebuffer.framebuffer);
                 this.lensScene.render(framebuffer, time);
                 break;
-            // SCENE 2
-            case timeSeconds < 20:
-                this.metalHeadzScene.render(framebuffer, time);
+            case 4:
+                this.DofBallsScene.render(framebuffer);
+                break;
+            case 5:
+                this.ScrollingBackgroundScene.render(framebuffer);
+                break;
+            case 6:
+                this.BakedLighting.render(framebuffer);
+                break;
+            case 7:
+                this.BlockFade.render(framebuffer);  // Transition!
+                break;
+            case 8:
+                this.Bobs.render(framebuffer);
+                break;
+            case 9:
+                this.BunnyScene.render(framebuffer);
+                break;
+            case 10:
+                this.CubeScene.render(framebuffer);
+                break;
+            case 11:
+                this.CubeTunnelScene.render(framebuffer);
+                break;
+            case 12:
+                this.FloodFillScene.render(framebuffer); // Transition!
+                break;
+            case 13:
+                this.CinematicScroller.render(framebuffer);
+                break;
+            case 14:
+                this.FloorScene.render(framebuffer);
+                break;
+            case 15:
+                this.FrustumCullingScene.render(framebuffer);
+                break;
+            case 16:
+                this.GearsScene.render(framebuffer);
+                break;
+            case 17:
+                this.Gears2Scene.render(framebuffer);
+                break;
+            case 18:
+                this.HoodlumScene.render(framebuffer);
+                break;
+            case 19:
+                this.LedPlasmaScene.render(framebuffer);
+                break;
+            case 20:
+                this.MetaballsScene.render(framebuffer);
+                break;
+            case 21:
+                this.MovingTorusScene.render(framebuffer);
+                break;
+            case 22:
+                this.ParticleStreamsScene.render(framebuffer);
+                break;
+            case 23:
+                this.ParticleSystemScene.render(framebuffer);
+                break;
+            case 24:
+                this.ParticleTorusScene.render(framebuffer); // has a zoom bump for sync
+                break;
+            case 25:
+                this.PixelEffectScene.render(framebuffer);
+                break;
+            case 26:
+                this.PlaneDeformationAbstractScene.render(framebuffer);
+                break;
+            case 27:
+                this.PlanedeformationTunnelScene.render(framebuffer);
+                break;
+            case 28:
+                this.PlasmaScene.render(framebuffer);
+                break;
+            case 29:
+                this.PlatonianScene.render(framebuffer);
+                break;
+            case 30:
+                this.PolarVoxelsScene.render(framebuffer);
+                break;
+            case 31:
+                this.RazorScene.render(framebuffer);
+                break;
+            case 32:
+                this.RotatingGearsScene.render(framebuffer);
+                break;
+            case 33:
+                this.RotoZoomerScene.render(framebuffer);
+                break;
+            case 34:
+                this.StarfieldScene.render(framebuffer);
+                break;
+            case 35:
+                this.TexturedTorusScene.render(framebuffer);
+                break;
+            case 36:
+                this.TitanEffectScene.render(framebuffer);
+                break;
+            case 37:
+                this.TorusScene.render(framebuffer);
+                break;
+            case 38:
+                this.TorusKnotScene.render(framebuffer);
+                break;
+            case 39:
+                this.TorusKnotTunnelScene.render(framebuffer);
+                break;
+            case 40:
+                this.TwisterScene.render(framebuffer);
+                break;
+            case 41:
+                this.VoxelBallsScene.render(framebuffer);
+                break;
+            case 42:
+                this.VoxelLandscapeScene.render(framebuffer);
+                break;
+            case 43:
+                this.sineScrollerScene.render(framebuffer, time);
                 break;
             default:
                 this.sineScrollerScene.render(framebuffer, time);
         }
         // END DEMO  ************************************
 
-        this.drawStats(framebuffer, time);
+        // this.drawStats(framebuffer);
     }
 
-    // draw FPS and timestamps
-    private drawStats(framebuffer: Framebuffer, time: number) {
-        framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
-        framebuffer.drawText(8, 36, 'ROCKET TIME: ' + this.sm._audio.currentTime.toFixed(2), this.texture4);
-        framebuffer.drawText(8, 36 + 18, 'ROTATION: ' + this._cameraRotation.getValue(this._row).toFixed(0), this.texture4);
+    // debug info
+    private drawStats(framebuffer: Framebuffer) {
+        // get values from JS rocket
+        framebuffer.drawText(8, 18, 'ROCKET TIME: ' + this.sm._audio.currentTime.toFixed(2), this.bmpFont);
+        framebuffer.drawText(8, 36, 'ROTATION: ' + this._cameraRotation.getValue(this._row).toFixed(0), this.bmpFont);
+        framebuffer.drawText(8, 36 + 18, 'EFFECT: ' + this._currentEffect, this.bmpFont);
+
+        // update FPS and Memory usage
+        this.statsFPS.update();
+        this.statsMEM.update();
     }
 
     prepareSync() {
@@ -189,7 +552,7 @@ export class DemoScene extends AbstractScene {
 
         if (this._demoMode) {
             this.sm._syncDevice.setConfig({
-                'rocketXML': require('../../assets/sound/alpha_c_-_euh.rocket').default
+                'rocketXML': require('../../assets/sound/no-xs_4.rocket').default
             });
             this.sm._syncDevice.init('demo');
 
@@ -210,29 +573,13 @@ export class DemoScene extends AbstractScene {
 
     onSyncReady() {
         console.info('onSyncReady', this.sm._syncDevice)
-
         this.sm._syncDevice.connected = true;
-        this._clearR = this.sm._syncDevice.getTrack('clearR');
-        this._clearG = this.sm._syncDevice.getTrack('clearG');
-        this._clearB = this.sm._syncDevice.getTrack('clearB');
+        this._effect = this.sm._syncDevice.getTrack('effect');
+        this._snare = this.sm._syncDevice.getTrack('snare');
+        this._bass = this.sm._syncDevice.getTrack('bass');
         this._cameraRotation = this.sm._syncDevice.getTrack('rotation');
         this._cameraDistance = this.sm._syncDevice.getTrack('distance');
         this._fov = this.sm._syncDevice.getTrack('FOV');
-
-        this.prepareAudio();
-    }
-
-    prepareAudio() {
-        console.info('prepareAudio');
-        // this.sm.playExtendedModule(require('../../assets/sound/dubmood_-_cromenu1_haschkaka.xm').default);
-        // this.sm.playOgg(require('../../assets/sound/alpha_c_-_euh.ogg').default);
-        // this.sm.audioContext.createMediaElementSource(this._audio);
-
-        // todo move this into an async loader
-        this.sm._audio.src = require('../../assets/sound/alpha_c_-_euh.ogg').default;
-        this.sm._audio.load();
-        this.sm._audio.preload = 'true';
-        this.sm._audio.loop = true;
     }
 
     // row is only given if you navigate, or change a value on the row in Rocket
@@ -242,7 +589,6 @@ export class DemoScene extends AbstractScene {
         if (!isNaN(newRow)) {
             this._row = newRow;
         }
-
         this.sm._audio.currentTime = newRow / this.ROW_RATE;
     }
 
