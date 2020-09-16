@@ -33,7 +33,6 @@ field of computer graphics including clipping, triangle rasterization, geometric
 * [Cube Tunnel](https://jdiemke.github.io/aisa/cube-tunnel.html)
 * [Cube](https://jdiemke.github.io/aisa/cube.html)
 * [Cubes](https://jdiemke.github.io/aisa/voxel-balls.html)
-* [Demo](https://jdiemke.github.io/aisa/demo.html)
 * [Distorted Sphere](https://jdiemke.github.io/aisa/distorted-sphere.html)
 * [DOF Balls](https://jdiemke.github.io/aisa/dof-balls.html)
 * [Flood Fill](https://jdiemke.github.io/aisa/flood-fill.html)

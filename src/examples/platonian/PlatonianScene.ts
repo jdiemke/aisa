@@ -1,9 +1,10 @@
-import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
+import { BlenderLoader } from '../../model/blender/BlenderLoader';
+import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 
 /**
  * TODO: extract lens into effect class
@@ -21,9 +22,10 @@ export class PlatonianScene extends AbstractScene {
     public init(framebuffer: Framebuffer): Promise<any> {
         framebuffer.setCullFace(CullFace.BACK);
 
-        this.platonianMesh = BlenderJsonParser.getBlenderScene(require('../../assets/platonian_backed.json'), false);
-
         return Promise.all([
+            BlenderLoader.loadWithTexture(require('../../assets/jsx/platonian_backed.jsx')).then(
+                (mesh: Array<TexturedMesh>) => this.platonianMesh = mesh
+            ),
             TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
             ),
