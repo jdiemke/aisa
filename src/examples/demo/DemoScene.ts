@@ -39,7 +39,6 @@ import { PlanedeformationTunnelScene } from '../planedeformation-tunnel/Planedef
 import { PlasmaScene } from '../plasma/PlasmaScene';
 import { PlatonianScene } from '../platonian/PlatonianScene';
 import { PolarVoxelsScene } from '../polar-voxels/PolarVoxelsScene';
-import { PortalScene } from '../portals/PortalScene';
 import { RazorScene } from '../razor/RazorScene';
 import { RotatingGearsScene } from '../rotating-gears/RotatingGearsScene';
 import { RotoZoomerScene } from '../roto-zoomer/RotoZoomerScene';
@@ -62,6 +61,7 @@ import { WaveFrontTextureScene } from '../wavefront-texture/WaveFrontTextureScen
 
 // Stats
 import Stats = require('stats.js');
+import { CullFace } from '../../CullFace';
 
 export class DemoScene extends AbstractScene {
 
@@ -93,8 +93,9 @@ export class DemoScene extends AbstractScene {
     // the current row we're on
     private _row = 0;
     private _currentEffect: number;
-
     private tickerPointer = document.getElementById('ticker_pointer');
+    private timeSeconds: number;
+    private timeMilliseconds: number;
 
     // effects
     private abscractCubeScene: AbstractCube;
@@ -131,7 +132,6 @@ export class DemoScene extends AbstractScene {
     private PlasmaScene: PlasmaScene;
     private PlatonianScene: PlatonianScene;
     private PolarVoxelsScene: PolarVoxelsScene;
-    private PortalScene: PortalScene;
     private RazorScene: RazorScene;
     private RotatingGearsScene: RotatingGearsScene;
     private RotoZoomerScene: RotoZoomerScene;
@@ -162,13 +162,13 @@ export class DemoScene extends AbstractScene {
 
         // Stats - Memory in Megabytes stats
         this.statsMEM = new Stats();
-        this.statsMEM.showPanel(0);
+        this.statsMEM.showPanel(2);
         this.statsMEM.dom.style.cssText = `position:absolute;top:0px;left:640px;`;
         document.body.appendChild(this.statsMEM.dom);
 
         // Stats - Frames per Seconds
         this.statsFPS = new Stats();
-        this.statsFPS.showPanel(2);
+        this.statsFPS.showPanel(0);
         this.statsFPS.dom.style.cssText = 'position:absolute;top:50px;left:640px;';
         document.body.appendChild(this.statsFPS.dom);
 
@@ -176,6 +176,9 @@ export class DemoScene extends AbstractScene {
         const tickerRef = document.getElementById('ticker');
         const tickerPlayRef = document.getElementById('ticker_play');
         const tickerPauseRef = document.getElementById('ticker_pause');
+
+        // Loading bar
+        const loadingRef = document.getElementById('loading');
 
         // play
         tickerPlayRef.addEventListener('click', () => {
@@ -230,11 +233,9 @@ export class DemoScene extends AbstractScene {
         this.PixelEffectScene = new PixelEffectScene();
         this.PlaneDeformationAbstractScene = new PlaneDeformationAbstractScene();
         this.PlanedeformationTunnelScene = new PlanedeformationTunnelScene();
-        this.PlanedeformationTunnelScene = new PlanedeformationTunnelScene();
         this.PlasmaScene = new PlasmaScene();
         this.PlatonianScene = new PlatonianScene();
         this.PolarVoxelsScene = new PolarVoxelsScene();
-        this.PortalScene = new PortalScene();
         this.RazorScene = new RazorScene();
         this.RotatingGearsScene = new RotatingGearsScene();
         this.RotoZoomerScene = new RotoZoomerScene();
@@ -255,17 +256,24 @@ export class DemoScene extends AbstractScene {
         this.WavefrontScene = new WavefrontScene();
         this.WaveFrontTextureScene = new WaveFrontTextureScene();
 
-        // initialize effects
-        // TODO: dynamically init each effect so everything isnt loaded at once
-        return Promise.all([
-            // load music
-            // this.sm.playExtendedModule(require('../../assets/sound/dubmood_-_cromenu1_haschkaka.xm').default),
-            this.sm.loadOgg(require('../../assets/sound/no-xs_4.ogg').default),
-            this.prepareSync(),
+        this.sineScrollerScene.init(framebuffer);
 
+        // initialize effects with progress
+        return this.allProgress([
+            // load music
+            this.sm.loadOgg(require('../../assets/sound/no-xs_4.ogg').default),
+
+            // font for stats
+            TextureUtils.load(require('../../assets/font.png'), true).then(
+                (texture: Texture) => {
+                    return this.bmpFont = texture;
+                }),
+
+            // load *.rocket file
+            this.prepareSync(),
             // these two cause the background of metalheadz to go black
-            // this.Md2ModelScene.init(framebuffer),
-            // this.DifferentMd2ModelScene.init(framebuffer),
+            this.Md2ModelScene.init(framebuffer),
+            this.DifferentMd2ModelScene.init(framebuffer),
             this.abscractCubeScene.init(framebuffer),
             this.lensScene.init(framebuffer),
             this.sineScrollerScene.init(framebuffer),
@@ -301,7 +309,6 @@ export class DemoScene extends AbstractScene {
             this.PlasmaScene.init(framebuffer),
             this.PlatonianScene.init(framebuffer),
             this.PolarVoxelsScene.init(framebuffer),
-            this.PortalScene.init(framebuffer),
             this.RazorScene.init(framebuffer),
             this.RotatingGearsScene.init(framebuffer),
             this.RotoZoomerScene.init(framebuffer),
@@ -320,113 +327,79 @@ export class DemoScene extends AbstractScene {
             this.VoxelLandScapeFadeScene.init(framebuffer),
             this.WavefrontScene.init(framebuffer),
             this.WaveFrontTextureScene.init(framebuffer),
-
-            TextureUtils.load(require('../../assets/font.png'), true).then(
-                (texture: Texture) => this.bmpFont = texture),
-        ]).then(() => {
+            this.WavefrontScene.init(framebuffer),
+            this.TwisterScene.init(framebuffer)
+        ], (percent: number) => {
+            // update the progress bar
+            const outputX = 640 / (100 / percent);
+            loadingRef.style.width = `${outputX}px`;
+            this.statsMEM.update();
         });
+    };
+
+    public onInit(): void {
+        document.getElementById('loading').style.width = `0px`;
+    }
+
+    private allProgress(proms: Array<Promise<void>>, progressCallback: Function) {
+        let d = 0;
+        progressCallback(0);
+        for (const p of proms) {
+            p.then(() => {
+                d++;
+                progressCallback((d * 100) / proms.length);
+            });
+        }
+        return Promise.all(proms);
     }
 
     public render(framebuffer: Framebuffer): void {
 
-        // show message if rocket app is not running in background
-        if (!this.sm._syncDevice.connected && !this._demoMode) {
-            framebuffer.drawText(8, 18, 'Rocket not connected'.toUpperCase(), this.bmpFont);
-            return;
-        }
+        // get time and values from music
+        this.updateMusic(framebuffer);
 
-        // use audio time otherwise use date
-        // const time: number = (Date.now() - this.start);
-        // const timeSeconds = this.sm.audioContext.currentTime;
-        const timeSeconds = this.sm._audio.currentTime;
-        const time: number = timeSeconds * 1000;
-
-        this._row = timeSeconds * this.ROW_RATE;
-
-        this._currentEffect = this._effect.getValue(this._row).toFixed(1);
-
-        // update JS rocket
-        if (this.sm._audio.paused === false) {
-            // otherwise we may jump into a point in the audio where there's
-            // no timeframe, resulting in Rocket setting row 2 and we report
-            // row 1 back - thus Rocket spasming out
-
-            // this informs Rocket where we are
-            this.sm._syncDevice.update(this._row);
-        }
-        this.tickerPointer.style.left = (timeSeconds * 100 / this.sm._audio.duration) + '%';
-
-        // empty the screen
-        framebuffer.clearColorBuffer(0);
-
-        // BEGIN DEMO ************************************
-
-        // error - normal not found (works in standalone)
-        // this.BumpMap.render(framebuffer);
-
-        // error - upButtonNot not defined (works in standalone)
-        // this.ThirdPersonCameraScene.render(framebuffer);
-
-        // error - points undefined (works in standalone)
-        // this.DistortedSphereScene.render(framebuffer);
-
-        // error - angle undefined (works in standalone)
-        // this.Mode7Scene.render(framebuffer);
-
-        // debug effect?
-        // this.PortalScene.render(framebuffer);
-
-        // missing bloom effect (works in standalone)
-        // this.ToxicDotsScene.render(framebuffer);
-
-        // black screen
-        // this.VoxelLandScapeFadeScene.render(framebuffer);
-
-        // duplicate
-        // this.WavefrontScene.render(framebuffer);
-
-        // duplicate
-        // this.WaveFrontTextureScene.render(framebuffer);
-
-        // TODO: add transition effects as effect N.5
-        // 5-10 seconds per effect is ideal
-        // max of 30 effects at 10 seconds each for 5 min demo
+        // this._currentEffect = 0;
 
         // use values from JS Rocket to determine which scene to show
         switch (Number(this._currentEffect)) {
+            case 0: // testing placeholder
+                break;
             case 1:
-                this.metalHeadzScene.render(framebuffer, time);
+                framebuffer.texturedRenderingPipeline.setCullFace(CullFace.BACK);
+                this.metalHeadzScene.render(framebuffer, this.timeMilliseconds);
                 break;
             case 1.5:
                 this.BlockFade.render(framebuffer);  // Transition!
             case 2:
-                this.abscractCubeScene.render(framebuffer, time);
+                this.abscractCubeScene.render(framebuffer, this.timeMilliseconds);
                 break;
             case 3:
-                this.sineScrollerScene.render(framebuffer, time);
+                this.sineScrollerScene.render(framebuffer, this.timeMilliseconds);
                 framebuffer.fastFramebufferCopy(this.lensScene.textureBackground.texture, framebuffer.framebuffer);
-                this.lensScene.render(framebuffer, time);
+                this.lensScene.render(framebuffer, this.timeMilliseconds);
                 break;
             case 4:
                 this.DofBallsScene.render(framebuffer);
                 break;
             case 5:
-                this.ScrollingBackgroundScene.render(framebuffer);
+                framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
+                this.Md2ModelScene.render(framebuffer);
                 break;
             case 6:
+                framebuffer.texturedRenderingPipeline.setCullFace(CullFace.BACK)
                 this.BakedLighting.render(framebuffer);
                 break;
             case 7:
-                this.BlockFade.render(framebuffer);  // Transition!
+                this.BumpMap.render(framebuffer);
                 break;
             case 8:
-                this.Bobs.render(framebuffer);
+                this.TwisterScene.render(framebuffer);
                 break;
             case 9:
                 this.BunnyScene.render(framebuffer);
                 break;
             case 10:
-                this.CubeScene.render(framebuffer);
+                this.DifferentMd2ModelScene.render(framebuffer)
                 break;
             case 11:
                 this.CubeTunnelScene.render(framebuffer);
@@ -435,13 +408,14 @@ export class DemoScene extends AbstractScene {
                 this.FloodFillScene.render(framebuffer); // Transition!
                 break;
             case 13:
-                this.CinematicScroller.render(framebuffer);
+                this.RotoZoomerScene.render(framebuffer);
+                this.CubeScene.renderBackground(framebuffer);
                 break;
             case 14:
                 this.FloorScene.render(framebuffer);
                 break;
             case 15:
-                this.FrustumCullingScene.render(framebuffer);
+                this.PlatonianScene.render(framebuffer);
                 break;
             case 16:
                 this.GearsScene.render(framebuffer);
@@ -483,7 +457,7 @@ export class DemoScene extends AbstractScene {
                 this.PlasmaScene.render(framebuffer);
                 break;
             case 29:
-                this.PlatonianScene.render(framebuffer);
+                this.FrustumCullingScene.render(framebuffer);
                 break;
             case 30:
                 this.PolarVoxelsScene.render(framebuffer);
@@ -495,7 +469,7 @@ export class DemoScene extends AbstractScene {
                 this.RotatingGearsScene.render(framebuffer);
                 break;
             case 33:
-                this.RotoZoomerScene.render(framebuffer);
+                this.Bobs.render(framebuffer);
                 break;
             case 34:
                 this.StarfieldScene.render(framebuffer);
@@ -516,7 +490,7 @@ export class DemoScene extends AbstractScene {
                 this.TorusKnotTunnelScene.render(framebuffer);
                 break;
             case 40:
-                this.TwisterScene.render(framebuffer);
+                this.ScrollingBackgroundScene.render(framebuffer);
                 break;
             case 41:
                 this.VoxelBallsScene.render(framebuffer);
@@ -525,20 +499,72 @@ export class DemoScene extends AbstractScene {
                 this.VoxelLandscapeScene.render(framebuffer);
                 break;
             case 43:
-                this.sineScrollerScene.render(framebuffer, time);
+                this.DistortedSphereScene.render(framebuffer);
+                break;
+            case 44:
+                this.CinematicScroller.render(framebuffer);
+                break;
+            case 45:
+
+                break;
+            case 44:
+                this.ThirdPersonCameraScene.render(framebuffer);
+                break;
+            case 45:
+                this.Mode7Scene.render(framebuffer);
+                break;
+            case 46:
+                this.VoxelLandScapeFadeScene.render(framebuffer);
+                break;
+            case 47:
+                this.ToxicDotsScene.render(framebuffer);
+                break;
+            case 48:
+                this.WavefrontScene.render(framebuffer); // dragon
+                break;
+            case 49:
+                this.WaveFrontTextureScene.render(framebuffer); // monkey with grey texture map
                 break;
             default:
-                this.sineScrollerScene.render(framebuffer, time);
+                this.sineScrollerScene.render(framebuffer, this.timeMilliseconds);
         }
-        // END DEMO  ************************************
 
-        // this.drawStats(framebuffer);
+        this.drawStats(framebuffer);
+    }
+
+    private updateMusic(framebuffer: Framebuffer) {
+        // show message if rocket app is not running in background
+        if (!this.sm._syncDevice.connected && !this._demoMode) {
+            framebuffer.drawText(8, 18, 'Rocket not connected'.toUpperCase(), this.bmpFont);
+            return;
+        }
+
+        // use audio time otherwise use date
+        // const time: number = (Date.now() - this.start);
+        // const timeSeconds = this.sm.audioContext.currentTime;
+        this.timeSeconds = this.sm._audio.currentTime;
+        this.timeMilliseconds = this.timeSeconds * 1000;
+
+        this._row = this.timeSeconds * this.ROW_RATE;
+
+        this._currentEffect = this._effect.getValue(this._row).toFixed(1);
+
+        // update JS rocket
+        if (this.sm._audio.paused === false) {
+            // otherwise we may jump into a point in the audio where there's
+            // no timeframe, resulting in Rocket setting row 2 and we report
+            // row 1 back - thus Rocket spasming out
+
+            // this informs Rocket where we are
+            this.sm._syncDevice.update(this._row);
+        }
+        this.tickerPointer.style.left = (this.timeSeconds * 100 / this.sm._audio.duration) + '%';
     }
 
     // debug info
     private drawStats(framebuffer: Framebuffer) {
         // get values from JS rocket
-        framebuffer.drawText(8, 18, 'ROCKET TIME: ' + this.sm._audio.currentTime.toFixed(2), this.bmpFont);
+        framebuffer.drawText(8, 18, 'TIME: ' + this.timeSeconds.toFixed(2), this.bmpFont);
         framebuffer.drawText(8, 36, 'ROTATION: ' + this._cameraRotation.getValue(this._row).toFixed(0), this.bmpFont);
         framebuffer.drawText(8, 36 + 18, 'EFFECT: ' + this._currentEffect, this.bmpFont);
 
@@ -547,32 +573,32 @@ export class DemoScene extends AbstractScene {
         this.statsMEM.update();
     }
 
-    prepareSync() {
-        console.info('this._syncDevice', this.sm._syncDevice)
+    prepareSync(): Promise<void> {
+        return new Promise((resolve) => {
+            if (this._demoMode) {
+                this.sm._syncDevice.setConfig({
+                    'rocketXML': require('../../assets/sound/no-xs_4.rocket').default
+                });
+                this.sm._syncDevice.init('demo');
 
-        if (this._demoMode) {
-            this.sm._syncDevice.setConfig({
-                'rocketXML': require('../../assets/sound/no-xs_4.rocket').default
-            });
-            this.sm._syncDevice.init('demo');
+            } else {
+                this.sm._syncDevice.init();
+            };
 
-        } else {
-            this.sm._syncDevice.init();
-        };
+            // XML file from JS Rocket library was loaded and parsed, make sure your ogg is ready
+            this.sm._syncDevice.on('ready', () => this.onSyncReady());
 
-        // XML file from JS Rocket library was loaded and parsed, make sure your ogg is ready
-        this.sm._syncDevice.on('ready', () => this.onSyncReady());
+            // [JS Rocket - Arrow keys] whenever you change the row, a value or interpolation mode this will get called
+            this.sm._syncDevice.on('update', (newRow: number) => this.onSyncUpdate(newRow));
 
-        // [JS Rocket - Arrow keys] whenever you change the row, a value or interpolation mode this will get called
-        this.sm._syncDevice.on('update', (newRow: number) => this.onSyncUpdate(newRow));
-
-        // [JS Rocket - Spacebar] in Rocket calls one of those
-        this.sm._syncDevice.on('play', () => this.onPlay());
-        this.sm._syncDevice.on('pause', () => this.onPause());
+            // [JS Rocket - Spacebar] in Rocket calls one of those
+            this.sm._syncDevice.on('play', () => this.onPlay());
+            this.sm._syncDevice.on('pause', () => this.onPause());
+            resolve()
+        });
     }
 
     onSyncReady() {
-        console.info('onSyncReady', this.sm._syncDevice)
         this.sm._syncDevice.connected = true;
         this._effect = this.sm._syncDevice.getTrack('effect');
         this._snare = this.sm._syncDevice.getTrack('snare');
@@ -585,7 +611,6 @@ export class DemoScene extends AbstractScene {
     // row is only given if you navigate, or change a value on the row in Rocket
     // on interpolation change (hit [i]) no row value is sent, as the current there is the upper row of your block
     onSyncUpdate(newRow: number) {
-        // console.info('onSyncUpdate', newRow);
         if (!isNaN(newRow)) {
             this._row = newRow;
         }

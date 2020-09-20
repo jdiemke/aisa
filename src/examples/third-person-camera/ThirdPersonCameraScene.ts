@@ -89,42 +89,41 @@ export class ThirdPersonCameraScene extends AbstractScene {
                 (texture: Texture) => this.ground = texture),
             TextureUtils.load(require('../../assets/glow.png'), true).then(
                 (texture: Texture) => this.glow = texture),
-        ]);
-    }
+        ]).then(
+            () => {
+                this.playerStateMachine = new PlayerStateMachine(this.md2, this.player);
+                window.addEventListener('gamepadconnected', (e: GamepadEvent) => {
+                    console.log('Gamepad connected at index %d: %s. %d buttons, %d axes.',
+                        e.gamepad.index, e.gamepad.id,
+                        e.gamepad.buttons.length, e.gamepad.axes.length);
+                });
 
-    public onInit(): void {
-        this.playerStateMachine = new PlayerStateMachine(this.md2, this.player);
-        window.addEventListener('gamepadconnected', (e: GamepadEvent) => {
-            console.log('Gamepad connected at index %d: %s. %d buttons, %d axes.',
-                e.gamepad.index, e.gamepad.id,
-                e.gamepad.buttons.length, e.gamepad.axes.length);
-        });
-
-        const mesh: TexturedMesh = new TexturedMesh();
-        mesh.points = [
-            new Vector4f(-20, 0, 20),
-            new Vector4f(20, 0, 20),
-            new Vector4f(20, 0, -20),
-            new Vector4f(-20, 0, -20)
-        ];
-        mesh.uv = [
-            new TextureCoordinate(0, 0),
-            new TextureCoordinate(1, 0),
-            new TextureCoordinate(1, 1),
-            new TextureCoordinate(0, 1)
-        ];
-        mesh.points2 = mesh.points.map(() => new Vector4f(0, 0, 0, 0));
-        mesh.faces = [
-            {
-                uv: [0, 1, 2],
-                vertices: [0, 1, 2]
-            },
-            {
-                uv: [2, 3, 0],
-                vertices: [2, 3, 0]
-            }
-        ];
-        this.floor = mesh;
+                const mesh: TexturedMesh = new TexturedMesh();
+                mesh.points = [
+                    new Vector4f(-20, 0, 20),
+                    new Vector4f(20, 0, 20),
+                    new Vector4f(20, 0, -20),
+                    new Vector4f(-20, 0, -20)
+                ];
+                mesh.uv = [
+                    new TextureCoordinate(0, 0),
+                    new TextureCoordinate(1, 0),
+                    new TextureCoordinate(1, 1),
+                    new TextureCoordinate(0, 1)
+                ];
+                mesh.points2 = mesh.points.map(() => new Vector4f(0, 0, 0, 0));
+                mesh.faces = [
+                    {
+                        uv: [0, 1, 2],
+                        vertices: [0, 1, 2]
+                    },
+                    {
+                        uv: [2, 3, 0],
+                        vertices: [2, 3, 0]
+                    }
+                ];
+                this.floor = mesh;
+            });
     }
 
     public processInput(deltaTime: number): void {

@@ -65,49 +65,6 @@ export class Mode7Scene extends AbstractScene {
 
     private animator: KartAnimator = new KartAnimator();
 
-    public onInit(): void {
-        const screenDistance: number = 160;
-        const cameraHeight: number = 80;
-        const cameraDistance: number = 153.4;
-
-        this.camera = new Camera();
-
-        this.camera.height = cameraHeight;
-        this.camera.screenDistance = screenDistance;
-        this.camera.angle = 270;
-
-        this.camera.position = new Vector2f(
-            this.kartPosition.x - Math.cos(2 * Math.PI / 360 * this.camera.angle) * cameraDistance,
-            this.kartPosition.y - Math.sin(2 * Math.PI / 360 * this.camera.angle) * cameraDistance
-        );
-
-        this.mode7Renderer = new Mode7Renderer(this.map, this.grass);
-        this.mode7Renderer.setCamera(this.camera);
-
-        this.pipePositions = new Array<Pipe>();
-        const texArray: Array<Texture> = [
-            this.banana,
-            this.bump,
-            this.pipe,
-            this.pipe2,
-            this.flower,
-            this.egg
-        ];
-
-        for (let i: number = 0; i < 100; i++) {
-            const tex: Texture = texArray[Math.floor(Math.random() * (texArray.length))];
-
-            this.pipePositions.push(
-                new Pipe(
-                    new Vector2f(
-                        Math.random() * 1024,
-                        Math.random() * 1024
-                    ),
-                    tex, 1.0, 0, 1.2, tex === this.bump ? -5 : tex === this.banana ? -3 : 0)
-            );
-        }
-    }
-
     public init(framebuffer: Framebuffer): Promise<any> {
         this.animator.setKeyFrames(this.npcTrack);
 
@@ -295,7 +252,50 @@ export class Mode7Scene extends AbstractScene {
             TextureUtils.load(require('./assets/sprites/posJoshi.png'), true).then(
                 (texture: Texture) => this.posJoshi = texture
             ),
-        ]);
+        ]).then(
+            () => {
+                const screenDistance: number = 160;
+                const cameraHeight: number = 80;
+                const cameraDistance: number = 153.4;
+
+                this.camera = new Camera();
+
+                this.camera.height = cameraHeight;
+                this.camera.screenDistance = screenDistance;
+                this.camera.angle = 270;
+
+                this.camera.position = new Vector2f(
+                    this.kartPosition.x - Math.cos(2 * Math.PI / 360 * this.camera.angle) * cameraDistance,
+                    this.kartPosition.y - Math.sin(2 * Math.PI / 360 * this.camera.angle) * cameraDistance
+                );
+
+                this.mode7Renderer = new Mode7Renderer(this.map, this.grass);
+                this.mode7Renderer.setCamera(this.camera);
+
+                this.pipePositions = new Array<Pipe>();
+                const texArray: Array<Texture> = [
+                    this.banana,
+                    this.bump,
+                    this.pipe,
+                    this.pipe2,
+                    this.flower,
+                    this.egg
+                ];
+
+                for (let i: number = 0; i < 100; i++) {
+                    const tex: Texture = texArray[Math.floor(Math.random() * (texArray.length))];
+
+                    this.pipePositions.push(
+                        new Pipe(
+                            new Vector2f(
+                                Math.random() * 1024,
+                                Math.random() * 1024
+                            ),
+                            tex, 1.0, 0, 1.2, tex === this.bump ? -5 : tex === this.banana ? -3 : 0)
+                    );
+                }
+
+            });
     }
 
     public render(framebuffer: Framebuffer): void {

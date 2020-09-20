@@ -11,9 +11,10 @@ export class BumpMap extends AbstractScene {
     private map: Texture;
     private bump: Texture;
     private phong: Texture;
-    private normals: Array<[number, number]> = Array<[number, number]>(320 * 200);
+    private normals: Array<[number, number]>;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.normals = new Array<[number, number]>(320 * 200);
         this.phong = new Texture(new Uint32Array(256 * 256), 256, 256);
         for (let i = 0; i < 255; i++) {
             for (let j = 0; j < 255; j++) {
@@ -32,21 +33,18 @@ export class BumpMap extends AbstractScene {
         return Promise.all([
             TextureUtils.load(require('./map.png'), false).then(texture => this.map = texture),
             TextureUtils.load(require('./bump.png'), false).then(texture => this.bump = texture),
-
-        ]);
-    }
-
-    public onInit(): void {
-        // precompute normal map
-
-        let framebufferIndex: number = 0;
-        for (let y = 0; y < 200; y++) {
-            for (let x = 0; x < 320; x++) {
-                const nx = ((this.bump.getPixel3(this.bump, x - 1, y) & 0xff) - (this.bump.getPixel3(this.bump, x + 1, y) & 0xff));
-                const ny = ((this.bump.getPixel3(this.bump, x, y - 1) & 0xff) - (this.bump.getPixel3(this.bump, x, y + 1) & 0xff));
-                this.normals[framebufferIndex++] = [nx, ny];
-            }
-        }
+        ]).then(
+            () => {
+                // precompute normal map
+                let framebufferIndex: number = 0;
+                for (let y = 0; y < 200; y++) {
+                    for (let x = 0; x < 320; x++) {
+                        const nx = ((this.bump.getPixel3(this.bump, x - 1, y) & 0xff) - (this.bump.getPixel3(this.bump, x + 1, y) & 0xff));
+                        const ny = ((this.bump.getPixel3(this.bump, x, y - 1) & 0xff) - (this.bump.getPixel3(this.bump, x, y + 1) & 0xff));
+                        this.normals[framebufferIndex++] = [nx, ny];
+                    }
+                }
+            });
     }
 
     public render(framebuffer: Framebuffer): void {

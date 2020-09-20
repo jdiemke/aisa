@@ -25,11 +25,10 @@ export class DistortedSphereScene extends AbstractScene {
             TextureUtils.load(require('../../assets/envmap.png'), false).then(
                 texture => this.env = texture
             ),
-        ]);
-    }
-
-    onInit() {
-        this.obj = this.createSphereDistplaced(this.heightmapSphere);
+        ]).then(
+            () => {
+                this.obj = this.createSphereDistplaced(this.heightmapSphere);
+            });
     }
 
     public render(framebuffer: Framebuffer): void {

@@ -11,10 +11,6 @@ export class SoundManager {
     public _audio = new Audio();
 
     public constructor() {
-        XMPlayer.init();
-
-        this.audioContext = XMPlayer.audioctx;
-
         // Initialize JS Rocket
         this._syncDevice = new JSRocket.SyncDevice();
         this._syncDevice.connected = false;
@@ -31,6 +27,12 @@ export class SoundManager {
                     console.log('unable to load', filename);
                 }
             });
+    }
+
+    // Initialize XM Player
+    public initXM() {
+        XMPlayer.init();
+        this.audioContext = XMPlayer.audioctx;
     }
 
     public playOgg(filename: string): Promise<void> {
@@ -62,6 +64,7 @@ export class SoundManager {
                 this._audio.load();
                 this._audio.preload = 'true';
                 this._audio.loop = true;
+                this._audio.autoplay = false;
             })
     }
 
