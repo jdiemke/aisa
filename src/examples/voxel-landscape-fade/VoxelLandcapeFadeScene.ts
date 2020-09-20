@@ -53,11 +53,10 @@ export class VoxelLandScapeFadeScene extends AbstractScene {
             TextureUtils.load(require('./assets/lines_256.png'), true).then(
                 (texture: Texture) => this.colormap = texture
             ),
-        ]);
-    }
-
-    public onInit(): void {
-        this.setup();
+        ]).then(
+            () => {
+                this.setup();
+            });
     }
 
     public render(framebuffer: Framebuffer): void {

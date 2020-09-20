@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
     <title>Demo Title - Aisa Software 3D Engine</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet" />
-    <link href='https://fonts.googleapis.com/css?family=Play:400,700' rel='stylesheet' type='text/css'>
 
     <style>
         body {
@@ -43,25 +42,6 @@
             bottom: 0px;
             right: 5px;
             padding: 5px;
-        }
-
-        #info #intro-credits {
-            position: absolute;
-            margin-left: auto;
-            margin-right: auto;
-            font-size: 3em;
-            top: 5%;
-            left: 0;
-            right: 0;
-            text-align: center;
-            z-index: 200;
-            width: 100%;
-        }
-
-        #intro-credits h1,
-        #intro-credits h3 {
-            opacity: 0.0;
-            margin: 30px auto;
         }
 
         /* debugging */
@@ -108,11 +88,20 @@
             padding-left: 10px;
             padding-right: 5px;
         }
+
+        #loading {
+            top: 180px;
+            background-color: white;
+            position: absolute;
+            height: 20px;
+            width: 0px;
+        }
     </style>
 </head>
 
 <body>
     <div id="aisa"></div>
+    <div id="loading"></div>
 
     <div id="debug">
         <div id="ticker_controls">
@@ -124,6 +113,9 @@
         </div>
 
         <div class="bottom" id="inlineDoc">
+            <!--
+                ⏮️⏹️▶️⏸️⏭️
+            -->
         </div>
     </div>
 </body>
