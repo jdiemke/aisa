@@ -20,7 +20,6 @@ export class DifferentMd2ModelScene extends AbstractScene {
     private static readonly CLEAR_COLOR: number = Color.SLATE_GRAY.toPackedFormat();
 
     private ogroTexture: Texture;
-    private texture4: Texture;
     private md2: MD2Model;
     private startTime: number;
 
@@ -39,9 +38,7 @@ export class DifferentMd2ModelScene extends AbstractScene {
             ),
             MD2Loader.load(require('../../assets/md2/tris.md2')).then(
                 (mesh: MD2Model) => this.md2 = mesh
-            ),
-            TextureUtils.load(require('../../assets/font.png'), true).then(
-                (texture: Texture) => this.texture4 = texture),
+            )
         ]);
     }
 
@@ -65,9 +62,6 @@ export class DifferentMd2ModelScene extends AbstractScene {
         framebuffer.setTexture(this.ogroTexture);
         framebuffer.texturedRenderingPipeline.setModelViewMatrix(this.modelViewMatrix.getMatrix());
         framebuffer.texturedRenderingPipeline.draw(this.md2.getMesh());
-
-        framebuffer.drawText(8, 8, 'FPS: ' + this.fps.toString(), this.texture4);
-        framebuffer.drawText(8, 16, 'TRIANGELS: ' + this.md2.header.numberOfTriangles, this.texture4);
     }
 
     private computeCameraMovement(elapsedTime: number): void {

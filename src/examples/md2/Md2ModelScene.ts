@@ -20,7 +20,6 @@ export class Md2ModelScene extends AbstractScene {
     private static readonly CLEAR_COLOR: number = Color.SLATE_GRAY.toPackedFormat();
 
     private ogroTexture: Texture;
-    private texture4: Texture;
     private md2: MD2Model;
     private startTime: number;
 
@@ -39,14 +38,13 @@ export class Md2ModelScene extends AbstractScene {
             ),
             MD2Loader.load(require('../../assets/md2/drfreak.md2')).then(
                 (mesh: MD2Model) => this.md2 = mesh
-            ),
-            TextureUtils.load(require('../../assets/font.png'), true).then(
-                (texture: Texture) => this.texture4 = texture),
+            )
         ]);
     }
 
     public render(framebuffer: Framebuffer): void {
         const currentTime: number = Date.now();
+        framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
 
         if (currentTime > this.fpsStartTime + 1000) {
             this.fpsStartTime = currentTime;
@@ -65,9 +63,6 @@ export class Md2ModelScene extends AbstractScene {
         framebuffer.setTexture(this.ogroTexture);
         framebuffer.texturedRenderingPipeline.setModelViewMatrix(this.modelViewMatrix.getMatrix());
         framebuffer.texturedRenderingPipeline.draw(this.md2.getMesh());
-
-        framebuffer.drawText(8, 8, 'FPS: ' + this.fps.toString(), this.texture4);
-        framebuffer.drawText(8, 16, 'TRIANGELS: ' + this.md2.header.numberOfTriangles, this.texture4);
     }
 
     private computeCameraMovement(elapsedTime: number): void {

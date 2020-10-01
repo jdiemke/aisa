@@ -21,6 +21,7 @@ export class BlockFade extends AbstractScene {
 
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now() - this.startTime;
+        framebuffer.clear();
         this.blockFace(framebuffer, this.ledTexture, time, 0);
     }
 
@@ -34,7 +35,7 @@ export class BlockFade extends AbstractScene {
                 fadeArray[x + y * 16] = 500 + Math.round(rng.getFloat() * 600000) % 10000;
             }
         }
-        framebuffer.clear();
+
         for (let y = 0; y < 10; y++) {
             for (let x = 0; x < 16; x++) {
                 framebuffer.drawTextureRect(x * 20, y * 20, x * 20, y * 20, 20, 20, texture,

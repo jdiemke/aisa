@@ -86,6 +86,7 @@ export class DemoScene extends AbstractScene {
     private _cameraRotation;
     private _cameraDistance;
     private _effect;
+    private _transition;
     private _snare;
     private _bass;
     private _fov;
@@ -353,6 +354,22 @@ export class DemoScene extends AbstractScene {
         return Promise.all(proms);
     }
 
+    /**
+     * Transitions from one effect to another using using "transition" value from JSRocket
+     * uses textureBackground as the temp
+     *
+     * @param  {Framebuffer} framebuffer            pixels
+     * @param  {Any} transitionSceneFrom            previous effect
+     * @param  {Any} transitionSceneTo              effect we are transitioning to
+     * @return {Any} transitionFunction             todo: make this more flexible or use numeric types 1-4 (blockfade, fade, pixelate, wipe)
+     */
+    private transition(framebuffer: Framebuffer, transitionSceneFrom: any, transitionSceneTo: any, transitionFunction?: any) {
+        transitionSceneTo.render(framebuffer, this.timeMilliseconds);
+        framebuffer.fastFramebufferCopy(this.lensScene.textureBackground.texture, framebuffer.framebuffer);
+        transitionSceneFrom.render(framebuffer, this.timeMilliseconds);
+        this.BlockFade.blockFace(framebuffer, this.lensScene.textureBackground, this._transition.getValue(this._row).toFixed(0), 0);
+    }
+
     public render(framebuffer: Framebuffer): void {
 
         // get time and values from music
@@ -365,76 +382,130 @@ export class DemoScene extends AbstractScene {
             case 0: // testing placeholder
                 break;
             case 1:
-                framebuffer.texturedRenderingPipeline.setCullFace(CullFace.BACK);
                 this.metalHeadzScene.render(framebuffer, this.timeMilliseconds);
                 break;
             case 1.5:
-                this.BlockFade.render(framebuffer);  // Transition!
+                this.transition(framebuffer, this.metalHeadzScene, this.abscractCubeScene);
+                break;
             case 2:
                 this.abscractCubeScene.render(framebuffer, this.timeMilliseconds);
+                break;
+            case 2.5:
+                this.transition(framebuffer, this.abscractCubeScene, this.sineScrollerScene);
                 break;
             case 3:
                 this.sineScrollerScene.render(framebuffer, this.timeMilliseconds);
                 framebuffer.fastFramebufferCopy(this.lensScene.textureBackground.texture, framebuffer.framebuffer);
-                this.lensScene.render(framebuffer, this.timeMilliseconds);
+                break;
+            case 3.5:
+                this.transition(framebuffer, this.sineScrollerScene, this.DofBallsScene);
                 break;
             case 4:
                 this.DofBallsScene.render(framebuffer);
                 break;
+            case 4.5:
+                this.transition(framebuffer, this.DofBallsScene, this.Md2ModelScene);
+                break;
             case 5:
-                framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
                 this.Md2ModelScene.render(framebuffer);
                 break;
+            case 5.5:
+                this.transition(framebuffer, this.Md2ModelScene, this.BakedLighting);
+                break;
             case 6:
-                framebuffer.texturedRenderingPipeline.setCullFace(CullFace.BACK)
                 this.BakedLighting.render(framebuffer);
+                break;
+            case 6.5:
+                this.transition(framebuffer, this.BakedLighting, this.BumpMap);
                 break;
             case 7:
                 this.BumpMap.render(framebuffer);
                 break;
-            case 8:
+            case 7.5:
+                this.transition(framebuffer, this.BumpMap, this.TwisterScene);
+                break;
+            case 8: // twister cannot transition out
                 this.TwisterScene.render(framebuffer);
                 break;
+            case 8.5:
+                this.transition(framebuffer, this.TwisterScene, this.RotatingGearsScene);
+                break;
             case 9:
-                this.BunnyScene.render(framebuffer);
+                this.RotatingGearsScene.render(framebuffer);
+                break;
+            case 9.5:
+                this.transition(framebuffer, this.RotatingGearsScene, this.DifferentMd2ModelScene);
                 break;
             case 10:
                 this.DifferentMd2ModelScene.render(framebuffer)
                 break;
-            case 11:
+            case 10.5:
+                this.transition(framebuffer, this.DifferentMd2ModelScene, this.CubeTunnelScene);
+                break;
+            case 11: // cube tunnel is really nice, but is really SLOW (40FPS)..extra slow with transtion
                 this.CubeTunnelScene.render(framebuffer);
                 break;
-            case 12:
-                this.FloodFillScene.render(framebuffer); // Transition!
+            case 11.5:
+                this.transition(framebuffer, this.CubeTunnelScene, this.FloodFillScene);
                 break;
-            case 13:
+            case 12: // floodfill does not transtion well - put next to still image
+                this.FloodFillScene.render(framebuffer);
+                break;
+            case 13: // multi-layered effect do not transition well
                 this.RotoZoomerScene.render(framebuffer);
                 this.CubeScene.renderBackground(framebuffer);
+                break;
+            case 13.5:
+                this.RotoZoomerScene.render(framebuffer);
+                this.transition(framebuffer, this.CubeScene, this.FloorScene);
                 break;
             case 14:
                 this.FloorScene.render(framebuffer);
                 break;
+            case 14.5:
+                this.transition(framebuffer, this.FloorScene, this.PlatonianScene);
+                break;
             case 15:
                 this.PlatonianScene.render(framebuffer);
                 break;
-            case 16:
+            case 15.5:
+                this.transition(framebuffer, this.PlatonianScene, this.GearsScene);
+                break;
+            case 16: // remove gearScene as duplicate. keep cooler gears2Scene instead
                 this.GearsScene.render(framebuffer);
+                break;
+            case 16.5:
+                this.transition(framebuffer, this.GearsScene, this.Gears2Scene);
                 break;
             case 17:
                 this.Gears2Scene.render(framebuffer);
                 break;
+            case 17.5:
+                this.transition(framebuffer, this.Gears2Scene, this.HoodlumScene);
+                break;
             case 18:
                 this.HoodlumScene.render(framebuffer);
+                break;
+            case 18.5:
+                this.transition(framebuffer, this.HoodlumScene, this.LedPlasmaScene);
                 break;
             case 19:
                 this.LedPlasmaScene.render(framebuffer);
                 break;
-            case 20:
+            case 19.5:
+                this.transition(framebuffer, this.LedPlasmaScene, this.MetaballsScene);
+                break;
+            case 20: // remove - too simple
                 this.MetaballsScene.render(framebuffer);
+                break;
+            case 20.5:
+                this.transition(framebuffer, this.MetaballsScene, this.MovingTorusScene);
                 break;
             case 21:
                 this.MovingTorusScene.render(framebuffer);
                 break;
+            // TODO --- KEEP DEMO TO 20-25 EFFECTS MAX for 10-12 seconds each effect
+            // ELIMINATE / CONSOLIDATE EFFECTS FROM BELOW
             case 22:
                 this.ParticleStreamsScene.render(framebuffer);
                 break;
@@ -465,8 +536,8 @@ export class DemoScene extends AbstractScene {
             case 31:
                 this.RazorScene.render(framebuffer);
                 break;
-            case 32:
-                this.RotatingGearsScene.render(framebuffer);
+            case 32:// delete bunny
+                this.BunnyScene.render(framebuffer);
                 break;
             case 33:
                 this.Bobs.render(framebuffer);
@@ -505,7 +576,7 @@ export class DemoScene extends AbstractScene {
                 this.CinematicScroller.render(framebuffer);
                 break;
             case 45:
-
+                this.lensScene.render(framebuffer, this.timeMilliseconds);
                 break;
             case 44:
                 this.ThirdPersonCameraScene.render(framebuffer);
@@ -606,6 +677,7 @@ export class DemoScene extends AbstractScene {
         this._cameraRotation = this.sm._syncDevice.getTrack('rotation');
         this._cameraDistance = this.sm._syncDevice.getTrack('distance');
         this._fov = this.sm._syncDevice.getTrack('FOV');
+        this._transition = this.sm._syncDevice.getTrack('transition');
     }
 
     // row is only given if you navigate, or change a value on the row in Rocket

@@ -52,6 +52,7 @@ export class MetalHeadzScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
+        framebuffer.texturedRenderingPipeline.setCullFace(CullFace.BACK);
         const elapsedTime: number = 0.2 * time;
 
         framebuffer.clearDepthBuffer();
