@@ -40,6 +40,8 @@ export class HoodlumScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
+        framebuffer.texturedRenderingPipeline.setCullFace(CullFace.BACK);
+        framebuffer.setCullFace(CullFace.BACK);
 
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         framebuffer.setCullFace(CullFace.BACK);
