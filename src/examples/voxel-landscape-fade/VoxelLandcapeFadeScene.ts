@@ -175,7 +175,7 @@ export class VoxelLandScapeFadeScene extends AbstractScene {
             let texel: number;
 
             // fade out to the distance
-            texel = this.blend(this.texelMap[idx], 0xFF000000, i);
+            texel = framebuffer.blend(this.texelMap[idx], 0xFF000000, i);
             // texel = this.texelMap[idx];
 
             // while (hi > z && j3 > 0) {
@@ -189,33 +189,6 @@ export class VoxelLandScapeFadeScene extends AbstractScene {
                 break;
             }
         }
-    }
-
-    private blend(c1: number, c2: number, nAlpha: number): number {
-
-        if (0 === nAlpha) {
-            return c1;
-        }
-
-        if (255 === nAlpha) {
-            return c2;
-        }
-
-        const nInvAlpha: number = 255 - nAlpha;
-
-        const r1: number = (c1 & 0x00FF0000) >> 16;
-        const r2: number = (c2 & 0x00FF0000) >> 16;
-        const r: number = (r2 * nAlpha + r1 * nInvAlpha) >> 8;
-
-        const g1: number = (c1 & 0x0000FF00) >> 8;
-        const g2: number = (c2 & 0x0000FF00) >> 8;
-        const g: number = (g2 * nAlpha + g1 * nInvAlpha) >> 8;
-
-        const b1: number = (c1 & 0x000000FF);
-        const b2: number = (c2 & 0x000000FF);
-        const b: number = (b2 * nAlpha + b1 * nInvAlpha) >> 8;
-
-        return 0xff000000 | r << 16 | g << 8 | b;
     }
 
     private blend32(c1: number, c2: number, f: number): number {

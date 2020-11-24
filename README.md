@@ -155,7 +155,6 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Procedural Textures
 - Render To Texture
     - Compositing
-    - Transitions (Alpha Fade)
     - Flashing
 - Refactoring
     - Split Framebuffer.ts into multiple classes
@@ -179,7 +178,6 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Material
 - Shadow Mapping
 - Pixel Shaders (Bump Mapping, Parallax Mapping)
-- Upgrade to Typescript 4
 - Transition Effects
 ### References
 - Portals & PVS

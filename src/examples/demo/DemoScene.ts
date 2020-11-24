@@ -10,7 +10,6 @@ import { BakedLighting } from '../baked-lighting/BakedLighting';
 import { BlockFade } from '../block-fade/BlockFade';
 import { Bobs } from '../bobs/Bobs';
 import { BumpMap } from '../bump-map/BumpMap';
-import { BunnyScene } from '../bunny/BunnyScene';
 import { CinematicScroller } from '../cinematic-scroller/CinematicScroller';
 import { CubeScene } from '../cube/CubeScene';
 import { CubeTunnelScene } from '../cube-tunnel/CubeTunnelScene';
@@ -61,7 +60,14 @@ import { WaveFrontTextureScene } from '../wavefront-texture/WaveFrontTextureScen
 
 // Stats
 import Stats = require('stats.js');
-import { CullFace } from '../../CullFace';
+
+// Transitions
+export enum TransitionMethods {
+    BLOCKFADE = 1,
+    CROSSFADE = 2,
+    FADEIN = 3,
+    VERTICAL = 4,
+}
 
 export class DemoScene extends AbstractScene {
 
@@ -104,7 +110,6 @@ export class DemoScene extends AbstractScene {
     private BlockFade: BlockFade;
     private Bobs: Bobs;
     private BumpMap: BumpMap;
-    private BunnyScene: BunnyScene;
     private CinematicScroller: CinematicScroller;
     private CubeScene: CubeScene;
     private CubeTunnelScene: CubeTunnelScene;
@@ -208,7 +213,6 @@ export class DemoScene extends AbstractScene {
         this.BlockFade = new BlockFade();
         this.Bobs = new Bobs();
         this.BumpMap = new BumpMap();
-        this.BunnyScene = new BunnyScene();
         this.CinematicScroller = new CinematicScroller();
         this.CubeScene = new CubeScene();
         this.CubeTunnelScene = new CubeTunnelScene();
@@ -284,7 +288,6 @@ export class DemoScene extends AbstractScene {
             this.BakedLighting.init(framebuffer),
             this.BlockFade.init(framebuffer),
             this.Bobs.init(framebuffer),
-            this.BunnyScene.init(framebuffer),
             this.CinematicScroller.init(framebuffer),
             this.CubeScene.init(framebuffer),
             this.CubeTunnelScene.init(framebuffer),
@@ -361,13 +364,35 @@ export class DemoScene extends AbstractScene {
      * @param  {Framebuffer} framebuffer            pixels
      * @param  {Any} transitionSceneFrom            previous effect
      * @param  {Any} transitionSceneTo              effect we are transitioning to
-     * @return {Any} transitionFunction             todo: make this more flexible or use numeric types 1-4 (blockfade, fade, pixelate, wipe)
+     * @param  {number} transitionMethod            transition effect (1 - blockfade, 2-cross-fade, pixelate, wipe)
      */
-    private transition(framebuffer: Framebuffer, transitionSceneFrom: any, transitionSceneTo: any, transitionFunction?: any) {
+    private transition(framebuffer: Framebuffer, transitionSceneFrom: any, transitionSceneTo: any, transitionMethod?: number) {
+        // render the 'To' effect into the framebuffer
         transitionSceneTo.render(framebuffer, this.timeMilliseconds);
+
+        //  copy framebuffer to the texture
         framebuffer.fastFramebufferCopy(this.lensScene.textureBackground.texture, framebuffer.framebuffer);
+
+        // render 'From' effect into framebuffer
         transitionSceneFrom.render(framebuffer, this.timeMilliseconds);
-        this.BlockFade.blockFace(framebuffer, this.lensScene.textureBackground, this._transition.getValue(this._row).toFixed(0), 0);
+
+        // apply transition to framebuffer (fromEffect) using texture (toEffect)
+        switch (transitionMethod) {
+            case TransitionMethods.BLOCKFADE:
+                this.BlockFade.blockFade(framebuffer, this.lensScene.textureBackground, this._transition.getValue(this._row).toFixed(0), 0);
+                break;
+            case TransitionMethods.CROSSFADE:
+                this.BlockFade.crossFade(framebuffer, this.lensScene.textureBackground, this._transition.getValue(this._row).toFixed(0));
+                break;
+            case TransitionMethods.FADEIN:
+                this.BlockFade.fadeIn(framebuffer, this.lensScene.textureBackground, this._transition.getValue(this._row).toFixed(0), 0);
+                break;
+            case TransitionMethods.VERTICAL:
+                this.BlockFade.fadeSide(framebuffer, this.lensScene.textureBackground, this._transition.getValue(this._row).toFixed(0), 0, this.timeMilliseconds);
+                break;
+            default:
+                this.BlockFade.crossFade(framebuffer, this.lensScene.textureBackground, this._transition.getValue(this._row).toFixed(0));
+        }
     }
 
     public render(framebuffer: Framebuffer): void {
@@ -381,72 +406,75 @@ export class DemoScene extends AbstractScene {
         switch (Number(this._currentEffect)) {
             case 0: // testing placeholder
                 break;
+            case 0.5:
+                this.transition(framebuffer, this.metalHeadzScene, this.metalHeadzScene, TransitionMethods.FADEIN);
+                break;
             case 1:
                 this.metalHeadzScene.render(framebuffer, this.timeMilliseconds);
                 break;
             case 1.5:
-                this.transition(framebuffer, this.metalHeadzScene, this.abscractCubeScene);
+                this.transition(framebuffer, this.metalHeadzScene, this.abscractCubeScene, TransitionMethods.BLOCKFADE);
                 break;
             case 2:
                 this.abscractCubeScene.render(framebuffer, this.timeMilliseconds);
                 break;
             case 2.5:
-                this.transition(framebuffer, this.abscractCubeScene, this.sineScrollerScene);
+                this.transition(framebuffer, this.abscractCubeScene, this.sineScrollerScene, TransitionMethods.CROSSFADE);
                 break;
             case 3:
                 this.sineScrollerScene.render(framebuffer, this.timeMilliseconds);
                 framebuffer.fastFramebufferCopy(this.lensScene.textureBackground.texture, framebuffer.framebuffer);
                 break;
             case 3.5:
-                this.transition(framebuffer, this.sineScrollerScene, this.DofBallsScene);
+                this.transition(framebuffer, this.sineScrollerScene, this.DofBallsScene, TransitionMethods.BLOCKFADE);
                 break;
             case 4:
-                this.DofBallsScene.render(framebuffer);
+                this.DofBallsScene.render(framebuffer, this.timeMilliseconds);
                 break;
             case 4.5:
-                this.transition(framebuffer, this.DofBallsScene, this.Md2ModelScene);
+                this.transition(framebuffer, this.DofBallsScene, this.Md2ModelScene, TransitionMethods.BLOCKFADE);
                 break;
             case 5:
                 this.Md2ModelScene.render(framebuffer);
                 break;
             case 5.5:
-                this.transition(framebuffer, this.Md2ModelScene, this.BakedLighting);
+                this.transition(framebuffer, this.Md2ModelScene, this.BakedLighting, TransitionMethods.BLOCKFADE);
                 break;
             case 6:
                 this.BakedLighting.render(framebuffer);
                 break;
             case 6.5:
-                this.transition(framebuffer, this.BakedLighting, this.BumpMap);
+                this.transition(framebuffer, this.BakedLighting, this.BumpMap, TransitionMethods.BLOCKFADE);
                 break;
             case 7:
                 this.BumpMap.render(framebuffer);
                 break;
             case 7.5:
-                this.transition(framebuffer, this.BumpMap, this.TwisterScene);
+                this.transition(framebuffer, this.BumpMap, this.TwisterScene, TransitionMethods.BLOCKFADE);
                 break;
             case 8: // twister cannot transition out
                 this.TwisterScene.render(framebuffer);
                 break;
             case 8.5:
-                this.transition(framebuffer, this.TwisterScene, this.RotatingGearsScene);
+                this.transition(framebuffer, this.TwisterScene, this.RotatingGearsScene, TransitionMethods.BLOCKFADE);
                 break;
             case 9:
                 this.RotatingGearsScene.render(framebuffer);
                 break;
             case 9.5:
-                this.transition(framebuffer, this.RotatingGearsScene, this.DifferentMd2ModelScene);
+                this.transition(framebuffer, this.RotatingGearsScene, this.DifferentMd2ModelScene, TransitionMethods.BLOCKFADE);
                 break;
             case 10:
                 this.DifferentMd2ModelScene.render(framebuffer)
                 break;
             case 10.5:
-                this.transition(framebuffer, this.DifferentMd2ModelScene, this.CubeTunnelScene);
+                this.transition(framebuffer, this.DifferentMd2ModelScene, this.CubeTunnelScene, TransitionMethods.BLOCKFADE);
                 break;
             case 11: // cube tunnel is really nice, but is really SLOW (40FPS)..extra slow with transtion
                 this.CubeTunnelScene.render(framebuffer);
                 break;
             case 11.5:
-                this.transition(framebuffer, this.CubeTunnelScene, this.FloodFillScene);
+                this.transition(framebuffer, this.CubeTunnelScene, this.FloodFillScene, TransitionMethods.BLOCKFADE);
                 break;
             case 12: // floodfill does not transtion well - put next to still image
                 this.FloodFillScene.render(framebuffer);
@@ -457,49 +485,49 @@ export class DemoScene extends AbstractScene {
                 break;
             case 13.5:
                 this.RotoZoomerScene.render(framebuffer);
-                this.transition(framebuffer, this.CubeScene, this.FloorScene);
+                this.transition(framebuffer, this.CubeScene, this.FloorScene, TransitionMethods.BLOCKFADE);
                 break;
             case 14:
                 this.FloorScene.render(framebuffer);
                 break;
             case 14.5:
-                this.transition(framebuffer, this.FloorScene, this.PlatonianScene);
+                this.transition(framebuffer, this.FloorScene, this.PlatonianScene, TransitionMethods.BLOCKFADE);
                 break;
             case 15:
                 this.PlatonianScene.render(framebuffer);
                 break;
             case 15.5:
-                this.transition(framebuffer, this.PlatonianScene, this.GearsScene);
+                this.transition(framebuffer, this.PlatonianScene, this.GearsScene, TransitionMethods.BLOCKFADE);
                 break;
             case 16: // remove gearScene as duplicate. keep cooler gears2Scene instead
                 this.GearsScene.render(framebuffer);
                 break;
             case 16.5:
-                this.transition(framebuffer, this.GearsScene, this.Gears2Scene);
+                this.transition(framebuffer, this.GearsScene, this.Gears2Scene, TransitionMethods.BLOCKFADE);
                 break;
             case 17:
                 this.Gears2Scene.render(framebuffer);
                 break;
             case 17.5:
-                this.transition(framebuffer, this.Gears2Scene, this.HoodlumScene);
+                this.transition(framebuffer, this.Gears2Scene, this.HoodlumScene, TransitionMethods.BLOCKFADE);
                 break;
             case 18:
                 this.HoodlumScene.render(framebuffer);
                 break;
             case 18.5:
-                this.transition(framebuffer, this.HoodlumScene, this.LedPlasmaScene);
+                this.transition(framebuffer, this.HoodlumScene, this.LedPlasmaScene, TransitionMethods.BLOCKFADE);
                 break;
             case 19:
                 this.LedPlasmaScene.render(framebuffer);
                 break;
             case 19.5:
-                this.transition(framebuffer, this.LedPlasmaScene, this.MetaballsScene);
+                this.transition(framebuffer, this.LedPlasmaScene, this.MetaballsScene, TransitionMethods.BLOCKFADE);
                 break;
             case 20: // remove - too simple
                 this.MetaballsScene.render(framebuffer);
                 break;
             case 20.5:
-                this.transition(framebuffer, this.MetaballsScene, this.MovingTorusScene);
+                this.transition(framebuffer, this.MetaballsScene, this.MovingTorusScene, TransitionMethods.BLOCKFADE);
                 break;
             case 21:
                 this.MovingTorusScene.render(framebuffer);
@@ -536,8 +564,8 @@ export class DemoScene extends AbstractScene {
             case 31:
                 this.RazorScene.render(framebuffer);
                 break;
-            case 32:// delete bunny
-                this.BunnyScene.render(framebuffer);
+            case 32:
+                this.TorusKnotTunnelScene.render(framebuffer);
                 break;
             case 33:
                 this.Bobs.render(framebuffer);
@@ -558,7 +586,6 @@ export class DemoScene extends AbstractScene {
                 this.TorusKnotScene.render(framebuffer);
                 break;
             case 39:
-                this.TorusKnotTunnelScene.render(framebuffer);
                 break;
             case 40:
                 this.ScrollingBackgroundScene.render(framebuffer);
