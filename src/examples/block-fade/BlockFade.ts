@@ -22,10 +22,10 @@ export class BlockFade extends AbstractScene {
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now() - this.startTime;
         framebuffer.clear();
-        this.blockFace(framebuffer, this.ledTexture, time, 0);
+        this.blockFade(framebuffer, this.ledTexture, time, 0);
     }
 
-    public blockFace(framebuffer: Framebuffer, texture: Texture, time: number, startTime: number) {
+    public blockFade(framebuffer: Framebuffer, texture: Texture, time: number, startTime: number) {
         const fadeArray = new Array<number>(16 * 10);
         const rng = new RandomNumberGenerator();
         rng.setSeed(366);
@@ -43,6 +43,39 @@ export class BlockFade extends AbstractScene {
                         startTime + fadeArray[x + y * 16] + 700, time));
             }
         }
+    }
+
+    public crossFade(framebuffer: Framebuffer, texture: Texture, alpha: number) {
+        for (let y = 0; y < 200; y++) {
+            for (let x = 0; x < 320; x++) {
+                framebuffer.drawPixel(x, y,
+                    framebuffer.blend(
+                        framebuffer.framebuffer[x + y * 320],
+                        texture.texture[x + y * 320],
+                        alpha)
+                );
+            }
+        }
+    }
+
+    // fade in from solid color
+    public fadeIn(framebuffer: Framebuffer, texture: Texture, alpha: number, startColor: number) {
+        for (let y = 0; y < 200; y++) {
+            for (let x = 0; x < 320; x++) {
+                framebuffer.drawPixel(x, y,
+                    framebuffer.blend(
+                        startColor,
+                        texture.texture[x + y * 320],
+                        alpha)
+                );
+            }
+        }
+    }
+
+    // star wars style side wipe effect here
+    public fadeSide(framebuffer: Framebuffer, texture: Texture, alpha: number, startColor: number, elapsedTime: number) {
+        // need a 320 x 200 array where an animated vertical bar is drawn left to right
+        // use greyscale (alpha) values to draw FROM and TO images into framebuffer
     }
 
 }

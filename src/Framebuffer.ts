@@ -249,6 +249,40 @@ export class Framebuffer {
         }
     }
 
+    /**
+     * Transitions from one pixel to another using alpha
+     *
+     * @param  {number} c1
+     * @param  {number} c2
+     * @return {number}     difference between c1 and c2 from 0-255
+     */
+    public blend(c1: number, c2: number, nAlpha: number): number {
+
+        if (0 === nAlpha) {
+            return c1;
+        }
+
+        if (255 === nAlpha) {
+            return c2;
+        }
+
+        const nInvAlpha: number = 255 - nAlpha;
+
+        const r1: number = (c1 & 0x00FF0000) >> 16;
+        const r2: number = (c2 & 0x00FF0000) >> 16;
+        const r: number = (r2 * nAlpha + r1 * nInvAlpha) >> 8;
+
+        const g1: number = (c1 & 0x0000FF00) >> 8;
+        const g2: number = (c2 & 0x0000FF00) >> 8;
+        const g: number = (g2 * nAlpha + g1 * nInvAlpha) >> 8;
+
+        const b1: number = (c1 & 0x000000FF);
+        const b2: number = (c2 & 0x000000FF);
+        const b: number = (b2 * nAlpha + b1 * nInvAlpha) >> 8;
+
+        return 0xff000000 | r << 16 | g << 8 | b;
+    }
+
     public drawTextureRect(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Texture, alpha2: number): void {
         let texIndex = xt + yt * texture.width;
         let frIndex = xs + ys * 320;

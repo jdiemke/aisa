@@ -29,9 +29,7 @@ export class DofBallsScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
-        const time: number = Date.now() - this.start;
-
+    public render(framebuffer: Framebuffer, time: number): void {
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         this.drawParticleTorus(framebuffer, time, this.particleTexture2, true);
 
