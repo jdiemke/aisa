@@ -42,17 +42,13 @@ export class DifferentMd2ModelScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
-        const currentTime: number = Date.now();
-
-        if (currentTime > this.fpsStartTime + 1000) {
-            this.fpsStartTime = currentTime;
+    public render(framebuffer: Framebuffer, time: number): void {
+        if (time > this.fpsStartTime + 1000) {
+            this.fpsStartTime = time;
             this.fps = this.fpsCount;
             this.fpsCount = 0;
         }
         this.fpsCount++;
-
-        const time: number = Date.now() - this.startTime;
 
         framebuffer.clearColorBuffer(DifferentMd2ModelScene.CLEAR_COLOR);
         framebuffer.clearDepthBuffer();
@@ -61,7 +57,7 @@ export class DifferentMd2ModelScene extends AbstractScene {
 
         framebuffer.setTexture(this.ogroTexture);
         framebuffer.texturedRenderingPipeline.setModelViewMatrix(this.modelViewMatrix.getMatrix());
-        framebuffer.texturedRenderingPipeline.draw(this.md2.getMesh());
+        framebuffer.texturedRenderingPipeline.draw(this.md2.getMesh(time));
     }
 
     private computeCameraMovement(elapsedTime: number): void {

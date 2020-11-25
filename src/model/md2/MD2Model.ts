@@ -56,8 +56,9 @@ export class MD2Model {
 
     }
 
-    public getMesh(): TexturedMesh {
-        const time: number = Date.now() * 0.006;
+    public getMesh(time: number): TexturedMesh {
+
+        time = time *.006;
         const f1: number = Math.floor(time) % this.frames.length;
         const f2: number = (f1 + 1) % this.frames.length;
         const cframe: MD2Frame = this.frames[f1];

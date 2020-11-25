@@ -66,7 +66,10 @@ export enum TransitionMethods {
     BLOCKFADE = 1,
     CROSSFADE = 2,
     FADEIN = 3,
-    VERTICAL = 4,
+    WIPE = 4,
+    RADIAL = 5,
+    CIRCLE = 6,
+    FADEOUT = 7,
 }
 
 export class DemoScene extends AbstractScene {
@@ -376,22 +379,33 @@ export class DemoScene extends AbstractScene {
         // render 'From' effect into framebuffer
         transitionSceneFrom.render(framebuffer, this.timeMilliseconds);
 
+        const transitionValue = this._transition.getValue(this._row).toFixed(0);
+
         // apply transition to framebuffer (fromEffect) using texture (toEffect)
         switch (transitionMethod) {
             case TransitionMethods.BLOCKFADE:
-                this.BlockFade.blockFade(framebuffer, this.lensScene.textureBackground, this._transition.getValue(this._row).toFixed(0), 0);
+                this.BlockFade.blockFade(framebuffer, this.lensScene.textureBackground, transitionValue, 0);
                 break;
             case TransitionMethods.CROSSFADE:
-                this.BlockFade.crossFade(framebuffer, this.lensScene.textureBackground, this._transition.getValue(this._row).toFixed(0));
+                this.BlockFade.crossFade(framebuffer, this.lensScene.textureBackground, transitionValue);
                 break;
             case TransitionMethods.FADEIN:
-                this.BlockFade.fadeIn(framebuffer, this.lensScene.textureBackground, this._transition.getValue(this._row).toFixed(0), 0);
+                this.BlockFade.fadeIn(framebuffer, this.lensScene.textureBackground, transitionValue, 0);
                 break;
-            case TransitionMethods.VERTICAL:
-                this.BlockFade.fadeSide(framebuffer, this.lensScene.textureBackground, this._transition.getValue(this._row).toFixed(0), 0, this.timeMilliseconds);
+            case TransitionMethods.FADEOUT:
+                this.BlockFade.fadeOut(framebuffer, this.lensScene.textureBackground, transitionValue, 0);
+                break;
+            case TransitionMethods.WIPE:
+                this.BlockFade.crossFadeImage(framebuffer, this.lensScene.textureBackground, transitionValue, this.BlockFade.transitionWipe);
+                break;
+            case TransitionMethods.RADIAL:
+                this.BlockFade.crossFadeImage(framebuffer, this.lensScene.textureBackground, transitionValue, this.BlockFade.transitionRadial);
+                break;
+            case TransitionMethods.CIRCLE:
+                this.BlockFade.crossFadeImage(framebuffer, this.lensScene.textureBackground, transitionValue, this.BlockFade.transitionCircle);
                 break;
             default:
-                this.BlockFade.crossFade(framebuffer, this.lensScene.textureBackground, this._transition.getValue(this._row).toFixed(0));
+                this.BlockFade.crossFade(framebuffer, this.lensScene.textureBackground, transitionValue);
         }
     }
 
@@ -413,13 +427,13 @@ export class DemoScene extends AbstractScene {
                 this.metalHeadzScene.render(framebuffer, this.timeMilliseconds);
                 break;
             case 1.5:
-                this.transition(framebuffer, this.metalHeadzScene, this.abscractCubeScene, TransitionMethods.BLOCKFADE);
+                this.transition(framebuffer, this.metalHeadzScene, this.abscractCubeScene, TransitionMethods.CIRCLE);
                 break;
             case 2:
                 this.abscractCubeScene.render(framebuffer, this.timeMilliseconds);
                 break;
             case 2.5:
-                this.transition(framebuffer, this.abscractCubeScene, this.sineScrollerScene, TransitionMethods.CROSSFADE);
+                this.transition(framebuffer, this.abscractCubeScene, this.sineScrollerScene, TransitionMethods.WIPE);
                 break;
             case 3:
                 this.sineScrollerScene.render(framebuffer, this.timeMilliseconds);
@@ -432,10 +446,10 @@ export class DemoScene extends AbstractScene {
                 this.DofBallsScene.render(framebuffer, this.timeMilliseconds);
                 break;
             case 4.5:
-                this.transition(framebuffer, this.DofBallsScene, this.Md2ModelScene, TransitionMethods.BLOCKFADE);
+                this.transition(framebuffer, this.DofBallsScene, this.Md2ModelScene, TransitionMethods.CIRCLE);
                 break;
             case 5:
-                this.Md2ModelScene.render(framebuffer);
+                this.Md2ModelScene.render(framebuffer, this.timeMilliseconds);
                 break;
             case 5.5:
                 this.transition(framebuffer, this.Md2ModelScene, this.BakedLighting, TransitionMethods.BLOCKFADE);
@@ -465,7 +479,7 @@ export class DemoScene extends AbstractScene {
                 this.transition(framebuffer, this.RotatingGearsScene, this.DifferentMd2ModelScene, TransitionMethods.BLOCKFADE);
                 break;
             case 10:
-                this.DifferentMd2ModelScene.render(framebuffer)
+                this.DifferentMd2ModelScene.render(framebuffer, this.timeMilliseconds)
                 break;
             case 10.5:
                 this.transition(framebuffer, this.DifferentMd2ModelScene, this.CubeTunnelScene, TransitionMethods.BLOCKFADE);
@@ -527,7 +541,7 @@ export class DemoScene extends AbstractScene {
                 this.MetaballsScene.render(framebuffer);
                 break;
             case 20.5:
-                this.transition(framebuffer, this.MetaballsScene, this.MovingTorusScene, TransitionMethods.BLOCKFADE);
+                this.transition(framebuffer, this.MetaballsScene, this.MovingTorusScene, TransitionMethods.FADEOUT);
                 break;
             case 21:
                 this.MovingTorusScene.render(framebuffer);

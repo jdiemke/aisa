@@ -178,7 +178,6 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Material
 - Shadow Mapping
 - Pixel Shaders (Bump Mapping, Parallax Mapping)
-- Transition Effects
 ### References
 - Portals & PVS
     - Doom 3 Portal Rendering Code: https://github.com/id-Software/DOOM-3-BFG/blob/1caba1979589971b5ed44e315d9ead30b278d8b4/neo/renderer/RenderWorld_portals.cpp
