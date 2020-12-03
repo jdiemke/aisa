@@ -84,7 +84,7 @@ export class Framebuffer {
         this.tmpGlitch = new Uint32Array(width * height);
 
         Framebuffer.minWindow = new Vector2f(0, 0);
-        Framebuffer.maxWindow = new Vector2f(width-1, height-1);
+        Framebuffer.maxWindow = new Vector2f(width - 1, height - 1);
     }
 
     public setCullFace(face: CullFace): void {
@@ -425,17 +425,9 @@ export class Framebuffer {
         }
     }
 
-    // todo: optimize noise function to fill entire screen
-    // for now fill screen as much as possible
     public noise(elapsedTime: number, texture: Texture, scale: number = 0.07): void {
-        const unitSize = 20;
-        const horizontalUnit = Math.floor(this.width / unitSize);
-        const verticalUnit = Math.floor(this.height / unitSize);
-
-       for (let x = 0; x < horizontalUnit; x++) {
-            for (let y = 0; y < verticalUnit; y++) {
-                this.drawTextureRect(x * unitSize, y * unitSize, unitSize * (Math.round(elapsedTime / 100 + x + y) % 12), 0, unitSize, unitSize, texture, scale);
-            }
+        for (let y = 0; y < this.height; y++) {
+            this.drawTextureRect(0, y, Math.floor(Math.random() * (texture.texture.length - this.width)), 0, this.width, 1, texture, scale);
         }
     }
 
@@ -451,9 +443,9 @@ export class Framebuffer {
         let xStart: number;
 
         if (yp + height < 0 ||
-            yp > (this.height-1) ||
+            yp > (this.height - 1) ||
             xp + width < 0 ||
-            xp > (this.width-1)) {
+            xp > (this.width - 1)) {
             return;
         }
 
@@ -512,9 +504,9 @@ export class Framebuffer {
         let xStart: number;
 
         if (yp + height < 0 ||
-            yp > (this.height-1) ||
+            yp > (this.height - 1) ||
             xp + width < 0 ||
-            xp > (this.width-1)) {
+            xp > (this.width - 1)) {
             return;
         }
 
@@ -579,9 +571,9 @@ export class Framebuffer {
         let yStart: number;
         let xStart: number;
         if (yp + height < 0 ||
-            yp > (this.height-1) ||
+            yp > (this.height - 1) ||
             xp + width < 0 ||
-            xp > (this.width-1)) {
+            xp > (this.width - 1)) {
             return;
         }
         if (yp < 0) {
@@ -645,31 +637,31 @@ export class Framebuffer {
         let xStart: number;
 
         if (yp + height < 0 ||
-            yp > this.height-1 ||
+            yp > this.height - 1 ||
             xp + width < 0 ||
-            xp > this.width-1) {
+            xp > this.width - 1) {
             return;
         }
 
         if (yp < 0) {
             yy = yStep * -yp;
-            newHeight = (height + yp) - Math.max(yp + height - (this.height-1), 0);
+            newHeight = (height + yp) - Math.max(yp + height - (this.height - 1), 0);
             yStart = 0;
         } else {
             yStart = yp;
-            newHeight = height - Math.max(yp + height - (this.height-1), 0);
+            newHeight = height - Math.max(yp + height - (this.height - 1), 0);
         }
 
         let xTextureStart: number;
 
         if (xp < 0) {
             xTextureStart = xx = xStep * -xp;
-            newWidth = Math.ceil((width + xp) - Math.max(xp + width - (this.width-1), 0));
+            newWidth = Math.ceil((width + xp) - Math.max(xp + width - (this.width - 1), 0));
             xStart = 0;
         } else {
             xTextureStart = 0;
             xStart = xp;
-            newWidth = Math.ceil(width - Math.max(xp + width - (this.width-1), 0));
+            newWidth = Math.ceil(width - Math.max(xp + width - (this.width - 1), 0));
         }
 
         const sub: number = Math.ceil(xp) - xp;
@@ -716,9 +708,9 @@ export class Framebuffer {
         let xStart: number;
 
         if (yp + height < 0 ||
-            yp > this.height-1 ||
+            yp > this.height - 1 ||
             xp + width < 0 ||
-            xp > this.width-1) {
+            xp > this.width - 1) {
             return;
         }
 
@@ -782,9 +774,9 @@ export class Framebuffer {
         let xStart: number;
 
         if (yp + height < 0 ||
-            yp > (this.height-1) ||
+            yp > (this.height - 1) ||
             xp + width < 0 ||
-            xp > (this.width-1)) {
+            xp > (this.width - 1)) {
             return;
         }
 
@@ -885,9 +877,9 @@ export class Framebuffer {
         let xStart: number;
 
         if (yp + height < 0 ||
-            yp > (this.height-1) ||
+            yp > (this.height - 1) ||
             xp + width < 0 ||
-            xp > (this.width-1)) {
+            xp > (this.width - 1)) {
             return;
         }
 
@@ -951,9 +943,9 @@ export class Framebuffer {
         let xStart: number;
 
         if (yp + height < 0 ||
-            yp > (this.height-1) ||
+            yp > (this.height - 1) ||
             xp + width < 0 ||
-            xp > (this.width-1)) {
+            xp > (this.width - 1)) {
             return;
         }
 
@@ -1013,9 +1005,9 @@ export class Framebuffer {
         let xStart: number;
 
         if (yp + height < 0 ||
-            yp > (this.height-1) ||
+            yp > (this.height - 1) ||
             xp + width < 0 ||
-            xp > (this.width-1)) {
+            xp > (this.width - 1)) {
             return;
         }
 
