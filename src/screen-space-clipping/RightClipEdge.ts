@@ -4,15 +4,16 @@ import { TextureCoordinate } from '../TextureCoordinate';
 import { Vertex } from '../Vertex';
 import { AbstractClipEdge } from './AbstractClipEdge';
 import { Vector4f } from '../math/Vector4f';
+import { Canvas } from '../Canvas';
 
 export class RightClipEdge extends AbstractClipEdge {
 
     public isInside(p: Vertex): boolean {
-        return p.projection.x < 320;
+        return p.projection.x < Canvas.WIDTH;
     }
 
     public isInside2(p: Vertex): boolean {
-        return p.position.x < 320;
+        return p.position.x < Canvas.WIDTH;
     }
 
     public computeIntersection(p1: Vertex, p2: Vertex): Vertex {

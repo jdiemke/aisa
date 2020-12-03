@@ -1,3 +1,4 @@
+import { Canvas } from '../../Canvas';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
@@ -16,8 +17,6 @@ import { Texture, TextureUtils } from '../../texture';
  * destination look like a lens is beeing held over the source
  * picture.
  *
- * TODO: extract lens into effect class
- *
  */
 
 export class LensScene extends AbstractScene {
@@ -26,14 +25,12 @@ export class LensScene extends AbstractScene {
     private lensRadius: number = this.lensDiameter / 2;
     public textureBackground: Texture;
     private textureLens: Texture;
-    private width: number = 320;
-    private height: number = 200;
 
     private lensArrayA: Array<number> = [this.lensDiameter * this.lensDiameter];
     private lensArrayB: Array<number> = [this.lensDiameter * this.lensDiameter];
 
-    private rightBorder: number = this.width - this.lensDiameter; // hit right wall
-    private ballBase: number = this.height - this.lensDiameter;
+    private rightBorder: number = Canvas.WIDTH - this.lensDiameter; // hit right wall
+    private ballBase: number = Canvas.HEIGHT - this.lensDiameter;
     private ballX: number = 0;          // horizontal position
     private ballY: number = 0;          // vertical position
     private ballXV: number = 2;         // horizontal velocity
@@ -79,8 +76,8 @@ export class LensScene extends AbstractScene {
                     const z: number = 1 + Math.sqrt(this.lensRadius * this.lensRadius - x * x - y * y) * 0.03;
                     const xx2: number = Math.round(x / z + this.ballX);
                     const yy2: number = Math.round(y / z + this.ballY);
-                    const col: number = texture.texture[xx2 + yy2 * this.width];
-                    framebuffer.framebuffer[xx + yy * this.width] = col;
+                    const col: number = texture.texture[xx2 + yy2 * framebuffer.width];
+                    framebuffer.framebuffer[xx + yy * framebuffer.width] = col;
                 }
             }
         }
@@ -93,11 +90,11 @@ export class LensScene extends AbstractScene {
         // offset from lensArray to the original background
         let i: number = 0;
         for (let y: number = 0; y < this.lensDiameter; y++) {
-            const ypos: number = this.ballX + (y + this.ballY) * this.width;
+            const ypos: number = this.ballX + (y + this.ballY) * framebuffer.width;
             for (let x: number = 0; x < this.lensDiameter; x++) {
                 framebuffer.framebuffer[x + ypos] = texture.texture[
                     this.ballX + this.lensArrayA[i] +
-                    (this.ballY + this.lensArrayB[i++]) * this.width];
+                    (this.ballY + this.lensArrayB[i++]) * framebuffer.width];
             }
         }
 
@@ -131,8 +128,8 @@ export class LensScene extends AbstractScene {
 
     // sine wave movement
     private moveWave(time: number): void {
-        this.ballX = (this.width / 2) + Math.cos(3 * time * 0.0004) * (this.width / 2 - this.lensRadius);
-        this.ballY = (this.height / 2) + Math.sin(2 * time * 0.0004) * (this.height / 2 - this.lensRadius);
+        this.ballX = (Canvas.WIDTH / 2) + Math.cos(3 * time * 0.0004) * (Canvas.WIDTH / 2 - this.lensRadius);
+        this.ballY = (Canvas.HEIGHT / 2) + Math.sin(2 * time * 0.0004) * (Canvas.HEIGHT / 2 - this.lensRadius);
 
         this.ballX = Math.floor(this.ballX - this.lensRadius);
         this.ballY = Math.floor(this.ballY - this.lensRadius);

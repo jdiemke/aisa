@@ -80,7 +80,7 @@ export class FlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
 
         for (let i = 0; i < yDistance; i++) {
             const length = Math.round(xPosition2) - Math.round(xPosition);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition);
             const spanzStep = (curz2 - curz1) / length;
             let wStart = curz1;
             for (let j = 0; j < length; j++) {
@@ -120,7 +120,7 @@ export class FlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
 
         for (let i = 0; i < yDistance; i++) {
             const length = Math.round(xPosition2) - Math.round(xPosition);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition);
             for (let j = 0; j < length; j++) {
                 const wStart = (curz2 - curz1) / (length) * j + curz1;
                 if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
@@ -160,7 +160,7 @@ export class FlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
 
         for (let i = 0; i < yDistanceLeft; i++) {
             const length = Math.round(xPosition2) - Math.round(xPosition);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition);
             const spanzStep = (curz2 - curz1) / length;
             let wStart = curz1;
             for (let j = 0; j < length; j++) {
@@ -189,7 +189,7 @@ export class FlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
 
         for (let i = 0; i < yDistanceLeft; i++) {
             const length = Math.round(xPosition2) - Math.round(xPosition);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition)
             const spanzStep = (curz2 - curz1) / length;
             let wStart = curz1;
             for (let j = 0; j < length; j++) {
@@ -232,7 +232,7 @@ export class FlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
 
         for (let i = 0; i < yDistanceRight; i++) {
             const length = Math.round(xPosition2) - Math.round(xPosition);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition);
             const spanzStep = (curz2 - curz1) / length;
             let wStart = curz1;
             for (let j = 0; j < length; j++) {
@@ -262,7 +262,7 @@ export class FlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
 
         for (let i = 0; i < yDistanceRight; i++) {
             const length = Math.round(xPosition2) - Math.round(xPosition);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition)
             const spanzStep = (curz2 - curz1) / length;
             let wStart = curz1;
             for (let j = 0; j < length; j++) {

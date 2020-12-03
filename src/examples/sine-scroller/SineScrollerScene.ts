@@ -68,10 +68,11 @@ export class SineScrollerScene extends AbstractScene {
         framebuffer.drawTexture(0, 0, this.texture2, 1.0);
 
         this.fontRenderer.drawText(0, 102, ' # TEAM GENESIS # IS BACK IN 2018 WITH A NEW PC FIRST! \'STAR WARS - EMPIRE AT WAR\' DO YOU LIKE THIS?    ', time);
-        this.fontRenderer2.drawText(0, 200 - 20,
+        this.fontRenderer2.drawText(0, framebuffer.height - 20,
             '   * WE REALLY LOVE SCROLLERS * HOW ABOUT YOU? THIS PRODUCTION IS FROM HOODLUM' +
             '~< LETS GO ON WITH THE GENERAL BLAH BLAH      ', time * 1.6, false);
 
+        // animated rainbow horizontal lines
         for (let i: number = 0; i < 20; i++) {
             const myTime = time * 0.003;
             const waveSum = i / 20 * 0.6;
@@ -96,22 +97,22 @@ export class SineScrollerScene extends AbstractScene {
         const stars2 = new Array<Vector2f>();
 
         for (let i = 0; i < 100; i++) {
-            stars.push(new Vector2f(rng.getFloat() * 320, Math.round(rng.getFloat() * 100 + 68)));
+            stars.push(new Vector2f(rng.getFloat() * frambuffer.width, Math.round(rng.getFloat() * 100 + 68)));
         }
 
         for (let i = 0; i < 60; i++) {
-            stars2.push(new Vector2f(rng.getFloat() * 320, Math.round(rng.getFloat() * 100 + 68)));
+            stars2.push(new Vector2f(rng.getFloat() * frambuffer.width, Math.round(rng.getFloat() * 100 + 68)));
         }
 
         frambuffer.clearColorBuffer(backgroundColor);
-        frambuffer.drawRect2(0, 68, 320, 100, Color.DARK_BLUE.toPackedFormat());
+        frambuffer.drawRect2(0, 68, frambuffer.width, 100, Color.DARK_BLUE.toPackedFormat());
 
         for (let i = 0; i < 100; i++) {
-            frambuffer.drawPixel(((stars[i].x + elapsedTime * 0.02) | 0) % 320, stars[i].y, darkStarColor);
+            frambuffer.drawPixel(((stars[i].x + elapsedTime * 0.02) | 0) % frambuffer.width, stars[i].y, darkStarColor);
         }
 
         for (let i = 0; i < 60; i++) {
-            frambuffer.drawPixel(((stars2[i].x + elapsedTime * 0.04) | 0) % 320, stars2[i].y, lightStarColor);
+            frambuffer.drawPixel(((stars2[i].x + elapsedTime * 0.04) | 0) % frambuffer.width, stars2[i].y, lightStarColor);
         }
     }
 

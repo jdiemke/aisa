@@ -1,3 +1,4 @@
+import { Canvas } from '../../Canvas';
 import { Framebuffer } from '../../Framebuffer';
 import { Vector2f, Vector3f } from '../../math/index';
 import { AbstractScene } from '../../scenes/AbstractScene';
@@ -423,7 +424,7 @@ export class Mode7Scene extends AbstractScene {
                 this.spriteRenderer.addSprite(
                     new Sprite(
                         Math.round(
-                            320 / 2 + cameraDirectionPerpDistance * projectionScale -
+                            Canvas.WIDTH / 2 + cameraDirectionPerpDistance * projectionScale -
                             (texture.width * projectionScale * scale) / 2
                         ),
                         Math.round(horizonHeight + projectedY -
@@ -441,7 +442,7 @@ export class Mode7Scene extends AbstractScene {
 
     private drawBackground(framebuffer: Framebuffer): void {
         // TODO: optimize
-        for (let x: number = 0; x < 320; x++) {
+        for (let x: number = 0; x < framebuffer.width; x++) {
             for (let y: number = 0; y < this.back.height; y++) {
                 framebuffer.drawPixel(
                     x, y,
@@ -455,7 +456,7 @@ export class Mode7Scene extends AbstractScene {
     }
 
     private drawHeadUpDisplay(framebuffer: Framebuffer): void {
-        framebuffer.drawTexture(320 - this.metrics.width - 16, 2, this.metrics, 1.0);
+        framebuffer.drawTexture(framebuffer.width - this.metrics.width - 16, 2, this.metrics, 1.0);
 
         const gameTime: number = Date.now() - this.startTime;
         const small: number = Math.floor(gameTime / 10) % 100;
@@ -463,9 +464,9 @@ export class Mode7Scene extends AbstractScene {
         const gameTimeMinutes: number = Math.floor(gameTime / 60000);
         const seconds: number = gameTimeSeconds % 60;
 
-        this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1, 4, this.pad(gameTimeMinutes, 2));
-        this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1 + 8 * 3, 4, this.pad(seconds, 2));
-        this.fontRenderer.drawText2(320 - 8 * 8 - 16 + 1 + 8 * 6, 4, this.pad(small, 2));
+        this.fontRenderer.drawText2(framebuffer.width - 8 * 8 - 16 + 1, 4, this.pad(gameTimeMinutes, 2));
+        this.fontRenderer.drawText2(framebuffer.width - 8 * 8 - 16 + 1 + 8 * 3, 4, this.pad(seconds, 2));
+        this.fontRenderer.drawText2(framebuffer.width - 8 * 8 - 16 + 1 + 8 * 6, 4, this.pad(small, 2));
     }
 
     private pad(num: number, size: number): string {

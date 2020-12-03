@@ -34,11 +34,11 @@ export class Mode7Renderer {
         const horizonHeight: number = 20;
         const mapScale: number = 0.3;
 
-        let framebufferPos: number = (horizonHeight + 1) * 320;
+        let framebufferPos: number = (horizonHeight + 1) * framebuffer.width;
         const viewDirection: Vector2f = this.camera.getViewDirection();
         const viewDirectionPerpendicular: Vector2f = viewDirection.perp();
 
-        for (let y: number = 21; y < 200; y++) {
+        for (let y: number = 21; y < framebuffer.height; y++) {
             const distance: number = this.camera.screenDistance * this.camera.height / (y - horizonHeight);
 
             const step: number = distance / this.camera.screenDistance;
@@ -50,14 +50,14 @@ export class Mode7Renderer {
             const yStep: number = viewDirectionPerpendicular.y * step;
             let texel: number;
 
-            let xSampl: number = scannlineCenterX - (320 / 2 * xStep);
-            let ySampl: number = scannlineCenterY - (320 / 2 * yStep);
+            let xSampl: number = scannlineCenterX - (framebuffer.width / 2 * xStep);
+            let ySampl: number = scannlineCenterY - (framebuffer.width / 2 * yStep);
             xSampl *= mapScale;
             ySampl *= mapScale;
             const xStepDelta: number = xStep * mapScale;
             const yStepDelta: number = yStep * mapScale;
 
-            for (let x: number = 0; x < 320; x++) {
+            for (let x: number = 0; x < framebuffer.width; x++) {
                 if (xSampl >= 0 && xSampl <= 1023 && ySampl >= 0 && ySampl <= 1023) {
                     texel = this.map.getPixel2(
                         this.map,

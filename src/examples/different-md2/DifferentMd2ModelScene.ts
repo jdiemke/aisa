@@ -43,6 +43,7 @@ export class DifferentMd2ModelScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
+        framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
         if (time > this.fpsStartTime + 1000) {
             this.fpsStartTime = time;
             this.fps = this.fpsCount;

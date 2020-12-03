@@ -22,8 +22,8 @@ export class PlasmaScene extends AbstractScene {
         const difference = new Vector3f(0, 0, 0);
         // TODO: implement sin/cos lookup tables plus starfield ;)
         let index = 0;
-        for (let y = 0; y < 200; y++) {
-            for (let x = 0; x < 320; x++) {
+        for (let y = 0; y < framebuffer.height; y++) {
+            for (let x = 0; x < framebuffer.width; x++) {
                 const directionalWave = Math.sin(((x * lineDirection.x + y * lineDirection.y) * 0.02 + time) + 1.0) * 0.5;
                 difference.x = x - radialWaveCenter.x;
                 difference.y = y - radialWaveCenter.y;

@@ -1,4 +1,3 @@
-import { Canvas } from '../../Canvas';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
@@ -15,9 +14,10 @@ export class ParticleStreamsScene extends AbstractScene {
     private particleTexture2: Texture;
     private noise: Texture;
 
-    private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
+    private accumulationBuffer: Uint32Array;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         return Promise.all([
             TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
@@ -35,7 +35,7 @@ export class ParticleStreamsScene extends AbstractScene {
         const time: number = Date.now();
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         this.drawParticleStreams(framebuffer, time, this.particleTexture2, true);
-        const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+        const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         framebuffer.drawTexture(0, 0, texture3, 0.55);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
         framebuffer.noise(time, this.noise);

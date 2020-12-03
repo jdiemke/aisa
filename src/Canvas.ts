@@ -3,6 +3,11 @@ import { FullscreenUtils } from './fullscreen/FullscreenUtils';
 import { AbstractScene } from './scenes/AbstractScene';
 
 export class Canvas {
+    // Fullscreen HD resolutions with no black bars:
+    // 320 x 180
+    // 356 x 200
+    public static readonly WIDTH = 320;
+    public static readonly HEIGHT = 200;
 
     public framebuffer: Framebuffer;
     private canvas: HTMLCanvasElement;
@@ -15,6 +20,7 @@ export class Canvas {
 
         this.canvas.width = width;
         this.canvas.height = height;
+        this.canvas.id = 'aisa-canvas';
 
         this.canvas.style.cssText = 'image-rendering: optimizeSpeed;' + // FireFox < 6.0
             'image-rendering: -moz-crisp-edges;' + // FireFox
@@ -35,11 +41,14 @@ export class Canvas {
         this.context.imageSmoothingEnabled = false;
         (this.context as any).webkitImageSmoothingEnabled = false;
 
-        this.framebuffer = new Framebuffer(320, 200);
+        this.framebuffer = new Framebuffer(width, height);
         this.boundRenderLoop = this.renderLoop.bind(this);
     }
 
     public init(): void {
+        // add canvas element to target element
+        this.appendTo(document.getElementById('aisa'));
+
         // Add fullscreen toggle on click
         this.canvas.addEventListener('click', (event: MouseEvent) => {
             event.preventDefault();

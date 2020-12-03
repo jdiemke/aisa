@@ -16,18 +16,18 @@ export class MetaballsScene extends AbstractScene {
 
     private drawMetaballs(framebuffer: Framebuffer): void {
         const balls: Array<Vector3f> = [
-            new Vector3f(Math.sin(Date.now() * 0.002) * 100 + 150,
+            new Vector3f(Math.sin(Date.now() * 0.002) * 100 + (framebuffer.width/2),
                 Math.cos(Date.now() * 0.0035) * 70 + 100, 0),
-            new Vector3f(Math.sin(Date.now() * 0.0015) * 100 + 150,
+            new Vector3f(Math.sin(Date.now() * 0.0015) * 100 + (framebuffer.width/2),
                 Math.cos(Date.now() * 0.002) * 70 + 100, 0),
-            new Vector3f(Math.sin(Date.now() * 0.003) * 100 + 150,
+            new Vector3f(Math.sin(Date.now() * 0.003) * 100 + (framebuffer.width/2),
                 Math.cos(Date.now() * 0.0045) * 70 + 100, 0)
         ];
 
         let index = 0;
 
-        for (let y = 0; y < 200; y++) {
-            for (let x = 0; x < 320; x++) {
+        for (let y = 0; y < framebuffer.height; y++) {
+            for (let x = 0; x < framebuffer.width; x++) {
                 let intensity = 0;
                 for (let b = 0; b < 3; b++) {
                     const xx = (balls[b].x - x);

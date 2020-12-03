@@ -23,9 +23,9 @@ export class PolarVoxelsScene extends AbstractScene {
         tempTexture.texture = new Uint32Array(256 * 256);
         for (let y = 0; y < 256; y++) {
             for (let x = 0; x < 256; x++) {
-                const ypos = 199 - Math.round(200 / 256 * x);
-                const xpos = Math.round(320 / 256 * y);
-                tempTexture.texture[x + y * 256] = framebuffer.framebuffer[xpos + ypos * 320];
+                const ypos = (framebuffer.height-1) - Math.round(framebuffer.height / 256 * x);
+                const xpos = Math.round(framebuffer.width / 256 * y);
+                tempTexture.texture[x + y * 256] = framebuffer.framebuffer[xpos + ypos * framebuffer.width];
             }
         }
         framebuffer.drawPolarDistotion2(time, tempTexture);
@@ -45,12 +45,12 @@ export class PolarVoxelsScene extends AbstractScene {
         const center = 90;
         const eye = 10;
 
-        for (let x = 0; x < 320; x++) {
+        for (let x = 0; x < framebuffer.width; x++) {
             let dirX;
             let dirY;
 
-            dirX = Math.cos(time * 0.0001 + Math.PI * 2 / 320 * x) * 1.99;
-            dirY = Math.sin(time * 0.0001 + Math.PI * 2 / 320 * x) * 1.99;
+            dirX = Math.cos(time * 0.0001 + Math.PI * 2 / framebuffer.width * x) * 1.99;
+            dirY = Math.sin(time * 0.0001 + Math.PI * 2 / framebuffer.width * x) * 1.99;
 
             let highestPoint = 0;
 
@@ -66,15 +66,15 @@ export class PolarVoxelsScene extends AbstractScene {
                 const packedRGB = 255 << 24 | (color * 0.7) << 16 | (color) << 8 | (color * 0.8);
 
                 if (projHeight > highestPoint) {
-                    let index = x + (199 - highestPoint) * 320;
-                    const max = Math.min(projHeight, 200);
+                    let index = x + ((framebuffer.height-1) - highestPoint) * framebuffer.width;
+                    const max = Math.min(projHeight, framebuffer.height);
 
                     for (let i = highestPoint; i < max; i++) {
                         framebuffer.framebuffer[index] = packedRGB;
-                        index -= 320;
+                        index -= framebuffer.width;
                     }
 
-                    if (max === 200) {
+                    if (max === framebuffer.height) {
                         break;
                     }
 

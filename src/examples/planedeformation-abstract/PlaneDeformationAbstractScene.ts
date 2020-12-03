@@ -49,7 +49,7 @@ export class PlaneDeformationAbstractScene extends AbstractScene {
     public render(framebuffer: Framebuffer): void {
         this.drawPlanedeformationTunnel(framebuffer, Date.now(), this.heightmap, this.heightmap);
 
-        framebuffer.drawTexture(((320 / 2) - (this.hoodlumLogo.width / 2)) | 0, ((200 / 2) - (this.hoodlumLogo.height / 2)) | 0, this.hoodlumLogo, 1.0);
+        framebuffer.drawTexture(((framebuffer.width / 2) - (this.hoodlumLogo.width / 2)) | 0, ((framebuffer.height / 2) - (this.hoodlumLogo.height / 2)) | 0, this.hoodlumLogo, 1.0);
     }
 
     /**
@@ -63,24 +63,16 @@ export class PlaneDeformationAbstractScene extends AbstractScene {
     drawPlanedeformationTunnel(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, texture2: Texture) {
 
         let i = 0;
-        for (let y = 0; y < 200; y++) {
-
-
-            for (let x = 0; x < 320; x++) {
-                const xdist = (x - (320 / 2)) / 160;
-                const ydist = (y - 200 / 2) / 100;
+        for (let y = 0; y < framebuffer.height; y++) {
+            for (let x = 0; x < framebuffer.width; x++) {
+                const xdist = (x - (framebuffer.width / 2)) / (framebuffer.width / 2);
+                const ydist = (y - framebuffer.height / 2) / (framebuffer.height / 2);
                 const alpha = 1;// 1 - Math.min(1, (1 / Math.abs(ydist / 10)));
                 const a = Math.atan2(ydist, xdist) + Date.now() * 0.0004;
                 const v = (a * 3 / Math.PI + Date.now() * 0.0004) * 128 % 256;
                 const d = Math.sqrt(xdist * xdist + ydist * ydist);
-
                 const u = (1 / (d + 0.5 + 0.5 * Math.sin(5 * a)) * 32 + Date.now() * 0.03) % 256;
-
                 const color1 = texture2.texture[(u | 0) + (v | 0) * 256];
-
-
-
-
                 const r = (((color1 >> 0) & 0xff) * (alpha)) | 0;
                 const g = (((color1 >> 8) & 0xff) * (alpha)) | 0;
                 const b = (((color1 >> 16) & 0xff) * (alpha)) | 0;

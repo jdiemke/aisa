@@ -23,21 +23,21 @@ export class StarfieldScene extends AbstractScene {
         const stars2 = new Array<Vector3f>();
 
         for (let i = 0; i < 100; i++) {
-            stars.push(new Vector3f(rng.getFloat() * 320, Math.round(rng.getFloat() * 200), 0));
+            stars.push(new Vector3f(rng.getFloat() * frambuffer.width, Math.round(rng.getFloat() * frambuffer.height), 0));
         }
 
         for (let i = 0; i < 60; i++) {
-            stars2.push(new Vector3f(rng.getFloat() * 320, Math.round(rng.getFloat() * 200), 0));
+            stars2.push(new Vector3f(rng.getFloat() * frambuffer.width, Math.round(rng.getFloat() * frambuffer.height), 0));
         }
 
         frambuffer.clearColorBuffer(backgroundColor);
 
         for (let i = 0; i < 100; i++) {
-            frambuffer.drawPixel(((stars[i].x + elapsedTime * 0.02) | 0) % 320, stars[i].y, darkStarColor);
+            frambuffer.drawPixel(((stars[i].x + elapsedTime * 0.02) | 0) % frambuffer.width, stars[i].y, darkStarColor);
         }
 
         for (let i = 0; i < 60; i++) {
-            frambuffer.drawPixel(((stars2[i].x + elapsedTime * 0.04) | 0) % 320, stars2[i].y, lightStarColor);
+            frambuffer.drawPixel(((stars2[i].x + elapsedTime * 0.04) | 0) % frambuffer.width, stars2[i].y, lightStarColor);
         }
     }
 

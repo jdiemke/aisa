@@ -1,4 +1,3 @@
-import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
@@ -17,12 +16,13 @@ export class AbstractCube extends AbstractScene {
     private blurred: Texture;
     private noise: Texture;
 
-    private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
+    private accumulationBuffer: Uint32Array;
     private renderingPipeline: FlatShadingRenderingPipeline;
 
     private scene: Array<FlatshadedMesh>;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.BACK);
 
@@ -40,19 +40,10 @@ export class AbstractCube extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         this.drawBlenderScene2(framebuffer, time);
-        /*
-            [
-                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                { tex: this.texture13, scale: 1.6, alpha: 0.25 },
-                { tex: this.texture13, scale: 0.7, alpha: 0.22 },
-                { tex: this.texture13, scale: -0.4, alpha: 0.22 },
-            ], this.dirt);
-            */
-        const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+
+        const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         framebuffer.drawTexture(0, 0, texture3, 0.75);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
 
@@ -80,9 +71,6 @@ export class AbstractCube extends AbstractScene {
         );
         model = this.scene[1];
         this.renderingPipeline.draw(model, mv);
-
-        // let lensflareScreenSpace = framebuffer.project(camera.multiply(new Vector3f(16.0 * 20, 16.0 * 20, 0)));
-        // framebuffer.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.3, texture, dirt);
     }
 
 }

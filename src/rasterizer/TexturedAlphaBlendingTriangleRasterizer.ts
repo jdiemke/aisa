@@ -90,7 +90,7 @@ export class TexturedAlphaBlendingTriangleRasterizer {
 
         for (let i = 0; i < yDistanceLeft; i++) {
             const length = Math.round(xPosition2) - Math.round(xPosition);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition)
             const spanzStep = (curz2 - curz1) / length;
             const spanuStep = (curu2 - curu1) / length;
             const spanvStep = (curv2 - curv1) / length;
@@ -159,7 +159,7 @@ export class TexturedAlphaBlendingTriangleRasterizer {
 
         for (let i = 0; i < yDistanceLeft; i++) {
             const length = Math.round(xPosition2) - Math.round(xPosition);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition)
 
             const spanzStep = (curz2 - curz1) / length;
             const spanuStep = (curu2 - curu1) / length;
@@ -247,7 +247,7 @@ export class TexturedAlphaBlendingTriangleRasterizer {
 
         for (let i = 0; i < yDistanceRight; i++) {
             const length = Math.round(xPosition2) - Math.round(xPosition);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition)
             const spanzStep = (curz2 - curz1) / length;
             const spanuStep = (curu2 - curu1) / length;
             const spanvStep = (curv2 - curv1) / length;
@@ -315,7 +315,7 @@ export class TexturedAlphaBlendingTriangleRasterizer {
 
         for (let i = 0; i < yDistanceRight; i++) {
             const length = Math.round(xPosition2) - Math.round(xPosition);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition)
 
 
             const spanzStep = (curz2 - curz1) / length;

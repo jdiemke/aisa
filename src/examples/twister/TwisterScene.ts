@@ -24,14 +24,18 @@ export class TwisterScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
+        framebuffer.drawScaledTextureClipBi(
+            0,
+            0,
+            framebuffer.width, framebuffer.height, this.backgroundTexture, 1.0);
 
-        framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.backgroundTexture.texture);
+        // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.backgroundTexture.texture);
         this.draw(framebuffer, this.logoTexture, time);
     }
 
     private draw(framebuffer: Framebuffer, texture: Texture, time: number): void {
         const a: number = time * 0.001;
-        for (let i: number = 10; i < 190; i++) {
+        for (let i: number = 10; i < framebuffer.height - 10; i++) {
             const xoff = (Math.sin(a + i * 0.01) * 50) | 0;
             const rot = Math.sin(a * 0.4 + i * 0.0021) * Math.PI * 2;
             let scale = 32;
@@ -72,7 +76,7 @@ export class TwisterScene extends AbstractScene {
 
     private drawSpan(framebuffer: Framebuffer, dist: number,
         xpos: number, ypos: number, scale: number, texture: Texture): void {
-        let framebufferIndex = xpos + ypos * 320;
+        let framebufferIndex = xpos + ypos * framebuffer.width;
         let textureIndex = (((ypos - Date.now() * 0.029) | 0) & 0xff) * texture.width;
         const textureForwardDifference = texture.width / dist;
         const hightlight = Math.pow(scale, 11) * 115;

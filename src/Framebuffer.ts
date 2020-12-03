@@ -31,8 +31,8 @@ export class Framebuffer {
 
     public static PIXEL_SIZE_IN_BYTES = 4;
 
-    public static minWindow: Vector2f = new Vector2f(0, 0);
-    public static maxWindow: Vector2f = new Vector2f(319.0, 199.0);
+    public static minWindow: Vector2f;
+    public static maxWindow: Vector2f;
 
     public static clipRegion = new Array<AbstractClipEdge>(
         new RightClipEdge(),
@@ -55,15 +55,14 @@ export class Framebuffer {
     public texturedRenderingPipeline = new TexturingRenderingPipeline(this);
     public lineRasterizer = new LineRasterizerDda(this);
     public lineRasterizerNo = new LineRasterizerNoZ(this);
-
-    public tmpGlitch = new Uint32Array(320 * 200);
+    public tmpGlitch: Uint32Array;
 
     public lensFlareVisible: boolean = false;
     public lensFlareStart = 0;
     public lensFlareEnd = 0;
 
-    private width: number;
-    private height: number;
+    public width: number;
+    public height: number;
     private imageData: ImageData;
     private unsignedIntArray: Uint8ClampedArray;
 
@@ -77,11 +76,15 @@ export class Framebuffer {
         this.width = width;
         this.height = height;
 
-        this.imageData = new ImageData(320, 200);
-        this.wBuffer = new Float32Array(320 * 200);
+        this.imageData = new ImageData(width, height);
+        this.wBuffer = new Float32Array(width * height);
         const arrayBuffer = new ArrayBuffer(this.width * this.height * Framebuffer.PIXEL_SIZE_IN_BYTES);
         this.unsignedIntArray = new Uint8ClampedArray(arrayBuffer);
         this.framebuffer = new Uint32Array(arrayBuffer);
+        this.tmpGlitch = new Uint32Array(width * height);
+
+        Framebuffer.minWindow = new Vector2f(0, 0);
+        Framebuffer.maxWindow = new Vector2f(width - 1, height - 1);
     }
 
     public setCullFace(face: CullFace): void {
@@ -165,7 +168,7 @@ export class Framebuffer {
         }
     }
 
-    public drawRect2(x, y, width, height, color) {
+    public drawRect2(x: number, y: number, width: number, height: number, color: number) {
         let start = x + y * this.width;
         for (let j = 0; j < height; j++) {
             for (let i = 0; i < width; i++) {
@@ -173,7 +176,7 @@ export class Framebuffer {
                 this.framebuffer[start++] = color;
 
             }
-            start += 320 - width;
+            start += this.width - width;
         }
     }
 
@@ -192,8 +195,8 @@ export class Framebuffer {
     public addReflections() {
         const start = 150;
         for (let i = 0; i < 50; i++) {
-            for (let x = 0; x < 320; x++) {
-                this.framebuffer[(start + i) * 320 + x] = this.framebuffer[(start - i * 3 - 1) * 320 + x +
+            for (let x = 0; x < this.width; x++) {
+                this.framebuffer[(start + i) * this.width + x] = this.framebuffer[(start - i * 3 - 1) * this.width + x +
                     this.interpolate(0, 50, i) * (Math.sin(Date.now() * 0.002 + i * 0.2) * 10) | 0];
             }
         }
@@ -203,7 +206,7 @@ export class Framebuffer {
         for (let w = 0; w < width; w++) {
             for (let h = 0; h < height; h++) {
                 const texIndex = (xt + w) + ((yt + h) * texture.width);
-                const frIndex = (xs + w) + ((ys + h) * 320);
+                const frIndex = (xs + w) + ((ys + h) * this.width);
                 const alpha = ((texture.texture[texIndex] >> 24) & 0xff) / 255 * alpha2;
                 const inverseAlpha = 1 - alpha;
 
@@ -218,7 +221,7 @@ export class Framebuffer {
 
     public drawTextureRectFastAlpha(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Texture): void {
         let texIndex = xt + yt * texture.width;
-        let frIndex = xs + ys * 320;
+        let frIndex = xs + ys * this.width;
 
         for (let h = 0; h < height; h++) {
             for (let w = 0; w < width; w++) {
@@ -230,13 +233,13 @@ export class Framebuffer {
                 frIndex++;
             }
             texIndex += texture.width - width;
-            frIndex += 320 - width;
+            frIndex += this.width - width;
         }
     }
 
     public drawTextureRectNoAlpha(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Texture): void {
         let texIndex = xt + yt * texture.width;
-        let frIndex = xs + ys * 320;
+        let frIndex = xs + ys * this.width;
 
         for (let h = 0; h < height; h++) {
             for (let w = 0; w < width; w++) {
@@ -245,7 +248,7 @@ export class Framebuffer {
                 frIndex++;
             }
             texIndex += texture.width - width;
-            frIndex += 320 - width;
+            frIndex += this.width - width;
         }
     }
 
@@ -285,7 +288,7 @@ export class Framebuffer {
 
     public drawTextureRect(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Texture, alpha2: number): void {
         let texIndex = xt + yt * texture.width;
-        let frIndex = xs + ys * 320;
+        let frIndex = xs + ys * this.width;
 
         for (let h = 0; h < height; h++) {
             for (let w = 0; w < width; w++) {
@@ -304,13 +307,13 @@ export class Framebuffer {
                 frIndex++;
             }
             texIndex += texture.width - width;
-            frIndex += 320 - width;
+            frIndex += this.width - width;
         }
     }
 
     public drawTextureRectAdd(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Texture, alpha2: number): void {
         let texIndex = xt + yt * texture.width;
-        let frIndex = xs + ys * 320;
+        let frIndex = xs + ys * this.width;
 
         for (let h = 0; h < height; h++) {
             for (let w = 0; w < width; w++) {
@@ -328,7 +331,7 @@ export class Framebuffer {
                 frIndex++;
             }
             texIndex += texture.width - width;
-            frIndex += 320 - width;
+            frIndex += this.width - width;
         }
     }
 
@@ -358,9 +361,9 @@ export class Framebuffer {
     }
 
     public fastFramebufferCopyOffset(src: Uint32Array, dest: Uint32Array, offset = 0) {
-        let i = 320 * 200 / 32 + 1;
-        let k = 320 * 200;
-        let l = 320 * (200 - offset);
+        let i = this.width * this.height / 32 + 1;
+        let k = this.width * this.height;
+        let l = this.width * (this.height - offset);
         while (--i) {
             src[--k] = dest[--l]; src[--k] = dest[--l];
             src[--k] = dest[--l]; src[--k] = dest[--l];
@@ -392,10 +395,10 @@ export class Framebuffer {
     public drawPolarDistotion2(elapsedTime: number, texture: Texture): void {
         let i = 0;
         const distScale = 1.355 * (0.4 + 0.6 * 0.5 * (1 + Math.sin(elapsedTime * 0.00017)));
-        for (let y = 0; y < 200; y++) {
-            for (let x = 0; x < 320; x++) {
-                const xdist = (x - 320 / 2);
-                const ydist = (y - 200 / 2);
+        for (let y = 0; y < this.height; y++) {
+            for (let x = 0; x < this.width; x++) {
+                const xdist = (x - this.width / 2);
+                const ydist = (y - this.height / 2);
                 const dist = Math.sqrt(xdist * xdist + ydist * ydist) * distScale;
                 const angle = Math.atan2(xdist, ydist) / (Math.PI * 2) * 256;
 
@@ -408,10 +411,10 @@ export class Framebuffer {
 
     public drawPolarDistotion3(elapsedTime: number, texture: Texture): void {
         let i = 0;
-        for (let y = 0; y < 200; y++) {
-            for (let x = 0; x < 320; x++) {
-                const xdist = (x - 320 / 2);
-                const ydist = (y - 200 / 2);
+        for (let y = 0; y < this.height; y++) {
+            for (let x = 0; x < this.width; x++) {
+                const xdist = (x - this.width / 2);
+                const ydist = (y - this.height / 2);
                 const dist = Math.sqrt(xdist * xdist + ydist * ydist) * 0.8 - (elapsedTime * 0.017);
                 const angle = Math.atan2(xdist, ydist) / (Math.PI * 2) * 256 + (elapsedTime * 0.017);
 
@@ -423,10 +426,8 @@ export class Framebuffer {
     }
 
     public noise(elapsedTime: number, texture: Texture, scale: number = 0.07): void {
-        for (let x = 0; x < 16; x++) {
-            for (let y = 0; y < 10; y++) {
-                this.drawTextureRect(x * 20, y * 20, 20 * (Math.round(elapsedTime / 100 + x + y) % 12), 0, 20, 20, texture, scale);
-            }
+        for (let y = 0; y < this.height; y++) {
+            this.drawTextureRect(0, y, Math.floor(Math.random() * (texture.texture.length - this.width)), 0, this.width, 1, texture, scale);
         }
     }
 
@@ -442,34 +443,34 @@ export class Framebuffer {
         let xStart: number;
 
         if (yp + height < 0 ||
-            yp > 199 ||
+            yp > (this.height - 1) ||
             xp + width < 0 ||
-            xp > 319) {
+            xp > (this.width - 1)) {
             return;
         }
 
         if (yp < 0) {
             yy = yStep * -yp;
-            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            newHeight = (height + yp) - Math.max(yp + height - this.height, 0);
             yStart = 0;
         } else {
             yStart = yp;
-            newHeight = height - Math.max(yp + height - 200, 0);
+            newHeight = height - Math.max(yp + height - this.height, 0);
         }
 
         let xTextureStart: number;
 
         if (xp < 0) {
             xTextureStart = xx = xStep * -xp;
-            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            newWidth = (width + xp) - Math.max(xp + width - this.width, 0);
             xStart = 0;
         } else {
             xTextureStart = 0;
             xStart = xp;
-            newWidth = width - Math.max(xp + width - 320, 0);
+            newWidth = width - Math.max(xp + width - this.width, 0);
         }
 
-        let index2 = (xStart) + (yStart) * 320;
+        let index2 = (xStart) + (yStart) * this.width;
         for (let y = 0; y < newHeight; y++) {
             for (let x = 0; x < newWidth; x++) {
                 if (this.wBuffer[index2] > z) {
@@ -487,7 +488,7 @@ export class Framebuffer {
             }
             yy += yStep;
             xx = xTextureStart;
-            index2 += -newWidth + 320;
+            index2 += -newWidth + this.width;
         }
     }
 
@@ -503,35 +504,35 @@ export class Framebuffer {
         let xStart: number;
 
         if (yp + height < 0 ||
-            yp > 199 ||
+            yp > (this.height - 1) ||
             xp + width < 0 ||
-            xp > 319) {
+            xp > (this.width - 1)) {
             return;
         }
 
         if (yp < 0) {
             yy = yStep * -yp;
-            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            newHeight = (height + yp) - Math.max(yp + height - this.height, 0);
             yStart = 0;
         } else {
             yStart = yp;
-            newHeight = height - Math.max(yp + height - 200, 0);
+            newHeight = height - Math.max(yp + height - this.height, 0);
         }
 
         let xTextureStart: number;
 
         if (xp < 0) {
             xTextureStart = xx = xStep * -xp;
-            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            newWidth = (width + xp) - Math.max(xp + width - this.width, 0);
             xStart = 0;
         } else {
             xTextureStart = 0;
             xStart = xp;
-            newWidth = width - Math.max(xp + width - 320, 0);
+            newWidth = width - Math.max(xp + width - this.width, 0);
         }
 
         const alphaScale = 1 / 255 * alphaBlend;
-        let index2 = (xStart) + (yStart) * 320;
+        let index2 = (xStart) + (yStart) * this.width;
         for (let y = 0; y < newHeight; y++) {
             for (let x = 0; x < newWidth; x++) {
                 if (this.wBuffer[index2] > z) {
@@ -554,7 +555,7 @@ export class Framebuffer {
             }
             yy += yStep;
             xx = xTextureStart;
-            index2 += -newWidth + 320;
+            index2 += -newWidth + this.width;
         }
     }
 
@@ -570,31 +571,31 @@ export class Framebuffer {
         let yStart: number;
         let xStart: number;
         if (yp + height < 0 ||
-            yp > 199 ||
+            yp > (this.height - 1) ||
             xp + width < 0 ||
-            xp > 319) {
+            xp > (this.width - 1)) {
             return;
         }
         if (yp < 0) {
             yy = yStep * -yp;
-            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            newHeight = (height + yp) - Math.max(yp + height - this.height, 0);
             yStart = 0;
         } else {
             yStart = yp;
-            newHeight = height - Math.max(yp + height - 200, 0);
+            newHeight = height - Math.max(yp + height - this.height, 0);
         }
         let xTextureStart: number;
         if (xp < 0) {
             xTextureStart = xx = xStep * -xp;
-            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            newWidth = (width + xp) - Math.max(xp + width - this.width, 0);
             xStart = 0;
         } else {
             xTextureStart = 0;
             xStart = xp;
-            newWidth = width - Math.max(xp + width - 320, 0);
+            newWidth = width - Math.max(xp + width - this.width, 0);
         }
         const alphaScale = 1 / 255 * alphaBlend;
-        let index2 = (xStart) + (yStart) * 320;
+        let index2 = (xStart) + (yStart) * this.width;
         for (let y = 0; y < newHeight; y++) {
             for (let x = 0; x < newWidth; x++) {
                 if (this.wBuffer[index2] > z) {
@@ -618,7 +619,7 @@ export class Framebuffer {
             }
             yy += yStep;
             xx = xTextureStart;
-            index2 += -newWidth + 320;
+            index2 += -newWidth + this.width;
         }
     }
 
@@ -636,31 +637,31 @@ export class Framebuffer {
         let xStart: number;
 
         if (yp + height < 0 ||
-            yp > 199 ||
+            yp > this.height - 1 ||
             xp + width < 0 ||
-            xp > 319) {
+            xp > this.width - 1) {
             return;
         }
 
         if (yp < 0) {
             yy = yStep * -yp;
-            newHeight = (height + yp) - Math.max(yp + height - 199, 0);
+            newHeight = (height + yp) - Math.max(yp + height - (this.height - 1), 0);
             yStart = 0;
         } else {
             yStart = yp;
-            newHeight = height - Math.max(yp + height - 199, 0);
+            newHeight = height - Math.max(yp + height - (this.height - 1), 0);
         }
 
         let xTextureStart: number;
 
         if (xp < 0) {
             xTextureStart = xx = xStep * -xp;
-            newWidth = Math.ceil((width + xp) - Math.max(xp + width - 319, 0));
+            newWidth = Math.ceil((width + xp) - Math.max(xp + width - (this.width - 1), 0));
             xStart = 0;
         } else {
             xTextureStart = 0;
             xStart = xp;
-            newWidth = Math.ceil(width - Math.max(xp + width - 319, 0));
+            newWidth = Math.ceil(width - Math.max(xp + width - (this.width - 1), 0));
         }
 
         const sub: number = Math.ceil(xp) - xp;
@@ -669,7 +670,7 @@ export class Framebuffer {
         yy += suby * yStep;
 
         const alphaScale = 1 / 255 * alphaBlend;
-        let index2 = Math.ceil(xStart) + Math.ceil(yStart) * 320;
+        let index2 = Math.ceil(xStart) + Math.ceil(yStart) * this.width;
         for (let y = 0; y < newHeight; y++) {
             for (let x = 0; x < newWidth; x++) {
                 if (this.wBuffer[index2] > z) {
@@ -691,7 +692,7 @@ export class Framebuffer {
             }
             yy += yStep;
             xx = xTextureStart;
-            index2 += -newWidth + 320;
+            index2 += -newWidth + this.width;
         }
     }
 
@@ -707,35 +708,35 @@ export class Framebuffer {
         let xStart: number;
 
         if (yp + height < 0 ||
-            yp > 199 ||
+            yp > this.height - 1 ||
             xp + width < 0 ||
-            xp > 319) {
+            xp > this.width - 1) {
             return;
         }
 
         if (yp < 0) {
             yy = yStep * -yp;
-            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            newHeight = (height + yp) - Math.max(yp + height - this.height, 0);
             yStart = 0;
         } else {
             yStart = yp;
-            newHeight = height - Math.max(yp + height - 200, 0);
+            newHeight = height - Math.max(yp + height - this.height, 0);
         }
 
         let xTextureStart: number;
 
         if (xp < 0) {
             xTextureStart = xx = xStep * -xp;
-            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            newWidth = (width + xp) - Math.max(xp + width - this.width, 0);
             xStart = 0;
         } else {
             xTextureStart = 0;
             xStart = xp;
-            newWidth = width - Math.max(xp + width - 320, 0);
+            newWidth = width - Math.max(xp + width - this.width, 0);
         }
 
         const alphaScale = 1 / 255 * alphaBlend;
-        let index2 = (xStart) + (yStart) * 320;
+        let index2 = (xStart) + (yStart) * this.width;
         for (let y = 0; y < newHeight; y++) {
             for (let x = 0; x < newWidth; x++) {
 
@@ -757,7 +758,7 @@ export class Framebuffer {
             }
             yy += yStep;
             xx = xTextureStart;
-            index2 += -newWidth + 320;
+            index2 += -newWidth + this.width;
         }
     }
 
@@ -773,35 +774,35 @@ export class Framebuffer {
         let xStart: number;
 
         if (yp + height < 0 ||
-            yp > 199 ||
+            yp > (this.height - 1) ||
             xp + width < 0 ||
-            xp > 319) {
+            xp > (this.width - 1)) {
             return;
         }
 
         if (yp < 0) {
             yy = yStep * -yp;
-            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            newHeight = (height + yp) - Math.max(yp + height - this.height, 0);
             yStart = 0;
         } else {
             yStart = yp;
-            newHeight = height - Math.max(yp + height - 200, 0);
+            newHeight = height - Math.max(yp + height - this.height, 0);
         }
 
         let xTextureStart: number;
 
         if (xp < 0) {
             xTextureStart = xx = xStep * -xp;
-            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            newWidth = (width + xp) - Math.max(xp + width - this.width, 0);
             xStart = 0;
         } else {
             xTextureStart = 0;
             xStart = xp;
-            newWidth = width - Math.max(xp + width - 320, 0);
+            newWidth = width - Math.max(xp + width - this.width, 0);
         }
 
         const alphaScale = 1 / 255 * alphaBlend;
-        let index2 = (xStart) + (yStart) * 320;
+        let index2 = (xStart) + (yStart) * this.width;
         for (let y = 0; y < newHeight; y++) {
             for (let x = 0; x < newWidth; x++) {
                 if (this.wBuffer[index2] > z) {
@@ -825,12 +826,12 @@ export class Framebuffer {
             }
             yy += yStep;
             xx = xTextureStart;
-            index2 += -newWidth + 320;
+            index2 += -newWidth + this.width;
         }
     }
 
     public drawFog(color: Color, fogScale: number, fogOffset: number): void {
-        const videoMemorySize: number = 320 * 200;
+        const videoMemorySize: number = this.width * this.height;
         const wBufferScale: number = -fogScale;
 
         for (let index: number = 0; index < videoMemorySize; index++) {
@@ -849,16 +850,16 @@ export class Framebuffer {
         this.fastFramebufferCopy(this.tmpGlitch, this.framebuffer);
         const texture = new Texture();
         texture.texture = this.tmpGlitch;
-        texture.width = 320;
-        texture.height = 200;
-        let width = 320;
-        let height = 200;
+        texture.width = this.width;
+        texture.height = this.height;
+        let width = this.width;
+        let height = this.height;
         for (let i = 0; i < 16; i++) {
-            width += 320 * 0.09;
-            height += 200 * 0.09;
+            width += this.width * 0.09;
+            height += this.height * 0.09;
             this.scaleClipBlitter.drawScaledTextureClip(
-                320 / 2 - width / 2,
-                200 / 2 - height / 2,
+                this.width / 2 - width / 2,
+                this.height / 2 - height / 2,
                 width, height, texture, 0.19 * (15 - i) / 15);
             this.fastFramebufferCopy(this.tmpGlitch, this.framebuffer);
         }
@@ -876,35 +877,35 @@ export class Framebuffer {
         let xStart: number;
 
         if (yp + height < 0 ||
-            yp > 199 ||
+            yp > (this.height - 1) ||
             xp + width < 0 ||
-            xp > 319) {
+            xp > (this.width - 1)) {
             return;
         }
 
         if (yp < 0) {
             yy = yStep * -yp;
-            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            newHeight = (height + yp) - Math.max(yp + height - this.height, 0);
             yStart = 0;
         } else {
             yStart = yp;
-            newHeight = height - Math.max(yp + height - 200, 0);
+            newHeight = height - Math.max(yp + height - this.height, 0);
         }
 
         let xTextureStart: number;
 
         if (xp < 0) {
             xTextureStart = xx = xStep * -xp;
-            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            newWidth = (width + xp) - Math.max(xp + width - this.width, 0);
             xStart = 0;
         } else {
             xTextureStart = 0;
             xStart = xp;
-            newWidth = width - Math.max(xp + width - 320, 0);
+            newWidth = width - Math.max(xp + width - this.width, 0);
         }
 
         const alphaScale = 1 / 255 * alphaBlend;
-        let index2 = (xStart) + (yStart) * 320;
+        let index2 = (xStart) + (yStart) * this.width;
         for (let y = 0; y < newHeight; y++) {
             for (let x = 0; x < newWidth; x++) {
                 // let textureIndex = //Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
@@ -926,7 +927,7 @@ export class Framebuffer {
             }
             yy += yStep;
             xx = xTextureStart;
-            index2 += -newWidth + 320;
+            index2 += -newWidth + this.width;
         }
     }
 
@@ -942,34 +943,34 @@ export class Framebuffer {
         let xStart: number;
 
         if (yp + height < 0 ||
-            yp > 199 ||
+            yp > (this.height - 1) ||
             xp + width < 0 ||
-            xp > 319) {
+            xp > (this.width - 1)) {
             return;
         }
 
         if (yp < 0) {
             yy = yStep * -yp;
-            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            newHeight = (height + yp) - Math.max(yp + height - this.height, 0);
             yStart = 0;
         } else {
             yStart = yp;
-            newHeight = height - Math.max(yp + height - 200, 0);
+            newHeight = height - Math.max(yp + height - this.height, 0);
         }
 
         let xTextureStart: number;
 
         if (xp < 0) {
             xTextureStart = xx = xStep * -xp;
-            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            newWidth = (width + xp) - Math.max(xp + width - this.width, 0);
             xStart = 0;
         } else {
             xTextureStart = 0;
             xStart = xp;
-            newWidth = width - Math.max(xp + width - 320, 0);
+            newWidth = width - Math.max(xp + width - this.width, 0);
         }
 
-        let index2 = (xStart) + (yStart) * 320;
+        let index2 = (xStart) + (yStart) * this.width;
         for (let y = 0; y < newHeight; y++) {
             for (let x = 0; x < newWidth; x++) {
                 // let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
@@ -988,7 +989,7 @@ export class Framebuffer {
             }
             yy += yStep;
             xx = xTextureStart;
-            index2 += -newWidth + 320;
+            index2 += -newWidth + this.width;
         }
     }
 
@@ -1004,34 +1005,34 @@ export class Framebuffer {
         let xStart: number;
 
         if (yp + height < 0 ||
-            yp > 199 ||
+            yp > (this.height - 1) ||
             xp + width < 0 ||
-            xp > 319) {
+            xp > (this.width - 1)) {
             return;
         }
 
         if (yp < 0) {
             yy = yStep * -yp;
-            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            newHeight = (height + yp) - Math.max(yp + height - this.height, 0);
             yStart = 0;
         } else {
             yStart = yp;
-            newHeight = height - Math.max(yp + height - 200, 0);
+            newHeight = height - Math.max(yp + height - this.height, 0);
         }
 
         let xTextureStart: number;
 
         if (xp < 0) {
             xTextureStart = xx = xStep * -xp;
-            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            newWidth = (width + xp) - Math.max(xp + width - this.width, 0);
             xStart = 0;
         } else {
             xTextureStart = 0;
             xStart = xp;
-            newWidth = width - Math.max(xp + width - 320, 0);
+            newWidth = width - Math.max(xp + width - this.width, 0);
         }
 
-        let index2 = (xStart) + (yStart) * 320;
+        let index2 = (xStart) + (yStart) * this.width;
         for (let y = 0; y < newHeight; y++) {
             for (let x = 0; x < newWidth; x++) {
                 const textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
@@ -1049,13 +1050,13 @@ export class Framebuffer {
             }
             yy += yStep;
             xx = xTextureStart;
-            index2 += -newWidth + 320;
+            index2 += -newWidth + this.width;
         }
     }
 
     public drawTexture(x: number, y: number, texture: Texture, alpha2: number) {
-        const SCREEN_WIDTH = 320;
-        const SCREEN_HEIGHT = 200;
+        const SCREEN_WIDTH = this.width;
+        const SCREEN_HEIGHT = this.height;
 
         let framebufferIndex: number = Math.max(x, 0) + Math.max(y, 0) * this.width;
         let textureIndex: number = Math.max(0, 0 - x) + Math.max(0, 0 - y) * texture.width;
@@ -1092,7 +1093,7 @@ export class Framebuffer {
 
         let framebufferIndex: number = 0;
         const inverseAlpha = 1 - alpha2;
-        for (let y: number = 0; y < 320 * 200; y++) {
+        for (let y: number = 0; y < this.width * this.height; y++) {
 
             const r = (this.framebuffer[framebufferIndex] >> 0 & 0xff) * inverseAlpha + (texture.texture[framebufferIndex] >> 0 & 0xff) * alpha2;
             const g = (this.framebuffer[framebufferIndex] >> 8 & 0xff) * inverseAlpha + (texture.texture[framebufferIndex] >> 8 & 0xff) * alpha2;
@@ -1104,8 +1105,8 @@ export class Framebuffer {
     }
 
     public drawTexture3(x: number, y: number, texture: Texture, alpha2: number, time: number) {
-        const SCREEN_WIDTH = 320;
-        const SCREEN_HEIGHT = 200;
+        const SCREEN_WIDTH = this.width;
+        const SCREEN_HEIGHT = this.height;
 
         let framebufferIndex: number = Math.max(x, 0) + Math.max(y, 0) * this.width;
         let textureIndex: number = Math.max(0, 0 - x) + Math.max(0, 0 - y) * texture.width;
@@ -1202,8 +1203,8 @@ export class Framebuffer {
     }
 
     public project(t1: { x: number, y: number, z: number }): Vector3f {
-        return new Vector3f(Math.round((320 / 2) + (292 * t1.x / (-t1.z))),
-            Math.round((200 / 2) - (t1.y * 292 / (-t1.z))),
+        return new Vector3f(Math.round((this.width / 2) + (292 * t1.x / (-t1.z))),
+            Math.round((this.height / 2) - (t1.y * 292 / (-t1.z))),
             t1.z);
     }
 
@@ -1233,19 +1234,19 @@ export class Framebuffer {
     public drawBox() {
         const height = Framebuffer.maxWindow.y - Framebuffer.minWindow.y + 1;
         const width = Framebuffer.maxWindow.x - Framebuffer.minWindow.x + 1;
-        let index = Framebuffer.minWindow.y * 320 + Framebuffer.minWindow.x;
+        let index = Framebuffer.minWindow.y * this.width + Framebuffer.minWindow.x;
         for (let i = 0; i < height; i++) {
             this.framebuffer.fill(255 << 24 | 55 << 16 | 55 << 8 | 55, index, index + width);
-            index += 320;
+            index += this.width;
         }
     }
 
     public drawBox2(x1: number, y1: number, width: number, height: number, color: number) {
 
-        let index = y1 * 320 + x1;
+        let index = y1 * this.width + x1;
         for (let i = 0; i < height; i++) {
             this.framebuffer.fill(color, index, index + width);
-            index += 320;
+            index += this.width;
         }
     }
 
@@ -1296,14 +1297,14 @@ export class Framebuffer {
             const y = transformed.y;
             const z = transformed.z;
 
-            const xx = (320 * 0.5) + (x / (-z * 0.0078));
-            const yy = (200 * 0.5) + (y / (-z * 0.0078));
+            const xx = (this.width * 0.5) + (x / (-z * 0.0078));
+            const yy = (this.height * 0.5) + (y / (-z * 0.0078));
 
             points2.push(new Vector3f(xx, yy, z));
         }
 
         // draw clip region
-        const colred = 255 << 24 | 230 << 16 | 200 << 16 | 200;
+        const colred = 255 << 24 | 230 << 16 | this.height << 16 | this.height;
         this.drawLineDDA(new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.minWindow.y - 1, 0), new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.maxWindow.y + 1, 0), colred);
         this.drawLineDDA(new Vector3f(Framebuffer.maxWindow.x + 1, Framebuffer.minWindow.y - 1, 0), new Vector3f(Framebuffer.maxWindow.x + 1, Framebuffer.maxWindow.y + 1, 0), colred);
         this.drawLineDDA(new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.minWindow.y - 1, 0), new Vector3f(Framebuffer.maxWindow.x + 1, Framebuffer.minWindow.y - 1, 0), colred);
@@ -1388,7 +1389,7 @@ export class Framebuffer {
 
             for (let i = 0; i < index.length; i += 2) {
                 let scale = (1 - Math.min(255, -points2[index[i]].z * 0.9) / 255);
-                let color = (255 * scale) << 8 | 100 * scale | (200 * scale) << 16 | 255 << 24;
+                let color = (255 * scale) << 8 | 100 * scale | (this.height * scale) << 16 | 255 << 24;
                 this.nearPlaneClipping(points2[index[i]], points2[index[i + 1]], color);
             }
         }
@@ -1448,10 +1449,10 @@ export class Framebuffer {
     public drawPlanedeformationTunnelAnim(elapsedTime: number, texture: Texture) {
 
         let i = 0;
-        for (let y = 0; y < 200; y++) {
-            for (let x = 0; x < 320; x++) {
-                const xdist = (x - 320 / 2);
-                const ydist = (y - 200 / 2);
+        for (let y = 0; y < this.height; y++) {
+            for (let x = 0; x < this.width; x++) {
+                const xdist = (x - this.width / 2);
+                const ydist = (y - this.height / 2);
                 const dist = 256 * 0.2 / Math.max(1.0, Math.sqrt(xdist * xdist + ydist * ydist));
                 const dist2 = dist + elapsedTime * 0.002;
                 const angle = (Math.atan2(xdist, ydist) / Math.PI + 1.0) * 16 + elapsedTime * 0.00069;
@@ -1478,13 +1479,13 @@ export class Framebuffer {
      */
     public drawPlanedeformationTunnelV2(elapsedTime: number, texture: Texture) {
         let i = 0;
-        for (let y = 0; y < 200; y++) {
-            for (let x = 0; x < 320; x++) {
+        for (let y = 0; y < this.height; y++) {
+            for (let x = 0; x < this.width; x++) {
                 const scale = 1.2;
-                const xdist = (x - 320 / 2) + Math.sin(elapsedTime * 0.0001) * 80 * scale;
-                const ydist = (y - 200 / 2) + Math.cos(elapsedTime * 0.0001) * 80 * scale;
-                const xdist2 = (x - 320 / 2) + Math.sin(elapsedTime * 0.0001 + Math.PI) * 80 * scale;
-                const ydist2 = (y - 200 / 2) + Math.cos(elapsedTime * 0.0001 + Math.PI) * 80 * scale;
+                const xdist = (x - this.width / 2) + Math.sin(elapsedTime * 0.0001) * 80 * scale;
+                const ydist = (y - this.height / 2) + Math.cos(elapsedTime * 0.0001) * 80 * scale;
+                const xdist2 = (x - this.width / 2) + Math.sin(elapsedTime * 0.0001 + Math.PI) * 80 * scale;
+                const ydist2 = (y - this.height / 2) + Math.cos(elapsedTime * 0.0001 + Math.PI) * 80 * scale;
                 let dist = 256 * 20 / Math.max(1.0, Math.sqrt(xdist * xdist + ydist * ydist));
                 dist += Math.sin(Math.atan2(xdist, ydist) * 5) * 8;
                 let dist2 = 256 * 20 / Math.max(1.0, Math.sqrt(xdist2 * xdist2 + ydist2 * ydist2));
@@ -1570,8 +1571,8 @@ export class Framebuffer {
 
     public drawScreenBounds(framebuffer: Framebuffer): void {
         const color: number = Color.WHITE.toPackedFormat();
-        const width: number = 320 / 2;
-        const height: number = 200 / 2;
+        const width: number = this.width / 2;
+        const height: number = this.height / 2;
 
         framebuffer.drawLineDDANoZ(
             new Vector3f(width / 2, height / 2, 0),
@@ -1658,12 +1659,12 @@ export class Framebuffer {
 
         let framebufferIndex = 0;
 
-        for (let y = 0; y < 200; y++) {
-            const yy = (-1.00 + 2.00 * y / 200);
+        for (let y = 0; y < this.height; y++) {
+            const yy = (-1.00 + 2.00 * y / this.height);
 
-            for (let x = 0; x < 320; x++) {
+            for (let x = 0; x < this.width; x++) {
 
-                const xx = (-1.00 + 2.00 * x / 320);
+                const xx = (-1.00 + 2.00 * x / this.width);
 
                 // magic formulas here
                 const u = ((xx / Math.abs(yy)) * IMG_WIDTH * 0.05) | 0;
@@ -1771,12 +1772,12 @@ export class Framebuffer {
             let y = transformed.y;
             let z = transformed.z; // TODO: use translation matrix!
 
-            let xx = (320 * 0.5) + (x / (-z * 0.0078));
-            let yy = (200 * 0.5) + (y / (-z * 0.0078));
+            let xx = (this.width * 0.5) + (x / (-z * 0.0078));
+            let yy = (this.height * 0.5) + (y / (-z * 0.0078));
             // commented out because it breaks the winding. inversion
             // of y has to be done after back-face culling in the
             // viewport transform
-            // yy =(200 * 0.5) - (y / (-z * 0.0078));
+            // yy =(this.height * 0.5) - (y / (-z * 0.0078));
 
             points2.push(new Vector4f(Math.round(xx), Math.round(yy), z));
         }
@@ -1793,7 +1794,7 @@ export class Framebuffer {
             // Only render triangles with CCW-ordered vertices
             //
             // Reference:
-            // David H. Eberly (2006).
+            // David H. Eberly (this.height6).
             // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
             // p. 69. Morgan Kaufmann Publishers, United States.
             //
@@ -2094,8 +2095,8 @@ export class Framebuffer {
         for (let p = 0; p < points.length; p++) {
             let transformed = modelViewMartrix.multiply(points[p]);
 
-            points2[p].x = Math.round((320 * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
-            points2[p].y = Math.round((200 * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
+            points2[p].x = Math.round((this.width * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
+            points2[p].y = Math.round((this.height * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
             points2[p].z = transformed.z;
         }
 
@@ -2111,7 +2112,7 @@ export class Framebuffer {
             // Only render triangles with CCW-ordered vertices
             //
             // Reference:
-            // David H. Eberly (2006).
+            // David H. Eberly (this.height6).
             // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
             // p. 69. Morgan Kaufmann Publishers, United States.
             //
@@ -2234,8 +2235,8 @@ export class Framebuffer {
         for (let p = 0; p < points.length; p++) {
             let transformed = modelViewMartrix.multiply(points[p]);
 
-            points2[p].x = Math.round((320 * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
-            points2[p].y = Math.round((200 * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
+            points2[p].x = Math.round((this.width * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
+            points2[p].y = Math.round((this.height * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
             points2[p].z = transformed.z;
         }
 
@@ -2251,7 +2252,7 @@ export class Framebuffer {
             // Only render triangles with CCW-ordered vertices
             //
             // Reference:
-            // David H. Eberly (2006).
+            // David H. Eberly (this.height6).
             // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
             // p. 69. Morgan Kaufmann Publishers, United States.
             //
@@ -2369,8 +2370,8 @@ export class Framebuffer {
         for (let p = 0; p < points.length; p++) {
             let transformed = modelViewMartrix.multiply(points[p]);
 
-            points2[p].x = Math.round((320 * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
-            points2[p].y = Math.round((200 * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
+            points2[p].x = Math.round((this.width * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
+            points2[p].y = Math.round((this.height * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
             points2[p].z = transformed.z;
         }
 
@@ -2386,7 +2387,7 @@ export class Framebuffer {
             // Only render triangles with CCW-ordered vertices
             //
             // Reference:
-            // David H. Eberly (2006).
+            // David H. Eberly (this.height6).
             // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
             // p. 69. Morgan Kaufmann Publishers, United States.
             //
@@ -2502,8 +2503,8 @@ export class Framebuffer {
         for (let p = 0; p < points.length; p++) {
             let transformed = modelViewMartrix.multiply(points[p]);
 
-            points2[p].x = Math.round((320 * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
-            points2[p].y = Math.round((200 * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
+            points2[p].x = Math.round((this.width * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
+            points2[p].y = Math.round((this.height * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
             points2[p].z = transformed.z;
         }
 
@@ -2627,8 +2628,8 @@ export class Framebuffer {
         for (let p = 0; p < points.length; p++) {
             let transformed = modelViewMartrix.multiply(points[p]);
 
-            points2[p].x = Math.round((320 * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
-            points2[p].y = Math.round((200 * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
+            points2[p].x = Math.round((this.width * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
+            points2[p].y = Math.round((this.height * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
             points2[p].z = transformed.z;
         }
 
@@ -2702,9 +2703,9 @@ export class Framebuffer {
         const pos = screenPos;
 
         if (pos.z < 0 &&
-            pos.x > 0 && pos.x < 320 &&
-            pos.y > 0 && pos.y < 200 &&
-            this.wBuffer[pos.x + (pos.y * 320)] > (1 / pos.z)) {
+            pos.x > 0 && pos.x < this.width &&
+            pos.y > 0 && pos.y < this.height &&
+            this.wBuffer[pos.x + (pos.y * this.width)] > (1 / pos.z)) {
             if (!this.lensFlareVisible) {
                 this.lensFlareVisible = true;
                 this.lensFlareStart = elapsedTime;
@@ -2720,7 +2721,7 @@ export class Framebuffer {
         if (this.lensFlareVisible !== true) {
             scale *= (1 - this.interpolate(this.lensFlareEnd, this.lensFlareEnd + 100, elapsedTime));
         }
-        const dir = new Vector3f(320 / 2, 200 / 2, 0).sub(pos);
+        const dir = new Vector3f(this.width / 2, this.height / 2, 0).sub(pos);
 
         if (scale > 0) {
             for (let i = 0; i < texture.length; i++) {
@@ -2729,7 +2730,7 @@ export class Framebuffer {
             }
         }
 
-        this.drawTextureRectAdd(0, 0, 0, 0, 320, 200, dirt, 0.03 + 0.15 * scale);
+        this.drawTextureRectAdd(0, 0, 0, 0, this.width, this.height, dirt, 0.03 + 0.15 * scale);
     }
 
     public drawLineDDA(start: Vector3f, end: Vector3f, color: number): void {

@@ -89,7 +89,7 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
             const length = Math.round(xPosition2) - Math.round(xPosition);
             this.rowColorInterpolator.setup(
                 this.colorInterpolator1.startColor, this.colorInterpolator2.startColor, length);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition);
             const spanzStep = (curz2 - curz1) / length;
             let wStart = curz1;
             for (let j = 0; j < length; j++) {
@@ -145,7 +145,7 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
             const length = Math.round(xPosition2) - Math.round(xPosition);
             this.rowColorInterpolator.setup(
                 this.colorInterpolator1.startColor, this.colorInterpolator2.startColor, length);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition);
             for (let j = 0; j < length; j++) {
                 const wStart = (curz2 - curz1) / (length) * j + curz1;
                 if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
@@ -200,7 +200,7 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
             const length = Math.round(xPosition2) - Math.round(xPosition);
             this.rowColorInterpolator.setup(
                 this.colorInterpolator1.startColor, this.colorInterpolator2.startColor, length);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition);
             const spanzStep = (curz2 - curz1) / length;
             let wStart = curz1;
             for (let j = 0; j < length; j++) {
@@ -243,7 +243,7 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
             const length = Math.round(xPosition2) - Math.round(xPosition);
             this.rowColorInterpolator.setup(
                 this.colorInterpolator3.startColor, this.colorInterpolator2.startColor, length);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition);
             const spanzStep = (curz2 - curz1) / length;
             let wStart = curz1;
             for (let j = 0; j < length; j++) {
@@ -300,7 +300,7 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
             const length = Math.round(xPosition2) - Math.round(xPosition);
             this.rowColorInterpolator.setup(
                 this.colorInterpolator1.startColor, this.colorInterpolator2.startColor, length);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition);
+            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition);
             const spanzStep = (curz2 - curz1) / length;
             let wStart = curz1;
             for (let j = 0; j < length; j++) {
@@ -343,7 +343,7 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
             const length = Math.round(xPosition2) - Math.round(xPosition);
             this.rowColorInterpolator.setup(
                 this.colorInterpolator1.startColor, this.colorInterpolator3.startColor, length);
-            let framebufferIndex = Math.round(yPosition) * 320 + Math.round(xPosition)
+            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition)
             const spanzStep = (curz2 - curz1) / length;
             let wStart = curz1;
             for (let j = 0; j < length; j++) {

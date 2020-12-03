@@ -12,9 +12,10 @@ export class DofBallsScene extends AbstractScene {
     private noise: Texture;
     private start: number;
 
-    private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
+    private accumulationBuffer: Uint32Array;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         this.start = Date.now();
         return Promise.all([
             TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
@@ -33,7 +34,7 @@ export class DofBallsScene extends AbstractScene {
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         this.drawParticleTorus(framebuffer, time, this.particleTexture2, true);
 
-        const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+        const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         framebuffer.drawTexture(0, 0, texture3, 0.60);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
 

@@ -15,10 +15,11 @@ export class RotatingGearsScene extends AbstractScene {
 
     private gearsMesh: Array<FlatshadedMesh>;
 
-    private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
+    private accumulationBuffer: Uint32Array;
     private renderingPipeline: FlatShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.FRONT);
 
@@ -52,9 +53,10 @@ export class RotatingGearsScene extends AbstractScene {
                 { tex: this.texture13, scale: -0.4, alpha: 0.22 },
             ], this.dirt);
             */
-        framebuffer.drawTexture(0, 75, this.hoodlumLogo, 0.6);
+        // place logo in center
+        framebuffer.drawTexture(Math.floor((framebuffer.width - this.hoodlumLogo.width) / 2), 75, this.hoodlumLogo, 0.6);
 
-        const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+        const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         framebuffer.drawTexture(0, 0, texture3, 0.75);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
 

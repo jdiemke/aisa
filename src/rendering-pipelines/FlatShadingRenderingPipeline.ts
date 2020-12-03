@@ -179,15 +179,15 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
 
     public project(t1: { x: number, y: number, z: number }): Vector4f {
         return new Vector4f(
-            Math.round((320 / 2) + (292 * t1.x / (-t1.z))),
-            Math.round((200 / 2) - (t1.y * 292 / (-t1.z))),
+            Math.round((this.framebuffer.width / 2) + (292 * t1.x / (-t1.z))),
+            Math.round((this.framebuffer.height / 2) - (t1.y * 292 / (-t1.z))),
             t1.z
         );
     }
 
     public project2(t1: { x: number, y: number, z: number }, result: Vector4f): void {
-        result.x = Math.round((320 / 2) + (292 * t1.x / (-t1.z)));
-        result.y = Math.round((200 / 2) - (t1.y * 292 / (-t1.z)));
+        result.x = Math.round((this.framebuffer.width / 2) + (292 * t1.x / (-t1.z)));
+        result.y = Math.round((this.framebuffer.height / 2) - (t1.y * 292 / (-t1.z)));
         result.z = t1.z;
     }
 

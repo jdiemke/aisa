@@ -14,7 +14,7 @@ export class BumpMap extends AbstractScene {
     private normals: Array<[number, number]>;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.normals = new Array<[number, number]>(320 * 200);
+        this.normals = new Array<[number, number]>(framebuffer.width * framebuffer.height);
         this.phong = new Texture(new Uint32Array(256 * 256), 256, 256);
         for (let i = 0; i < 255; i++) {
             for (let j = 0; j < 255; j++) {
@@ -37,8 +37,8 @@ export class BumpMap extends AbstractScene {
             () => {
                 // precompute normal map
                 let framebufferIndex: number = 0;
-                for (let y = 0; y < 200; y++) {
-                    for (let x = 0; x < 320; x++) {
+                for (let y = 0; y < framebuffer.height; y++) {
+                    for (let x = 0; x < framebuffer.width; x++) {
                         const nx = ((this.bump.getPixel3(this.bump, x - 1, y) & 0xff) - (this.bump.getPixel3(this.bump, x + 1, y) & 0xff));
                         const ny = ((this.bump.getPixel3(this.bump, x, y - 1) & 0xff) - (this.bump.getPixel3(this.bump, x, y + 1) & 0xff));
                         this.normals[framebufferIndex++] = [nx, ny];
@@ -49,13 +49,20 @@ export class BumpMap extends AbstractScene {
 
     public render(framebuffer: Framebuffer): void {
         const elapsedTime: number = Date.now();
-        framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.bump.texture);
+        // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.bump.texture);
+
+        /*
+        framebuffer.drawScaledTextureClipBi(
+            0,
+            0,
+            framebuffer.width, framebuffer.height, this.bump, 1.0);
+            */
 
         let framebufferIndex: number = 0;
-        const lightPosX = - Math.sin(2 * elapsedTime * 0.0008) * 160 - 160;
-        const lightPosY = - Math.sin(3 * elapsedTime * 0.0008) * 100 - 100;
-        for (let y = 0; y < 200; y++) {
-            for (let x = 0; x < 320; x++) {
+        const lightPosX = - Math.sin(2 * elapsedTime * 0.0008) * (framebuffer.width/2) - (framebuffer.width/2);
+        const lightPosY = - Math.sin(3 * elapsedTime * 0.0008) * (framebuffer.height/2) - (framebuffer.height/2);
+        for (let y = 0; y < framebuffer.height; y++) {
+            for (let x = 0; x < framebuffer.width; x++) {
 
                 const lx = x + lightPosX;
                 const ly = y + lightPosY;
