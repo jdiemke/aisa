@@ -1,12 +1,7 @@
-import { Canvas } from '../../Canvas';
-import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 
-/**
- * TODO: extract lens into effect class
- */
 export class RotoZoomerScene extends AbstractScene {
 
     private logoTexture: Texture;
@@ -39,11 +34,11 @@ export class RotoZoomerScene extends AbstractScene {
         let texXCoordInner = 0;
         let framebufferPos = 0;
 
-        for (let y = 0; y < 200; y++) {
+        for (let y = 0; y < framebuffer.height; y++) {
             texXCoordInner = texXCoord;
             texYCoordInner = texYCoord;
 
-            for (let x = 0; x < 320; x++) {
+            for (let x = 0; x < framebuffer.width; x++) {
                 framebuffer.framebuffer[framebufferPos++] = texture.texture[(texXCoordInner & 63) + (texYCoordInner & 0xff) * 64];
 
                 texXCoordInner += xStepX;

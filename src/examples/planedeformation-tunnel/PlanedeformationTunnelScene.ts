@@ -42,8 +42,8 @@ export class PlanedeformationTunnelScene extends AbstractScene {
             framebuffer.cosineInterpolate(15, 200, smashTime) +
             0.4 * framebuffer.cosineInterpolate(200, 300, smashTime) -
             0.4 * framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
-        this.scaleClipBlitter.drawScaledTextureClip((320 / 2 - (this.hoodlumLogo.width + smash) / 2) | 0,
-            (200 / 2 - (this.hoodlumLogo.height - smash) / 2) | 0, this.hoodlumLogo.width + smash, (this.hoodlumLogo.height - smash) | 0, this.hoodlumLogo, 1.0);
+        this.scaleClipBlitter.drawScaledTextureClip((framebuffer.width / 2 - (this.hoodlumLogo.width + smash) / 2) | 0,
+            (framebuffer.height / 2 - (this.hoodlumLogo.height - smash) / 2) | 0, this.hoodlumLogo.width + smash, (this.hoodlumLogo.height - smash) | 0, this.hoodlumLogo, 1.0);
     }
 
     /**
@@ -57,10 +57,10 @@ export class PlanedeformationTunnelScene extends AbstractScene {
     drawPlanedeformationTunnel(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, texture2: Texture) {
 
         let i = 0;
-        for (let y = 0; y < 200; y++) {
-            for (let x = 0; x < 320; x++) {
-                const xdist = (x - 320 / 2);
-                const ydist = (y - 200 / 2);
+        for (let y = 0; y < framebuffer.height; y++) {
+            for (let x = 0; x < framebuffer.width; x++) {
+                const xdist = (x - framebuffer.width / 2);
+                const ydist = (y - framebuffer.height / 2);
                 let dist = 256 * 20 / Math.max(1.0, Math.sqrt(xdist * xdist + ydist * ydist));
                 let dist2 = dist;
                 dist += elapsedTime * 0.02;

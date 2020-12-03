@@ -106,8 +106,8 @@ export class PortalScene extends AbstractScene {
 
     private drawScreenBounds(framebuffer: Framebuffer): void {
         const color: number = Color.WHITE.toPackedFormat();
-        const width: number = 320 / 2;
-        const height: number = 200 / 2;
+        const width: number = framebuffer.width / 2;
+        const height: number = framebuffer.height / 2;
 
         framebuffer.drawLineDDANoZ(
             new Vector3f(width / 2, height / 2, 0),

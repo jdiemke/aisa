@@ -24,29 +24,34 @@ export class CinematicScroller extends AbstractScene {
 
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
-        framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.ledTexture.texture);
+        // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.ledTexture.texture);
+        framebuffer.drawScaledTextureClipBi(
+            0,
+            0,
+            framebuffer.width, framebuffer.height, this.ledTexture, 1.0);
+
         this.cinematicScroller(framebuffer, this.texture4, time - 140000);
     }
 
     public floodFill(framebuffer: Framebuffer, texture: Texture, time: number): void {
-        const pos: number = Math.floor(time * 0.02) % 200;
-        let index: number = 320 * 200;
+        const pos: number = Math.floor(time * 0.02) % framebuffer.height;
+        let index: number = framebuffer.width * framebuffer.height;
 
         for (let y = 0; y < pos; y++) {
-            for (let x = 0; x < 320; x++) {
+            for (let x = 0; x < framebuffer.width; x++) {
                 framebuffer.framebuffer[index] = texture.texture[index];
                 index--;
             }
         }
 
         let index2 = index;
-        for (let y = 0; y < 200 - pos; y++) {
-            for (let x = 0; x < 320; x++) {
+        for (let y = 0; y < framebuffer.height - pos; y++) {
+            for (let x = 0; x < framebuffer.width; x++) {
                 framebuffer.framebuffer[index] = texture.texture[index2];
                 index--;
                 index2--;
             }
-            index2 += 320;
+            index2 += framebuffer.width;
         }
     }
 
@@ -77,9 +82,9 @@ export class CinematicScroller extends AbstractScene {
 
         const scrollerOffset = Math.round(framebuffer.interpolate(0, 250, time & 0xff) * 8);
 
-        for (let i = 1; i < 200 / 8; i++) {
+        for (let i = 1; i < framebuffer.height / 8; i++) {
             const text = scrollText[Math.floor((i + (time / 256))) % scrollText.length];
-            const x = (320 / 2 - text.length * 8 / 2) | 0;
+            const x = (framebuffer.width / 2 - text.length * 8 / 2) | 0;
             const y = 8 * i - scrollerOffset;
             // TODO: proper text clipping to rect
             // maybe just for first and last row

@@ -42,8 +42,8 @@ export class TorusScene extends AbstractScene {
 
     private drawTitanEffect(framebuffer: Framebuffer) {
         framebuffer.clear();
-        const horizontalNum = 320 / 20;
-        const verticalNum = 200 / 20;
+        const horizontalNum = framebuffer.width / 20;
+        const verticalNum = framebuffer.height / 20;
 
         for (let x = 0; x < horizontalNum; x++) {
             for (let y = 0; y < verticalNum; y++) {

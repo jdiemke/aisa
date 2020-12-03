@@ -19,35 +19,35 @@ export class ScaleClipBlitter {
         let xStart: number;
 
         if (yp + height < 0 ||
-            yp > 199 ||
+            yp > (this.framebuffer.height - 1) ||
             xp + width < 0 ||
-            xp > 319) {
+            xp > (this.framebuffer.width - 1)) {
             return;
         }
 
         if (yp < 0) {
             yy = yStep * -yp;
-            newHeight = (height + yp) - Math.max(yp + height - 200, 0);
+            newHeight = (height + yp) - Math.max(yp + height - this.framebuffer.height, 0);
             yStart = 0;
         } else {
             yStart = yp;
-            newHeight = height - Math.max(yp + height - 200, 0);
+            newHeight = height - Math.max(yp + height - this.framebuffer.height, 0);
         }
 
         let xTextureStart: number;
 
         if (xp < 0) {
             xTextureStart = xx = xStep * -xp;
-            newWidth = (width + xp) - Math.max(xp + width - 320, 0);
+            newWidth = (width + xp) - Math.max(xp + width - this.framebuffer.width, 0);
             xStart = 0;
         } else {
             xTextureStart = 0;
             xStart = xp;
-            newWidth = width - Math.max(xp + width - 320, 0);
+            newWidth = width - Math.max(xp + width - this.framebuffer.width, 0);
         }
 
         const alphaScale = 1 / 255 * alphaBlend;
-        let index2 = (xStart) + (yStart) * 320;
+        let index2 = (xStart) + (yStart) * this.framebuffer.width;
         for (let y = 0; y < newHeight; y++) {
             for (let x = 0; x < newWidth; x++) {
                 const textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
@@ -68,7 +68,7 @@ export class ScaleClipBlitter {
             }
             yy += yStep;
             xx = xTextureStart;
-            index2 += -newWidth + 320;
+            index2 += -newWidth + this.framebuffer.width;
         }
     }
 

@@ -19,9 +19,10 @@ export class MetalHeadzScene extends AbstractScene {
 
     private blenderObjMetal: any;
 
-    private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
+    private accumulationBuffer: Uint32Array;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         framebuffer.setCullFace(CullFace.BACK);
         this.skyBox = new SkyBox();
         // TODO:
@@ -81,7 +82,7 @@ export class MetalHeadzScene extends AbstractScene {
             { tex: this.texture13, scale: -0.4, alpha: 0.22 },
         ], this.dirt);
 
-        const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+        const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         framebuffer.drawTexture(0, 0, texture3, 0.75);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
         framebuffer.noise(time, this.noise);

@@ -59,7 +59,7 @@ export class VoxelLandscapeScene extends AbstractScene {
         const center = 300;
         const eye = 260;
 
-        for (let x = 0; x < 320; x++) {
+        for (let x = 0; x < framebuffer.width; x++) {
             const dirX = Math.cos(time * 0.0005 + x * 0.005) * 0.4;
             const dirY = Math.sin(time * 0.0005 + x * 0.005) * 0.4;
 
@@ -76,15 +76,15 @@ export class VoxelLandscapeScene extends AbstractScene {
                 const packedRGB = 255 << 24 | (color + 10) << 16 | (color + 20) << 8 | (color + 13);
 
                 if (projHeight > highestPoint) {
-                    let index = x + (199 - highestPoint) * 320;
-                    const max = Math.min(projHeight, 200);
+                    let index = x + ((framebuffer.height - 1) - highestPoint) * framebuffer.width;
+                    const max = Math.min(projHeight, framebuffer.height);
 
                     for (let i = highestPoint; i < max; i++) {
                         framebuffer.framebuffer[index] = packedRGB;
-                        index -= 320;
+                        index -= framebuffer.width;
                     }
 
-                    if (max === 200) {
+                    if (max === framebuffer.height) {
                         break;
                     }
 
@@ -110,7 +110,7 @@ export class VoxelLandscapeScene extends AbstractScene {
         const center = 300;
         const eye = 480;
 
-        for (let x = 0; x < 320; x++) {
+        for (let x = 0; x < framebuffer.width; x++) {
             const dirX = Math.cos(time * 0.0005 + x * 0.0018) * 0.4;
             const dirY = Math.sin(time * 0.0005 + x * 0.0018) * 0.4;
 
@@ -126,15 +126,15 @@ export class VoxelLandscapeScene extends AbstractScene {
                 const packedRGB = texture.getPixel(this.abstract, rayX, rayY) | 255 << 24;
 
                 if (projHeight > highestPoint) {
-                    let index = x + (199 - highestPoint) * 320;
-                    const max: number = Math.min(projHeight, 200);
+                    let index = x + ((framebuffer.height - 1) - highestPoint) * framebuffer.width;
+                    const max: number = Math.min(projHeight, framebuffer.height);
 
                     for (let i: number = highestPoint; i < max; i++) {
                         framebuffer.framebuffer[index] = packedRGB;
-                        index -= 320;
+                        index -= framebuffer.width;
                     }
 
-                    if (max === 200) {
+                    if (max === framebuffer.height) {
                         break;
                     }
 

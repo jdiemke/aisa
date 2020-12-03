@@ -20,18 +20,18 @@ import { Texture, TextureUtils } from '../../texture';
 
 export class VoxelLandScapeFadeScene extends AbstractScene {
     private MAP_BIT_SIZE: number = 8; // 8  = 256x256 , 9 = 512x512
-    private RENDERWIDTH: number = 320;
-    private RENDERHEIGHT: number = 200;
-    private RENDERLENGTH: number = this.RENDERWIDTH * this.RENDERHEIGHT;
-    private MAPWIDTH: number = 1 << this.MAP_BIT_SIZE; // texture size.  if mapbit is 9 then 2^9 = 512
-    private MAPWIDTH_MIN_1: number = this.MAPWIDTH - 1;
-    private MAPSIZE: number = this.MAPWIDTH * this.MAPWIDTH;
+    private RENDERWIDTH: number;
+    private RENDERHEIGHT: number;
+    private RENDERLENGTH: number;
+    private MAPWIDTH: number; // texture size.  if mapbit is 9 then 2^9 = 512
+    private MAPWIDTH_MIN_1: number;
+    private MAPSIZE;
 
-    private sinTable: Array<number> = [3600];
-    private cosTable: Array<number> = [3600];
-    private heightMap: Uint32Array = new Uint32Array(this.MAPSIZE);
-    private texelMap: Uint32Array = new Uint32Array(this.RENDERLENGTH);
-    private colorLut: Uint32Array = new Uint32Array(65536);
+    private sinTable: Array<number>;
+    private cosTable: Array<number>;
+    private heightMap: Uint32Array;
+    private texelMap: Uint32Array;
+    private colorLut: Uint32Array;
 
     private playerX: number = 20;
     private playerY: number = 0;
@@ -46,6 +46,21 @@ export class VoxelLandScapeFadeScene extends AbstractScene {
     private colormap: Texture;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+
+        this.MAP_BIT_SIZE = 8; // 8  = 256x256 , 9 = 512x512
+        this.RENDERWIDTH = framebuffer.width;
+        this.RENDERHEIGHT = framebuffer.height;
+        this.RENDERLENGTH = this.RENDERWIDTH * this.RENDERHEIGHT;
+        this.MAPWIDTH = 1 << this.MAP_BIT_SIZE; // texture size.  if mapbit is 9 then 2^9 = 512
+        this.MAPWIDTH_MIN_1 = this.MAPWIDTH - 1;
+        this.MAPSIZE = this.MAPWIDTH * this.MAPWIDTH;
+
+        this.sinTable = [3600];
+        this.cosTable = [3600];
+        this.heightMap = new Uint32Array(this.MAPSIZE);
+        this.texelMap = new Uint32Array(this.RENDERLENGTH);
+        this.colorLut = new Uint32Array(65536);
+
         return Promise.all([
             TextureUtils.load(require('./assets/height_256.png'), false).then(
                 (texture: Texture) => this.voxelmap = texture

@@ -1,8 +1,14 @@
+// Synthwave
+// https://codepen.io/H2xDev/pen/YMPJeP
+// https://codepen.io/H2xDev/details/MRYoEM
+// https://codepen.io/H2xDev/pen/dyPGKBy
+
 // Core
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { SoundManager } from '../../sound/SoundManager';
+import { Color } from '../../core/Color';
 
 // Effects
 import { AbstractCube } from '../abstract-cube/AbstractCube';
@@ -172,13 +178,13 @@ export class DemoScene extends AbstractScene {
         // Stats - Memory in Megabytes stats
         this.statsMEM = new Stats();
         this.statsMEM.showPanel(2);
-        this.statsMEM.dom.style.cssText = `position:absolute;top:0px;left:640px;`;
+        this.statsMEM.dom.style.cssText = `position:absolute;top:0px;left:${framebuffer.width * 2}px;`;
         document.body.appendChild(this.statsMEM.dom);
 
         // Stats - Frames per Seconds
         this.statsFPS = new Stats();
         this.statsFPS.showPanel(0);
-        this.statsFPS.dom.style.cssText = 'position:absolute;top:50px;left:640px;';
+        this.statsFPS.dom.style.cssText = `position:absolute;top:50px;left:${framebuffer.width * 2}px;`;
         document.body.appendChild(this.statsFPS.dom);
 
         // Scene Playback Controls
@@ -264,8 +270,6 @@ export class DemoScene extends AbstractScene {
         this.WavefrontScene = new WavefrontScene();
         this.WaveFrontTextureScene = new WaveFrontTextureScene();
 
-        this.sineScrollerScene.init(framebuffer);
-
         // initialize effects with progress
         return this.allProgress([
             // load music
@@ -337,15 +341,22 @@ export class DemoScene extends AbstractScene {
             this.WavefrontScene.init(framebuffer),
             this.TwisterScene.init(framebuffer)
         ], (percent: number) => {
-            // update the progress bar
-            const outputX = 640 / (100 / percent);
-            loadingRef.style.width = `${outputX}px`;
+            // update the progress bar via canvas
+            const outputX = Math.ceil(framebuffer.width * percent);
+            framebuffer.drawRect2(0, (framebuffer.height / 2) - 5, outputX, 10, Color.WHITE.toPackedFormat());
+
+            // update the canvas
+            const canvas = document.getElementById('aisa-canvas') as HTMLCanvasElement;
+            canvas.getContext('2d').putImageData(framebuffer.getImageData(), 0, 0);
+
+            // update memory usage
             this.statsMEM.update();
         });
     };
 
+    // this runs after init() has finished
     public onInit(): void {
-        document.getElementById('loading').style.width = `0px`;
+
     }
 
     private allProgress(proms: Array<Promise<void>>, progressCallback: Function) {
@@ -354,7 +365,7 @@ export class DemoScene extends AbstractScene {
         for (const p of proms) {
             p.then(() => {
                 d++;
-                progressCallback((d * 100) / proms.length);
+                progressCallback(d / proms.length);
             });
         }
         return Promise.all(proms);
@@ -437,7 +448,6 @@ export class DemoScene extends AbstractScene {
                 break;
             case 3:
                 this.sineScrollerScene.render(framebuffer, this.timeMilliseconds);
-                framebuffer.fastFramebufferCopy(this.lensScene.textureBackground.texture, framebuffer.framebuffer);
                 break;
             case 3.5:
                 this.transition(framebuffer, this.sineScrollerScene, this.DofBallsScene, TransitionMethods.BLOCKFADE);
@@ -660,6 +670,8 @@ export class DemoScene extends AbstractScene {
         this._row = this.timeSeconds * this.ROW_RATE;
 
         this._currentEffect = this._effect.getValue(this._row).toFixed(1);
+
+
 
         // update JS rocket
         if (this.sm._audio.paused === false) {

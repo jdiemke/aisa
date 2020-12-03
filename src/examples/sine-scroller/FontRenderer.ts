@@ -53,7 +53,7 @@ export class FontRenderer {
         const xOff: number = Math.floor(time * speed) % this.width;
         const textOff: number = Math.floor((time * speed) / this.width) % text.length;
         xpos -= xOff;
-        for (let i: number = 0; i < Math.floor(320 / this.width + 1); i++) {
+        for (let i: number = 0; i < Math.floor(this.framebuffer.width / this.width + 1); i++) {
             const asciiCode: number = text.charCodeAt((i + textOff) % text.length);
             const index: number = this.charToIndex.has(asciiCode) ? this.charToIndex.get(asciiCode) : 0;
             const tx: number = Math.floor(index % xFonts) * this.width;
@@ -67,12 +67,12 @@ export class FontRenderer {
     public drawTextureRectFastAlpha(xs: number, ys: number, xt: number, yt: number,
         width: number, height: number, texture: Texture, time: number, sine: boolean = true): void {
         const startW: number = Math.max(0, 0 - xs);
-        const endW: number = Math.min(xs + width, 320) - xs;
+        const endW: number = Math.min(xs + width, this.framebuffer.width) - xs;
         for (let w: number = startW; w < endW; w++) {
 
             const yDisp: number = sine ? Math.round(Math.sin(time * 0.004 + (xs + w) * 0.013) * 30) : 0;
             let texIndex: number = xt + w + yt * texture.width;
-            let frIndex: number = xs + w + (ys + yDisp) * 320;
+            let frIndex: number = xs + w + (ys + yDisp) * this.framebuffer.width;
 
             for (let h: number = 0; h < height; h++) {
                 const color: number = texture.texture[texIndex];
@@ -81,7 +81,7 @@ export class FontRenderer {
                 }
 
                 texIndex += texture.width;
-                frIndex += 320;
+                frIndex += this.framebuffer.width;
             }
 
         }

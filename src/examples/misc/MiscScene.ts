@@ -66,9 +66,10 @@ export class MiscScene extends AbstractScene {
 
     private sm: SoundManager;
 
-    private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
+    private accumulationBuffer: Uint32Array;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         return Promise.all([
             this.createTexture(require('../../assets/spheremap.png'), false).then(texture => this.spheremap = texture),
             this.createTexture(require('../../assets/metall.png'), false).then(texture => this.metal = texture),

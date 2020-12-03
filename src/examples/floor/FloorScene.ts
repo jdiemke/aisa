@@ -39,10 +39,10 @@ export class FloorScene extends AbstractScene {
     public render(framebuffer: Framebuffer): void {
         this.drawPlanedeformationTunnel(framebuffer, Date.now(), this.heightmap);
 
-        this.fontRenderer2.drawText(0, 200 - 32 - 16,
+        this.fontRenderer2.drawText(0, framebuffer.height - 32 - 16,
             '              WELCOME TO A NEW RELEASE FROM YOUR FRIENDS IN CRIME! HOW DO YOU LIKE THIS INTRO?'
             , (Date.now() - this.startTime) * 0.8, false);
-        framebuffer.drawTexture(0, ((200 / 2) - (this.hoodlumLogo.height / 2)) | 0, this.hoodlumLogo, 1.0);
+        framebuffer.drawTexture(0, ((framebuffer.height / 2) - (this.hoodlumLogo.height / 2)) | 0, this.hoodlumLogo, 1.0);
     }
 
     /**
@@ -56,12 +56,12 @@ export class FloorScene extends AbstractScene {
     private drawPlanedeformationTunnel(framebuffer: Framebuffer, elapsedTime: number, texture2: Texture): void {
 
         let i = 0;
-        for (let y = 0; y < 200; y++) {
-            const ydist = (y - 200 / 2);
+        for (let y = 0; y < framebuffer.height; y++) {
+            const ydist = (y - framebuffer.height / 2);
             const v = (((1 / Math.abs(ydist / 100 * 0.02) + elapsedTime * 0.069) % 256) + 256) % 256;
             const alpha = 1 - Math.min(1, (1 / Math.abs(ydist / 10)));
-            for (let x = 0; x < 320; x++) {
-                const xdist = (x - (320 / 2));
+            for (let x = 0; x < framebuffer.width; x++) {
+                const xdist = (x - (framebuffer.width / 2));
 
                 const u = (((((xdist / 160) / Math.abs(ydist / 100 * 0.02))) % 256) + 256) % 256;
 

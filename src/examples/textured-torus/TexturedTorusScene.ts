@@ -150,9 +150,9 @@ export class TexturedTorusScene extends AbstractScene {
 
         const scrollerOffset = Math.round(framebuffer.interpolate(0, 250, time & 0xff) * 8);
 
-        for (let i = 1; i < 200 / 8; i++) {
+        for (let i = 1; i < framebuffer.height / 8; i++) {
             const text = scrollText[Math.floor((i + (time / 256))) % scrollText.length];
-            const x = (320 / 2 - text.length * 8 / 2) | 0;
+            const x = (framebuffer.width / 2 - text.length * 8 / 2) | 0;
             const y = 8 * i - scrollerOffset;
             // TODO: proper text clipping to rect
             // maybe just for first and last row

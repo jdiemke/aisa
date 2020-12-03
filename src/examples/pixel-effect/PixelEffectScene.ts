@@ -80,7 +80,7 @@ export class PixelEffectScene extends AbstractScene {
 
         for (let x = 0; x < this.pixels.length; x++) {
             const pos = this.pixels[x].getPos((Date.now() - this.startTime - this.pixels[x].startTime) * 0.0002, x);
-            if (pos.x < 0 || pos.x > 319 || pos.y < 0 || pos.y > 199) continue;
+            if (pos.x < 0 || pos.x > (framebuffer.width-1) || pos.y < 0 || pos.y > (framebuffer.height-1)) continue;
             const alpha =
                 Math.max(0, Math.min(1, (Date.now() - this.startTime - this.pixels[x].startTime) * 0.001));
             framebuffer.drawPixel4(pos.x, pos.y, this.pixels[x].pixel, alpha);
@@ -98,12 +98,12 @@ export class PixelEffectScene extends AbstractScene {
     drawPlanedeformationTunnel(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, texture2: Texture) {
 
         let i = 0;
-        for (let y = 0; y < 200; y++) {
-            const ydist = (y - 200 / 2);
+        for (let y = 0; y < framebuffer.height; y++) {
+            const ydist = (y - framebuffer.height / 2);
             const v = (((1 / Math.abs(ydist / 100 * 0.02) + elapsedTime * 0.069) % 256) + 256) % 256;
             const alpha = 1 - Math.min(1, (1 / Math.abs(ydist / 10)));
-            for (let x = 0; x < 320; x++) {
-                const xdist = (x - (320 / 2));
+            for (let x = 0; x < framebuffer.width; x++) {
+                const xdist = (x - (framebuffer.width / 2));
 
 
                 const u = (((((xdist / 160) / Math.abs(ydist / 100 * 0.02))) % 256) + 256) % 256;

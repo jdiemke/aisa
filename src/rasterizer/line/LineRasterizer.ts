@@ -36,8 +36,8 @@ export class LineRasterizerDda {
         const wDelta = (1 / end.z - 1 / start.z) / length;
 
         for (let i = 0; i <= length; i++) {
-            if (wStart < this.framebuffer.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320]) {
-                this.framebuffer.wBuffer[Math.round(xPosition) + Math.round(yPosition) * 320] = wStart;
+            if (wStart < this.framebuffer.wBuffer[Math.round(xPosition) + Math.round(yPosition) * this.framebuffer.width]) {
+                this.framebuffer.wBuffer[Math.round(xPosition) + Math.round(yPosition) * this.framebuffer.width] = wStart;
                 this.framebuffer.drawPixel(Math.round(xPosition), Math.round(yPosition), color);
             }
             xPosition += dx;

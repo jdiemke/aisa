@@ -43,21 +43,21 @@ export class TorusKnotScene extends AbstractScene {
         // framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
 
         framebuffer.drawScaledTextureClipAdd(
-            320 - (((time * 0.13) | 0) % (this.micro.width * 2 + 320)),
-            200 / 2 - 20,
+            framebuffer.width - (((time * 0.13) | 0) % (this.micro.width * 2 + framebuffer.width)),
+            framebuffer.height / 2 - 20,
             this.micro.width * 2, this.micro.height * 2, this.micro, 0.5);
 
         framebuffer.drawScaledTextureClipAdd(
-            (((time * 0.1) | 0) % (this.micro.width + 320)) - 320,
-            200 / 2 - 60,
+            (((time * 0.1) | 0) % (this.micro.width + framebuffer.width)) - framebuffer.width,
+            framebuffer.height / 2 - 60,
             this.micro.width, this.micro.height, this.micro, 0.5);
 
         framebuffer.setCullFace(CullFace.BACK);
         this.shadingTorus5(framebuffer, Date.now() * 0.03);
         /*
                 framebuffer.drawScaledTextureClipAdd(
-                    320 - (((time * 0.05) | 0) % (this.micro.width + 320)),
-                    200 / 2 - 60,
+                    framebuffer.width - (((time * 0.05) | 0) % (this.micro.width + framebuffer.width)),
+                    framebuffer.height / 2 - 60,
                     this.micro.width, this.micro.height, this.micro);*/
     }
 
@@ -71,8 +71,8 @@ export class TorusKnotScene extends AbstractScene {
         const rng = new RandomNumberGenerator();
         rng.setSeed((elapsedTime / 250) | 0);
         const texture2 = new Texture();
-        texture2.height = 200;
-        texture2.width = 320;
+        texture2.height = framebuffer.height;
+        texture2.width = framebuffer.width;
         texture2.texture = framebuffer.framebuffer;
         for (let x = 0; x < 16; x++) {
             for (let y = 0; y < 10; y++) {
@@ -108,15 +108,15 @@ export class TorusKnotScene extends AbstractScene {
                 const offset = Math.abs(Math.round(off * 25) + Math.round(rng2.getFloat() * 3)
                     + Math.round(Math.cos(y * 0.01 + elapsedTime * 0.002 + off) * scale * 5));
 
-                let index = yStart * 320;
-                let glIndex = yStart * 320 + 320 - offset;
+                let index = yStart * framebuffer.width;
+                let glIndex = yStart * framebuffer.width + framebuffer.width - offset;
 
                 for (let i = 0; i < Math.max(0, offset); i++) {
                     framebuffer.framebuffer[index++] = framebuffer.tmpGlitch[glIndex++];
                 }
 
-                glIndex = yStart * 320;
-                const count = 320 - offset;
+                glIndex = yStart * framebuffer.width;
+                const count = framebuffer.width - offset;
 
                 for (let i = 0; i < count; i++) {
                     framebuffer.framebuffer[index++] = framebuffer.tmpGlitch[glIndex++];

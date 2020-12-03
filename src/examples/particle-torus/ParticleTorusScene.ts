@@ -12,9 +12,10 @@ export class ParticleTorusScene extends AbstractScene {
     private noise: Texture;
     private start: number;
 
-    private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
+    private accumulationBuffer: Uint32Array;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         this.start = Date.now();
         return Promise.all([
             TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
@@ -31,28 +32,28 @@ export class ParticleTorusScene extends AbstractScene {
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         this.drawParticleTorus(framebuffer, time, this.particleTexture2, true);
 
-        const tmpGlitch: Uint32Array = new Uint32Array(320 * 200);
+        const tmpGlitch: Uint32Array = new Uint32Array(framebuffer.width * framebuffer.height);
         framebuffer.fastFramebufferCopy(tmpGlitch, framebuffer.framebuffer);
 
         const texture: Texture = new Texture();
         texture.texture = tmpGlitch;
-        texture.width = 320;
-        texture.height = 200;
+        texture.width = framebuffer.width;
+        texture.height = framebuffer.height;
 
         const ukBasslineBpm: number = 140;
         const ukBasslineClapMs: number = 60000 / ukBasslineBpm * 2;
         const smashTime: number = (Date.now() - this.start) % ukBasslineClapMs;
         const smash: number = (framebuffer.cosineInterpolate(0, 20, smashTime) -
             framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
-        const width: number = Math.round(320 + smash * 320 / 100);
-        const height: number = Math.round(200 + smash * 200 / 100);
+        const width: number = Math.round(framebuffer.width + smash * framebuffer.width / 100);
+        const height: number = Math.round(framebuffer.height + smash * framebuffer.height / 100);
 
         framebuffer.drawScaledTextureClipBi(
-            Math.round(320 / 2 - width / 2),
-            Math.round(200 / 2 - height / 2),
+            Math.round(framebuffer.width / 2 - width / 2),
+            Math.round(framebuffer.height / 2 - height / 2),
             width, height, texture, 1.0);
 
-        const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+        const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         framebuffer.drawTexture(0, 0, texture3, 0.85);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
 

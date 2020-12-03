@@ -19,9 +19,10 @@ export class CubeTunnelScene extends AbstractScene {
     private static BACKGROUND_COLOR: number = Color.DARK_GRAY.toPackedFormat();
     private renderingPipeline: FlatShadingRenderingPipeline;
     private cubeMesh: Cube = new Cube();
-    private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
+    private accumulationBuffer: Uint32Array;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         framebuffer.setCullFace(CullFace.BACK);
         this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
 
@@ -83,7 +84,7 @@ export class CubeTunnelScene extends AbstractScene {
         }
 
 
-        // const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+        // const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         //  framebuffer.drawTextureFullscreen(texture3, 0.75);
         //  framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
 

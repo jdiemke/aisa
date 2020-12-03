@@ -24,24 +24,24 @@ export class FloodFillScene extends AbstractScene {
     }
 
     public floodFill(framebuffer: Framebuffer, texture: Texture, time: number) {
-        const pos = Math.floor(time * 0.02) % 200;
-        let index = 320 * 200;
+        const pos = Math.floor(time * 0.02) % framebuffer.height;
+        let index = framebuffer.width * framebuffer.height;
 
         for (let y = 0; y < pos; y++) {
-            for (let x = 0; x < 320; x++) {
+            for (let x = 0; x < framebuffer.width; x++) {
                 framebuffer.framebuffer[index] = texture.texture[index];
                 index--;
             }
         }
 
         let index2 = index;
-        for (let y = 0; y < 200 - pos; y++) {
-            for (let x = 0; x < 320; x++) {
+        for (let y = 0; y < framebuffer.height - pos; y++) {
+            for (let x = 0; x < framebuffer.width; x++) {
                 framebuffer.framebuffer[index] = texture.texture[index2];
                 index--;
                 index2--;
             }
-            index2 += 320;
+            index2 += framebuffer.width;
         }
     }
 

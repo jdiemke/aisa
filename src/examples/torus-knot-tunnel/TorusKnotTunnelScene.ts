@@ -38,8 +38,8 @@ export class TorusKnotTunnelScene extends AbstractScene {
         const time: number = Date.now();
         this.torusTunnel(framebuffer, time * 0.019, this.particleTexture);
         framebuffer.drawScaledTextureClipAdd(
-            320 / 2 - this.cocoon.width / 2,
-            200 / 2 - this.cocoon.height / 2,
+            framebuffer.width / 2 - this.cocoon.width / 2,
+            framebuffer.height / 2 - this.cocoon.height / 2,
             this.cocoon.width, this.cocoon.height, this.cocoon, 0.67);
 
         // framebuffer.noise(time, this.noise);
@@ -52,8 +52,8 @@ export class TorusKnotTunnelScene extends AbstractScene {
         const rng = new RandomNumberGenerator();
         rng.setSeed((elapsedTime / 250) | 0);
         const texture2 = new Texture();
-        texture2.height = 200;
-        texture2.width = 320;
+        texture2.height = framebuffer.height;
+        texture2.width = framebuffer.width;
         texture2.texture = framebuffer.framebuffer;
         for (let x = 0; x < 16; x++) {
             for (let y = 0; y < 10; y++) {
@@ -89,15 +89,15 @@ export class TorusKnotTunnelScene extends AbstractScene {
                 const offset = Math.abs(Math.round(off * 25) + Math.round(rng2.getFloat() * 3)
                     + Math.round(Math.cos(y * 0.01 + elapsedTime * 0.002 + off) * scale * 5));
 
-                let index = yStart * 320;
-                let glIndex = yStart * 320 + 320 - offset;
+                let index = yStart * framebuffer.width;
+                let glIndex = yStart * framebuffer.width + framebuffer.width - offset;
 
                 for (let i = 0; i < Math.max(0, offset); i++) {
                     framebuffer.framebuffer[index++] = framebuffer.tmpGlitch[glIndex++];
                 }
 
-                glIndex = yStart * 320;
-                const count = 320 - offset;
+                glIndex = yStart * framebuffer.width;
+                const count = framebuffer.width - offset;
 
                 for (let i = 0; i < count; i++) {
                     framebuffer.framebuffer[index++] = framebuffer.tmpGlitch[glIndex++];

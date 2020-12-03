@@ -1,4 +1,3 @@
-import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f } from '../../math/Matrix4f';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
@@ -12,9 +11,10 @@ export class PlanedeformationTunnelScene extends AbstractScene {
     private metall: Texture;
     private metalheadz: Texture;
     private blenderObjMetal: Array<TexturedMesh>;
-    private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
+    private accumulationBuffer: Uint32Array;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         return Promise.all([
             BlenderLoader.loadWithTexture(require('../../assets/jsx/metalheadz.jsx')).then(
                 (mesh: Array<TexturedMesh>) => this.blenderObjMetal = mesh
@@ -42,7 +42,7 @@ export class PlanedeformationTunnelScene extends AbstractScene {
         framebuffer.texturedRenderingPipeline.setModelViewMatrix(mv);
         framebuffer.texturedRenderingPipeline.drawMeshArray(this.blenderObjMetal);
 
-        const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+        const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         framebuffer.drawTexture(0, 0, texture3, 0.75);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
     }
@@ -69,10 +69,10 @@ export class PlanedeformationTunnelScene extends AbstractScene {
     private drawPlanedeformationTunnel(framebuffer: Framebuffer, elapsedTime: number, texture2: Texture): void {
 
         let i = 0;
-        for (let y = 0; y < 200; y++) {
-            for (let x = 0; x < 320; x++) {
-                const xdist = (x - 160 + Math.sin(3 * Date.now() * 0.0001) * 160) + Math.sin(y * 0.3) * 2 * Math.max(Math.sin(elapsedTime * 0.00008), 0);
-                const ydist = (y - 100 + Math.cos(2 * Date.now() * 0.00009) * 100) + Math.cos(x * 0.3) * 2 * Math.max(Math.sin(elapsedTime * 0.00008), 0);
+        for (let y = 0; y < framebuffer.height; y++) {
+            for (let x = 0; x < framebuffer.width; x++) {
+                const xdist = (x - (framebuffer.width/2) + Math.sin(3 * Date.now() * 0.0001) * 160) + Math.sin(y * 0.3) * 2 * Math.max(Math.sin(elapsedTime * 0.00008), 0);
+                const ydist = (y - (framebuffer.height/2) + Math.cos(2 * Date.now() * 0.00009) * 100) + Math.cos(x * 0.3) * 2 * Math.max(Math.sin(elapsedTime * 0.00008), 0);
                 let dist = 256 * 10 / Math.max(1.0, Math.sqrt(xdist * xdist + ydist * ydist)) * 4.4;
                 const alpha = 1 - Math.min(1, dist * 0.0026);
                 const alpha2 = 1 - alpha;

@@ -4,8 +4,7 @@ import { FloodFillScene } from './FloodFillScene';
 class Application {
 
     public static main(): void {
-        const canvas: Canvas = new Canvas(320, 200, new FloodFillScene());
-        canvas.appendTo(document.getElementById('aisa'));
+        const canvas: Canvas = new Canvas(Canvas.WIDTH, Canvas.HEIGHT, new FloodFillScene());
         canvas.init();
     }
 

@@ -54,30 +54,6 @@ export class DistortedSphereScene extends AbstractScene {
         framebuffer.clearDepthBuffer();
         framebuffer.clearColorBuffer(Color.BLACK.toPackedFormat());
         this.shadingSphereEnvDisp2(framebuffer, time * 0.0002, modelViewMartrix);
-        /*
-                // Motion Blur
-                const tmpGlitch: Uint32Array = new Uint32Array(320 * 200);
-                this.framebuffer.fastFramebufferCopy(tmpGlitch, this.framebuffer.framebuffer);
-                const texture: Texture = new Texture();
-                texture.texture = tmpGlitch;
-                texture.width = 320;
-                texture.height = 200;
-                const ukBasslineBpm: number = 140;
-                const ukBasslineClapMs: number = 60000 / ukBasslineBpm * 2;
-                const smashTime: number = (Date.now() - this.start) % ukBasslineClapMs;
-                const smash: number = (this.framebuffer.cosineInterpolate(0, 20, smashTime) -
-                    this.framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
-                const width: number = Math.round(320 + smash * 320 / 100);
-                const height: number = Math.round(200 + smash * 200 / 100);
-                this.framebuffer.drawScaledTextureClipBi(
-                    Math.round(320 / 2 - width / 2),
-                    Math.round(200 / 2 - height / 2),
-                    width, height, texture, 1.0);
-                const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
-                this.framebuffer.drawTexture(0, 0, texture3, 0.85);
-                this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-                this.framebuffer.noise(time, this.noise);
-                */
     }
 
 
@@ -263,8 +239,8 @@ export class DistortedSphereScene extends AbstractScene {
         for (let p = 0; p < points.length; p++) {
             const transformed = modelViewMartrix.multiplyHom(points[p]);
 
-            points2[p].x = Math.round((320 * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
-            points2[p].y = Math.round((200 * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
+            points2[p].x = Math.round((framebuffer.width * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
+            points2[p].y = Math.round((framebuffer.height * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
             points2[p].z = transformed.z;
         }
 

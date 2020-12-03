@@ -4,6 +4,15 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 
 export class ToxicDotsScene extends AbstractScene {
 
+    private tmp: Uint32Array;
+    private tmp2: Uint32Array;
+
+    public init(framebuffer: Framebuffer): Promise<any> {
+        this.tmp = new Uint32Array(framebuffer.width * framebuffer.height);
+        this.tmp2 = new Uint32Array(framebuffer.width * framebuffer.height);
+        return Promise.all([]);
+    }
+
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
 
@@ -44,8 +53,8 @@ export class ToxicDotsScene extends AbstractScene {
             const y = transformed.y;
             const z = transformed.z; // TODO: use translation matrix!
 
-            const xx = (320 * 0.5) + (x / (-z * 0.0078));
-            const yy = (200 * 0.5) + (y / (-z * 0.0078));
+            const xx = (framebuffer.width * 0.5) + (x / (-z * 0.0078));
+            const yy = (framebuffer.height * 0.5) + (y / (-z * 0.0078));
 
             points2.push(new Vector3f(Math.round(xx), Math.round(yy), z));
         }
@@ -63,18 +72,17 @@ export class ToxicDotsScene extends AbstractScene {
     // optimization:
     // - downscale image to half the size before bluring
     // render result to texture in order to not blur the logo
-    tmp = new Uint32Array(320 * 200);
-    tmp2 = new Uint32Array(320 * 200);
+
     public blur(framebuffer: Framebuffer) {
         const scale = 1 / (3.1);
         let r: number = 0;
         let g: number = 0;
         let b: number = 0;
-        let index = 1 + 320;
-        let sumIndex = 320;
+        let index = 1 + framebuffer.width;
+        let sumIndex = framebuffer.width;
         let color: number;
-        for (let y = 0; y < 198; y++) {
-            for (let x = 0; x < 318; x++) {
+        for (let y = 0; y < framebuffer.height - 2; y++) {
+            for (let x = 0; x < framebuffer.width - 2; x++) {
                 color = framebuffer.framebuffer[sumIndex];
                 r = color & 0xff;
                 g = color >> 8 & 0xff;
@@ -102,36 +110,35 @@ export class ToxicDotsScene extends AbstractScene {
             index += 2;
         }
 
-        index = 320 + 1;
+        index = framebuffer.width + 1;
         sumIndex = 1;
-        for (let x = 1; x < 320 - 1; x++) {
-            //   index = x + 320;
+        for (let x = 1; x < framebuffer.width - 1; x++) {
             sumIndex = x;
-            for (let y = 0; y < 198; y++) {
+            for (let y = 0; y < framebuffer.height - 2; y++) {
                 color = this.tmp[sumIndex];
                 r = color & 0xff;
                 g = color >> 8 & 0xff;
                 b = color >> 16 & 0xff;
-                sumIndex += 320;
+                sumIndex += framebuffer.width;
 
                 color = this.tmp[sumIndex];
                 r += color & 0xff;
                 g += color >> 8 & 0xff;
                 b += color >> 16 & 0xff;
-                sumIndex += 320;
+                sumIndex += framebuffer.width;
 
                 color = this.tmp[sumIndex];
                 r += color & 0xff;
                 g += color >> 8 & 0xff;
                 b += color >> 16 & 0xff;
-                sumIndex += 320;
+                sumIndex += framebuffer.width;
 
-                sumIndex -= 320 * 2;
+                sumIndex -= framebuffer.width * 2;
                 r *= scale; g *= scale; b *= scale;
                 this.tmp2[index] = r | g << 8 | b << 16 | 255 << 24;
-                index += 320;
+                index += framebuffer.width;
             }
-            index += -198 * 320 + 1;
+            index += -(framebuffer.height - 2) * framebuffer.width + 1;
         }
 
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.tmp2);

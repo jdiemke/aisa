@@ -9,9 +9,10 @@ export class TitanEffectScene extends AbstractScene {
     private atlantisBackground: Texture;
     private startTime: number;
 
-    private accumulationBuffer: Uint32Array = new Uint32Array(320 * 200);
+    private accumulationBuffer: Uint32Array;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         this.startTime = Date.now();
         return Promise.all([
             TextureUtils.load(require('../../assets/atlantis.png'), false).then(
@@ -44,7 +45,7 @@ export class TitanEffectScene extends AbstractScene {
             );
         }
 
-        const texture3: Texture = new Texture(this.accumulationBuffer, 320, 200);
+        const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         framebuffer.drawTexture(0, 0, texture3, 0.65);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
     }
@@ -54,8 +55,8 @@ export class TitanEffectScene extends AbstractScene {
         const delta: number = Math.abs(y2 - y1);
         const textureStep: number = texture.height / delta;
         let texpos: number = 0;
-        const pixelStep: number = y2 > y1 ? 320 : -320;
-        let index: number = x + y1 * 320;
+        const pixelStep: number = y2 > y1 ? framebuffer.width : -framebuffer.width;
+        let index: number = x + y1 * framebuffer.width;
         const shiny: number = Math.pow(scale, 20);
         for (let i: number = 0; i < delta; i++) {
             const texel: number = texture.texture[x + Math.round(texpos) * texture.width];

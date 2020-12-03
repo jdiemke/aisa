@@ -3,6 +3,9 @@ import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
 
+// todo: gradient generation to save on loading transition textures
+// https://www.openprocessing.org/sketch/790560
+
 export class BlockFade extends AbstractScene {
 
     private ledTexture: Texture;
@@ -57,12 +60,12 @@ export class BlockFade extends AbstractScene {
 
     // blend entire image to another image
     public crossFade(framebuffer: Framebuffer, texture: Texture, alpha: number) {
-        for (let y = 0; y < 200; y++) {
-            for (let x = 0; x < 320; x++) {
+        for (let y = 0; y < framebuffer.height; y++) {
+            for (let x = 0; x < framebuffer.width; x++) {
                 framebuffer.drawPixel(x, y,
                     framebuffer.blend(
-                        framebuffer.framebuffer[x + y * 320],
-                        texture.texture[x + y * 320],
+                        framebuffer.framebuffer[x + y * framebuffer.width],
+                        texture.texture[x + y * framebuffer.width],
                         this.clamp(alpha, 0, 255))
                 );
             }
@@ -72,14 +75,14 @@ export class BlockFade extends AbstractScene {
     // transition using image
     // https://github.com/Slynchy/SDL-AlphaMaskWipes/blob/master/Transition.h
     public crossFadeImage(framebuffer: Framebuffer, texture: Texture, alpha: number, transitionImage: Texture) {
-        for (let y = 0; y < 200; y++) {
-            for (let x = 0; x < 320; x++) {
+        for (let y = 0; y < framebuffer.height; y++) {
+            for (let x = 0; x < framebuffer.width; x++) {
                 framebuffer.drawPixel(x, y,
                     framebuffer.blend(
-                        framebuffer.framebuffer[x + y * 320],
-                        texture.texture[x + y * 320],
+                        framebuffer.framebuffer[x + y * framebuffer.width],
+                        texture.texture[x + y * framebuffer.width],
                         this.clamp(
-                            (alpha) - (transitionImage.texture[x + y * 320] >> 8 & 0xff),
+                            (alpha) - (transitionImage.texture[x + y * framebuffer.width] >> 8 & 0xff),
                             0, 255)
                     )
                 );
@@ -93,12 +96,12 @@ export class BlockFade extends AbstractScene {
 
     // fade in from solid color
     public fadeIn(framebuffer: Framebuffer, texture: Texture, alpha: number, startColor: number) {
-        for (let y = 0; y < 200; y++) {
-            for (let x = 0; x < 320; x++) {
+        for (let y = 0; y < framebuffer.height; y++) {
+            for (let x = 0; x < framebuffer.width; x++) {
                 framebuffer.drawPixel(x, y,
                     framebuffer.blend(
                         startColor,
-                        texture.texture[x + y * 320],
+                        texture.texture[x + y * framebuffer.width],
                         alpha)
                 );
             }
@@ -107,11 +110,11 @@ export class BlockFade extends AbstractScene {
 
     // fade out to solid color
     public fadeOut(framebuffer: Framebuffer, texture: Texture, alpha: number, endColor: number) {
-        for (let y = 0; y < 200; y++) {
-            for (let x = 0; x < 320; x++) {
+        for (let y = 0; y < framebuffer.height; y++) {
+            for (let x = 0; x < framebuffer.width; x++) {
                 framebuffer.drawPixel(x, y,
                     framebuffer.blend(
-                        texture.texture[x + y * 320],
+                        texture.texture[x + y * framebuffer.width],
                         endColor,
                         alpha)
                 );
@@ -119,4 +122,16 @@ export class BlockFade extends AbstractScene {
         }
     }
 
+    /**
+     * Re-maps a number from one range to another.
+     *
+     * @param  {number} value           the incoming value to be converted
+     * @param  {number} istart          lower bound of the value's current range
+     * @param  {number} istop           upper bound of the value's current range
+     * @param  {number} ostart          lower bound of the value's target range
+     * @param  {number} ostop           upper bound of the value's target range
+     */
+    private map(value: number, istart: number, istop: number, ostart: number, ostop: number): number {
+        return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
+    }
 }
