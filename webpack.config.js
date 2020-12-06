@@ -17,7 +17,6 @@ module.exports = {
 		'distorted-sphere': './src/examples/distorted-sphere/Application.ts',
 		'dof-balls': './src/examples/dof-balls/Application.ts',
 		'flood-fill': './src/examples/flood-fill/Application.ts',
-		'floor': './src/examples/floor/Application.ts',
 		'frustum-culling': './src/examples/frustum-culling/Application.ts',
 		'gears-2': './src/examples/gears-2/Application.ts',
 		'gears': './src/examples/gears/Application.ts',
@@ -36,8 +35,9 @@ module.exports = {
 		'particle-system': './src/examples/particle-system/Application.ts',
 		'particle-torus': './src/examples/particle-torus/Application.ts',
 		'pixel-effect': './src/examples/pixel-effect/Application.ts',
-		'planedeformation-abstract': './src/examples/planedeformation-abstract/Application.ts',
-		'planedeformation-tunnel': './src/examples/planedeformation-tunnel/Application.ts',
+        'plane-deformation': './src/examples/plane-deformation/Application.ts',
+        'plane-deformation-floor': './src/examples/plane-deformation-floor/Application.ts',
+		'plane-deformation-tunnel': './src/examples/plane-deformation-tunnel/Application.ts',
 		'plasma': './src/examples/plasma/Application.ts',
 		'platonian': './src/examples/platonian/Application.ts',
 		'polar-voxels': './src/examples/polar-voxels/Application.ts',
@@ -214,11 +214,6 @@ module.exports = {
 		}),
 		new HtmlWebpackPlugin({
 			template: './src/index.html',
-			chunks: ['planedeformation-tunnel'],
-			filename: 'planedeformation-tunnel.html'
-		}),
-		new HtmlWebpackPlugin({
-			template: './src/index.html',
 			chunks: ['torus-knot'],
 			filename: 'torus-knot.html'
 		}),
@@ -281,21 +276,26 @@ module.exports = {
 			template: './src/index.html',
 			chunks: ['gears-2'],
 			filename: 'gears-2.html'
+        }),
+		new HtmlWebpackPlugin({
+			template: './src/index.html',
+			chunks: ['plane-deformation'],
+			filename: 'plane-deformation.html'
 		}),
 		new HtmlWebpackPlugin({
 			template: './src/index.html',
-			chunks: ['floor'],
-			filename: 'floor.html'
+			chunks: ['plane-deformation-floor'],
+			filename: 'plane-deformation-floor.html'
+        }),
+		new HtmlWebpackPlugin({
+			template: './src/index.html',
+			chunks: ['plane-deformation-tunnel'],
+			filename: 'plane-deformation-tunnel.html'
 		}),
 		new HtmlWebpackPlugin({
 			template: './src/index.html',
 			chunks: ['pixel-effect'],
 			filename: 'pixel-effect.html'
-		}),
-		new HtmlWebpackPlugin({
-			template: './src/index.html',
-			chunks: ['planedeformation-abstract'],
-			filename: 'planedeformation-abstract.html'
 		}),
 		new HtmlWebpackPlugin({
 			template: './src/index.html',

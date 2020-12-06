@@ -38,6 +38,7 @@ export class PlatonianScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer): void {
+        framebuffer.setCullFace(CullFace.BACK);
         const time: number = Date.now();
 
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);

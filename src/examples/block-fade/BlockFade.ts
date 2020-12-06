@@ -1,3 +1,4 @@
+import { Utils } from '../../core/Utils';
 import { Framebuffer } from '../../Framebuffer';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { AbstractScene } from '../../scenes/AbstractScene';
@@ -66,7 +67,7 @@ export class BlockFade extends AbstractScene {
                     framebuffer.blend(
                         framebuffer.framebuffer[x + y * framebuffer.width],
                         texture.texture[x + y * framebuffer.width],
-                        this.clamp(alpha, 0, 255))
+                        Utils.clamp(alpha, 0, 255))
                 );
             }
         }
@@ -81,7 +82,7 @@ export class BlockFade extends AbstractScene {
                     framebuffer.blend(
                         framebuffer.framebuffer[x + y * framebuffer.width],
                         texture.texture[x + y * framebuffer.width],
-                        this.clamp(
+                        Utils.clamp(
                             (alpha) - (transitionImage.texture[x + y * framebuffer.width] >> 8 & 0xff),
                             0, 255)
                     )
@@ -89,10 +90,6 @@ export class BlockFade extends AbstractScene {
             }
         }
     }
-
-    clamp(num, min, max) {
-        return Math.min(Math.max(num, min), max);
-    };
 
     // fade in from solid color
     public fadeIn(framebuffer: Framebuffer, texture: Texture, alpha: number, startColor: number) {
@@ -122,16 +119,4 @@ export class BlockFade extends AbstractScene {
         }
     }
 
-    /**
-     * Re-maps a number from one range to another.
-     *
-     * @param  {number} value           the incoming value to be converted
-     * @param  {number} istart          lower bound of the value's current range
-     * @param  {number} istop           upper bound of the value's current range
-     * @param  {number} ostart          lower bound of the value's target range
-     * @param  {number} ostop           upper bound of the value's target range
-     */
-    private map(value: number, istart: number, istop: number, ostart: number, ostop: number): number {
-        return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
-    }
 }

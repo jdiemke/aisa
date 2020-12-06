@@ -6,7 +6,7 @@ import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { BlenderLoader } from '../../model/blender/BlenderLoader';
 
-export class PlanedeformationTunnelScene extends AbstractScene {
+export class TunnelScene extends AbstractScene {
 
     private metall: Texture;
     private metalheadz: Texture;

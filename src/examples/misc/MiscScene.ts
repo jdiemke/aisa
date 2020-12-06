@@ -72,7 +72,7 @@ export class MiscScene extends AbstractScene {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         return Promise.all([
             this.createTexture(require('../../assets/spheremap.png'), false).then(texture => this.spheremap = texture),
-            this.createTexture(require('../../assets/metall.png'), false).then(texture => this.metal = texture),
+            this.createTexture(require('../../assets/textures/metall.png'), false).then(texture => this.metal = texture),
             this.createTexture(require('../../assets/logo.png'), false).then(texture => this.texture = texture),
             this.createTexture(require('../../assets/razor1911.png'), true).then(texture => this.texture2 = texture),
             this.createTexture(require('../../assets/heightmap.png'), false).then(texture => this.heightmap = texture),
