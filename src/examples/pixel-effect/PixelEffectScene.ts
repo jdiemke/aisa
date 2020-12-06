@@ -1,32 +1,21 @@
-import { Canvas } from '../../Canvas';
-import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { Vector3f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { Texture } from '../../texture/Texture';
-import { ScaleClipBlitter } from '../../blitter/ScaleClipBlitter';
 import { FontRenderer } from '../sine-scroller/FontRenderer';
 import { PixelInterpolator } from './PixelInterpolator';
 import { Vector2f } from '../../math/index';
+import { PlaneDeformationScene } from '../plane-deformation/PlaneDeformationScene';
 
-/**
- * TODO: extract lens into effect class
- */
 export class PixelEffectScene extends AbstractScene {
 
-    private heightmap: Texture;
-    private metall: Texture;
     private hoodlumLogo: Texture;
     private fontRenderer2: FontRenderer;
     private startTime = Date.now();
-
     private pixels: Array<PixelInterpolator> = new Array<PixelInterpolator>();
-
-    private scaleClipBlitter: ScaleClipBlitter;
+    private PlaneDeformationFloorScene = new PlaneDeformationScene(8, require('../../assets/heightmap.png'));
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.scaleClipBlitter = new ScaleClipBlitter(framebuffer);
 
         const fonts2: string =
             ' !"    \'  ' +
@@ -42,12 +31,11 @@ export class PixelEffectScene extends AbstractScene {
         );
 
         return Promise.all([
-            TextureUtils.load(require('../../assets/scify.png'), false).then(
-                (texture: Texture) => this.heightmap = texture
-            ),
             TextureUtils.load(require('../../assets/tristar.png'), true).then(
                 (texture: Texture) => this.hoodlumLogo = texture
-            ), this.fontRenderer2.init()
+            ),
+            this.fontRenderer2.init(),
+            this.PlaneDeformationFloorScene.init(framebuffer)
         ]).then(
             () => {
                 let count = 0;
@@ -71,54 +59,19 @@ export class PixelEffectScene extends AbstractScene {
             });
     }
 
-    public render(framebuffer: Framebuffer): void {
-        this.drawPlanedeformationTunnel(framebuffer, Date.now(), this.heightmap, this.heightmap);
+    public render(framebuffer: Framebuffer, time: number): void {
+        this.PlaneDeformationFloorScene.drawPlaneDeformation(framebuffer, time >> 3, 0);
 
-        this.fontRenderer2.drawText(0, 200 - 32 - 16,
+        this.fontRenderer2.drawText(0, framebuffer.height - 32 - 16,
             '              WELCOME TO A NEW RELEASE FROM YOUR FRIENDS IN CRIME! HOW DO YOU LIKE THIS INTRO?'
             , (Date.now() - this.startTime) * 0.8, false);
 
         for (let x = 0; x < this.pixels.length; x++) {
             const pos = this.pixels[x].getPos((Date.now() - this.startTime - this.pixels[x].startTime) * 0.0002, x);
-            if (pos.x < 0 || pos.x > (framebuffer.width-1) || pos.y < 0 || pos.y > (framebuffer.height-1)) continue;
+            if (pos.x < 0 || pos.x > (framebuffer.width - 1) || pos.y < 0 || pos.y > (framebuffer.height - 1)) continue;
             const alpha =
                 Math.max(0, Math.min(1, (Date.now() - this.startTime - this.pixels[x].startTime) * 0.001));
             framebuffer.drawPixel4(pos.x, pos.y, this.pixels[x].pixel, alpha);
         }
     }
-
-    /**
-     * http://sol.gfxile.net/gp/ch17.html
-     * TODO:
-     * - better textures
-     * - precalc lookup tables
-     * - fadeout
-     * - substraction to create black holes
-     */
-    drawPlanedeformationTunnel(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, texture2: Texture) {
-
-        let i = 0;
-        for (let y = 0; y < framebuffer.height; y++) {
-            const ydist = (y - framebuffer.height / 2);
-            const v = (((1 / Math.abs(ydist / 100 * 0.02) + elapsedTime * 0.069) % 256) + 256) % 256;
-            const alpha = 1 - Math.min(1, (1 / Math.abs(ydist / 10)));
-            for (let x = 0; x < framebuffer.width; x++) {
-                const xdist = (x - (framebuffer.width / 2));
-
-
-                const u = (((((xdist / 160) / Math.abs(ydist / 100 * 0.02))) % 256) + 256) % 256;
-
-                const color1 = texture2.texture[(u | 0) + (v | 0) * 256];
-
-
-
-                const r = (((color1 >> 0) & 0xff) * (alpha)) | 0;
-                const g = (((color1 >> 8) & 0xff) * (alpha)) | 0;
-                const b = (((color1 >> 16) & 0xff) * (alpha)) | 0;
-
-                framebuffer.framebuffer[i++] = r | g << 8 | b << 16 | 255 << 24;
-            }
-        }
-    }
-
 }

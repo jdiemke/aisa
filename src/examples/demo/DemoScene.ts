@@ -23,7 +23,6 @@ import { DifferentMd2ModelScene } from '../different-md2/DifferentMd2ModelScene'
 import { DistortedSphereScene } from '../distorted-sphere/DistortedSphereScene';
 import { DofBallsScene } from '../dof-balls/DofBallsScene';
 import { FloodFillScene } from '../flood-fill/FloodFillScene';
-import { FloorScene } from '../floor/FloorScene';
 import { FrustumCullingScene } from '../frustum-culling/FrustumCullingScene';
 import { Gears2Scene } from '../gears-2/Gears2Scene';
 import { GearsScene } from '../gears/GearsScene';
@@ -39,8 +38,9 @@ import { ParticleStreamsScene } from '../particle-streams/ParticleStreamsScene';
 import { ParticleSystemScene } from '../particle-system/ParticleSystemScene';
 import { ParticleTorusScene } from '../particle-torus/ParticleTorusScene';
 import { PixelEffectScene } from '../pixel-effect/PixelEffectScene';
-import { PlaneDeformationAbstractScene } from '../planedeformation-abstract/PlaneDeformationAbstractScene';
-import { PlanedeformationTunnelScene } from '../planedeformation-tunnel/PlanedeformationTunnelScene';
+import { PlaneDeformationScene } from '../plane-deformation/PlaneDeformationScene';
+import { PlaneDeformationFloorScene } from '../plane-deformation-floor/PlaneDeformationFloorScene';
+import { PlaneDeformationTunnelScene } from '../plane-deformation-tunnel/PlaneDeformationTunnelScene';
 import { PlasmaScene } from '../plasma/PlasmaScene';
 import { PlatonianScene } from '../platonian/PlatonianScene';
 import { PolarVoxelsScene } from '../polar-voxels/PolarVoxelsScene';
@@ -94,7 +94,7 @@ export class DemoScene extends AbstractScene {
 
     // Set to true when using *.rocket
     // set to false when using rocket editor using websocket
-    private _demoMode = true;
+    private _demoMode = false;
 
     // scene variables | things you set through jsRocket
     private FOV = 50;
@@ -126,7 +126,6 @@ export class DemoScene extends AbstractScene {
     private DistortedSphereScene: DistortedSphereScene;
     private DofBallsScene: DofBallsScene;
     private FloodFillScene: FloodFillScene;
-    private FloorScene: FloorScene;
     private FrustumCullingScene: FrustumCullingScene;
     private Gears2Scene: Gears2Scene;
     private GearsScene: GearsScene;
@@ -142,8 +141,9 @@ export class DemoScene extends AbstractScene {
     private ParticleSystemScene: ParticleSystemScene;
     private ParticleTorusScene: ParticleTorusScene;
     private PixelEffectScene: PixelEffectScene;
-    private PlaneDeformationAbstractScene: PlaneDeformationAbstractScene;
-    private PlanedeformationTunnelScene: PlanedeformationTunnelScene;
+    private PlaneDeformationScene: PlaneDeformationScene;
+    private PlaneDeformationFloorScene: PlaneDeformationFloorScene;
+    private PlaneDeformationTunnelScene: PlaneDeformationTunnelScene;
     private PlasmaScene: PlasmaScene;
     private PlatonianScene: PlatonianScene;
     private PolarVoxelsScene: PolarVoxelsScene;
@@ -229,7 +229,6 @@ export class DemoScene extends AbstractScene {
         this.DistortedSphereScene = new DistortedSphereScene();
         this.DofBallsScene = new DofBallsScene();
         this.FloodFillScene = new FloodFillScene();
-        this.FloorScene = new FloorScene();
         this.FrustumCullingScene = new FrustumCullingScene();
         this.Gears2Scene = new Gears2Scene();
         this.GearsScene = new GearsScene();
@@ -245,8 +244,9 @@ export class DemoScene extends AbstractScene {
         this.ParticleSystemScene = new ParticleSystemScene();
         this.ParticleTorusScene = new ParticleTorusScene();
         this.PixelEffectScene = new PixelEffectScene();
-        this.PlaneDeformationAbstractScene = new PlaneDeformationAbstractScene();
-        this.PlanedeformationTunnelScene = new PlanedeformationTunnelScene();
+        this.PlaneDeformationScene = new PlaneDeformationScene(8, require('../../assets/textures/tex4_256.png'));
+        this.PlaneDeformationFloorScene = new PlaneDeformationFloorScene();
+        this.PlaneDeformationTunnelScene = new PlaneDeformationTunnelScene();
         this.PlasmaScene = new PlasmaScene();
         this.PlatonianScene = new PlatonianScene();
         this.PolarVoxelsScene = new PolarVoxelsScene();
@@ -302,7 +302,6 @@ export class DemoScene extends AbstractScene {
             this.DistortedSphereScene.init(framebuffer),
             this.DofBallsScene.init(framebuffer),
             this.FloodFillScene.init(framebuffer),
-            this.FloorScene.init(framebuffer),
             this.FrustumCullingScene.init(framebuffer),
             this.GearsScene.init(framebuffer),
             this.Gears2Scene.init(framebuffer),
@@ -315,8 +314,9 @@ export class DemoScene extends AbstractScene {
             this.ParticleSystemScene.init(framebuffer),
             this.ParticleTorusScene.init(framebuffer),
             this.PixelEffectScene.init(framebuffer),
-            this.PlaneDeformationAbstractScene.init(framebuffer),
-            this.PlanedeformationTunnelScene.init(framebuffer),
+            this.PlaneDeformationScene.init(framebuffer),
+            this.PlaneDeformationFloorScene.init(framebuffer),
+            this.PlaneDeformationTunnelScene.init(framebuffer),
             this.PlasmaScene.init(framebuffer),
             this.PlatonianScene.init(framebuffer),
             this.PolarVoxelsScene.init(framebuffer),
@@ -331,7 +331,6 @@ export class DemoScene extends AbstractScene {
             this.TorusKnotScene.init(framebuffer),
             this.TorusKnotTunnelScene.init(framebuffer),
             this.ToxicDotsScene.init(framebuffer),
-            this.PlanedeformationTunnelScene.init(framebuffer),
             this.TwisterScene.init(framebuffer),
             this.VoxelBallsScene.init(framebuffer),
             this.VoxelLandscapeScene.init(framebuffer),
@@ -476,7 +475,7 @@ export class DemoScene extends AbstractScene {
             case 7.5:
                 this.transition(framebuffer, this.BumpMap, this.TwisterScene, TransitionMethods.BLOCKFADE);
                 break;
-            case 8: // twister cannot transition out
+            case 8:
                 this.TwisterScene.render(framebuffer);
                 break;
             case 8.5:
@@ -509,13 +508,13 @@ export class DemoScene extends AbstractScene {
                 break;
             case 13.5:
                 this.RotoZoomerScene.render(framebuffer);
-                this.transition(framebuffer, this.CubeScene, this.FloorScene, TransitionMethods.BLOCKFADE);
+                this.transition(framebuffer, this.CubeScene, this.PlaneDeformationFloorScene, TransitionMethods.BLOCKFADE);
                 break;
             case 14:
-                this.FloorScene.render(framebuffer);
+                this.PlaneDeformationFloorScene.render(framebuffer, this.timeMilliseconds);
                 break;
             case 14.5:
-                this.transition(framebuffer, this.FloorScene, this.PlatonianScene, TransitionMethods.BLOCKFADE);
+                this.transition(framebuffer, this.PlaneDeformationFloorScene, this.PlatonianScene, TransitionMethods.BLOCKFADE);
                 break;
             case 15:
                 this.PlatonianScene.render(framebuffer);
@@ -568,13 +567,13 @@ export class DemoScene extends AbstractScene {
                 this.ParticleTorusScene.render(framebuffer); // has a zoom bump for sync
                 break;
             case 25:
-                this.PixelEffectScene.render(framebuffer);
+                this.PixelEffectScene.render(framebuffer, this.timeMilliseconds);
                 break;
             case 26:
-                this.PlaneDeformationAbstractScene.render(framebuffer);
+                this.PlaneDeformationScene.render(framebuffer, this.timeMilliseconds);
                 break;
             case 27:
-                this.PlanedeformationTunnelScene.render(framebuffer);
+                this.PlaneDeformationTunnelScene.render(framebuffer, this.timeMilliseconds);
                 break;
             case 28:
                 this.PlasmaScene.render(framebuffer);
