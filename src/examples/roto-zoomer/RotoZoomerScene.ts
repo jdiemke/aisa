@@ -14,21 +14,21 @@ export class RotoZoomerScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
-        this.drawRotoZoomer(framebuffer, this.logoTexture);
+    public render(framebuffer: Framebuffer, time: number): void {
+        this.drawRotoZoomer(framebuffer, time);
     }
 
-    drawRotoZoomer(framebuffer: Framebuffer, texture: Texture) {
-        const scale = Math.sin(Date.now() * 0.0005) + 1.1;
+    drawRotoZoomer(framebuffer: Framebuffer, time: number) {
+        const scale = Math.sin(time * 0.0005) + 1.1;
 
-        const yStepX = Math.sin(Date.now() * 0.0003) * scale;
-        const yStepY = Math.cos(Date.now() * 0.0003) * scale;
+        const yStepX = Math.sin(time * 0.0003) * scale;
+        const yStepY = Math.cos(time * 0.0003) * scale;
 
         const xStepX = yStepY;
         const xStepY = -yStepX;
 
-        let texYCoord = Math.sin(Date.now() * 0.0002) * 512;
-        let texXCoord = Math.cos(Date.now() * 0.0002) * 512;
+        let texYCoord = Math.sin(time * 0.0002) * 512;
+        let texXCoord = Math.cos(time * 0.0002) * 512;
 
         let texYCoordInner = 0;
         let texXCoordInner = 0;
@@ -39,7 +39,7 @@ export class RotoZoomerScene extends AbstractScene {
             texYCoordInner = texYCoord;
 
             for (let x = 0; x < framebuffer.width; x++) {
-                framebuffer.framebuffer[framebufferPos++] = texture.texture[(texXCoordInner & 63) + (texYCoordInner & 0xff) * 64];
+                framebuffer.framebuffer[framebufferPos++] = this.logoTexture.texture[(texXCoordInner & 63) + (texYCoordInner & 0xff) * 64];
 
                 texXCoordInner += xStepX;
                 texYCoordInner += xStepY;
