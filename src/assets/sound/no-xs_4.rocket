@@ -25,6 +25,7 @@
 			<key interpolation="0" value="11" row="800"/>
 			<key interpolation="0" value="11.5" row="864"/>
 			<key interpolation="0" value="12" row="880"/>
+			<key interpolation="0" value="12.5" row="944"/>
 			<key interpolation="0" value="13" row="960"/>
 			<key interpolation="0" value="13.5" row="1024"/>
 			<key interpolation="0" value="14" row="1040"/>
@@ -82,7 +83,7 @@
 			<key interpolation="0" value="12000" row="479"/>
 			<key interpolation="1" value="0" row="544"/>
 			<key interpolation="0" value="12000" row="559"/>
-			<key interpolation="0" value="0" row="624"/>
+			<key interpolation="1" value="0" row="624"/>
 			<key interpolation="0" value="12000" row="639"/>
 			<key interpolation="1" value="0" row="704"/>
 			<key interpolation="0" value="12000" row="719"/>
@@ -90,6 +91,8 @@
 			<key interpolation="0" value="12000" row="799"/>
 			<key interpolation="1" value="0" row="864"/>
 			<key interpolation="0" value="12000" row="879"/>
+			<key interpolation="1" value="0" row="944"/>
+			<key interpolation="0" value="12000" row="959"/>
 			<key interpolation="1" value="0" row="1024"/>
 			<key interpolation="0" value="12000" row="1039"/>
 			<key interpolation="1" value="0" row="1104"/>

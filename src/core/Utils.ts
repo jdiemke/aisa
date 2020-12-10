@@ -26,4 +26,16 @@ export class Utils {
     public static map(value: number, istart: number, istop: number, ostart: number, ostop: number): number {
         return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
     }
+
+    /**
+     * returns random integer between two values
+     *
+     * @param  {number} value           the incoming value to be converted
+     */
+    public static getRandomInt(min: number, max: number): number {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
+    }
+
 }

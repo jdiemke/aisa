@@ -377,9 +377,9 @@ export class DemoScene extends AbstractScene {
      * @param  {Framebuffer} framebuffer            pixels
      * @param  {Any} transitionSceneFrom            previous effect
      * @param  {Any} transitionSceneTo              effect we are transitioning to
-     * @param  {number} transitionMethod            transition effect (1 - blockfade, 2-cross-fade, pixelate, wipe)
+     * @param  {number} transitionMethod            transition effect to use (blend, wipe, crossfade, etc)
      */
-    private transition(framebuffer: Framebuffer, transitionSceneFrom: any, transitionSceneTo: any, transitionMethod?: number) {
+    private transition(framebuffer: Framebuffer, transitionSceneFrom: AbstractScene, transitionSceneTo: AbstractScene, transitionMethod: number) {
         // render the 'To' effect into the framebuffer
         transitionSceneTo.render(framebuffer, this.timeMilliseconds);
 
@@ -389,7 +389,7 @@ export class DemoScene extends AbstractScene {
         // render 'From' effect into framebuffer
         transitionSceneFrom.render(framebuffer, this.timeMilliseconds);
 
-        const transitionValue = this._transition.getValue(this._row).toFixed(0);
+        const transitionValue = this._transition.getValue(this._row);
 
         // apply transition to framebuffer (fromEffect) using texture (toEffect)
         switch (transitionMethod) {
@@ -497,17 +497,20 @@ export class DemoScene extends AbstractScene {
                 this.CubeTunnelScene.render(framebuffer);
                 break;
             case 11.5:
-                this.transition(framebuffer, this.CubeTunnelScene, this.FloodFillScene, TransitionMethods.BLOCKFADE);
+                this.transition(framebuffer, this.CubeTunnelScene, this.PlasmaScene, TransitionMethods.BLOCKFADE);
                 break;
-            case 12: // floodfill does not transtion well - put next to still image
-                this.FloodFillScene.render(framebuffer);
+            case 12:
+                this.PlasmaScene.render(framebuffer, this.timeMilliseconds);
                 break;
-            case 13: // multi-layered effect do not transition well
-                this.RotoZoomerScene.render(framebuffer);
-                this.CubeScene.renderBackground(framebuffer);
+            case 12.5:
+                this.transition(framebuffer, this.PlasmaScene, this.RotoZoomerScene, TransitionMethods.BLOCKFADE);
+                break;
+            case 13:
+                this.RotoZoomerScene.render(framebuffer, this.timeMilliseconds);
+                this.CubeScene.renderBackground(framebuffer, this.timeMilliseconds);
                 break;
             case 13.5:
-                this.RotoZoomerScene.render(framebuffer);
+                this.RotoZoomerScene.render(framebuffer, this.timeMilliseconds);
                 this.transition(framebuffer, this.CubeScene, this.PlaneDeformationFloorScene, TransitionMethods.BLOCKFADE);
                 break;
             case 14:
@@ -576,7 +579,7 @@ export class DemoScene extends AbstractScene {
                 this.PlaneDeformationTunnelScene.render(framebuffer, this.timeMilliseconds);
                 break;
             case 28:
-                this.PlasmaScene.render(framebuffer);
+                this.FloodFillScene.render(framebuffer);
                 break;
             case 29:
                 this.FrustumCullingScene.render(framebuffer);
@@ -669,8 +672,6 @@ export class DemoScene extends AbstractScene {
         this._row = this.timeSeconds * this.ROW_RATE;
 
         this._currentEffect = this._effect.getValue(this._row).toFixed(1);
-
-
 
         // update JS rocket
         if (this.sm._audio.paused === false) {
