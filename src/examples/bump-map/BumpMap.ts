@@ -47,20 +47,10 @@ export class BumpMap extends AbstractScene {
             });
     }
 
-    public render(framebuffer: Framebuffer): void {
-        const elapsedTime: number = Date.now();
-        // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.bump.texture);
-
-        /*
-        framebuffer.drawScaledTextureClipBi(
-            0,
-            0,
-            framebuffer.width, framebuffer.height, this.bump, 1.0);
-            */
-
+    public render(framebuffer: Framebuffer, time: number): void {
         let framebufferIndex: number = 0;
-        const lightPosX = - Math.sin(2 * elapsedTime * 0.0008) * (framebuffer.width/2) - (framebuffer.width/2);
-        const lightPosY = - Math.sin(3 * elapsedTime * 0.0008) * (framebuffer.height/2) - (framebuffer.height/2);
+        const lightPosX = - Math.sin(2 * time * 0.0008) * (framebuffer.width/2) - (framebuffer.width/2);
+        const lightPosY = - Math.sin(3 * time * 0.0008) * (framebuffer.height/2) - (framebuffer.height/2);
         for (let y = 0; y < framebuffer.height; y++) {
             for (let x = 0; x < framebuffer.width; x++) {
 

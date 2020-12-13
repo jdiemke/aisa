@@ -42,8 +42,8 @@ export class BakedLighting extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
-        const time: number = Date.now();
+    public render(framebuffer: Framebuffer, time: number): void {
+
         framebuffer.texturedRenderingPipeline.setCullFace(CullFace.BACK);
 
         this.drawBlenderScene7(framebuffer, time - 1100000);

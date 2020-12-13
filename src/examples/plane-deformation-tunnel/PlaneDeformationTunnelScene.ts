@@ -28,7 +28,7 @@ export class PlaneDeformationTunnelScene extends AbstractScene {
 
         const ukBasslineBpm = 140;
         const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
-        const smashTime = (Date.now()) % ukBasslineClapMs;
+        const smashTime = time % ukBasslineClapMs;
         const smash = (framebuffer.cosineInterpolate(0, 15, smashTime) -
             framebuffer.cosineInterpolate(15, 200, smashTime) +
             0.4 * framebuffer.cosineInterpolate(200, 300, smashTime) -

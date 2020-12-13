@@ -36,8 +36,7 @@ export class HoodlumScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
-        const time: number = Date.now();
+    public render(framebuffer: Framebuffer, time: number): void {
         framebuffer.texturedRenderingPipeline.setCullFace(CullFace.BACK);
         framebuffer.setCullFace(CullFace.BACK);
 

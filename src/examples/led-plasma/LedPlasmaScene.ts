@@ -19,8 +19,8 @@ export class LedPlasmaScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
-        this.led(framebuffer, Date.now(), this.ledTexture);
+    public render(framebuffer: Framebuffer, time: number): void {
+        this.led(framebuffer, time, this.ledTexture);
     }
 
     // TODO: create interesting pattern!

@@ -22,9 +22,9 @@ export class Bobs extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
+    public render(framebuffer: Framebuffer, time: number): void {
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.texture5.texture);
-        this.drawBobs(framebuffer, this.texture7, Date.now());
+        this.drawBobs(framebuffer, this.texture7, time);
     }
 
     public drawBobs(framebuffer: Framebuffer, texture: Texture, time: number): void {

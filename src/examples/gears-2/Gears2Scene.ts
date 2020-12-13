@@ -44,11 +44,10 @@ export class Gears2Scene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
-        const time: number = Date.now();
+    public render(framebuffer: Framebuffer, time: number): void {
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
 
-        this.drawBlenderScene4(framebuffer);
+        this.drawBlenderScene4(framebuffer, time);
         /*  [
               { tex: this.texture10, scale: 0.0, alpha: 1.0 },
               { tex: this.texture11, scale: 2.3, alpha: 0.5 },
@@ -63,18 +62,18 @@ export class Gears2Scene extends AbstractScene {
         framebuffer.noise(time, this.noise);
     }
 
-    public drawBlenderScene4(framebuffer: Framebuffer): void {
+    public drawBlenderScene4(framebuffer: Framebuffer, time: number): void {
         framebuffer.clearDepthBuffer();
         const mat =
             Matrix4f.constructTranslationMatrix(0, 0, -14)
-                .multiplyMatrix(Matrix4f.constructXRotationMatrix(Date.now() * 0.0007)
+                .multiplyMatrix(Matrix4f.constructXRotationMatrix(time * 0.0007)
 
-                    .multiplyMatrix(Matrix4f.constructZRotationMatrix(-Date.now() * 0.0007 + Math.PI * 2 / 360 * 13).
+                    .multiplyMatrix(Matrix4f.constructZRotationMatrix(-time * 0.0007 + Math.PI * 2 / 360 * 13).
                         multiplyMatrix(Matrix4f.constructXRotationMatrix(Math.PI * 2 / 360 * 90))));
         const mat2 = Matrix4f.constructTranslationMatrix(0 - 4.8, 0, -14)
-            .multiplyMatrix(Matrix4f.constructXRotationMatrix(Date.now() * 0.0007)
+            .multiplyMatrix(Matrix4f.constructXRotationMatrix(time * 0.0007)
 
-                .multiplyMatrix(Matrix4f.constructZRotationMatrix(Date.now() * 0.0007).
+                .multiplyMatrix(Matrix4f.constructZRotationMatrix(time * 0.0007).
                     multiplyMatrix(Matrix4f.constructXRotationMatrix(Math.PI * 2 / 360 * 90))));
 
         this.renderingPipeline.draw(this.gearsMesh[0], mat);

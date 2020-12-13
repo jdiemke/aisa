@@ -6,6 +6,7 @@ import { TextureUtils } from '../../texture/TextureUtils';
 import { Vertex } from '../../Vertex';
 import { TextureCoordinate } from '../../TextureCoordinate';
 import { Color } from '../../core/Color';
+import { CullFace } from '../../CullFace';
 
 /**
  * TODO: extract lens into effect class
@@ -31,12 +32,10 @@ export class DistortedSphereScene extends AbstractScene {
             });
     }
 
-    public render(framebuffer: Framebuffer): void {
-        const time: number = Date.now();
-
+    public render(framebuffer: Framebuffer, time: number): void {
+        framebuffer.setCullFace(CullFace.BACK);
         /*
         this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-        this.framebuffer.setCullFace(CullFace.BACK);
         // this.framebuffer.setBob(this.spheremap);
         this.framebuffer.setBob(this.envmap);
 */
