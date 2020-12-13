@@ -40,7 +40,7 @@ export class PlaneDeformationFloorScene extends AbstractScene {
         this.PlaneDeformationFloorScene.drawPlaneDeformation(framebuffer, time >> 3, 0);
         this.fontRenderer2.drawText(0, framebuffer.height - 32 - 16,
             '              WELCOME TO A NEW RELEASE FROM YOUR FRIENDS IN CRIME! HOW DO YOU LIKE THIS INTRO?'
-            , (Date.now() - this.startTime) * 0.8, false);
+            , (time - this.startTime) * 0.8, false);
         framebuffer.drawTexture(0, ((framebuffer.height / 2) - (this.hoodlumLogo.height / 2)) | 0, this.hoodlumLogo, 1.0);
     }
 

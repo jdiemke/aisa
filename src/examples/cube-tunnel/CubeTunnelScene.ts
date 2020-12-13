@@ -45,10 +45,8 @@ export class CubeTunnelScene extends AbstractScene {
         return Promise.all([]);
     }
 
-    public render(framebuffer: Framebuffer): void {
+    public render(framebuffer: Framebuffer, time: number): void {
         //   framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
-        const elapsedTime: number = Date.now() * 0.02;
-
         framebuffer.clearColorBuffer(CubeTunnelScene.BACKGROUND_COLOR);
         framebuffer.clearDepthBuffer();
 
@@ -62,16 +60,16 @@ export class CubeTunnelScene extends AbstractScene {
             const rotSpeed = rand.getFloat() * 0.3 + 0.2;
             for (let z = 0; z < rot; z++) {
 
-                const scale = rand.getFloat() * 2.3 + 0.7 + 0.2 * (Math.sin(Date.now() * 0.0044 + rand.getFloat() * 3));
+                const scale = rand.getFloat() * 2.3 + 0.7 + 0.2 * (Math.sin(time * 0.0044 + rand.getFloat() * 3));
                 const size = (xSteps - 1) * 0.7;
                 const mat =
-                    Matrix4f.constructXRotationMatrix(0.2 * Math.sin(Date.now() * 0.00044)).multiplyMatrix(
-                        Matrix4f.constructYRotationMatrix(0.2 * Math.sin(Date.now() * 0.0004)).multiplyMatrix(
+                    Matrix4f.constructXRotationMatrix(0.2 * Math.sin(time * 0.00044)).multiplyMatrix(
+                        Matrix4f.constructYRotationMatrix(0.2 * Math.sin(time * 0.0004)).multiplyMatrix(
                             Matrix4f.constructTranslationMatrix(0, 0,
-                                -20 - ((x * 0.7 + Date.now() * 0.002) % size) + size
+                                -20 - ((x * 0.7 + time * 0.002) % size) + size
                             ).multiplyMatrix(
 
-                                Matrix4f.constructZRotationMatrix(Math.PI * 2 / rot * z + Date.now() * rotSpeed * 0.002 + x * 0.2).multiplyMatrix(
+                                Matrix4f.constructZRotationMatrix(Math.PI * 2 / rot * z + time * rotSpeed * 0.002 + x * 0.2).multiplyMatrix(
                                     Matrix4f.constructTranslationMatrix(+ 3, 0, 0)
                                         .multiplyMatrix(
                                             Matrix4f.constructScaleMatrix(scale, 0.5, 0.5)))))); // .multiplyMatrix(

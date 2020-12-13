@@ -37,7 +37,6 @@ export class PlayerStateMachine {
 
         this.activeState = state;
         this.activeState.entry();
-        console.log(state);
     }
 
 }

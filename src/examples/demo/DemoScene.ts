@@ -9,74 +9,10 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { SoundManager } from '../../sound/SoundManager';
 import { Color } from '../../core/Color';
-
-// Effects
-import { AbstractCube } from '../abstract-cube/AbstractCube';
-import { BakedLighting } from '../baked-lighting/BakedLighting';
 import { BlockFade } from '../block-fade/BlockFade';
-import { Bobs } from '../bobs/Bobs';
-import { BumpMap } from '../bump-map/BumpMap';
-import { CinematicScroller } from '../cinematic-scroller/CinematicScroller';
-import { CubeScene } from '../cube/CubeScene';
-import { CubeTunnelScene } from '../cube-tunnel/CubeTunnelScene';
-import { DifferentMd2ModelScene } from '../different-md2/DifferentMd2ModelScene';
-import { DistortedSphereScene } from '../distorted-sphere/DistortedSphereScene';
-import { DofBallsScene } from '../dof-balls/DofBallsScene';
-import { FloodFillScene } from '../flood-fill/FloodFillScene';
-import { FrustumCullingScene } from '../frustum-culling/FrustumCullingScene';
-import { Gears2Scene } from '../gears-2/Gears2Scene';
-import { GearsScene } from '../gears/GearsScene';
-import { HoodlumScene } from '../hoodlum/HoodlumScene';
-import { LedPlasmaScene } from '../led-plasma/LedPlasmaScene';
-import { LensScene } from '../lens/LensScene';
-import { Md2ModelScene } from '../md2/Md2ModelScene';
-import { MetaballsScene } from '../metaballs/MetaballsScene';
-import { MetalHeadzScene } from '../metalheadz/MetalHeadzScene';
-import { Mode7Scene } from '../mode-7/Mode7Scene';
-import { MovingTorusScene } from '../moving-torus/MovingTorusScene';
-import { ParticleStreamsScene } from '../particle-streams/ParticleStreamsScene';
-import { ParticleSystemScene } from '../particle-system/ParticleSystemScene';
-import { ParticleTorusScene } from '../particle-torus/ParticleTorusScene';
-import { PixelEffectScene } from '../pixel-effect/PixelEffectScene';
-import { PlaneDeformationScene } from '../plane-deformation/PlaneDeformationScene';
-import { PlaneDeformationFloorScene } from '../plane-deformation-floor/PlaneDeformationFloorScene';
-import { PlaneDeformationTunnelScene } from '../plane-deformation-tunnel/PlaneDeformationTunnelScene';
-import { PlasmaScene } from '../plasma/PlasmaScene';
-import { PlatonianScene } from '../platonian/PlatonianScene';
-import { PolarVoxelsScene } from '../polar-voxels/PolarVoxelsScene';
-import { RazorScene } from '../razor/RazorScene';
-import { RotatingGearsScene } from '../rotating-gears/RotatingGearsScene';
-import { RotoZoomerScene } from '../roto-zoomer/RotoZoomerScene';
-import { ScrollingBackgroundScene } from '../scrolling-background/ScrollingBackgroundScene';
-import { SineScrollerScene } from '../sine-scroller/SineScrollerScene';
-import { StarfieldScene } from '../starfield/StarfieldScene';
-import { TexturedTorusScene } from '../textured-torus/TexturedTorusScene';
-import { ThirdPersonCameraScene } from '../third-person-camera/ThirdPersonCameraScene';
-import { TitanEffectScene } from '../titan-effect/TitanEffectScene';
-import { TorusKnotScene } from '../torus-knot/TorusKnotScene';
-import { TorusKnotTunnelScene } from '../torus-knot-tunnel/TorusKnotTunnelScene';
-import { TorusScene } from '../torus/TorusScene';
-import { ToxicDotsScene } from '../toxic-dots/ToxicDotsScene';
-import { TwisterScene } from '../twister/TwisterScene';
-import { VoxelBallsScene } from '../voxel-balls/VoxelBallsScene';
-import { VoxelLandScapeFadeScene } from '../voxel-landscape-fade/VoxelLandcapeFadeScene';
-import { VoxelLandscapeScene } from '../voxel-landscape/VoxelLandscapeScene';
-import { WavefrontScene } from '../wavefront/WavefrontScene';
-import { WaveFrontTextureScene } from '../wavefront-texture/WaveFrontTextureScene';
 
 // Stats
 import Stats = require('stats.js');
-
-// Transitions
-export enum TransitionMethods {
-    BLOCKFADE = 1,
-    CROSSFADE = 2,
-    FADEIN = 3,
-    WIPE = 4,
-    RADIAL = 5,
-    CIRCLE = 6,
-    FADEOUT = 7,
-}
 
 export class DemoScene extends AbstractScene {
 
@@ -94,7 +30,10 @@ export class DemoScene extends AbstractScene {
 
     // Set to true when using *.rocket
     // set to false when using rocket editor using websocket
-    private _demoMode = true;
+    private _demoMode = false;
+
+    // list of scenes
+    private sceneList: Array<AbstractScene>;
 
     // scene variables | things you set through jsRocket
     private FOV = 50;
@@ -112,60 +51,7 @@ export class DemoScene extends AbstractScene {
     private tickerPointer = document.getElementById('ticker_pointer');
     private timeSeconds: number;
     private timeMilliseconds: number;
-
-    // effects
-    private abscractCubeScene: AbstractCube;
-    private BakedLighting: BakedLighting;
     private BlockFade: BlockFade;
-    private Bobs: Bobs;
-    private BumpMap: BumpMap;
-    private CinematicScroller: CinematicScroller;
-    private CubeScene: CubeScene;
-    private CubeTunnelScene: CubeTunnelScene;
-    private DifferentMd2ModelScene: DifferentMd2ModelScene;
-    private DistortedSphereScene: DistortedSphereScene;
-    private DofBallsScene: DofBallsScene;
-    private FloodFillScene: FloodFillScene;
-    private FrustumCullingScene: FrustumCullingScene;
-    private Gears2Scene: Gears2Scene;
-    private GearsScene: GearsScene;
-    private HoodlumScene: HoodlumScene;
-    private LedPlasmaScene: LedPlasmaScene;
-    private lensScene: LensScene;
-    private Md2ModelScene: Md2ModelScene;
-    private MetaballsScene: MetaballsScene;
-    private metalHeadzScene: MetalHeadzScene
-    private Mode7Scene: Mode7Scene;
-    private MovingTorusScene: MovingTorusScene;
-    private ParticleStreamsScene: ParticleStreamsScene;
-    private ParticleSystemScene: ParticleSystemScene;
-    private ParticleTorusScene: ParticleTorusScene;
-    private PixelEffectScene: PixelEffectScene;
-    private PlaneDeformationScene: PlaneDeformationScene;
-    private PlaneDeformationFloorScene: PlaneDeformationFloorScene;
-    private PlaneDeformationTunnelScene: PlaneDeformationTunnelScene;
-    private PlasmaScene: PlasmaScene;
-    private PlatonianScene: PlatonianScene;
-    private PolarVoxelsScene: PolarVoxelsScene;
-    private RazorScene: RazorScene;
-    private RotatingGearsScene: RotatingGearsScene;
-    private RotoZoomerScene: RotoZoomerScene;
-    private ScrollingBackgroundScene: ScrollingBackgroundScene;
-    private sineScrollerScene: SineScrollerScene;
-    private StarfieldScene: StarfieldScene;
-    private TexturedTorusScene: TexturedTorusScene;
-    private ThirdPersonCameraScene: ThirdPersonCameraScene;
-    private TitanEffectScene: TitanEffectScene;
-    private TorusKnotScene: TorusKnotScene;
-    private TorusKnotTunnelScene: TorusKnotTunnelScene;
-    private TorusScene: TorusScene;
-    private ToxicDotsScene: ToxicDotsScene;
-    private TwisterScene: TwisterScene;
-    private VoxelBallsScene: VoxelBallsScene;
-    private VoxelLandScapeFadeScene: VoxelLandScapeFadeScene;
-    private VoxelLandscapeScene: VoxelLandscapeScene;
-    private WavefrontScene: WavefrontScene;
-    private WaveFrontTextureScene: WaveFrontTextureScene;
 
     // stats
     private bmpFont: Texture;
@@ -174,6 +60,8 @@ export class DemoScene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.sm = new SoundManager();
+
+        this.sceneList = new Array<AbstractScene>();
 
         // Stats - Memory in Megabytes stats
         this.statsMEM = new Stats();
@@ -216,59 +104,7 @@ export class DemoScene extends AbstractScene {
             }
         });
 
-        // Effects
-        this.abscractCubeScene = new AbstractCube();
-        this.BakedLighting = new BakedLighting();
         this.BlockFade = new BlockFade();
-        this.Bobs = new Bobs();
-        this.BumpMap = new BumpMap();
-        this.CinematicScroller = new CinematicScroller();
-        this.CubeScene = new CubeScene();
-        this.CubeTunnelScene = new CubeTunnelScene();
-        this.DifferentMd2ModelScene = new DifferentMd2ModelScene();
-        this.DistortedSphereScene = new DistortedSphereScene();
-        this.DofBallsScene = new DofBallsScene();
-        this.FloodFillScene = new FloodFillScene();
-        this.FrustumCullingScene = new FrustumCullingScene();
-        this.Gears2Scene = new Gears2Scene();
-        this.GearsScene = new GearsScene();
-        this.HoodlumScene = new HoodlumScene();
-        this.LedPlasmaScene = new LedPlasmaScene();
-        this.lensScene = new LensScene();
-        this.Md2ModelScene = new Md2ModelScene();
-        this.MetaballsScene = new MetaballsScene();
-        this.metalHeadzScene = new MetalHeadzScene();
-        this.Mode7Scene = new Mode7Scene();
-        this.MovingTorusScene = new MovingTorusScene();
-        this.ParticleStreamsScene = new ParticleStreamsScene();
-        this.ParticleSystemScene = new ParticleSystemScene();
-        this.ParticleTorusScene = new ParticleTorusScene();
-        this.PixelEffectScene = new PixelEffectScene();
-        this.PlaneDeformationScene = new PlaneDeformationScene(8, require('../../assets/textures/tex4_256.png'));
-        this.PlaneDeformationFloorScene = new PlaneDeformationFloorScene();
-        this.PlaneDeformationTunnelScene = new PlaneDeformationTunnelScene();
-        this.PlasmaScene = new PlasmaScene();
-        this.PlatonianScene = new PlatonianScene();
-        this.PolarVoxelsScene = new PolarVoxelsScene();
-        this.RazorScene = new RazorScene();
-        this.RotatingGearsScene = new RotatingGearsScene();
-        this.RotoZoomerScene = new RotoZoomerScene();
-        this.ScrollingBackgroundScene = new ScrollingBackgroundScene();
-        this.sineScrollerScene = new SineScrollerScene();
-        this.StarfieldScene = new StarfieldScene();
-        this.TexturedTorusScene = new TexturedTorusScene();
-        this.ThirdPersonCameraScene = new ThirdPersonCameraScene();
-        this.TitanEffectScene = new TitanEffectScene();
-        this.TorusKnotScene = new TorusKnotScene();
-        this.TorusKnotTunnelScene = new TorusKnotTunnelScene();
-        this.TorusScene = new TorusScene();
-        this.ToxicDotsScene = new ToxicDotsScene();
-        this.TwisterScene = new TwisterScene();
-        this.VoxelBallsScene = new VoxelBallsScene();
-        this.VoxelLandScapeFadeScene = new VoxelLandScapeFadeScene();
-        this.VoxelLandscapeScene = new VoxelLandscapeScene();
-        this.WavefrontScene = new WavefrontScene();
-        this.WaveFrontTextureScene = new WaveFrontTextureScene();
 
         // initialize effects with progress
         return this.allProgress([
@@ -283,62 +119,68 @@ export class DemoScene extends AbstractScene {
 
             // load *.rocket file
             this.prepareSync(),
-            // these two cause the background of metalheadz to go black
-            this.Md2ModelScene.init(framebuffer),
-            this.DifferentMd2ModelScene.init(framebuffer),
-            this.abscractCubeScene.init(framebuffer),
-            this.lensScene.init(framebuffer),
-            this.sineScrollerScene.init(framebuffer),
-            this.metalHeadzScene.init(framebuffer),
-            this.ScrollingBackgroundScene.init(framebuffer),
-            this.BumpMap.init(framebuffer),
-            this.BakedLighting.init(framebuffer),
+
+            // we use this for transitions
             this.BlockFade.init(framebuffer),
-            this.Bobs.init(framebuffer),
-            this.CinematicScroller.init(framebuffer),
-            this.CubeScene.init(framebuffer),
-            this.CubeTunnelScene.init(framebuffer),
-            this.ThirdPersonCameraScene.init(framebuffer),
-            this.DistortedSphereScene.init(framebuffer),
-            this.DofBallsScene.init(framebuffer),
-            this.FloodFillScene.init(framebuffer),
-            this.FrustumCullingScene.init(framebuffer),
-            this.GearsScene.init(framebuffer),
-            this.Gears2Scene.init(framebuffer),
-            this.HoodlumScene.init(framebuffer),
-            this.LedPlasmaScene.init(framebuffer),
-            this.MetaballsScene.init(framebuffer),
-            this.Mode7Scene.init(framebuffer),
-            this.MovingTorusScene.init(framebuffer),
-            this.ParticleStreamsScene.init(framebuffer),
-            this.ParticleSystemScene.init(framebuffer),
-            this.ParticleTorusScene.init(framebuffer),
-            this.PixelEffectScene.init(framebuffer),
-            this.PlaneDeformationScene.init(framebuffer),
-            this.PlaneDeformationFloorScene.init(framebuffer),
-            this.PlaneDeformationTunnelScene.init(framebuffer),
-            this.PlasmaScene.init(framebuffer),
-            this.PlatonianScene.init(framebuffer),
-            this.PolarVoxelsScene.init(framebuffer),
-            this.RazorScene.init(framebuffer),
-            this.RotatingGearsScene.init(framebuffer),
-            this.RotoZoomerScene.init(framebuffer),
-            this.ScrollingBackgroundScene.init(framebuffer),
-            this.StarfieldScene.init(framebuffer),
-            this.TexturedTorusScene.init(framebuffer),
-            this.TitanEffectScene.init(framebuffer),
-            this.TorusScene.init(framebuffer),
-            this.TorusKnotScene.init(framebuffer),
-            this.TorusKnotTunnelScene.init(framebuffer),
-            this.ToxicDotsScene.init(framebuffer),
-            this.TwisterScene.init(framebuffer),
-            this.VoxelBallsScene.init(framebuffer),
-            this.VoxelLandscapeScene.init(framebuffer),
-            this.VoxelLandScapeFadeScene.init(framebuffer),
-            this.WavefrontScene.init(framebuffer),
-            this.WaveFrontTextureScene.init(framebuffer),
-            this.WavefrontScene.init(framebuffer),
-            this.TwisterScene.init(framebuffer)
+
+            // load and initialze effects
+            import('../metalheadz/MetalHeadzScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../abstract-cube/AbstractCube').then(plug => this.initScene(framebuffer, plug)),
+            import('../plane-deformation/PlaneDeformationScene').then(plug => this.initScene(framebuffer, plug, 8, require('../../assets/textures/tex4_256.png'))),
+            import('../plane-deformation-floor/PlaneDeformationFloorScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../plane-deformation-tunnel/PlaneDeformationTunnelScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../plasma/PlasmaScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../dof-balls/DofBallsScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../baked-lighting/BakedLighting').then(plug => this.initScene(framebuffer, plug)),
+            import('../bump-map/BumpMap').then(plug => this.initScene(framebuffer, plug)),
+            import('../cube/CubeScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../cube-tunnel/CubeTunnelScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../distorted-sphere/DistortedSphereScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../gears-2/Gears2Scene').then(plug => this.initScene(framebuffer, plug)),
+            import('../gears/GearsScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../hoodlum/HoodlumScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../led-plasma/LedPlasmaScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../lens/LensScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../md2/Md2ModelScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../razor/RazorScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../metaballs/MetaballsScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../moving-torus/MovingTorusScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../particle-streams/ParticleStreamsScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../particle-system/ParticleSystemScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../particle-torus/ParticleTorusScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../pixel-effect/PixelEffectScene').then(plug => { this.initScene(framebuffer, plug); }),
+            import('../platonian/PlatonianScene').then(plug => this.initScene(framebuffer, plug)),
+            // approximate end of demo here 26 effects
+            import('../polar-voxels/PolarVoxelsScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../rotating-gears/RotatingGearsScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../roto-zoomer/RotoZoomerScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../sine-scroller/SineScrollerScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../starfield/StarfieldScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../textured-torus/TexturedTorusScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../third-person-camera/ThirdPersonCameraScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../titan-effect/TitanEffectScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../torus-knot/TorusKnotScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../torus-knot-tunnel/TorusKnotTunnelScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../torus/TorusScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../toxic-dots/ToxicDotsScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../twister/TwisterScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../voxel-balls/VoxelBallsScene').then(plug => { this.initScene(framebuffer, plug); }),
+            import('../voxel-landscape-fade/VoxelLandcapeFadeScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../voxel-landscape/VoxelLandscapeScene').then(plug => this.initScene(framebuffer, plug)),
+
+            /*
+            import('../wavefront/WavefrontScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../wavefront-texture/WaveFrontTextureScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../cinematic-scroller/CinematicScroller').then(plug => this.initScene(framebuffer, plug)),
+            import('../scrolling-background/ScrollingBackgroundScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../bobs/Bobs').then(plug => this.initScene(framebuffer, plug)),
+            import('../flood-fill/FloodFillScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../different-md2/DifferentMd2ModelScene').then(plug => this.initScene(framebuffer, plug)),
+            // this seems to be a debug effect
+            import('../frustum-culling/FrustumCullingScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../mode-7/Mode7Scene').then(plug => this.initScene(framebuffer, plug)),
+            */
+
         ], (percent: number) => {
             // update the progress bar via canvas
             const outputX = Math.ceil(framebuffer.width * percent);
@@ -358,65 +200,35 @@ export class DemoScene extends AbstractScene {
 
     }
 
-    private allProgress(proms: Array<Promise<void>>, progressCallback: Function) {
+    /**
+     * Runs all promises in an array and runs callback with percentage of completion
+     *
+     * @param   {Array<Promise<any>>} promises       array of promises to run
+     * @param   {Function} progressCallback          function to run sending percenetage after individual promise is complete
+     * @returns {Promise<any>}                       promise resolve after all promises are complete
+     */
+    private allProgress(promsises: Array<Promise<any>>, progressCallback: Function): Promise<any> {
         let d = 0;
-        progressCallback(0);
-        for (const p of proms) {
+        for (const p of promsises) {
             p.then(() => {
                 d++;
-                progressCallback(d / proms.length);
+                progressCallback(d / promsises.length);
             });
         }
-        return Promise.all(proms);
+        return Promise.all(promsises);
     }
 
     /**
-     * Transitions from one effect to another using using "transition" value from JSRocket
-     * uses textureBackground as the temp
+     * Adds list of AbstractScenes to sceneList array and initializes it
      *
-     * @param  {Framebuffer} framebuffer            pixels
-     * @param  {Any} transitionSceneFrom            previous effect
-     * @param  {Any} transitionSceneTo              effect we are transitioning to
-     * @param  {number} transitionMethod            transition effect to use (blend, wipe, crossfade, etc)
+     * @param   {Framebuffer} framebuffer            scene initializes with information in framebuffer such as width and height
+     * @param   {Object} plug                        imported class
+     * @returns {Promise<any>}                       resolves promise after completion
      */
-    private transition(framebuffer: Framebuffer, transitionSceneFrom: AbstractScene, transitionSceneTo: AbstractScene, transitionMethod: number) {
-        // render the 'To' effect into the framebuffer
-        transitionSceneTo.render(framebuffer, this.timeMilliseconds);
-
-        //  copy framebuffer to the texture
-        framebuffer.fastFramebufferCopy(this.lensScene.textureBackground.texture, framebuffer.framebuffer);
-
-        // render 'From' effect into framebuffer
-        transitionSceneFrom.render(framebuffer, this.timeMilliseconds);
-
-        const transitionValue = this._transition.getValue(this._row);
-
-        // apply transition to framebuffer (fromEffect) using texture (toEffect)
-        switch (transitionMethod) {
-            case TransitionMethods.BLOCKFADE:
-                this.BlockFade.blockFade(framebuffer, this.lensScene.textureBackground, transitionValue, 0);
-                break;
-            case TransitionMethods.CROSSFADE:
-                this.BlockFade.crossFade(framebuffer, this.lensScene.textureBackground, transitionValue);
-                break;
-            case TransitionMethods.FADEIN:
-                this.BlockFade.fadeIn(framebuffer, this.lensScene.textureBackground, transitionValue, 0);
-                break;
-            case TransitionMethods.FADEOUT:
-                this.BlockFade.fadeOut(framebuffer, this.lensScene.textureBackground, transitionValue, 0);
-                break;
-            case TransitionMethods.WIPE:
-                this.BlockFade.crossFadeImage(framebuffer, this.lensScene.textureBackground, transitionValue, this.BlockFade.transitionWipe);
-                break;
-            case TransitionMethods.RADIAL:
-                this.BlockFade.crossFadeImage(framebuffer, this.lensScene.textureBackground, transitionValue, this.BlockFade.transitionRadial);
-                break;
-            case TransitionMethods.CIRCLE:
-                this.BlockFade.crossFadeImage(framebuffer, this.lensScene.textureBackground, transitionValue, this.BlockFade.transitionCircle);
-                break;
-            default:
-                this.BlockFade.crossFade(framebuffer, this.lensScene.textureBackground, transitionValue);
-        }
+    private initScene(framebuffer: Framebuffer, plug: {}, ...args: Array<any>): Promise<any> {
+        const constructorName = Object.keys(plug)[0];
+        this.sceneList.push(new plug[constructorName](...args));
+        return this.sceneList[this.sceneList.length - 1].init(framebuffer);
     }
 
     public render(framebuffer: Framebuffer): void {
@@ -424,235 +236,27 @@ export class DemoScene extends AbstractScene {
         // get time and values from music
         this.updateMusic(framebuffer);
 
-        // this._currentEffect = 0;
-
         // use values from JS Rocket to determine which scene to show
-        switch (Number(this._currentEffect)) {
-            case 0: // testing placeholder
-                break;
-            case 0.5:
-                this.transition(framebuffer, this.metalHeadzScene, this.metalHeadzScene, TransitionMethods.FADEIN);
-                break;
-            case 1:
-                this.metalHeadzScene.render(framebuffer, this.timeMilliseconds);
-                break;
-            case 1.5:
-                this.transition(framebuffer, this.metalHeadzScene, this.abscractCubeScene, TransitionMethods.CIRCLE);
-                break;
-            case 2:
-                this.abscractCubeScene.render(framebuffer, this.timeMilliseconds);
-                break;
-            case 2.5:
-                this.transition(framebuffer, this.abscractCubeScene, this.sineScrollerScene, TransitionMethods.WIPE);
-                break;
-            case 3:
-                this.sineScrollerScene.render(framebuffer, this.timeMilliseconds);
-                break;
-            case 3.5:
-                this.transition(framebuffer, this.sineScrollerScene, this.DofBallsScene, TransitionMethods.BLOCKFADE);
-                break;
-            case 4:
-                this.DofBallsScene.render(framebuffer, this.timeMilliseconds);
-                break;
-            case 4.5:
-                this.transition(framebuffer, this.DofBallsScene, this.Md2ModelScene, TransitionMethods.CIRCLE);
-                break;
-            case 5:
-                this.Md2ModelScene.render(framebuffer, this.timeMilliseconds);
-                break;
-            case 5.5:
-                this.transition(framebuffer, this.Md2ModelScene, this.BakedLighting, TransitionMethods.BLOCKFADE);
-                break;
-            case 6:
-                this.BakedLighting.render(framebuffer);
-                break;
-            case 6.5:
-                this.transition(framebuffer, this.BakedLighting, this.BumpMap, TransitionMethods.BLOCKFADE);
-                break;
-            case 7:
-                this.BumpMap.render(framebuffer);
-                break;
-            case 7.5:
-                this.transition(framebuffer, this.BumpMap, this.TwisterScene, TransitionMethods.BLOCKFADE);
-                break;
-            case 8:
-                this.TwisterScene.render(framebuffer);
-                break;
-            case 8.5:
-                this.transition(framebuffer, this.TwisterScene, this.RotatingGearsScene, TransitionMethods.BLOCKFADE);
-                break;
-            case 9:
-                this.RotatingGearsScene.render(framebuffer);
-                break;
-            case 9.5:
-                this.transition(framebuffer, this.RotatingGearsScene, this.DifferentMd2ModelScene, TransitionMethods.BLOCKFADE);
-                break;
-            case 10:
-                this.DifferentMd2ModelScene.render(framebuffer, this.timeMilliseconds)
-                break;
-            case 10.5:
-                this.transition(framebuffer, this.DifferentMd2ModelScene, this.CubeTunnelScene, TransitionMethods.BLOCKFADE);
-                break;
-            case 11: // cube tunnel is really nice, but is really SLOW (40FPS)..extra slow with transtion
-                this.CubeTunnelScene.render(framebuffer);
-                break;
-            case 11.5:
-                this.transition(framebuffer, this.CubeTunnelScene, this.PlasmaScene, TransitionMethods.BLOCKFADE);
-                break;
-            case 12:
-                this.PlasmaScene.render(framebuffer, this.timeMilliseconds);
-                break;
-            case 12.5:
-                this.transition(framebuffer, this.PlasmaScene, this.RotoZoomerScene, TransitionMethods.BLOCKFADE);
-                break;
-            case 13:
-                this.RotoZoomerScene.render(framebuffer, this.timeMilliseconds);
-                this.CubeScene.renderBackground(framebuffer, this.timeMilliseconds);
-                break;
-            case 13.5:
-                this.RotoZoomerScene.render(framebuffer, this.timeMilliseconds);
-                this.transition(framebuffer, this.CubeScene, this.PlaneDeformationFloorScene, TransitionMethods.BLOCKFADE);
-                break;
-            case 14:
-                this.PlaneDeformationFloorScene.render(framebuffer, this.timeMilliseconds);
-                break;
-            case 14.5:
-                this.transition(framebuffer, this.PlaneDeformationFloorScene, this.PlatonianScene, TransitionMethods.BLOCKFADE);
-                break;
-            case 15:
-                this.PlatonianScene.render(framebuffer);
-                break;
-            case 15.5:
-                this.transition(framebuffer, this.PlatonianScene, this.GearsScene, TransitionMethods.BLOCKFADE);
-                break;
-            case 16: // remove gearScene as duplicate. keep cooler gears2Scene instead
-                this.GearsScene.render(framebuffer);
-                break;
-            case 16.5:
-                this.transition(framebuffer, this.GearsScene, this.Gears2Scene, TransitionMethods.BLOCKFADE);
-                break;
-            case 17:
-                this.Gears2Scene.render(framebuffer);
-                break;
-            case 17.5:
-                this.transition(framebuffer, this.Gears2Scene, this.HoodlumScene, TransitionMethods.BLOCKFADE);
-                break;
-            case 18:
-                this.HoodlumScene.render(framebuffer);
-                break;
-            case 18.5:
-                this.transition(framebuffer, this.HoodlumScene, this.LedPlasmaScene, TransitionMethods.BLOCKFADE);
-                break;
-            case 19:
-                this.LedPlasmaScene.render(framebuffer);
-                break;
-            case 19.5:
-                this.transition(framebuffer, this.LedPlasmaScene, this.MetaballsScene, TransitionMethods.BLOCKFADE);
-                break;
-            case 20: // remove - too simple
-                this.MetaballsScene.render(framebuffer);
-                break;
-            case 20.5:
-                this.transition(framebuffer, this.MetaballsScene, this.MovingTorusScene, TransitionMethods.FADEOUT);
-                break;
-            case 21:
-                this.MovingTorusScene.render(framebuffer);
-                break;
-            // TODO --- KEEP DEMO TO 20-25 EFFECTS MAX for 10-12 seconds each effect
-            // ELIMINATE / CONSOLIDATE EFFECTS FROM BELOW
-            case 22:
-                this.ParticleStreamsScene.render(framebuffer);
-                break;
-            case 23:
-                this.ParticleSystemScene.render(framebuffer);
-                break;
-            case 24:
-                this.ParticleTorusScene.render(framebuffer); // has a zoom bump for sync
-                break;
-            case 25:
-                this.PixelEffectScene.render(framebuffer, this.timeMilliseconds);
-                break;
-            case 26:
-                this.PlaneDeformationScene.render(framebuffer, this.timeMilliseconds);
-                break;
-            case 27:
-                this.PlaneDeformationTunnelScene.render(framebuffer, this.timeMilliseconds);
-                break;
-            case 28:
-                this.FloodFillScene.render(framebuffer);
-                break;
-            case 29:
-                this.FrustumCullingScene.render(framebuffer);
-                break;
-            case 30:
-                this.PolarVoxelsScene.render(framebuffer);
-                break;
-            case 31:
-                this.RazorScene.render(framebuffer);
-                break;
-            case 32:
-                this.TorusKnotTunnelScene.render(framebuffer);
-                break;
-            case 33:
-                this.Bobs.render(framebuffer);
-                break;
-            case 34:
-                this.StarfieldScene.render(framebuffer);
-                break;
-            case 35:
-                this.TexturedTorusScene.render(framebuffer);
-                break;
-            case 36:
-                this.TitanEffectScene.render(framebuffer);
-                break;
-            case 37:
-                this.TorusScene.render(framebuffer);
-                break;
-            case 38:
-                this.TorusKnotScene.render(framebuffer);
-                break;
-            case 39:
-                break;
-            case 40:
-                this.ScrollingBackgroundScene.render(framebuffer);
-                break;
-            case 41:
-                this.VoxelBallsScene.render(framebuffer);
-                break;
-            case 42:
-                this.VoxelLandscapeScene.render(framebuffer);
-                break;
-            case 43:
-                this.DistortedSphereScene.render(framebuffer);
-                break;
-            case 44:
-                this.CinematicScroller.render(framebuffer);
-                break;
-            case 45:
-                this.lensScene.render(framebuffer, this.timeMilliseconds);
-                break;
-            case 44:
-                this.ThirdPersonCameraScene.render(framebuffer);
-                break;
-            case 45:
-                this.Mode7Scene.render(framebuffer);
-                break;
-            case 46:
-                this.VoxelLandScapeFadeScene.render(framebuffer);
-                break;
-            case 47:
-                this.ToxicDotsScene.render(framebuffer);
-                break;
-            case 48:
-                this.WavefrontScene.render(framebuffer); // dragon
-                break;
-            case 49:
-                this.WaveFrontTextureScene.render(framebuffer); // monkey with grey texture map
-                break;
-            default:
-                this.sineScrollerScene.render(framebuffer, this.timeMilliseconds);
+        const whichEffect = Number(this._currentEffect - 1);
+
+        // if the "effect" column in JSRocket is a whole number then run the effect by itself otherwise transition to next effect
+        if (Number.isInteger(whichEffect)) {
+            this.sceneList[Math.trunc(whichEffect)].render(framebuffer, this.timeMilliseconds);
+        } else {
+            const currentEffect = Math.trunc(whichEffect < 1 ? 0 : whichEffect);
+            const nextEffect = Math.trunc(whichEffect + 1);
+            // get the decimal from the current scene to pick which transition effect to use .5 = radial   .1 = fadein
+            const decimalAsInt = Math.round((this._currentEffect - parseInt(this._currentEffect.toString(), 10)) * 10);; // 10.5 returns 5
+            this.BlockFade.transition(
+                framebuffer,
+                this.sceneList[currentEffect],
+                this.sceneList[nextEffect],
+                decimalAsInt,
+                this._transition.getValue(this._row),
+                this.timeMilliseconds);
         }
 
+        // show FPS, time and effect number on canvas
         this.drawStats(framebuffer);
     }
 
