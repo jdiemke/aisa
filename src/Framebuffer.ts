@@ -6,6 +6,7 @@ import { CullFace } from './CullFace';
 import { Torus } from './geometrical-objects/Torus';
 import { Matrix3f, Matrix4f, Vector2f, Vector3f, Vector4f } from './math';
 import { Sphere } from './math/Sphere';
+import RandomNumberGenerator from './RandomNumberGenerator';
 import { FlatShadingTriangleRasterizer } from './rasterizer/FlatShadingTriangleRasterizer';
 import { LineRasterizerDda } from './rasterizer/line/LineRasterizer';
 import { LineRasterizerNoZ } from './rasterizer/line/LineRasterizerNoZ';
@@ -426,8 +427,10 @@ export class Framebuffer {
     }
 
     public noise(elapsedTime: number, texture: Texture, scale: number = 0.07): void {
+        const rng = new RandomNumberGenerator();
+        rng.setSeed(elapsedTime);
         for (let y = 0; y < this.height; y++) {
-            this.drawTextureRect(0, y, Math.floor(Math.random() * (texture.texture.length - this.width)), 0, this.width, 1, texture, scale);
+            this.drawTextureRect(0, y, Math.floor(rng.getFloat() * (texture.texture.length - this.width)), 0, this.width, 1, texture, scale);
         }
     }
 

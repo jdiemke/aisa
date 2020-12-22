@@ -7,7 +7,7 @@ export class SoundManager {
     public audioContext: AudioContext;
     public songLengthSeconds: number;
 
-    public _syncDevice = new JSRocket.SyncDevice();
+    public _syncDevice;
     public _audio = new Audio();
 
     public constructor() {
@@ -21,6 +21,7 @@ export class SoundManager {
             .then((response: Response) => response.arrayBuffer())
             .then((arrayBuffer: ArrayBuffer) => {
                 if (arrayBuffer) {
+                    XMPlayer.init();
                     XMPlayer.load(arrayBuffer);
                     XMPlayer.play();
                 } else {
