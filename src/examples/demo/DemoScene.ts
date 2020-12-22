@@ -47,62 +47,108 @@ export class DemoScene extends AbstractScene {
 
     // the current row we're on
     private _row = 0;
-    private _currentEffect: number;
+    private _currentEffect = 0;
     private tickerPointer = document.getElementById('ticker_pointer');
-    private timeSeconds: number;
-    private timeMilliseconds: number;
+    private timeSeconds = 0;
+    private timeMilliseconds = 0;
     private BlockFade: BlockFade;
 
     // stats
+    private stats: Array<Stats>;
     private bmpFont: Texture;
-    private statsFPS: Stats;
-    private statsMEM: Stats;
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.sm = new SoundManager();
 
         this.sceneList = new Array<AbstractScene>();
 
-        // Stats - Memory in Megabytes stats
-        this.statsMEM = new Stats();
-        this.statsMEM.showPanel(2);
-        this.statsMEM.dom.style.cssText = `position:absolute;top:0px;left:${framebuffer.width * 2}px;`;
-        document.body.appendChild(this.statsMEM.dom);
+        this.stats = new Array<Stats>();
 
-        // Stats - Frames per Seconds
-        this.statsFPS = new Stats();
-        this.statsFPS.showPanel(0);
-        this.statsFPS.dom.style.cssText = `position:absolute;top:50px;left:${framebuffer.width * 2}px;`;
-        document.body.appendChild(this.statsFPS.dom);
+        // Stats - Memory in Megabytes
+        this.initStats(2, 0, framebuffer.width * 2);
+
+        // Stats - Frames per second
+        this.initStats(0, 50, framebuffer.width * 2);
+
+        // Stats - Milliseconds per frame
+        this.initStats(1, 100, framebuffer.width * 2);
+
 
         // Scene Playback Controls
         const tickerRef = document.getElementById('ticker');
         const tickerPlayRef = document.getElementById('ticker_play');
         const tickerPauseRef = document.getElementById('ticker_pause');
-
-        // Loading bar
-        const loadingRef = document.getElementById('loading');
+        const tickerStopRef = document.getElementById('ticker_stop');
+        const tickerNextRef = document.getElementById('ticker_next');
+        const tickerBackRef = document.getElementById('ticker_back');
 
         // play
         tickerPlayRef.addEventListener('click', () => {
             this.onPlay();
         })
 
+        // stop
+        tickerStopRef.addEventListener('click', () => {
+            this.onPause();
+            this.seek(0);
+        })
+
         // pause
         tickerPauseRef.addEventListener('click', () => {
-            this.onPause();
+            if (this.sm._audio.paused) {
+                this.onPlay();
+            } else {
+                this.onPause();
+            }
+        })
+
+        // next
+        tickerNextRef.addEventListener('click', () => {
+            this.jump(this.sm._audio.currentTime, 1);
+        })
+
+        // back
+        tickerBackRef.addEventListener('click', () => {
+            this.jump(this.sm._audio.currentTime, -1);
         })
 
         // seek
         tickerRef.addEventListener('click', (e) => {
             const time = e.offsetX * this.sm._audio.duration / tickerRef.getBoundingClientRect().width;
-            this.sm._audio.currentTime = time;
-
-            // update rocket editor position to new timeline location
-            if (!this._demoMode) {
-                this.sm._syncDevice.update(this.sm._audio.currentTime * this.ROW_RATE);
-            }
+            this.seek(time);
         });
+
+        // keyboard navigation controls
+        document.addEventListener('keydown', (e: KeyboardEvent) => {
+            switch (e.code) {
+                case 'Space':
+                    // play or pause
+                    tickerPauseRef.click();
+                    break;
+                case 'ArrowLeft':
+                    // navigate timeline backward
+                    this.sm._audio.currentTime = this.sm._audio.currentTime - 0.06;
+                    break;
+                case 'ArrowRight':
+                    // navigate timeline forward
+                    this.sm._audio.currentTime = this.sm._audio.currentTime + 0.06;
+                    break;
+                case 'ArrowUp':
+                    // jump to next effect
+                    this.jump(this.sm._audio.currentTime, 1);
+                    break;
+                case 'ArrowDown':
+                    // jump to previous effect
+                    this.jump(this.sm._audio.currentTime, -1);
+                    break;
+                case 'KeyF':
+                    // toggle full screen
+                    document.getElementById('aisa-canvas').click();
+                    break;
+                case 'KeyD':
+                    break;
+            }
+        })
 
         this.BlockFade = new BlockFade();
 
@@ -191,9 +237,24 @@ export class DemoScene extends AbstractScene {
             canvas.getContext('2d').putImageData(framebuffer.getImageData(), 0, 0);
 
             // update memory usage
-            this.statsMEM.update();
+            for (const p of this.stats) {
+                p.update();
+            }
         });
     };
+
+    /**
+     * Jumps to a point in the audio timeline in milliseconds
+     *
+     * @param  {number} time            time in milliseconds
+     */
+    private seek(time: number) {
+        this.sm._audio.currentTime = time;
+        // update rocket editor position to new timeline location
+        if (!this._demoMode) {
+            this.sm._syncDevice.update(this.sm._audio.currentTime * this.ROW_RATE);
+        }
+    }
 
     // this runs after init() has finished
     public onInit(): void {
@@ -231,6 +292,19 @@ export class DemoScene extends AbstractScene {
         return this.sceneList[this.sceneList.length - 1].init(framebuffer);
     }
 
+    /**
+     * Adds JavaScript Performance Monitor and initializes it
+     *
+     * @param   {Object} args                        stat type[0-3], top in pixels, left in pixels
+     */
+    private initStats(...args: Array<any>) {
+        this.stats.push(new Stats());
+        const statsObj = this.stats[this.stats.length - 1];
+        statsObj.showPanel(args[0]);
+        statsObj.dom.style.cssText = `position:absolute;top:${args[1]}px;left:${args[2]}px;`;
+        document.body.appendChild(statsObj.dom);
+    }
+
     public render(framebuffer: Framebuffer): void {
 
         // get time and values from music
@@ -238,12 +312,12 @@ export class DemoScene extends AbstractScene {
 
         // use values from JS Rocket to determine which scene to show
         const whichEffect = Number(this._currentEffect - 1);
+        const currentEffect = Math.trunc(whichEffect < 0 ? 0 : whichEffect);
 
         // if the "effect" column in JSRocket is a whole number then run the effect by itself otherwise transition to next effect
         if (Number.isInteger(whichEffect)) {
-            this.sceneList[Math.trunc(whichEffect)].render(framebuffer, this.timeMilliseconds);
+            this.sceneList[currentEffect].render(framebuffer, this.timeMilliseconds);
         } else {
-            const currentEffect = Math.trunc(whichEffect < 1 ? 0 : whichEffect);
             const nextEffect = Math.trunc(whichEffect + 1);
             // get the decimal from the current scene to pick which transition effect to use .5 = radial   .1 = fadein
             const decimalAsInt = Math.round((this._currentEffect - parseInt(this._currentEffect.toString(), 10)) * 10);; // 10.5 returns 5
@@ -260,16 +334,26 @@ export class DemoScene extends AbstractScene {
         this.drawStats(framebuffer);
     }
 
+    // find the prev/next section and jump to it
+    private jump(timeSeconds: number, direction: number) {
+        this._row = timeSeconds * this.ROW_RATE;
+        const effectJump = this._effect.getValue(this._row).toFixed(1);
+        if (this._currentEffect !== effectJump) {
+            this.seek(timeSeconds);
+        } else {
+            if (timeSeconds >= 0) {
+                this.jump(timeSeconds + (0.06 * direction), direction);
+            }
+        }
+    }
+
     private updateMusic(framebuffer: Framebuffer) {
         // show message if rocket app is not running in background
         if (!this.sm._syncDevice.connected && !this._demoMode) {
-            framebuffer.drawText(8, 18, 'Rocket not connected'.toUpperCase(), this.bmpFont);
             return;
         }
 
         // use audio time otherwise use date
-        // const time: number = (Date.now() - this.start);
-        // const timeSeconds = this.sm.audioContext.currentTime;
         this.timeSeconds = this.sm._audio.currentTime;
         this.timeMilliseconds = this.timeSeconds * 1000;
 
@@ -291,14 +375,19 @@ export class DemoScene extends AbstractScene {
 
     // debug info
     private drawStats(framebuffer: Framebuffer) {
-        // get values from JS rocket
-        framebuffer.drawText(8, 18, 'TIME: ' + this.timeSeconds.toFixed(2), this.bmpFont);
-        framebuffer.drawText(8, 36, 'ROTATION: ' + this._cameraRotation.getValue(this._row).toFixed(0), this.bmpFont);
-        framebuffer.drawText(8, 36 + 18, 'EFFECT: ' + this._currentEffect, this.bmpFont);
-
+        if (!this.sm._syncDevice.connected && !this._demoMode) {
+            framebuffer.drawText(8, 18, 'Rocket not connected'.toUpperCase(), this.bmpFont);
+            return;
+        } else {
+            // get values from JS rocket
+            framebuffer.drawText(8, 18, 'TIME: ' + this.timeSeconds.toFixed(2), this.bmpFont);
+            framebuffer.drawText(8, 36, 'ROTATION: ' + this._cameraRotation.getValue(this._row).toFixed(0), this.bmpFont);
+            framebuffer.drawText(8, 36 + 18, 'EFFECT: ' + this._currentEffect, this.bmpFont);
+        }
         // update FPS and Memory usage
-        this.statsFPS.update();
-        this.statsMEM.update();
+        for (const p of this.stats) {
+            p.update();
+        }
     }
 
     prepareSync(): Promise<void> {
@@ -347,9 +436,9 @@ export class DemoScene extends AbstractScene {
     }
 
     onPlay() {
+        console.log('[onPlay]');
         this.sm._audio.currentTime = this._row / this.ROW_RATE;
         this.sm._audio.play();
-        console.log('[onPlay] time in seconds', this.sm._audio.currentTime);
     }
 
     onPause() {
