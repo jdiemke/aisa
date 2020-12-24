@@ -34,6 +34,7 @@ field of computer graphics including clipping, triangle rasterization, geometric
 * [Cubes](https://jdiemke.github.io/aisa/voxel-balls.html)
 * [Distorted Sphere](https://jdiemke.github.io/aisa/distorted-sphere.html)
 * [DOF Balls](https://jdiemke.github.io/aisa/dof-balls.html)
+* [Fire](https://jdiemke.github.io/aisa/fire.html)
 * [Flood Fill](https://jdiemke.github.io/aisa/flood-fill.html)
 * [Frustum Culling](https://jdiemke.github.io/aisa/frustum-culling.html)
 * [Gears](https://jdiemke.github.io/aisa/gears.html)

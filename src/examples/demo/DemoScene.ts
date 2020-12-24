@@ -320,7 +320,7 @@ export class DemoScene extends AbstractScene {
         } else {
             const nextEffect = Math.trunc(whichEffect + 1);
             // get the decimal from the current scene to pick which transition effect to use .5 = radial   .1 = fadein
-            const decimalAsInt = Math.round((this._currentEffect - parseInt(this._currentEffect.toString(), 10)) * 10);; // 10.5 returns 5
+            const decimalAsInt = Math.round((this._currentEffect - parseInt(this._currentEffect.toString(), 10)) * 10); // 10.5 returns 5
             this.BlockFade.transition(
                 framebuffer,
                 this.sceneList[currentEffect],
@@ -335,14 +335,16 @@ export class DemoScene extends AbstractScene {
     }
 
     // find the prev/next section and jump to it
-    private jump(timeSeconds: number, direction: number) {
-        this._row = timeSeconds * this.ROW_RATE;
+    private jump(time: number, direction: number) {
+        this._row = time * this.ROW_RATE;
         const effectJump = this._effect.getValue(this._row).toFixed(1);
-        if (this._currentEffect !== effectJump) {
-            this.seek(timeSeconds);
+        if (Math.trunc(this._currentEffect) !== Math.trunc(effectJump)) {
+            this.seek(time);
         } else {
-            if (timeSeconds >= 0) {
-                this.jump(timeSeconds + (0.06 * direction), direction);
+            if (time >= 0) {
+                this.jump(time + (0.06 * direction), direction);
+            } else {
+                this.seek(0);
             }
         }
     }

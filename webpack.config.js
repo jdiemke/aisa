@@ -15,7 +15,8 @@ module.exports = {
 		'cube': './src/examples/cube/Application.ts',
 		'demo': './src/examples/demo/Application.ts',
 		'distorted-sphere': './src/examples/distorted-sphere/Application.ts',
-		'dof-balls': './src/examples/dof-balls/Application.ts',
+        'dof-balls': './src/examples/dof-balls/Application.ts',
+        'fire': './src/examples/fire/Application.ts',
 		'flood-fill': './src/examples/flood-fill/Application.ts',
 		'frustum-culling': './src/examples/frustum-culling/Application.ts',
 		'gears-2': './src/examples/gears-2/Application.ts',
@@ -236,7 +237,12 @@ module.exports = {
 			template: './src/index.html',
 			chunks: ['flood-fill'],
 			filename: 'flood-fill.html'
-		}),
+        }),
+		new HtmlWebpackPlugin({
+			template: './src/index.html',
+			chunks: ['fire'],
+			filename: 'fire.html'
+		}),        
 		new HtmlWebpackPlugin({
 			template: './src/index.html',
 			chunks: ['rotating-gears'],
