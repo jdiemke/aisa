@@ -178,6 +178,13 @@ And open `http://localhost:8080/webpack-dev-server/` in your favourite web brows
 - Material
 - Shadow Mapping
 - Pixel Shaders (Bump Mapping, Parallax Mapping)
+
+### Tools used
+- https://github.com/dmnsgn/canvas-record
+- https://github.com/mrdoob/stats.js
+- https://github.com/a1k0n/jsxm
+- https://github.com/rocket/rocket
+
 ### References
 - Portals & PVS
     - Doom 3 Portal Rendering Code: https://github.com/id-Software/DOOM-3-BFG/blob/1caba1979589971b5ed44e315d9ead30b278d8b4/neo/renderer/RenderWorld_portals.cpp

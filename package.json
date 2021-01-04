@@ -24,6 +24,7 @@
     "author": "Johannes Diemke",
     "license": "MIT",
     "devDependencies": {
+        "@types/dom-mediacapture-record": "^1.0.7",
         "@types/node": "14.0.1",
         "babel-minify-webpack-plugin": "0.3.1",
         "file-loader": "6.0.0",

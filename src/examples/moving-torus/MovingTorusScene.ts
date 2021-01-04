@@ -20,9 +20,8 @@ export class MovingTorusScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
-        const time: number = Date.now();
-
+    public render(framebuffer: Framebuffer, time: number): void {
+        framebuffer.setCullFace(CullFace.BACK);
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.background.texture);
         this.shadingTorus2(framebuffer, time * 0.02);
     }

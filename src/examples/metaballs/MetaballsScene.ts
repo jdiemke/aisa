@@ -10,18 +10,18 @@ import { Texture, TextureUtils } from '../../texture';
  */
 export class MetaballsScene extends AbstractScene {
 
-    public render(framebuffer: Framebuffer): void {
-        this.drawMetaballs(framebuffer);
+    public render(framebuffer: Framebuffer, time: number): void {
+        this.drawMetaballs(framebuffer, time);
     }
 
-    private drawMetaballs(framebuffer: Framebuffer): void {
+    private drawMetaballs(framebuffer: Framebuffer, time: number): void {
         const balls: Array<Vector3f> = [
-            new Vector3f(Math.sin(Date.now() * 0.002) * 100 + (framebuffer.width/2),
-                Math.cos(Date.now() * 0.0035) * 70 + 100, 0),
-            new Vector3f(Math.sin(Date.now() * 0.0015) * 100 + (framebuffer.width/2),
-                Math.cos(Date.now() * 0.002) * 70 + 100, 0),
-            new Vector3f(Math.sin(Date.now() * 0.003) * 100 + (framebuffer.width/2),
-                Math.cos(Date.now() * 0.0045) * 70 + 100, 0)
+            new Vector3f(Math.sin(time * 0.002) * 100 + (framebuffer.width/2),
+                Math.cos(time * 0.0035) * 70 + 100, 0),
+            new Vector3f(Math.sin(time * 0.0015) * 100 + (framebuffer.width/2),
+                Math.cos(time * 0.002) * 70 + 100, 0),
+            new Vector3f(Math.sin(time * 0.003) * 100 + (framebuffer.width/2),
+                Math.cos(time * 0.0045) * 70 + 100, 0)
         ];
 
         let index = 0;
