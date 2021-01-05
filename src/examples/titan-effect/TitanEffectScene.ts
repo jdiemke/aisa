@@ -24,8 +24,8 @@ export class TitanEffectScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
-        const time: number = Date.now() - this.startTime;
+    public render(framebuffer: Framebuffer, time: number): void {
+        // const time: number = Date.now() - this.startTime;
         const elapsedTime: number = 0.004 * time;
 
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.atlantisBackground.texture);

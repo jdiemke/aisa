@@ -14,6 +14,9 @@ import { BlockFade } from '../block-fade/BlockFade';
 // Stats
 import Stats = require('stats.js');
 
+// Video Recording Tool
+import { CanvasRecorder } from './canvas-record';
+
 export class DemoScene extends AbstractScene {
 
     // Sound Manager
@@ -31,6 +34,10 @@ export class DemoScene extends AbstractScene {
     // Set to true when using *.rocket
     // set to false when using rocket editor using websocket
     private _demoMode = true;
+
+    private _recording = false;
+    private canvasRecorder;
+    private canvasRecordingOptions;
 
     // list of scenes
     private sceneList: Array<AbstractScene>;
@@ -81,6 +88,9 @@ export class DemoScene extends AbstractScene {
         const tickerStopRef = document.getElementById('ticker_stop');
         const tickerNextRef = document.getElementById('ticker_next');
         const tickerBackRef = document.getElementById('ticker_back');
+        const tickerRecordRef = document.getElementById('ticker_record');
+        const tickerScreenshotRef = document.getElementById('ticker_screenshot');
+        const tickerPointerRef = document.getElementById('ticker_pointer');
 
         // play
         tickerPlayRef.addEventListener('click', () => {
@@ -93,6 +103,19 @@ export class DemoScene extends AbstractScene {
             this.seek(0);
         })
 
+        // record video
+        tickerRecordRef.addEventListener('click', () => {
+            if (!this._recording) {
+                tickerRecordRef.style.color = 'red';
+                this.onPlay(); // start playing from cursor
+                this.recordVideo();
+            } else {
+                tickerRecordRef.style.color = 'white';
+                tickerPauseRef.click();
+                this.saveVideo();
+            }
+        })
+
         // pause
         tickerPauseRef.addEventListener('click', () => {
             if (this.sm._audio.paused) {
@@ -100,6 +123,21 @@ export class DemoScene extends AbstractScene {
             } else {
                 this.onPause();
             }
+        })
+
+        // save screenshot in PNG format
+        tickerScreenshotRef.addEventListener('click', () => {
+            const date = new Date();
+            const fileName = `Aisa ${date.toISOString().slice(0, 10)} at ${date
+                .toTimeString()
+                .slice(0, 8)
+                .replace(/:/g, '.')}.png`;
+            const canvas = document.getElementById('aisa-canvas');
+            const image = (canvas as HTMLCanvasElement).toDataURL('image/png').replace('image/png', 'image/octet-stream');
+            const anchor = document.createElement('a');
+            anchor.setAttribute('download', fileName);
+            anchor.setAttribute('href', image);
+            anchor.click();
         })
 
         // next
@@ -118,34 +156,53 @@ export class DemoScene extends AbstractScene {
             this.seek(time);
         });
 
+        // don't seek when clicking on the pointer
+        tickerPointerRef.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
         // keyboard navigation controls
         document.addEventListener('keydown', (e: KeyboardEvent) => {
-            switch (e.code) {
-                case 'Space':
-                    // play or pause
+            switch (e.key) {
+                case 'MediaStop':
+                    tickerStopRef.click();
+                    break;
+                // play or pause
+                case 'MediaPlayPause':
+                case ' ':
                     tickerPauseRef.click();
                     break;
+                // navigate timeline backward
                 case 'ArrowLeft':
-                    // navigate timeline backward
                     this.sm._audio.currentTime = this.sm._audio.currentTime - 0.06;
                     break;
+                // navigate timeline forward
                 case 'ArrowRight':
-                    // navigate timeline forward
                     this.sm._audio.currentTime = this.sm._audio.currentTime + 0.06;
                     break;
+                // jump to next effect
+                case 'MediaTrackNext':
                 case 'ArrowUp':
-                    // jump to next effect
                     this.jump(this.sm._audio.currentTime, 1);
                     break;
+                // jump to previous effect
+                case 'MediaTrackPrevious':
                 case 'ArrowDown':
-                    // jump to previous effect
                     this.jump(this.sm._audio.currentTime, -1);
                     break;
-                case 'KeyF':
-                    // toggle full screen
+                // toggle full screen
+                case 'f':
                     document.getElementById('aisa-canvas').click();
                     break;
-                case 'KeyD':
+                // save a screenshot
+                case 's':
+                    tickerScreenshotRef.click();
+                    break;
+                // record video in webm format
+                case 'r':
+                    tickerRecordRef.click();
+                    break;
+                case 'd':
                     break;
             }
         })
@@ -242,6 +299,44 @@ export class DemoScene extends AbstractScene {
             }
         });
     };
+
+    public recordVideo() {
+        console.info('recording video...');
+        this._recording = true;
+        const date = new Date();
+
+        // options
+        this.canvasRecordingOptions = {
+            filename: `Aisa ${date.toISOString().slice(0, 10)} at ${date
+                .toTimeString()
+                .slice(0, 8)
+                .replace(/:/g, '.')}.webm`,
+            frameRate: 60,
+            download: true,
+            recorderOptions: {
+                // mimeType: 'video/x-matroska;codecs=avc1',
+                mimeType: 'video/webm',
+                // mimeType: 'video/webm; codecs=vp9',
+                audioBitsPerSecond: 128000, // 128 Kbit/sec
+                // videoBitsPerSecond: 2500000 // 2.5 Mbit/sec
+                videoBitsPerSecond: 5000000 // 2.5 Mbit/sec
+            }
+        }
+
+        // Create recorder
+        const canvasRecorder = new CanvasRecorder();
+        const canvasObj = document.getElementById('aisa-canvas');
+        this.canvasRecorder = canvasRecorder.createCanvasRecorder(canvasObj, this.canvasRecordingOptions, this.sm._audio);
+        this.canvasRecorder.start();
+    }
+
+    private saveVideo() {
+        // Stop and dispose
+        this.canvasRecorder.stop();
+        this.canvasRecorder.dispose();
+        this._recording = false;
+        console.info(`saved video as ${this.canvasRecordingOptions.filename}`);
+    }
 
     /**
      * Jumps to a point in the audio timeline in milliseconds
@@ -382,9 +477,8 @@ export class DemoScene extends AbstractScene {
             return;
         } else {
             // get values from JS rocket
-            framebuffer.drawText(8, 18, 'TIME: ' + this.timeSeconds.toFixed(2), this.bmpFont);
-            framebuffer.drawText(8, 36, 'ROTATION: ' + this._cameraRotation.getValue(this._row).toFixed(0), this.bmpFont);
-            framebuffer.drawText(8, 36 + 18, 'EFFECT: ' + this._currentEffect, this.bmpFont);
+            document.getElementById('scene').innerText = this._currentEffect.toString();
+            document.getElementById('time').innerText = this.timeSeconds.toFixed(2);
         }
         // update FPS and Memory usage
         for (const p of this.stats) {

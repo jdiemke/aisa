@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
     <title>Demo Title - Aisa Software 3D Engine</title>
+    <link rel='icon' href="favicon.ico" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet" />
 
     <style>
@@ -54,6 +55,11 @@
             height: 24px;
             background-color: black;
         }
+
+        #scene, #time {
+            font-weight: bold;
+            padding-right: 10px;
+        }
     </style>
 </head>
 
@@ -61,11 +67,15 @@
     <div id="aisa"></div>
     <div id="debug">
         <div id="ticker_controls">
-            <a id="ticker_back" class="fa fa-step-backward" aria-hidden="true"></a>
-            <a id="ticker_play" class="fa fa-play" aria-hidden="true"></a>
-            <a id="ticker_pause" class="fa fa-pause" aria-hidden="true"></a>
-            <a id="ticker_stop" class="fa fa-stop" aria-hidden="true"></a>
-            <a id="ticker_next" class="fa fa-step-forward" aria-hidden="true"></a>
+            <a id="ticker_back" class="fa fa-step-backward" title="previous effect"></a>
+            <a id="ticker_play" class="fa fa-play" title="play"></a>
+            <a id="ticker_pause" class="fa fa-pause" title="pause"></a>
+            <a id="ticker_stop" class="fa fa-stop" title="stop"></a>
+            <a id="ticker_record" class="fa fa-circle" title="record video"></a>
+            <a id="ticker_next" class="fa fa-step-forward" title="next effect"></a>
+            <a id="ticker_screenshot" class="fa fa-save" title="save screenshot"></a>
+            scene: <span id="scene"></span> 
+            time: <span id="time"></span>
         </div>
         <div id="ticker">
             <div id="ticker_pointer"></div>&nbsp;

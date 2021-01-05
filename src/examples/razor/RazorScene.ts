@@ -45,8 +45,7 @@ export class RazorScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
-        const time: number = Date.now();
+    public render(framebuffer: Framebuffer, time: number): void {
 
         this.reproduceRazorScene(framebuffer, time * 0.0025, [
             { tex: this.texture10, scale: 0.0, alpha: 1.0 },

@@ -176,8 +176,9 @@ module.exports = {
 		new HtmlWebpackPlugin({
 			template: './src/index-demo.html',
 			chunks: ['demo'],
-			filename: 'demo.html'
-		}),
+            filename: 'demo.html',
+            favicon: './src/assets/favicon.ico',
+        }),
 		new HtmlWebpackPlugin({
 			template: './src/index.html',
 			chunks: ['baked-lighting'],
