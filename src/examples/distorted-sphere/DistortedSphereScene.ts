@@ -33,6 +33,12 @@ export class DistortedSphereScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
+        framebuffer.clearColorBuffer(Color.BLACK.toPackedFormat());
+        this.renderTransparent(framebuffer,time);
+    }
+
+
+    public renderTransparent(framebuffer: Framebuffer, time: number): void {
         framebuffer.setCullFace(CullFace.BACK);
         /*
         this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
@@ -51,10 +57,8 @@ export class DistortedSphereScene extends AbstractScene {
             -10 - (Math.sin(elapsedTime * 0.3) * 0.5 + 0.5) * 6)
             .multiplyMatrix(modelViewMartrix);
         framebuffer.clearDepthBuffer();
-        framebuffer.clearColorBuffer(Color.BLACK.toPackedFormat());
         this.shadingSphereEnvDisp2(framebuffer, time * 0.0002, modelViewMartrix);
     }
-
 
     public createSphere() {
 

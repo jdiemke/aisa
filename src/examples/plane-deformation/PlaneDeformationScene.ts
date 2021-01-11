@@ -107,7 +107,7 @@ export class PlaneDeformationScene {
                     case 8:  // floor and ceiling with fade to dark horizon
                         u = x / Math.abs(y);
                         v = 1 / Math.abs(y);
-                        bright = 10 * -v;
+                        bright = 40 * -v;
                         break;
                     case 9:  // hot magma liquid swirl
                         u = 0.5 * (a) / Math.PI;

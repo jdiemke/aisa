@@ -29,11 +29,16 @@ export class VoxelBallsScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
+    public render(framebuffer: Framebuffer, time: number): void {
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
-        const elapsedTime: number = Date.now() * 0.02;
+        this.renderTransparent(framebuffer, time);
+        const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
+        framebuffer.drawTextureFullscreen(texture3, 0.75);
+        framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
+    }
 
-        //  framebuffer.clearColorBuffer(CubeScene.BACKGROUND_COLOR);
+    public renderTransparent(framebuffer: Framebuffer, time: number): void {
+
         framebuffer.clearDepthBuffer();
 
         const xSteps = 5;
@@ -42,18 +47,18 @@ export class VoxelBallsScene extends AbstractScene {
         for (let x = 0; x < xSteps; x++) {
             for (let y = 0; y < xsteps; y++) {
                 for (let z = 0; z < zsteps; z++) {
-                    let scale = (Math.sin(x * 0.3 + Date.now() * 0.0009) + 1.0) * 0.5 *
-                        (Math.sin(y * 0.4 + Date.now() * 0.002) + 1.0) * 0.5 *
-                        (Math.sin(z * 0.3 + Date.now() * 0.001) + 1.0) * 0.5;
+                    let scale = (Math.sin(x * 0.3 + time * 0.0009) + 1.0) * 0.5 *
+                        (Math.sin(y * 0.4 + time * 0.002) + 1.0) * 0.5 *
+                        (Math.sin(z * 0.3 + time * 0.001) + 1.0) * 0.5;
                     if (scale < 0.3) {
                         // continue;
                     }
                     scale = 0.8;
                     const mat =
                         Matrix4f.constructTranslationMatrix(0, 0, -11).multiplyMatrix(
-                            Matrix4f.constructYRotationMatrix(Date.now() * 0.0003).multiplyMatrix(
-                                Matrix4f.constructXRotationMatrix(Date.now() * 0.0005).multiplyMatrix(
-                                    Matrix4f.constructZRotationMatrix(Date.now() * 0.0004).multiplyMatrix(
+                            Matrix4f.constructYRotationMatrix(time * 0.0003).multiplyMatrix(
+                                Matrix4f.constructXRotationMatrix(time * 0.0005).multiplyMatrix(
+                                    Matrix4f.constructZRotationMatrix(time * 0.0004).multiplyMatrix(
                                         Matrix4f.constructTranslationMatrix(x - xSteps / 2 + 0.5, y - xsteps / 2 + 0.5, z - zsteps / 2 + 0.5)
                                             .multiplyMatrix(
                                                 Matrix4f.constructScaleMatrix(scale, scale, scale)))))); // .multiplyMatrix(
@@ -64,11 +69,7 @@ export class VoxelBallsScene extends AbstractScene {
                 }
             }
         }
-
-        const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
-        framebuffer.drawTextureFullscreen(texture3, 0.75);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
-
     }
 
 
