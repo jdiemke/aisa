@@ -34,7 +34,6 @@ export class DemoScene extends AbstractScene {
     // Set to true when using *.rocket
     // set to false when using rocket editor using websocket
     private _demoMode = true;
-
     private _recording = false;
     private canvasRecorder;
     private canvasRecordingOptions;
@@ -55,7 +54,7 @@ export class DemoScene extends AbstractScene {
     // the current row we're on
     private _row = 0;
     private _currentEffect = 0;
-    private tickerPointer = document.getElementById('ticker_pointer');
+    private tickerPointerRef;
     private timeSeconds = 0;
     private timeMilliseconds = 0;
     private BlockFade: BlockFade;
@@ -69,143 +68,7 @@ export class DemoScene extends AbstractScene {
 
         this.sceneList = new Array<AbstractScene>();
 
-        this.stats = new Array<Stats>();
-
-        // Stats - Memory in Megabytes
-        this.initStats(2, 0, framebuffer.width * 2);
-
-        // Stats - Frames per second
-        this.initStats(0, 50, framebuffer.width * 2);
-
-        // Stats - Milliseconds per frame
-        this.initStats(1, 100, framebuffer.width * 2);
-
-
-        // Scene Playback Controls
-        const tickerRef = document.getElementById('ticker');
-        const tickerPlayRef = document.getElementById('ticker_play');
-        const tickerPauseRef = document.getElementById('ticker_pause');
-        const tickerStopRef = document.getElementById('ticker_stop');
-        const tickerNextRef = document.getElementById('ticker_next');
-        const tickerBackRef = document.getElementById('ticker_back');
-        const tickerRecordRef = document.getElementById('ticker_record');
-        const tickerScreenshotRef = document.getElementById('ticker_screenshot');
-        const tickerPointerRef = document.getElementById('ticker_pointer');
-
-        // play
-        tickerPlayRef.addEventListener('click', () => {
-            this.onPlay();
-        })
-
-        // stop
-        tickerStopRef.addEventListener('click', () => {
-            this.onPause();
-            this.seek(0);
-        })
-
-        // record video
-        tickerRecordRef.addEventListener('click', () => {
-            if (!this._recording) {
-                tickerRecordRef.style.color = 'red';
-                this.onPlay(); // start playing from cursor
-                this.recordVideo();
-            } else {
-                tickerRecordRef.style.color = 'white';
-                tickerPauseRef.click();
-                this.saveVideo();
-            }
-        })
-
-        // pause
-        tickerPauseRef.addEventListener('click', () => {
-            if (this.sm._audio.paused) {
-                this.onPlay();
-            } else {
-                this.onPause();
-            }
-        })
-
-        // save screenshot in PNG format
-        tickerScreenshotRef.addEventListener('click', () => {
-            const date = new Date();
-            const fileName = `Aisa ${date.toISOString().slice(0, 10)} at ${date
-                .toTimeString()
-                .slice(0, 8)
-                .replace(/:/g, '.')}.png`;
-            const canvas = document.getElementById('aisa-canvas');
-            const image = (canvas as HTMLCanvasElement).toDataURL('image/png').replace('image/png', 'image/octet-stream');
-            const anchor = document.createElement('a');
-            anchor.setAttribute('download', fileName);
-            anchor.setAttribute('href', image);
-            anchor.click();
-        })
-
-        // next
-        tickerNextRef.addEventListener('click', () => {
-            this.jump(this.sm._audio.currentTime, 1);
-        })
-
-        // back
-        tickerBackRef.addEventListener('click', () => {
-            this.jump(this.sm._audio.currentTime, -1);
-        })
-
-        // seek
-        tickerRef.addEventListener('click', (e) => {
-            const time = e.offsetX * this.sm._audio.duration / tickerRef.getBoundingClientRect().width;
-            this.seek(time);
-        });
-
-        // don't seek when clicking on the pointer
-        tickerPointerRef.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
-
-        // keyboard navigation controls
-        document.addEventListener('keydown', (e: KeyboardEvent) => {
-            switch (e.key) {
-                case 'MediaStop':
-                    tickerStopRef.click();
-                    break;
-                // play or pause
-                case 'MediaPlayPause':
-                case ' ':
-                    tickerPauseRef.click();
-                    break;
-                // navigate timeline backward
-                case 'ArrowLeft':
-                    this.sm._audio.currentTime = this.sm._audio.currentTime - 0.06;
-                    break;
-                // navigate timeline forward
-                case 'ArrowRight':
-                    this.sm._audio.currentTime = this.sm._audio.currentTime + 0.06;
-                    break;
-                // jump to next effect
-                case 'MediaTrackNext':
-                case 'ArrowUp':
-                    this.jump(this.sm._audio.currentTime, 1);
-                    break;
-                // jump to previous effect
-                case 'MediaTrackPrevious':
-                case 'ArrowDown':
-                    this.jump(this.sm._audio.currentTime, -1);
-                    break;
-                // toggle full screen
-                case 'f':
-                    document.getElementById('aisa-canvas').click();
-                    break;
-                // save a screenshot
-                case 's':
-                    tickerScreenshotRef.click();
-                    break;
-                // record video in webm format
-                case 'r':
-                    tickerRecordRef.click();
-                    break;
-                case 'd':
-                    break;
-            }
-        })
+        this.initControls(framebuffer.width);
 
         this.BlockFade = new BlockFade();
 
@@ -227,51 +90,62 @@ export class DemoScene extends AbstractScene {
             this.BlockFade.init(framebuffer),
 
             // load and initialze effects
+            import('./parts/Scene1').then(plug => this.initScene(framebuffer, plug)), // cubicles
+            import('./parts/Scene2').then(plug => this.initScene(framebuffer, plug)), // phone
+            import('./parts/Scene3').then(plug => this.initScene(framebuffer, plug)), // title screen here
+            import('./parts/Scene4').then(plug => this.initScene(framebuffer, plug)), // pizza delivery guy
+            import('./parts/Scene5').then(plug => this.initScene(framebuffer, plug)), // pizza party
+
+            // oldskool effects start
+            import('./parts/Scene6').then(plug => this.initScene(framebuffer, plug)), // spikeball + plane deformation
+            import('./parts/Scene7').then(plug => this.initScene(framebuffer, plug)), // cube + rotozoomer
+            import('./parts/Scene8').then(plug => this.initScene(framebuffer, plug)), // ledplasma + voxelcubes
+
+
+            /* todo: move examples into their own scenes
+            import('./parts/Scene9').then(plug => this.initScene(framebuffer, plug)),
+            import('./parts/Scene10').then(plug => this.initScene(framebuffer, plug)),
+            import('./parts/Scene11').then(plug => this.initScene(framebuffer, plug)),
+            import('./parts/Scene12').then(plug => this.initScene(framebuffer, plug)),
+            */
+
             import('../metalheadz/MetalHeadzScene').then(plug => this.initScene(framebuffer, plug)),
             import('../abstract-cube/AbstractCube').then(plug => this.initScene(framebuffer, plug)),
+            import('../dof-balls/DofBallsScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../torus-knot-tunnel/TorusKnotTunnelScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../gears/GearsScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../md2/Md2ModelScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../baked-lighting/BakedLighting').then(plug => this.initScene(framebuffer, plug)),
+            import('../particle-streams/ParticleStreamsScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../torus/TorusScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../torus-knot/TorusKnotScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../platonian/PlatonianScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../cube-tunnel/CubeTunnelScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../sine-scroller/SineScrollerScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../hoodlum/HoodlumScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../polar-voxels/PolarVoxelsScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../particle-torus/ParticleTorusScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../toxic-dots/ToxicDotsScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../particle-system/ParticleSystemScene').then(plug => this.initScene(framebuffer, plug)),
+            import('../voxel-landscape-fade/VoxelLandcapeFadeScene').then(plug => this.initScene(framebuffer, plug)),
+            /*
             import('../plane-deformation/PlaneDeformationScene').then(plug => this.initScene(framebuffer, plug, 8, require('../../assets/textures/tex4_256.png'))),
             import('../plane-deformation-floor/PlaneDeformationFloorScene').then(plug => this.initScene(framebuffer, plug)),
             import('../plane-deformation-tunnel/PlaneDeformationTunnelScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../plasma/PlasmaScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../dof-balls/DofBallsScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../baked-lighting/BakedLighting').then(plug => this.initScene(framebuffer, plug)),
             import('../bump-map/BumpMap').then(plug => this.initScene(framebuffer, plug)),
-            import('../cube/CubeScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../cube-tunnel/CubeTunnelScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../distorted-sphere/DistortedSphereScene').then(plug => this.initScene(framebuffer, plug)),
             import('../gears-2/Gears2Scene').then(plug => this.initScene(framebuffer, plug)),
-            import('../gears/GearsScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../hoodlum/HoodlumScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../led-plasma/LedPlasmaScene').then(plug => this.initScene(framebuffer, plug)),
+
             import('../lens/LensScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../md2/Md2ModelScene').then(plug => this.initScene(framebuffer, plug)),
             import('../razor/RazorScene').then(plug => this.initScene(framebuffer, plug)),
             import('../metaballs/MetaballsScene').then(plug => this.initScene(framebuffer, plug)),
             import('../moving-torus/MovingTorusScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../particle-streams/ParticleStreamsScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../particle-system/ParticleSystemScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../particle-torus/ParticleTorusScene').then(plug => this.initScene(framebuffer, plug)),
             import('../pixel-effect/PixelEffectScene').then(plug => { this.initScene(framebuffer, plug); }),
-            import('../platonian/PlatonianScene').then(plug => this.initScene(framebuffer, plug)),
-            // approximate end of demo here 26 effects
-            import('../polar-voxels/PolarVoxelsScene').then(plug => this.initScene(framebuffer, plug)),
             import('../rotating-gears/RotatingGearsScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../roto-zoomer/RotoZoomerScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../sine-scroller/SineScrollerScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../starfield/StarfieldScene').then(plug => this.initScene(framebuffer, plug)),
             import('../textured-torus/TexturedTorusScene').then(plug => this.initScene(framebuffer, plug)),
             import('../third-person-camera/ThirdPersonCameraScene').then(plug => this.initScene(framebuffer, plug)),
             import('../titan-effect/TitanEffectScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../torus-knot/TorusKnotScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../torus-knot-tunnel/TorusKnotTunnelScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../torus/TorusScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../toxic-dots/ToxicDotsScene').then(plug => this.initScene(framebuffer, plug)),
             import('../twister/TwisterScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../voxel-balls/VoxelBallsScene').then(plug => { this.initScene(framebuffer, plug); }),
-            import('../voxel-landscape-fade/VoxelLandcapeFadeScene').then(plug => this.initScene(framebuffer, plug)),
             import('../voxel-landscape/VoxelLandscapeScene').then(plug => this.initScene(framebuffer, plug)),
-
-            /*
             import('../wavefront/WavefrontScene').then(plug => this.initScene(framebuffer, plug)),
             import('../wavefront-texture/WaveFrontTextureScene').then(plug => this.initScene(framebuffer, plug)),
             import('../cinematic-scroller/CinematicScroller').then(plug => this.initScene(framebuffer, plug)),
@@ -279,9 +153,6 @@ export class DemoScene extends AbstractScene {
             import('../bobs/Bobs').then(plug => this.initScene(framebuffer, plug)),
             import('../flood-fill/FloodFillScene').then(plug => this.initScene(framebuffer, plug)),
             import('../different-md2/DifferentMd2ModelScene').then(plug => this.initScene(framebuffer, plug)),
-            // this seems to be a debug effect
-            import('../frustum-culling/FrustumCullingScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../mode-7/Mode7Scene').then(plug => this.initScene(framebuffer, plug)),
             */
 
         ], (percent: number) => {
@@ -349,6 +220,146 @@ export class DemoScene extends AbstractScene {
         if (!this._demoMode) {
             this.sm._syncDevice.update(this.sm._audio.currentTime * this.ROW_RATE);
         }
+    }
+
+    private initControls(width: number) {
+        this.stats = new Array<Stats>();
+
+        // Stats - Memory in Megabytes
+        this.initStats(2, 0, width * 2);
+
+        // Stats - Frames per second
+        this.initStats(0, 50, width * 2);
+
+        // Stats - Milliseconds per frame
+        this.initStats(1, 100, width * 2);
+
+
+        // Scene Playback Controls
+        const tickerRef = document.getElementById('ticker');
+        const tickerPlayRef = document.getElementById('ticker_play');
+        const tickerPauseRef = document.getElementById('ticker_pause');
+        const tickerStopRef = document.getElementById('ticker_stop');
+        const tickerNextRef = document.getElementById('ticker_next');
+        const tickerBackRef = document.getElementById('ticker_back');
+        const tickerRecordRef = document.getElementById('ticker_record');
+        const tickerScreenshotRef = document.getElementById('ticker_screenshot');
+        this.tickerPointerRef = document.getElementById('ticker_pointer');
+
+        // play
+        tickerPlayRef.addEventListener('click', () => {
+            this.onPlay();
+        })
+
+        // stop
+        tickerStopRef.addEventListener('click', () => {
+            this.onPause();
+            this.seek(0);
+        })
+
+        // record video
+        tickerRecordRef.addEventListener('click', () => {
+            if (!this._recording) {
+                tickerRecordRef.style.color = 'red';
+                this.onPlay(); // start playing from cursor
+                this.recordVideo();
+            } else {
+                tickerRecordRef.style.color = 'white';
+                tickerPauseRef.click();
+                this.saveVideo();
+            }
+        })
+
+        // pause
+        tickerPauseRef.addEventListener('click', () => {
+            if (this.sm._audio.paused) {
+                this.onPlay();
+            } else {
+                this.onPause();
+            }
+        })
+
+        // save screenshot in PNG format
+        tickerScreenshotRef.addEventListener('click', () => {
+            const date = new Date();
+            const fileName = `Aisa ${date.toISOString().slice(0, 10)} at ${date
+                .toTimeString()
+                .slice(0, 8)
+                .replace(/:/g, '.')}.png`;
+            const canvas = document.getElementById('aisa-canvas');
+            const image = (canvas as HTMLCanvasElement).toDataURL('image/png').replace('image/png', 'image/octet-stream');
+            const anchor = document.createElement('a');
+            anchor.setAttribute('download', fileName);
+            anchor.setAttribute('href', image);
+            anchor.click();
+        })
+
+        // next
+        tickerNextRef.addEventListener('click', () => {
+            this.jump(this.sm._audio.currentTime, 1);
+        })
+
+        // back
+        tickerBackRef.addEventListener('click', () => {
+            this.jump(this.sm._audio.currentTime, -1);
+        })
+
+        // seek
+        tickerRef.addEventListener('click', (e) => {
+            const time = e.offsetX * this.sm._audio.duration / tickerRef.getBoundingClientRect().width;
+            this.seek(time);
+        });
+
+        // don't seek when clicking on the pointer
+        this.tickerPointerRef.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // keyboard navigation controls
+        document.addEventListener('keydown', (e: KeyboardEvent) => {
+            switch (e.key) {
+                case 'MediaStop':
+                    tickerStopRef.click();
+                    break;
+                // play or pause
+                case 'MediaPlayPause':
+                case ' ':
+                    tickerPauseRef.click();
+                    break;
+                // navigate timeline backward
+                case 'ArrowLeft':
+                    this.sm._audio.currentTime = this.sm._audio.currentTime - 0.06;
+                    break;
+                // navigate timeline forward
+                case 'ArrowRight':
+                    this.sm._audio.currentTime = this.sm._audio.currentTime + 0.06;
+                    break;
+                // jump to next effect
+                case 'MediaTrackNext':
+                case 'ArrowUp':
+                    this.jump(this.sm._audio.currentTime, 1);
+                    break;
+                // jump to previous effect
+                case 'MediaTrackPrevious':
+                case 'ArrowDown':
+                    this.jump(this.sm._audio.currentTime, -1);
+                    break;
+                // toggle full screen
+                case 'f':
+                    document.getElementById('aisa-canvas').click();
+                    break;
+                // save a screenshot
+                case 's':
+                    tickerScreenshotRef.click();
+                    break;
+                // record video in webm format
+                case 'r':
+                    tickerRecordRef.click();
+                    break;
+                case 'd':
+                    break;
+            }
+        })
     }
 
     // this runs after init() has finished
@@ -467,7 +478,7 @@ export class DemoScene extends AbstractScene {
             // this informs Rocket where we are
             this.sm._syncDevice.update(this._row);
         }
-        this.tickerPointer.style.left = (this.timeSeconds * 100 / this.sm._audio.duration) + '%';
+        this.tickerPointerRef.style.left = (this.timeSeconds * 100 / this.sm._audio.duration) + '%';
     }
 
     // debug info
