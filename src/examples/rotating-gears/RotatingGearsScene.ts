@@ -42,7 +42,8 @@ export class RotatingGearsScene extends AbstractScene {
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
 
-        framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
+        // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
+        framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
         this.drawBlenderScene3(framebuffer, time);
         /*
             [

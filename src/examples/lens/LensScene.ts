@@ -53,7 +53,9 @@ export class LensScene extends AbstractScene {
     public render(framebuffer: Framebuffer, time: number): void {
 
         // draw the background
-        framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.textureBackground.texture);
+        /// framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.textureBackground.texture);
+        framebuffer.drawScaledTextureClipBi(0,0,this.textureBackground.width, this.textureBackground.height, this.textureBackground, 1.0);
+
 
         // move the lens around
         this.moveWave(time);
@@ -94,7 +96,7 @@ export class LensScene extends AbstractScene {
             for (let x: number = 0; x < this.lensDiameter; x++) {
                 framebuffer.framebuffer[x + ypos] = texture.texture[
                     this.ballX + this.lensArrayA[i] +
-                    (this.ballY + this.lensArrayB[i++]) * framebuffer.width];
+                    (this.ballY + this.lensArrayB[i++]) * texture.width];
             }
         }
 

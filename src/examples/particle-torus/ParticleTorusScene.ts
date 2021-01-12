@@ -29,7 +29,8 @@ export class ParticleTorusScene extends AbstractScene {
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
 
-        framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
+        // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
+        framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
         this.drawParticleTorus(framebuffer, time, this.particleTexture2, true);
 
         const tmpGlitch: Uint32Array = new Uint32Array(framebuffer.width * framebuffer.height);
