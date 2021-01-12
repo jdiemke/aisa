@@ -22,7 +22,9 @@ export class MovingTorusScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer, time: number): void {
         framebuffer.setCullFace(CullFace.BACK);
-        framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.background.texture);
+        // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.background.texture);
+        framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.background, 1.0);
+
         this.shadingTorus2(framebuffer, time * 0.02);
     }
 

@@ -29,9 +29,10 @@ export class VoxelBallsScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
-        framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
-        const elapsedTime: number = Date.now() * 0.02;
+    public render(framebuffer: Framebuffer, time: number): void {
+        // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
+        framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
+        const elapsedTime: number = time * 0.02;
 
         //  framebuffer.clearColorBuffer(CubeScene.BACKGROUND_COLOR);
         framebuffer.clearDepthBuffer();

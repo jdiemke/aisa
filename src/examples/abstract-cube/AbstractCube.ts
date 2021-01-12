@@ -40,7 +40,9 @@ export class AbstractCube extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
+        // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
+        framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
+
         this.drawBlenderScene2(framebuffer, time);
 
         const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);

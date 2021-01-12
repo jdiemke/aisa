@@ -40,7 +40,8 @@ export class HoodlumScene extends AbstractScene {
         framebuffer.texturedRenderingPipeline.setCullFace(CullFace.BACK);
         framebuffer.setCullFace(CullFace.BACK);
 
-        framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
+        // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
+        framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
         framebuffer.setCullFace(CullFace.BACK);
         framebuffer.setTexture(this.lab2);
 
