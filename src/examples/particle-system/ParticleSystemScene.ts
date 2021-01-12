@@ -32,7 +32,8 @@ export class ParticleSystemScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now() * 0.8;
-        framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
+        // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
+        framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
         framebuffer.clearDepthBuffer();
         const mat: Matrix4f = this.getMV(time * 3);
         this.particleSystem.drawParticleStreams(framebuffer, time, this.particleTexture2, mat);
