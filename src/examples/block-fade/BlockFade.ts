@@ -231,4 +231,31 @@ export class BlockFade extends AbstractScene {
         }
     }
 
+    // Alternating scanlines + RGB Distort /w external input
+    public renderScanlines(framebuffer: Framebuffer, shiftAmount: number) {
+        let i = 0;
+
+        const offRed = Math.round(2 * shiftAmount);
+        const offGreen = Math.round(5 * shiftAmount);
+        const offBlue = Math.round(2 * shiftAmount);
+
+        for (let y = 0; y < framebuffer.height; y++) {
+
+            // horizontal scanlines * intensity
+            const strips = (y & 1) * 16;
+            const verticalPosition = y * framebuffer.width;
+
+            for (let x = 0; x < framebuffer.width; x++) {
+                const imagePixelR = framebuffer.framebuffer[Utils.clamp(x + offRed, 0, framebuffer.width - 1) + verticalPosition] & 0xFF;
+                const imagePixelG = framebuffer.framebuffer[Utils.clamp(x + offGreen, 0, framebuffer.width - 1) + verticalPosition] >> 8 & 0xFF;
+                const imagePixelB = framebuffer.framebuffer[Utils.clamp(x + offBlue, 0, framebuffer.width - 1) + verticalPosition] >> 16 & 0xFF;
+
+                framebuffer.framebuffer[i++] = new Color(
+                    Utils.clamp(imagePixelR - strips, 0, 255),
+                    Utils.clamp(imagePixelG - strips, 0, 255),
+                    Utils.clamp(imagePixelB - strips, 0, 255)).toPackedFormat();
+            }
+        }
+    }
+
 }

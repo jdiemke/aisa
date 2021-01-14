@@ -21,11 +21,10 @@ export class TorusScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
-        const time: number = Date.now();
-        const elapsedTime: number = 0.02 * time;
-        this.drawTitanEffect(framebuffer);
-        this.shadingTorus(framebuffer, elapsedTime);
+    public render(framebuffer: Framebuffer, time: number): void {
+        framebuffer.setCullFace(CullFace.BACK);
+        this.drawTitanEffect(framebuffer, time);
+        this.shadingTorus(framebuffer, time * 0.02);
         framebuffer.drawTexture(32, 1, this.razorLogo, 1.0);
     }
 
@@ -40,7 +39,7 @@ export class TorusScene extends AbstractScene {
     }
 
 
-    private drawTitanEffect(framebuffer: Framebuffer) {
+    private drawTitanEffect(framebuffer: Framebuffer, time: number) {
         framebuffer.clear();
         const horizontalNum = framebuffer.width / 20;
         const verticalNum = framebuffer.height / 20;
@@ -48,7 +47,7 @@ export class TorusScene extends AbstractScene {
         for (let x = 0; x < horizontalNum; x++) {
             for (let y = 0; y < verticalNum; y++) {
 
-                const scale = ((Math.sin(Date.now() * 0.004 + x * 0.7 + y * 0.4) + 1) / 2);
+                const scale = ((Math.sin(time * 0.004 + x * 0.7 + y * 0.4) + 1) / 2);
                 const size = Math.round(scale * 8 + 1) * 2;
                 const offset = (20 / 2 - size / 2) | 0;
                 const color = 255 << 24 | (85 * scale) << 16 | (55 * scale) << 8 | (55 * scale);

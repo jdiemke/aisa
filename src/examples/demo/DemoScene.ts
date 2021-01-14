@@ -436,6 +436,8 @@ export class DemoScene extends AbstractScene {
                 this.timeMilliseconds);
         }
 
+        this.BlockFade.renderScanlines(framebuffer, this._bass.getValue(this._row));
+
         // show FPS, time and effect number on canvas
         this.drawStats(framebuffer);
     }

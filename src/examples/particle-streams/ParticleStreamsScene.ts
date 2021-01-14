@@ -31,8 +31,7 @@ export class ParticleStreamsScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
-        const time: number = Date.now();
+    public render(framebuffer: Framebuffer, time: number): void {
         // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
         this.drawParticleStreams(framebuffer, time, this.particleTexture2, true);
