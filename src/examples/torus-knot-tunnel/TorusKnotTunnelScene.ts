@@ -34,8 +34,8 @@ export class TorusKnotTunnelScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
-        const time: number = Date.now();
+    public render(framebuffer: Framebuffer, time: number): void {
+        framebuffer.renderingPipeline.setCullFace(CullFace.FRONT);
         this.torusTunnel(framebuffer, time * 0.019, this.particleTexture);
         framebuffer.drawScaledTextureClipAdd(
             framebuffer.width / 2 - this.cocoon.width / 2,

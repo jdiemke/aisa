@@ -34,8 +34,7 @@ export class TorusKnotScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
-        const time: number = (Date.now() - this.startTime);
+    public render(framebuffer: Framebuffer, time: number): void {
 
         this.raveMoview(framebuffer, time * 5, this.rave);
 
@@ -53,7 +52,7 @@ export class TorusKnotScene extends AbstractScene {
             this.micro.width, this.micro.height, this.micro, 0.5);
 
         framebuffer.setCullFace(CullFace.BACK);
-        this.shadingTorus5(framebuffer, Date.now() * 0.03);
+        this.shadingTorus5(framebuffer, time * 0.03);
         /*
                 framebuffer.drawScaledTextureClipAdd(
                     framebuffer.width - (((time * 0.05) | 0) % (this.micro.width + framebuffer.width)),
