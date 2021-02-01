@@ -20,7 +20,7 @@ export class BlenderJsonParser {
             const normals: Array<Vector4f> = new Array<Vector4f>();
 
             object.vertices.forEach((v: Vector) => {
-                points.push(new Vector4f(v.x, v.y, v.z).mul(2));
+                points.push(new Vector4f(v.x, v.y, v.z).mul(1));
             });
 
             object.normals.forEach((v: Vector) => {

@@ -61,7 +61,8 @@ module.exports = {
 		'voxel-landscape-fade': './src/examples/voxel-landscape-fade/Application.ts',
 		'voxel-landscape': './src/examples/voxel-landscape/Application.ts',
 		'wavefront-texture': './src/examples/wavefront-texture/Application.ts',
-		'wavefront': './src/examples/wavefront/Application.ts',
+        'wavefront': './src/examples/wavefront/Application.ts',
+        'blender-camera': './src/examples/blender-camera-animation/Application.ts',
 	},
 	mode: 'development',
 	output: {
@@ -243,7 +244,7 @@ module.exports = {
 			template: './src/index.html',
 			chunks: ['fire'],
 			filename: 'fire.html'
-		}),        
+		}),
 		new HtmlWebpackPlugin({
 			template: './src/index.html',
 			chunks: ['rotating-gears'],
@@ -388,6 +389,11 @@ module.exports = {
 			template: './src/index.html',
 			chunks: ['distorted-sphere'],
 			filename: 'distorted-sphere.html'
+		}),
+		new HtmlWebpackPlugin({
+			template: './src/index.html',
+			chunks: ['blender-camera'],
+			filename: 'blender-camera.html'
 		})
 	]
 }

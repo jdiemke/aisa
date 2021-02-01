@@ -20,6 +20,7 @@ export class Color {
     public static readonly MAGENTA: Color = new Color(255, 0, 255, 255);
     public static readonly SLATE_GRAY: Color = new Color(112, 128, 144, 255);
     public static readonly DARK_GRAY: Color = new Color(19, 19, 20, 255);
+    public static readonly ORANGE: Color = new Color(255, 160, 122);
 
     constructor(public r: number = 0, public g: number = 0, public b: number = 0, public a: number = 255) {
     }
