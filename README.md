@@ -26,6 +26,7 @@ field of computer graphics including clipping, triangle rasterization, geometric
 * [Third Person Camera](https://jdiemke.github.io/aisa/third-person-camera.html)
 * [Abstract Cube](https://jdiemke.github.io/aisa/abstract-cube.html)
 * [Baked Lighting](https://jdiemke.github.io/aisa/baked-lighting.html)
+* [Blender Camera Export](https://jdiemke.github.io/aisa/blender-camera.html)
 * [Block Fade](https://jdiemke.github.io/aisa/block-fade.html)
 * [Bobs](https://jdiemke.github.io/aisa/bobs.html)
 * [Cinematic Scroller](https://jdiemke.github.io/aisa/cinematic-scroller.html)

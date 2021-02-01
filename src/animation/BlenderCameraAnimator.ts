@@ -1,9 +1,10 @@
 import { BasicCamera } from '../camera';
+import { EulerAngleCamera } from '../camera/EulerAngleCamera';
 import { Matrix4f } from '../math/Matrix4f';
 import { Vector3f } from '../math/Vector3f';
 import { CameraKeyFrame } from './CameraKeyFrame';
 
-export class CameraAnimator {
+export class BlenderCameraAnimator {
 
     public pos: Vector3f;
     private keyFrames: Array<CameraKeyFrame>;
@@ -31,11 +32,6 @@ export class CameraAnimator {
 
         const mu2 = (1 - Math.cos(fraction * Math.PI)) / 2;
         let position = new Vector3f(
-            CosineInterpolate(this.keyFrames[first].position.x, this.keyFrames[second].position.x, fraction),
-            CosineInterpolate(this.keyFrames[first].position.y, this.keyFrames[second].position.y, fraction),
-            CosineInterpolate(this.keyFrames[first].position.z, this.keyFrames[second].position.z, fraction)
-        );
-        position = new Vector3f(
             CubicInterpolate(this.keyFrames[zero].position.x, this.keyFrames[first].position.x, this.keyFrames[second].position.x, this.keyFrames[third].position.x, fraction),
             CubicInterpolate(this.keyFrames[zero].position.y, this.keyFrames[first].position.y, this.keyFrames[second].position.y, this.keyFrames[third].position.y, fraction),
             CubicInterpolate(this.keyFrames[zero].position.z, this.keyFrames[first].position.z, this.keyFrames[second].position.z, this.keyFrames[third].position.z, fraction)
@@ -49,7 +45,7 @@ export class CameraAnimator {
         );
         this.pos = position;
 
-        return new BasicCamera(position, look.x, look.y, look.z).getViewMatrix();
+        return new EulerAngleCamera(position, look.x, look.y, look.z).getViewMatrix();
     }
 
 }
