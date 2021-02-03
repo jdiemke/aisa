@@ -62,7 +62,7 @@ export class BunnyScene extends AbstractScene {
 
         const mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(10, 10, 10));
         const model: FlatshadedMesh = this.scene[0];
-        this.renderingPipeline.draw(model, mv);
+        this.renderingPipeline.draw(framebuffer, model, mv);
     }
 
     private constructSceneLights(): Array<PointLight> {

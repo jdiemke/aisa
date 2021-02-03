@@ -12,7 +12,7 @@ export class TexturedAlphaBlendingTriangleRasterizer {
     // bob und wbuffer
     constructor(private framebuffer: Framebuffer, private pipeline: AbstractRenderingPipeline) { }
 
-    public drawTriangleDDA(p1: Vertex, p2: Vertex, p3: Vertex): void {
+    public drawTriangleDDA(framebuffer: Framebuffer, p1: Vertex, p2: Vertex, p3: Vertex): void {
 
         if (p1.position.y > p3.position.y) {
             this.temp = p1;
@@ -38,13 +38,14 @@ export class TexturedAlphaBlendingTriangleRasterizer {
             const x: number = (p3.position.x - p1.position.x) * (p2.position.y - p1.position.y) /
                 (p3.position.y - p1.position.y) + p1.position.x;
             if (x > p2.position.x) {
-                this.fillLongRightTriangle2(p1, p2, p3);
+                this.fillLongRightTriangle2(framebuffer, p1, p2, p3);
             } else {
                 const tex = p1.textureCoordinate;
                 const tex2 = p2.textureCoordinate;
                 const tex3 = p3.textureCoordinate;
 
                 this.fillLongLeftTriangle2(
+                    framebuffer,
                     p1.position,
                     p2.position,
                     p3.position,
@@ -56,7 +57,7 @@ export class TexturedAlphaBlendingTriangleRasterizer {
         }
     }
 
-    private fillLongRightTriangle2(v1: Vertex, v2: Vertex, v3: Vertex): void {
+    private fillLongRightTriangle2(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void {
         let yDistanceLeft = v2.position.y - v1.position.y;
 
 
@@ -212,7 +213,7 @@ export class TexturedAlphaBlendingTriangleRasterizer {
     }
 
 
-    fillLongLeftTriangle2(v1: Vector4f, v2: Vector4f, v3: Vector4f, t1: Vector3f, t2: Vector3f, t3: Vector3f): void {
+    fillLongLeftTriangle2(framebuffer: Framebuffer, v1: Vector4f, v2: Vector4f, v3: Vector4f, t1: Vector3f, t2: Vector3f, t3: Vector3f): void {
 
         let yDistanceRight = v2.y - v1.y;
         const yDistanceLeft = v3.y - v1.y;

@@ -77,8 +77,8 @@ export class Gears2Scene extends AbstractScene {
                 .multiplyMatrix(Matrix4f.constructZRotationMatrix(time * 0.0007).
                     multiplyMatrix(Matrix4f.constructXRotationMatrix(Math.PI * 2 / 360 * 90))));
 
-        this.renderingPipeline.draw(this.gearsMesh[0], mat);
-        this.renderingPipeline.draw(this.gearsMesh[0], mat2);
+        this.renderingPipeline.draw(framebuffer, this.gearsMesh[0], mat);
+        this.renderingPipeline.draw(framebuffer, this.gearsMesh[0], mat2);
     }
 
 

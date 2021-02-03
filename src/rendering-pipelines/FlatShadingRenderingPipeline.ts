@@ -96,7 +96,7 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
         this.color = color;
     }
 
-    public draw(mesh: FlatshadedMesh, modelViewMartrix: Matrix4f): void {
+    public draw(framebuffer: Framebuffer, mesh: FlatshadedMesh, modelViewMartrix: Matrix4f): void {
 
         const normalMatrix: Matrix4f = modelViewMartrix.computeNormalMatrix();
 
@@ -137,7 +137,7 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
                 this.vertexArray[2].projection = this.projectedVertices[2];
                 this.vertexArray[2].normal = normal3;
 
-                this.renderConvexPolygon(this.vertexArray, true);
+                this.renderConvexPolygon(framebuffer, this.vertexArray, true);
             } else if (!this.isInFrontOfNearPlane(v1) &&
                 !this.isInFrontOfNearPlane(v2) &&
                 !this.isInFrontOfNearPlane(v3)) {
@@ -172,7 +172,7 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
                     output[j].projection = this.project(output[j].position);
                 }
 
-                this.renderConvexPolygon(output);
+                this.renderConvexPolygon(framebuffer, output, false);
             }
         }
     }
@@ -225,7 +225,7 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
         return output;
     }
 
-    private renderConvexPolygon(projected: Array<Vertex>, late: boolean = false): void {
+    private renderConvexPolygon(framebuffer: Framebuffer, projected: Array<Vertex>, late: boolean = false): void {
         if (projected.length === 3 &&
             !this.isTriangleCCW(
                 projected[0].projection,
@@ -263,12 +263,13 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
             return;
         }
 
-        this.triangulateConvexPolygon(clippedPolygon);
+        this.triangulateConvexPolygon(framebuffer, clippedPolygon);
     }
 
-    private triangulateConvexPolygon(clippedPolygon: Array<Vertex>): void {
+    private triangulateConvexPolygon(framebuffer:Framebuffer, clippedPolygon: Array<Vertex>): void {
         for (let j: number = 0; j < clippedPolygon.length - 2; j++) {
             this.triangleRasterizer.drawTriangleDDA(
+                framebuffer,
                 clippedPolygon[0],
                 clippedPolygon[1 + j],
                 clippedPolygon[2 + j]

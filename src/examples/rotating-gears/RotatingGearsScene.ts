@@ -84,7 +84,7 @@ export class RotatingGearsScene extends AbstractScene {
                     )
                 )
             );
-            this.renderingPipeline.draw(this.gearsMesh[0], mv);
+            this.renderingPipeline.draw(framebuffer, this.gearsMesh[0], mv);
         }
         // let lensflareScreenSpace = framebuffer.project(camera.multiply(new Vector3f(16.0 * 20, 16.0 * 20, 0)));
         // framebuffer.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.3, texture, dirt);

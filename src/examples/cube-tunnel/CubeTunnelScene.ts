@@ -76,7 +76,7 @@ export class CubeTunnelScene extends AbstractScene {
                 //       Matrix4f.constructYRotationMatrix(elapsedTime * 0.05)).multiplyMatrix(
                 //           Matrix4f.constructXRotationMatrix(elapsedTime * 0.08)));
 
-                this.renderingPipeline.draw(this.cubeMesh.getMesh(), mat);
+                this.renderingPipeline.draw(framebuffer, this.cubeMesh.getMesh(), mat);
             }
 
         }

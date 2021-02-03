@@ -36,7 +36,7 @@ export class WaveFrontTextureScene extends AbstractScene {
 
         framebuffer.setTexture(this.platonian);
         framebuffer.texturedRenderingPipeline.setModelViewMatrix(this.getModelViewMatrix(elapsedTime));
-        framebuffer.texturedRenderingPipeline.drawMeshArray(this.platonianMesh);
+        framebuffer.texturedRenderingPipeline.drawMeshArray(framebuffer, this.platonianMesh);
     }
 
     private getModelViewMatrix(elapsedTime: number): Matrix4f {

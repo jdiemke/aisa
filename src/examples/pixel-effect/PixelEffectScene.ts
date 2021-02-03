@@ -62,7 +62,7 @@ export class PixelEffectScene extends AbstractScene {
     public render(framebuffer: Framebuffer, time: number): void {
         this.PlaneDeformationFloorScene.drawPlaneDeformation(framebuffer, time >> 3, 0);
 
-        this.fontRenderer2.drawText(0, framebuffer.height - 32 - 16,
+        this.fontRenderer2.drawText(framebuffer, 0, framebuffer.height - 32 - 16,
             '              WELCOME TO A NEW RELEASE FROM YOUR FRIENDS IN CRIME! HOW DO YOU LIKE THIS INTRO?'
             , (Date.now() - this.startTime) * 0.8, false);
 

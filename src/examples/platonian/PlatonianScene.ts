@@ -64,7 +64,7 @@ export class PlatonianScene extends AbstractScene {
 
         framebuffer.setTexture(this.platonian);
         framebuffer.texturedRenderingPipeline.setModelViewMatrix(mv);
-        framebuffer.texturedRenderingPipeline.drawMeshArray(this.platonianMesh);
+        framebuffer.texturedRenderingPipeline.drawMeshArray(framebuffer, this.platonianMesh);
     }
 
 }

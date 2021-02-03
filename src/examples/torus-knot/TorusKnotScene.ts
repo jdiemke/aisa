@@ -79,14 +79,14 @@ export class TorusKnotScene extends AbstractScene {
                     continue;
                 }
 
-                framebuffer.drawTextureRect(20 * (16 - x), 20 * ((16 * rng.getFloat()) | 0), 20 * x, 20 * y, 20, 20, texture2, 0.1 + 0.35 * glitchFactor);
+                framebuffer.drawTextureRect(20 * (16 - x), 20 * ((16 * rng.getFloat()) | 0), 20 * x, 20 * y, 20, 20, texture2.texture, texture2.width, 0.1 + 0.35 * glitchFactor);
             }
         }
 
         if (noise) {
             for (let x = 0; x < 16; x++) {
                 for (let y = 0; y < 10; y++) {
-                    framebuffer.drawTextureRect(x * 20, y * 20, 20 * (Math.round(elapsedTime / 100 + x + y) % 12), 0, 20, 20, texture, 0.1 + 0.3 * glitchFactor);
+                    framebuffer.drawTextureRect(x * 20, y * 20, 20 * (Math.round(elapsedTime / 100 + x + y) % 12), 0, 20, 20, texture.texture, texture.width, 0.1 + 0.3 * glitchFactor);
                 }
             }
         }
@@ -144,7 +144,7 @@ export class TorusKnotScene extends AbstractScene {
         modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(time * 0.04) * 20,
             Math.sin(time * 0.05) * 8 - smash * 5, -28 - 250).multiplyMatrix(modelViewMartrix);
 
-        framebuffer.renderingPipeline.draw(this.torus.getMesh(), modelViewMartrix);
+        framebuffer.renderingPipeline.draw(framebuffer, this.torus.getMesh(), modelViewMartrix);
     }
 
 }

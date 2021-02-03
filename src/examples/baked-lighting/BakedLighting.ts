@@ -80,7 +80,7 @@ export class BakedLighting extends AbstractScene {
         framebuffer.clearDepthBuffer();
         framebuffer.setTexture(this.baked);
         framebuffer.texturedRenderingPipeline.setModelViewMatrix(mv);
-        framebuffer.texturedRenderingPipeline.drawMeshArray(this.blenderObj8);
+        framebuffer.texturedRenderingPipeline.drawMeshArray(framebuffer, this.blenderObj8);
     }
 
 }

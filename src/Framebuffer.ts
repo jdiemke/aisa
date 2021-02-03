@@ -260,7 +260,7 @@ export class Framebuffer {
      * @param  {number} c2
      * @return {number}     difference between c1 and c2 from 0-255
      */
-    public blend(c1: number, c2: number, nAlpha: number): number {
+    public static blend(c1: number, c2: number, nAlpha: number): number {
 
         if (0 === nAlpha) {
             return c1;
@@ -287,17 +287,17 @@ export class Framebuffer {
         return 0xff000000 | r << 16 | g << 8 | b;
     }
 
-    public drawTextureRect(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Texture, alpha2: number): void {
-        let texIndex = xt + yt * texture.width;
+    public drawTextureRect(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Uint32Array, pixelWidth: number,  alpha2: number): void {
+        let texIndex = xt + yt * pixelWidth;
         let frIndex = xs + ys * this.width;
 
         for (let h = 0; h < height; h++) {
             for (let w = 0; w < width; w++) {
-                const alpha = ((texture.texture[texIndex] >> 24) & 0xff) / 255 * alpha2;
+                const alpha = ((texture[texIndex] >> 24) & 0xff) / 255 * alpha2;
                 const inverseAlpha = 1 - alpha;
 
                 const fbPixel = this.framebuffer[frIndex];
-                const txPixel = texture.texture[texIndex];
+                const txPixel = texture[texIndex];
 
                 const r = (fbPixel >> 0 & 0xff) * inverseAlpha + (txPixel >> 0 & 0xff) * alpha;
                 const g = (fbPixel >> 8 & 0xff) * inverseAlpha + (txPixel >> 8 & 0xff) * alpha;
@@ -307,7 +307,7 @@ export class Framebuffer {
                 texIndex++;
                 frIndex++;
             }
-            texIndex += texture.width - width;
+            texIndex += pixelWidth - width;
             frIndex += this.width - width;
         }
     }
@@ -430,7 +430,7 @@ export class Framebuffer {
         const rng = new RandomNumberGenerator();
         rng.setSeed(elapsedTime);
         for (let y = 0; y < this.height; y++) {
-            this.drawTextureRect(0, y, Math.floor(rng.getFloat() * (texture.texture.length - this.width)), 0, this.width, 1, texture, scale);
+            this.drawTextureRect(0, y, Math.floor(rng.getFloat() * (texture.texture.length - this.width)), 0, this.width, 1, texture.texture, texture.width, scale);
         }
     }
 
@@ -1619,14 +1619,14 @@ export class Framebuffer {
         for (let j = 0; j < this.blenderObj4.length; j++) {
             const model = this.blenderObj4[j];
             if (j !== 0 && j !== 2) {
-                this.renderingPipeline.draw(model, mv);
+                this.renderingPipeline.draw(this, model, mv);
             }
 
             if (j === 0) {
-                this.renderingPipeline.draw(model, mv);
+                this.renderingPipeline.draw(this, model, mv);
             }
             if (j === 2) {
-                this.renderingPipeline.draw(model, mv);
+                this.renderingPipeline.draw(this, model, mv);
             }
 
         }
@@ -1638,7 +1638,7 @@ export class Framebuffer {
             ));
 
         const model2 = this.blenderObj5[0];
-        this.renderingPipeline.draw(model2, mv);
+        this.renderingPipeline.draw(this, model2, mv);
 
         const scale: number = 8;
         mv = camera.multiplyMatrix(
@@ -1693,7 +1693,7 @@ export class Framebuffer {
         modelViewMartrix = Matrix4f.constructZRotationMatrix(-elapsedTime * 0.02).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0, -21)
             .multiplyMatrix(modelViewMartrix));
 
-        this.renderingPipeline.draw(this.torus.getMesh(), modelViewMartrix);
+        this.renderingPipeline.draw(this, this.torus.getMesh(), modelViewMartrix);
     }
 
     public torusFunction(alpha: number): Vector3f {

@@ -45,7 +45,7 @@ export class FontRenderer {
         }
     }
 
-    public drawText(x: number, y: number, text: string, time: number, sine: boolean = true): void {
+    public drawText(framebuffer: Framebuffer, x: number, y: number, text: string, time: number, sine: boolean = true): void {
         let xpos: number = x;
         const xFonts: number = this.fontTexture.width / this.width;
 
@@ -58,26 +58,26 @@ export class FontRenderer {
             const index: number = this.charToIndex.has(asciiCode) ? this.charToIndex.get(asciiCode) : 0;
             const tx: number = Math.floor(index % xFonts) * this.width;
             const ty: number = Math.floor(index / xFonts) * this.height;
-            this.drawTextureRectFastAlpha(xpos,
+            this.drawTextureRectFastAlpha(framebuffer, xpos,
                 y, tx, ty, this.width, this.height, this.fontTexture, time, sine);
             xpos += this.width;
         }
     }
 
-    public drawTextureRectFastAlpha(xs: number, ys: number, xt: number, yt: number,
+    public drawTextureRectFastAlpha(framebuffer: Framebuffer, xs: number, ys: number, xt: number, yt: number,
         width: number, height: number, texture: Texture, time: number, sine: boolean = true): void {
         const startW: number = Math.max(0, 0 - xs);
-        const endW: number = Math.min(xs + width, this.framebuffer.width) - xs;
+        const endW: number = Math.min(xs + width, framebuffer.width) - xs;
         for (let w: number = startW; w < endW; w++) {
 
             const yDisp: number = sine ? Math.round(Math.sin(time * 0.004 + (xs + w) * 0.013) * 30) : 0;
             let texIndex: number = xt + w + yt * texture.width;
-            let frIndex: number = xs + w + (ys + yDisp) * this.framebuffer.width;
+            let frIndex: number = xs + w + (ys + yDisp) * framebuffer.width;
 
             for (let h: number = 0; h < height; h++) {
                 const color: number = texture.texture[texIndex];
                 if (color & 0xff000000) {
-                    this.framebuffer.framebuffer[frIndex] = color;
+                    framebuffer.framebuffer[frIndex] = color;
                 }
 
                 texIndex += texture.width;

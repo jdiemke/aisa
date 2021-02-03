@@ -25,13 +25,13 @@ export class CubeScene extends AbstractScene {
         const elapsedTime: number = time * 0.02;
         framebuffer.clearColorBuffer(CubeScene.BACKGROUND_COLOR);
         framebuffer.clearDepthBuffer();
-        this.renderingPipeline.draw(this.cubeMesh.getMesh(), this.getModelViewMatrix(elapsedTime));
+        this.renderingPipeline.draw(framebuffer, this.cubeMesh.getMesh(), this.getModelViewMatrix(elapsedTime));
     }
 
     public renderBackground(framebuffer: Framebuffer, time: number): void {
         const elapsedTime: number = time * 0.02;
         framebuffer.clearDepthBuffer();
-        this.renderingPipeline.draw(this.cubeMesh.getMesh(), this.getModelViewMatrix(elapsedTime));
+        this.renderingPipeline.draw(framebuffer, this.cubeMesh.getMesh(), this.getModelViewMatrix(elapsedTime));
     }
 
     private getModelViewMatrix(elapsedTime: number): Matrix4f {

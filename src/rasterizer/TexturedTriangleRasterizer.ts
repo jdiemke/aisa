@@ -11,7 +11,7 @@ export class TexturedTriangleRasterizer {
     // bob und wbuffer
     constructor(private framebuffer: Framebuffer) { }
 
-    public drawTriangleDDA(p1: Vertex, p2: Vertex, p3: Vertex): void {
+    public drawTriangleDDA(framebuffer: Framebuffer, p1: Vertex, p2: Vertex, p3: Vertex): void {
 
         if (p1.position.y > p3.position.y) {
             this.temp = p1;
@@ -37,13 +37,14 @@ export class TexturedTriangleRasterizer {
             const x: number = (p3.position.x - p1.position.x) * (p2.position.y - p1.position.y) /
                 (p3.position.y - p1.position.y) + p1.position.x;
             if (x > p2.position.x) {
-                this.fillLongRightTriangle2(p1, p2, p3);
+                this.fillLongRightTriangle2(framebuffer, p1, p2, p3);
             } else {
                 const tex = p1.textureCoordinate;
                 const tex2 = p2.textureCoordinate;
                 const tex3 = p3.textureCoordinate;
 
                 this.fillLongLeftTriangle2(
+                    framebuffer,
                     p1.position,
                     p2.position,
                     p3.position,
@@ -55,7 +56,7 @@ export class TexturedTriangleRasterizer {
         }
     }
 
-    private fillLongRightTriangle2(v1: Vertex, v2: Vertex, v3: Vertex): void {
+    private fillLongRightTriangle2(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void {
         let yDistanceLeft = v2.position.y - v1.position.y;
 
 
@@ -89,7 +90,7 @@ export class TexturedTriangleRasterizer {
 
         for (let i = 0; i < yDistanceLeft; i++) {
             const length = Math.round(xPosition2) - Math.round(xPosition);
-            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition)
+            let framebufferIndex = Math.round(yPosition) * framebuffer.width + Math.round(xPosition)
             const spanzStep = (curz2 - curz1) / length;
             const spanuStep = (curu2 - curu1) / length;
             const spanvStep = (curv2 - curv1) / length;
@@ -98,15 +99,15 @@ export class TexturedTriangleRasterizer {
             let uStart = curu1;
             let vStart = curv1;
             for (let j = 0; j < length; j++) {
-                if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
-                    this.framebuffer.wBuffer[framebufferIndex] = wStart;
+                if (wStart < framebuffer.wBuffer[framebufferIndex]) {
+                    framebuffer.wBuffer[framebufferIndex] = wStart;
                     const z = 1 / wStart;
 
-                    const u = Math.max(Math.min((uStart * z * this.framebuffer.bob.width), this.framebuffer.bob.width - 1), 0) | 0;
-                    const v = Math.max(Math.min((vStart * z * this.framebuffer.bob.height), this.framebuffer.bob.height - 1), 0) | 0;
-                    const color2 = this.framebuffer.bob.texture[u + v * this.framebuffer.bob.width];
+                    const u = Math.max(Math.min((uStart * z * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
+                    const v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
+                    const color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
 
-                    this.framebuffer.framebuffer[framebufferIndex] = color2;
+                    framebuffer.framebuffer[framebufferIndex] = color2;
 
                 }
                 framebufferIndex++;
@@ -149,7 +150,7 @@ export class TexturedTriangleRasterizer {
 
         for (let i = 0; i < yDistanceLeft; i++) {
             const length = Math.round(xPosition2) - Math.round(xPosition);
-            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition)
+            let framebufferIndex = Math.round(yPosition) * framebuffer.width + Math.round(xPosition)
 
             const spanzStep = (curz2 - curz1) / length;
             const spanuStep = (curu2 - curu1) / length;
@@ -159,17 +160,17 @@ export class TexturedTriangleRasterizer {
             let uStart = curu1;
             let vStart = curv1;
             for (let j = 0; j < length; j++) {
-                if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
-                    this.framebuffer.wBuffer[framebufferIndex] = wStart;
+                if (wStart < framebuffer.wBuffer[framebufferIndex]) {
+                    framebuffer.wBuffer[framebufferIndex] = wStart;
 
                     const z = 1 / wStart;
 
 
-                    const u = Math.max(Math.min((uStart * z * this.framebuffer.bob.width), this.framebuffer.bob.width - 1), 0) | 0;
-                    const v = Math.max(Math.min((vStart * z * this.framebuffer.bob.height), this.framebuffer.bob.height - 1), 0) | 0;
-                    const color2 = this.framebuffer.bob.texture[u + v * this.framebuffer.bob.width];
+                    const u = Math.max(Math.min((uStart * z * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
+                    const v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
+                    const color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
 
-                    this.framebuffer.framebuffer[framebufferIndex] = color2;
+                    framebuffer.framebuffer[framebufferIndex] = color2;
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
@@ -195,7 +196,7 @@ export class TexturedTriangleRasterizer {
     }
 
 
-    fillLongLeftTriangle2(v1: Vector4f, v2: Vector4f, v3: Vector4f, t1: Vector3f, t2: Vector3f, t3: Vector3f): void {
+    fillLongLeftTriangle2(framebuffer: Framebuffer, v1: Vector4f, v2: Vector4f, v3: Vector4f, t1: Vector3f, t2: Vector3f, t3: Vector3f): void {
 
         let yDistanceRight = v2.y - v1.y;
         const yDistanceLeft = v3.y - v1.y;
@@ -230,7 +231,7 @@ export class TexturedTriangleRasterizer {
 
         for (let i = 0; i < yDistanceRight; i++) {
             const length = Math.round(xPosition2) - Math.round(xPosition);
-            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition)
+            let framebufferIndex = Math.round(yPosition) * framebuffer.width + Math.round(xPosition)
             const spanzStep = (curz2 - curz1) / length;
             const spanuStep = (curu2 - curu1) / length;
             const spanvStep = (curv2 - curv1) / length;
@@ -239,16 +240,16 @@ export class TexturedTriangleRasterizer {
             let uStart = curu1;
             let vStart = curv1;
             for (let j = 0; j < length; j++) {
-                if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
-                    this.framebuffer.wBuffer[framebufferIndex] = wStart;
+                if (wStart < framebuffer.wBuffer[framebufferIndex]) {
+                    framebuffer.wBuffer[framebufferIndex] = wStart;
                     const z = 1 / wStart;
 
 
-                    const u = Math.max(Math.min((uStart * z * this.framebuffer.bob.width), this.framebuffer.bob.width - 1), 0) | 0;
-                    const v = Math.max(Math.min((vStart * z * this.framebuffer.bob.height), this.framebuffer.bob.height - 1), 0) | 0;
-                    const color2 = this.framebuffer.bob.texture[u + v * this.framebuffer.bob.width];
+                    const u = Math.max(Math.min((uStart * z * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
+                    const v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
+                    const color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
 
-                    this.framebuffer.framebuffer[framebufferIndex] = color2;
+                    framebuffer.framebuffer[framebufferIndex] = color2;
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
@@ -291,7 +292,7 @@ export class TexturedTriangleRasterizer {
 
         for (let i = 0; i < yDistanceRight; i++) {
             const length = Math.round(xPosition2) - Math.round(xPosition);
-            let framebufferIndex = Math.round(yPosition) * this.framebuffer.width + Math.round(xPosition)
+            let framebufferIndex = Math.round(yPosition) * framebuffer.width + Math.round(xPosition)
 
 
             const spanzStep = (curz2 - curz1) / length;
@@ -302,15 +303,15 @@ export class TexturedTriangleRasterizer {
             let uStart = curu1;
             let vStart = curv1;
             for (let j = 0; j < length; j++) {
-                if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
-                    this.framebuffer.wBuffer[framebufferIndex] = wStart;
+                if (wStart < framebuffer.wBuffer[framebufferIndex]) {
+                    framebuffer.wBuffer[framebufferIndex] = wStart;
                     const z = 1 / wStart;
 
-                    const u = Math.max(Math.min((uStart * z * this.framebuffer.bob.width), this.framebuffer.bob.width - 1), 0) | 0;
-                    const v = Math.max(Math.min((vStart * z * this.framebuffer.bob.height), this.framebuffer.bob.height - 1), 0) | 0;
-                    const color2 = this.framebuffer.bob.texture[u + v * this.framebuffer.bob.width];
+                    const u = Math.max(Math.min((uStart * z * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
+                    const v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
+                    const color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
 
-                    this.framebuffer.framebuffer[framebufferIndex] = color2;
+                    framebuffer.framebuffer[framebufferIndex] = color2;
                 }
                 framebufferIndex++;
                 wStart += spanzStep;

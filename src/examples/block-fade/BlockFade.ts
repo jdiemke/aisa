@@ -12,46 +12,37 @@ export enum TransitionMethods {
     BLOCKFADE = 3,
     CROSSFADE = 4,
     CIRCLE = 5,
-    WIPE = 6
+    WIPE_LEFT = 6
 }
 
 export class BlockFade extends AbstractScene {
     private ledTexture: Texture;
     private startTime: number = Date.now();
-    private transitionTemp: Texture;
+    private transitionFramebufferTo: Framebuffer;
 
-    public transitionCircle: Texture;
-    public transitionWipe: Texture;
+    public transitionCircle: Uint32Array;
+    public transitionWipe: Uint32Array;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.transitionTemp = new Texture(new Uint32Array(framebuffer.width * framebuffer.height), framebuffer.width, framebuffer.height);
+        this.transitionFramebufferTo = new Framebuffer(framebuffer.width, framebuffer.height);
 
         // draw side wipe
-        const texture: Texture = new Texture();
-        texture.texture = new Uint32Array(framebuffer.width * framebuffer.height);
-        texture.width = framebuffer.width;
-        texture.height = framebuffer.height;
+        this.transitionWipe = new Uint32Array(framebuffer.width * framebuffer.height);
         for (let y = 0; y < framebuffer.height; y++) {
             for (let x = 0; x < framebuffer.width; x++) {
-                const c2 = Utils.map(x, 0, texture.width, 0, 255);
+                const c2 = Utils.map(x, 0, framebuffer.width, 0, 255);
                 const color = new Color(c2, c2, c2, 255).toPackedFormat();
-                texture.texture[x + y * texture.width] = color;
+                this.transitionWipe[x + y * framebuffer.width] = color;
             }
         }
-        this.transitionWipe = texture;
 
         // draw circle gradient
-        const textureCircle: Texture = new Texture();
-        textureCircle.texture = new Uint32Array(framebuffer.width * framebuffer.height);
-        textureCircle.width = framebuffer.width;
-        textureCircle.height = framebuffer.height;
-        this.transitionCircle = textureCircle;
-        this.transitionCircle.texture.fill(Color.WHITE.toPackedFormat(), 0, this.transitionCircle.texture.length);
-
-        for (let d = 0; d < this.transitionCircle.width / 2; d += 1) {
-            const c3 = Utils.map(d, 0, this.transitionCircle.width / 2, 0, 255);
+        this.transitionCircle = new Uint32Array(framebuffer.width * framebuffer.height);
+        this.transitionCircle.fill(Color.WHITE.toPackedFormat(), 0, this.transitionCircle.length);
+        for (let d = 0; d < framebuffer.width / 2; d += 1) {
+            const c3 = Utils.map(d, 0, framebuffer.width / 2, 0, 255);
             const color = new Color(c3, c3, c3, 255).toPackedFormat();
-            this.drawCircle(this.transitionCircle.width / 2, this.transitionCircle.height / 2, d, color);
+            this.drawCircle(framebuffer.width / 2, framebuffer.height / 2, d, c3);
         }
 
         return Promise.all([
@@ -62,7 +53,7 @@ export class BlockFade extends AbstractScene {
     }
 
     private putpixel(x: number, y: number, color: number) {
-        this.transitionCircle.texture[x + y * this.transitionCircle.width] = new Color(color, color, color, 255).toPackedFormat();
+        this.transitionCircle[x + y * this.transitionFramebufferTo.width] = new Color(color, color, color, 255).toPackedFormat();
     }
 
     private drawCircle(x0: number, y0: number, radius: number, color: number) {
@@ -93,12 +84,11 @@ export class BlockFade extends AbstractScene {
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now() - this.startTime;
         framebuffer.clear();
-        this.blockFade(framebuffer, this.ledTexture, time, 0);
+        this.blockFade(framebuffer, this.ledTexture.texture, this.ledTexture.width, time, 0);
     }
 
     /**
      * Transitions from one effect to another using using "transition" value from JSRocket
-     * uses transitionTemp as the temp
      *
      * @param  {Framebuffer} framebuffer            pixels
      * @param  {Any} transitionSceneFrom            previous effect
@@ -113,10 +103,7 @@ export class BlockFade extends AbstractScene {
         transitionValue: number,
         time: number) {
         // render the 'To' effect into the framebuffer
-        transitionSceneTo.render(framebuffer, time);
-
-        //  copy framebuffer to the texture
-        framebuffer.fastFramebufferCopy(this.transitionTemp.texture, framebuffer.framebuffer);
+        transitionSceneTo.render(this.transitionFramebufferTo, time);
 
         // render 'From' effect into framebuffer
         transitionSceneFrom.render(framebuffer, time);
@@ -124,33 +111,32 @@ export class BlockFade extends AbstractScene {
         // apply transition to framebuffer (fromEffect) using texture (toEffect) 0-255
         switch (transitionMethod) {
             case TransitionMethods.BLOCKFADE: // 0 - 12000
-                this.blockFade(framebuffer, this.transitionTemp, Utils.map(transitionValue, 0, 255, 0, 12000), 0);
+                this.blockFade(framebuffer, this.transitionFramebufferTo.framebuffer, this.transitionFramebufferTo.width, Utils.map(transitionValue, 0, 255, 0, 12000), 0);
                 break;
-            case TransitionMethods.CROSSFADE: // 0 - 512
-                this.crossFade(framebuffer, this.transitionTemp, Utils.map(transitionValue, 0, 255, 0, 512));
+            case TransitionMethods.CROSSFADE: // 0 - 255
+                this.crossFade(framebuffer.framebuffer, transitionValue);
                 break;
             case TransitionMethods.FADEIN: // 0-255
-                this.fadeIn(framebuffer, this.transitionTemp, transitionValue, 0);
+                this.fadeIn(framebuffer, transitionValue, 0);
                 break;
             case TransitionMethods.FADEOUT: // 0-255
-                this.fadeOut(framebuffer, this.transitionTemp, transitionValue, 0);
+                this.fadeOut(framebuffer, transitionValue, 0);
                 break;
-            case TransitionMethods.WIPE: // 0 - 512
-                this.crossFadeImage(framebuffer, this.transitionTemp, Utils.map(transitionValue, 0, 255, 0, 512), this.transitionWipe);
+            case TransitionMethods.WIPE_LEFT: // 0 - 255
+                this.crossFadeImage(framebuffer, transitionValue, this.transitionWipe);
                 break;
-            case TransitionMethods.CIRCLE: // 0 - 512
-                this.crossFadeImage(framebuffer, this.transitionTemp, Utils.map(transitionValue, 0, 255, 0, 512), this.transitionCircle);
+            case TransitionMethods.CIRCLE: // 0 - 255
+                this.crossFadeImage(framebuffer, transitionValue, this.transitionCircle);
                 break;
             default: // 0 - 512
-                this.crossFade(framebuffer, this.transitionTemp, Utils.map(transitionValue, 0, 255, 0, 12000));
+                this.crossFade(framebuffer.framebuffer, Utils.map(transitionValue, 0, 255, 0, 12000));
         }
     }
 
-
-
-    public blockFade(framebuffer: Framebuffer, texture: Texture, time: number, startTime: number) {
-        const horizontalUnits = Math.floor(framebuffer.width / 20);
-        const verticalUnits = Math.floor(framebuffer.height / 20);
+    public blockFade(framebuffer: Framebuffer, pixelArray: Uint32Array, pixelArrayWidth: number, time: number, startTime: number) {
+        const blockWidth = 20;
+        const horizontalUnits = Math.floor(framebuffer.width / blockWidth);
+        const verticalUnits = Math.floor(framebuffer.height / blockWidth);
 
         const fadeArray = new Array<number>(horizontalUnits * verticalUnits);
         const rng = new RandomNumberGenerator();
@@ -161,56 +147,46 @@ export class BlockFade extends AbstractScene {
             }
         }
 
-
         for (let y = 0; y < verticalUnits; y++) {
             for (let x = 0; x < horizontalUnits; x++) {
-                framebuffer.drawTextureRect(x * 20, y * 20, x * 20, y * 20, 20, 20, texture,
-                    framebuffer.interpolate(startTime + fadeArray[x + y * horizontalUnits],
-                        startTime + fadeArray[x + y * horizontalUnits] + 700, time));
+                framebuffer.drawTextureRect(x * blockWidth, y * blockWidth, x * blockWidth, y * blockWidth, blockWidth, blockWidth, pixelArray, pixelArrayWidth,
+                    framebuffer.interpolate(startTime + fadeArray[x + y * horizontalUnits], startTime + fadeArray[x + y * horizontalUnits] + 700, time)
+                );
             }
         }
     }
 
     // blend entire image to another image
-    public crossFade(framebuffer: Framebuffer, texture: Texture, alpha: number) {
-        for (let y = 0; y < framebuffer.height; y++) {
-            for (let x = 0; x < framebuffer.width; x++) {
-                framebuffer.drawPixel(x, y,
-                    framebuffer.blend(
-                        framebuffer.framebuffer[x + y * framebuffer.width],
-                        texture.texture[x + y * framebuffer.width],
-                        Utils.clamp(alpha, 0, 255))
-                );
-            }
+    public crossFade(framebuffer: Uint32Array, alpha: number) {
+        for (let i = 0; i < framebuffer.length; i++) {
+            framebuffer[i] = Framebuffer.blend(
+                framebuffer[i],
+                this.transitionFramebufferTo.framebuffer[i],
+                alpha)
         }
     }
 
     // transition using image
     // https://github.com/Slynchy/SDL-AlphaMaskWipes/blob/master/Transition.h
-    public crossFadeImage(framebuffer: Framebuffer, texture: Texture, alpha: number, transitionImage: Texture) {
-        for (let y = 0; y < framebuffer.height; y++) {
-            for (let x = 0; x < framebuffer.width; x++) {
-                framebuffer.drawPixel(x, y,
-                    framebuffer.blend(
-                        framebuffer.framebuffer[x + y * framebuffer.width],
-                        texture.texture[x + y * framebuffer.width],
-                        Utils.clamp(
-                            (alpha) - (transitionImage.texture[x + y * framebuffer.width] >> 8 & 0xff),
-                            0, 255)
-                    )
-                );
-            }
+    public crossFadeImage(framebuffer: Framebuffer, alpha: number, transitionImage: Uint32Array) {
+        for (let i = 0; i < framebuffer.framebuffer.length; i++) {
+            framebuffer.framebuffer[i] = Framebuffer.blend(
+                framebuffer.framebuffer[i],
+                this.transitionFramebufferTo.framebuffer[i],
+                Utils.clamp(
+                    (alpha * 2) - (transitionImage[i] & 0xff),
+                    0, 255))
         }
     }
 
     // fade in from solid color
-    public fadeIn(framebuffer: Framebuffer, texture: Texture, alpha: number, startColor: number) {
+    public fadeIn(framebuffer: Framebuffer, alpha: number, startColor: number) {
         for (let y = 0; y < framebuffer.height; y++) {
             for (let x = 0; x < framebuffer.width; x++) {
                 framebuffer.drawPixel(x, y,
-                    framebuffer.blend(
+                    Framebuffer.blend(
                         startColor,
-                        texture.texture[x + y * framebuffer.width],
+                        this.transitionFramebufferTo.framebuffer[x + y * framebuffer.width],
                         alpha)
                 );
             }
@@ -218,12 +194,12 @@ export class BlockFade extends AbstractScene {
     }
 
     // fade out to solid color
-    public fadeOut(framebuffer: Framebuffer, texture: Texture, alpha: number, endColor: number) {
+    public fadeOut(framebuffer: Framebuffer, alpha: number, endColor: number) {
         for (let y = 0; y < framebuffer.height; y++) {
             for (let x = 0; x < framebuffer.width; x++) {
                 framebuffer.drawPixel(x, y,
-                    framebuffer.blend(
-                        texture.texture[x + y * framebuffer.width],
+                    Framebuffer.blend(
+                        framebuffer.framebuffer[x + y * framebuffer.width],
                         endColor,
                         alpha)
                 );

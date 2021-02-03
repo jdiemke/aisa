@@ -69,7 +69,7 @@ export class MetalHeadzScene extends AbstractScene {
         const renderingPipeline: TexturingRenderingPipeline = framebuffer.texturedRenderingPipeline;
 
         renderingPipeline.setModelViewMatrix(mv);
-        renderingPipeline.drawMeshArray(this.blenderObjMetal);
+        renderingPipeline.drawMeshArray(framebuffer, this.blenderObjMetal);
 
         const scale: number = 20;
         const lensflareScreenSpace: Vector3f =

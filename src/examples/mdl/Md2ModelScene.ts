@@ -70,7 +70,7 @@ export class Md2ModelScene extends AbstractScene {
         this.computeCameraMovement(time * 0.6);
 
         framebuffer.setTexture(this.ogroTexture);
-        framebuffer.renderingPipeline.draw(this.meshes[0], this.modelViewMatrix.getMatrix());
+        framebuffer.renderingPipeline.draw(framebuffer, this.meshes[0], this.modelViewMatrix.getMatrix());
 
         framebuffer.drawText(8, 8, 'FPS: ' + this.fps.toString(), this.texture4);
         framebuffer.drawText(8, 16, 'FACES: ' + this.meshes[0].faces.length, this.texture4);

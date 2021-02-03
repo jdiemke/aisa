@@ -41,14 +41,14 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
         this.modelViewMatrix = matrix;
     }
 
-    public drawMeshArray(meshes: Array<TexturedMesh>): void {
+    public drawMeshArray(framebuffer: Framebuffer, meshes: Array<TexturedMesh>): void {
         for (let j: number = 0; j < meshes.length; j++) {
             const model: TexturedMesh = meshes[j];
-            this.draw(model);
+            this.draw(framebuffer, model);
         }
     }
 
-    public draw(mesh: TexturedMesh): void {
+    public draw(framebuffer: Framebuffer, mesh: TexturedMesh): void {
 
         for (let i: number = 0; i < mesh.points.length; i++) {
             this.modelViewMatrix.multiplyHomArr(mesh.points[i], mesh.points2[i]);
@@ -81,7 +81,7 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
                     this.vertexArray[2].position = this.projectedVertices[2];
                     this.vertexArray[2].textureCoordinate = mesh.uv[mesh.faces[i].uv[2]];
 
-                    this.clipConvexPolygon2(this.vertexArray);
+                    this.clipConvexPolygon2(framebuffer, this.vertexArray);
                 }
             } else if (!this.isInFrontOfNearPlane(v1) &&
                 !this.isInFrontOfNearPlane(v2) &&
@@ -97,7 +97,7 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
                 this.vertexArray[2].position = v3;
                 this.vertexArray[2].textureCoordinate = mesh.uv[mesh.faces[i].uv[2]];
 
-                this.zClipTriangle2(this.vertexArray);
+                this.zClipTriangle2(framebuffer, this.vertexArray);
             }
         }
     }
@@ -134,7 +134,7 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
         return vertex;
     }
 
-    public zClipTriangle2(subject: Array<Vertex>): void {
+    public zClipTriangle2(framebuffer: Framebuffer, subject: Array<Vertex>): void {
         const input: Array<Vertex> = subject;
         const output: Array<Vertex> = new Array<Vertex>();
         let S: Vertex = input[input.length - 1];
@@ -177,11 +177,11 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
             return;
         }
 
-        this.clipConvexPolygon2(projected);
+        this.clipConvexPolygon2(framebuffer, projected);
     }
 
 
-    public clipConvexPolygon2(subject: Array<Vertex>): void {
+    public clipConvexPolygon2(framebuffer: Framebuffer, subject: Array<Vertex>): void {
 
         let output = subject;
 
@@ -211,7 +211,7 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
 
         // triangulate new point set
         for (let i = 0; i < output.length - 2; i++) {
-            this.triangleRasterizer.drawTriangleDDA(output[0], output[1 + i], output[2 + i]);
+            this.triangleRasterizer.drawTriangleDDA(framebuffer, output[0], output[1 + i], output[2 + i]);
         }
     }
 
