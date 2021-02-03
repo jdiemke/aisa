@@ -99,7 +99,7 @@ export class SkyBox {
 
             framebuffer.setTexture(textures[i]);
             framebuffer.texturedRenderingPipeline.setModelViewMatrix(mv);
-            framebuffer.texturedRenderingPipeline.draw(skyBoxSideModel);
+            framebuffer.texturedRenderingPipeline.draw(framebuffer, skyBoxSideModel);
 
         }
 
@@ -140,7 +140,7 @@ export class SkyBox {
 
         framebuffer.setTexture(this.up);
         framebuffer.texturedRenderingPipeline.setModelViewMatrix(mv);
-        framebuffer.texturedRenderingPipeline.draw(skyBoxSideModel);
+        framebuffer.texturedRenderingPipeline.draw(framebuffer, skyBoxSideModel);
 
 
         camera =
@@ -182,7 +182,7 @@ export class SkyBox {
 
         framebuffer.setTexture(this.down);
         framebuffer.texturedRenderingPipeline.setModelViewMatrix(mv);
-        framebuffer.texturedRenderingPipeline.draw(skyBoxSideModel);
+        framebuffer.texturedRenderingPipeline.draw(framebuffer, skyBoxSideModel);
     }
 
 }

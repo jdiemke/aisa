@@ -67,7 +67,7 @@ export class HoodlumScene extends AbstractScene {
         let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(13, 13, 13));
 
         framebuffer.texturedRenderingPipeline.setModelViewMatrix(mv);
-        framebuffer.texturedRenderingPipeline.drawMeshArray(this.spaceLabMesh);
+        framebuffer.texturedRenderingPipeline.drawMeshArray(framebuffer, this.spaceLabMesh);
 
         mv = camera.multiplyMatrix(
             Matrix4f.constructTranslationMatrix(0, -5.5, 0).multiplyMatrix(
@@ -77,7 +77,7 @@ export class HoodlumScene extends AbstractScene {
             ));
 
         const model = this.hoodlumLogoMesh[0];
-        framebuffer.renderingPipeline.draw(model, mv);
+        framebuffer.renderingPipeline.draw(framebuffer, model, mv);
 
         const points: Array<Vector3f> = new Array<Vector3f>();
         const num = 10;

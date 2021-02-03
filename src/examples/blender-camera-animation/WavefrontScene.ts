@@ -94,7 +94,7 @@ export class WavefrontScene extends AbstractScene {
         // TODO: use frame position for interpolation speed
         let faces: number= 0;
         for (let j = 0; j <this.meshes.length; j++) {
-            framebuffer.renderingPipeline.draw(this.meshes[j], modelViewMartrix);
+            framebuffer.renderingPipeline.draw(framebuffer, this.meshes[j], modelViewMartrix);
             faces += this.meshes[j].faces.length;
         }
 

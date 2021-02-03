@@ -70,7 +70,7 @@ export class FrustumCullingScene extends AbstractScene {
             const model: [FlatshadedMesh, Sphere] = this.world[j];
 
             if (frustumCuller.isPotentiallyVisible(model[1])) {
-                this.renderingPipeline.draw(model[0], modelViewMartrix);
+                this.renderingPipeline.draw(framebuffer, model[0], modelViewMartrix);
                 const colLine = 255 << 24 | 255 << 8;
                 framebuffer.drawBoundingSphere(model[1], modelViewMartrix, colLine);
                 //  count++;

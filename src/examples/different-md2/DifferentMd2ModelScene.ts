@@ -58,7 +58,7 @@ export class DifferentMd2ModelScene extends AbstractScene {
 
         framebuffer.setTexture(this.ogroTexture);
         framebuffer.texturedRenderingPipeline.setModelViewMatrix(this.modelViewMatrix.getMatrix());
-        framebuffer.texturedRenderingPipeline.draw(this.md2.getMesh(time));
+        framebuffer.texturedRenderingPipeline.draw(framebuffer, this.md2.getMesh(time));
     }
 
     private computeCameraMovement(elapsedTime: number): void {

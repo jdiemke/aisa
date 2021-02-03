@@ -67,8 +67,8 @@ export class SineScrollerScene extends AbstractScene {
 
         framebuffer.drawTexture(0, 0, this.texture2, 1.0);
 
-        this.fontRenderer.drawText(0, 102, ' # TEAM GENESIS # IS BACK IN 2018 WITH A NEW PC FIRST! \'STAR WARS - EMPIRE AT WAR\' DO YOU LIKE THIS?    ', time);
-        this.fontRenderer2.drawText(0, framebuffer.height - 20,
+        this.fontRenderer.drawText(framebuffer, 0, 102, ' # TEAM GENESIS # IS BACK IN 2018 WITH A NEW PC FIRST! \'STAR WARS - EMPIRE AT WAR\' DO YOU LIKE THIS?    ', time);
+        this.fontRenderer2.drawText(framebuffer, 0, framebuffer.height - 20,
             '   * WE REALLY LOVE SCROLLERS * HOW ABOUT YOU? THIS PRODUCTION IS FROM HOODLUM' +
             '~< LETS GO ON WITH THE GENERAL BLAH BLAH      ', time * 1.6, false);
 

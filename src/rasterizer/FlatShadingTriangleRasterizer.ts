@@ -14,7 +14,7 @@ export class FlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
      * Triangle rasterization using edge-walking strategy for scan-conversion.
      * Internally DDA is used for edge-walking.
      */
-    public drawTriangleDDA(p1: Vertex, p2: Vertex, p3: Vertex): void {
+    public drawTriangleDDA(framebuffer: Framebuffer, p1: Vertex, p2: Vertex, p3: Vertex): void {
         if (p1.projection.y > p3.projection.y) {
             this.temp = p1;
             p1 = p3;
@@ -41,26 +41,26 @@ export class FlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
                 p2 = p3;
                 p3 = this.temp;
             }
-            this.fillBottomFlatTriangle(p1, p2, p3);
+            this.fillBottomFlatTriangle(framebuffer, p1, p2, p3);
         } else if (p1.projection.y === p2.projection.y) {
             if (p1.projection.x > p2.projection.x) {
                 this.temp = p1;
                 p1 = p2;
                 p2 = this.temp;
             }
-            this.fillTopFlatTriangle(p1, p2, p3);
+            this.fillTopFlatTriangle(framebuffer, p1, p2, p3);
         } else {
             const x: number = (p3.projection.x - p1.projection.x) *
                 (p2.projection.y - p1.projection.y) / (p3.projection.y - p1.projection.y) + p1.projection.x;
             if (x > p2.projection.x) {
-                this.fillLongRightTriangle(p1, p2, p3);
+                this.fillLongRightTriangle(framebuffer, p1, p2, p3);
             } else {
-                this.fillLongLeftTriangle(p1, p2, p3);
+                this.fillLongLeftTriangle(framebuffer, p1, p2, p3);
             }
         }
     }
 
-    private fillBottomFlatTriangle(v1: Vertex, v2: Vertex, v3: Vertex): void {
+    private fillBottomFlatTriangle(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void {
         const color: number = v1.color.toPackedFormat();
 
         const yDistance: number = v3.projection.y - v1.projection.y;
@@ -101,7 +101,7 @@ export class FlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
         }
     }
 
-    fillTopFlatTriangle(v1: Vertex, v2: Vertex, v3: Vertex): void {
+    fillTopFlatTriangle(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void {
         const color: number = v1.color.toPackedFormat();
 
         const yDistance = v3.projection.y - v1.projection.y;
@@ -139,7 +139,7 @@ export class FlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
         }
     }
 
-    fillLongRightTriangle(v1: Vertex, v2: Vertex, v3: Vertex): void {
+    fillLongRightTriangle(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void {
         const color: number = v1.color.toPackedFormat();
 
         let yDistanceLeft = v2.projection.y - v1.projection.y;
@@ -211,7 +211,7 @@ export class FlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
     }
 
 
-    fillLongLeftTriangle(v1: Vertex, v2: Vertex, v3: Vertex): void {
+    fillLongLeftTriangle(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void {
         const color: number = v1.color.toPackedFormat();
 
         let yDistanceRight = v2.projection.y - v1.projection.y;

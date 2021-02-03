@@ -34,30 +34,23 @@ export class DistortedSphereScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer, time: number): void {
         framebuffer.clearColorBuffer(Color.BLACK.toPackedFormat());
-        this.renderTransparent(framebuffer,time);
+        this.renderTransparent(framebuffer, time);
     }
-
 
     public renderTransparent(framebuffer: Framebuffer, time: number): void {
         framebuffer.setCullFace(CullFace.BACK);
-        /*
-        this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-        // this.framebuffer.setBob(this.spheremap);
-        this.framebuffer.setBob(this.envmap);
-*/
         framebuffer.setTexture(this.env);
         const scale: number = 3.7;
-        const elapsedTime: number = (time) * 0.002;
 
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale)
-            .multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.35)
-                .multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3)));
+            .multiplyMatrix(Matrix4f.constructYRotationMatrix(time * 0.0007)
+                .multiplyMatrix(Matrix4f.constructXRotationMatrix(time * 0.0006)));
 
         modelViewMartrix = Matrix4f.constructTranslationMatrix(-0, -0,
-            -10 - (Math.sin(elapsedTime * 0.3) * 0.5 + 0.5) * 6)
+            -10 - (Math.sin(time * 0.0006) * 0.5 + 0.5) * 6)
             .multiplyMatrix(modelViewMartrix);
         framebuffer.clearDepthBuffer();
-        this.shadingSphereEnvDisp2(framebuffer, time * 0.0002, modelViewMartrix);
+        this.shadingSphereEnvDisp2(framebuffer, time * 0.0000004, modelViewMartrix);
     }
 
     public createSphere() {
@@ -292,9 +285,9 @@ export class DistortedSphereScene extends AbstractScene {
                     v3.y > Framebuffer.maxWindow.y) {
 
 
-                    framebuffer.texturedRenderingPipeline.clipConvexPolygon2(vertexArray);
+                    framebuffer.texturedRenderingPipeline.clipConvexPolygon2(framebuffer, vertexArray);
                 } else {
-                    framebuffer.texturedTriangleRasterizer.drawTriangleDDA(vertexArray[0], vertexArray[1], vertexArray[2]);
+                    framebuffer.texturedTriangleRasterizer.drawTriangleDDA(framebuffer, vertexArray[0], vertexArray[1], vertexArray[2]);
                 }
             }
         }

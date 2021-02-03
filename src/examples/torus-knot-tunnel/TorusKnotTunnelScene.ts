@@ -55,20 +55,26 @@ export class TorusKnotTunnelScene extends AbstractScene {
         texture2.height = framebuffer.height;
         texture2.width = framebuffer.width;
         texture2.texture = framebuffer.framebuffer;
-        for (let x = 0; x < 16; x++) {
-            for (let y = 0; y < 10; y++) {
+
+
+        const blockWidth = 20;
+        const horizontalUnits = Math.floor(framebuffer.width / blockWidth);
+        const verticalUnits = Math.floor(framebuffer.height / blockWidth);
+
+        for (let x = 0; x < horizontalUnits; x++) {
+            for (let y = 0; y < verticalUnits; y++) {
                 if (rng.getFloat() > 0.25) {
                     continue;
                 }
 
-                framebuffer.drawTextureRect(20 * (16 - x), 20 * ((16 * rng.getFloat()) | 0), 20 * x, 20 * y, 20, 20, texture2, 0.03 + 0.35 * glitchFactor);
+                framebuffer.drawTextureRect(blockWidth * (horizontalUnits - x), blockWidth * ((horizontalUnits * rng.getFloat()) | 0), blockWidth * x, blockWidth * y, blockWidth, blockWidth, texture2.texture, texture2.width, 0.03 + 0.35 * glitchFactor);
             }
         }
 
         if (noise) {
-            for (let x = 0; x < 16; x++) {
-                for (let y = 0; y < 10; y++) {
-                    framebuffer.drawTextureRect(x * 20, y * 20, 20 * (Math.round(elapsedTime / 100 + x + y) % 12), 0, 20, 20, texture, 0.1 + 0.3 * glitchFactor);
+            for (let x = 0; x < horizontalUnits; x++) {
+                for (let y = 0; y < verticalUnits; y++) {
+                    framebuffer.drawTextureRect(x * blockWidth, y * blockWidth, blockWidth * (Math.round(elapsedTime / 100 + x + y) % 12), 0, blockWidth, blockWidth, texture.texture, texture.width, 0.1 + 0.3 * glitchFactor);
                 }
             }
         }
@@ -149,7 +155,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
         modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -10).multiplyMatrix(modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.04)));
         modelViewMartrix = Matrix4f.constructZRotationMatrix(elapsedTime * 0.01).multiplyMatrix(finalMatrix);
 
-        framebuffer.renderingPipeline.draw(this.torusKnot.getMesh(), modelViewMartrix);
+        framebuffer.renderingPipeline.draw(framebuffer, this.torusKnot.getMesh(), modelViewMartrix);
     }
 
     private torusFunction3(alpha: number): Vector4f {

@@ -44,7 +44,7 @@ export class MovingTorusScene extends AbstractScene {
         modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.04) * 25,
             Math.sin(elapsedTime * 0.05) * 9, -24).multiplyMatrix(modelViewMartrix);
 
-        framebuffer.renderingPipeline.draw(this.torus.getMesh(), modelViewMartrix);
+        framebuffer.renderingPipeline.draw(framebuffer, this.torus.getMesh(), modelViewMartrix);
     }
 
 }

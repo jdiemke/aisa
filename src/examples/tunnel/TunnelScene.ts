@@ -40,7 +40,7 @@ export class TunnelScene extends AbstractScene {
         framebuffer.setTexture(this.metalheadz);
 
         framebuffer.texturedRenderingPipeline.setModelViewMatrix(mv);
-        framebuffer.texturedRenderingPipeline.drawMeshArray(this.blenderObjMetal);
+        framebuffer.texturedRenderingPipeline.drawMeshArray(framebuffer, this.blenderObjMetal);
 
         const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         framebuffer.drawTexture(0, 0, texture3, 0.75);

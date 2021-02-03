@@ -215,7 +215,7 @@ export class ThirdPersonCameraScene extends AbstractScene {
         this.texturedRenderingPipeline.setCullFace(CullFace.BACK);
         this.computeFloorMovement(delta);
         this.texturedRenderingPipeline.setModelViewMatrix(this.modelViewMatrix.getMatrix());
-        this.texturedRenderingPipeline.draw(this.floor);
+        this.texturedRenderingPipeline.draw(framebuffer, this.floor);
         this.modelViewMatrix.trans(0, 0.1, 0);
 
         this.computeGlowMovement(delta, currentTime);
@@ -223,7 +223,7 @@ export class ThirdPersonCameraScene extends AbstractScene {
 
         this.texturedRenderingPipeline.enableAlphaBlending();
         this.texturedRenderingPipeline.setModelViewMatrix(this.modelViewMatrix.getMatrix());
-        this.texturedRenderingPipeline.draw(this.floor);
+        this.texturedRenderingPipeline.draw(framebuffer, this.floor);
         this.texturedRenderingPipeline.disableAlphaBlending();
 
         this.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
@@ -244,10 +244,10 @@ export class ThirdPersonCameraScene extends AbstractScene {
         this.texturedRenderingPipeline.setModelViewMatrix(this.modelViewMatrix.getMatrix());
 
         framebuffer.setTexture(this.ogroTexture);
-        this.texturedRenderingPipeline.draw(this.md2.getMesh2(time * 1000));
+        this.texturedRenderingPipeline.draw(framebuffer, this.md2.getMesh2(time * 1000));
 
         framebuffer.setTexture(this.weaponTexture);
-        this.texturedRenderingPipeline.draw(this.weapon.getMesh2(time * 1000));
+        this.texturedRenderingPipeline.draw(framebuffer, this.weapon.getMesh2(time * 1000));
     }
 
     private computeFloorMovement(elapsedTime: number): void {
