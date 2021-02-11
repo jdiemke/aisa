@@ -1,19 +1,19 @@
 import { Framebuffer } from '../../../Framebuffer';
-import { PlasmaScene } from '../../plasma/PlasmaScene';
+import { AbstractCube } from '../../abstract-cube/AbstractCube';
 
 export class Scene11 {
-    private PlasmaScene: PlasmaScene;
+    private AbstractCube: AbstractCube;
     public init(framebuffer: Framebuffer): Promise<any> {
 
-        this.PlasmaScene = new PlasmaScene();
+        this.AbstractCube = new AbstractCube();
 
         return Promise.all([
-            this.PlasmaScene.init(framebuffer),
+            this.AbstractCube.init(framebuffer),
         ])
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        this.PlasmaScene.render(framebuffer, time);
+        this.AbstractCube.render(framebuffer, time);
     }
 
 }

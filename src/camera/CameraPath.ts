@@ -1,15 +1,11 @@
-import { Vector3f } from "../math";
+import { Vector3f } from '../math';
 
 export class CameraPath {
-
     public frames: Array<CameraFrame>;
-
     constructor() {
         this.frames = new Array<CameraFrame>();
     }
-
 }
-
 
 export class CameraFrame {
     public frame: number;

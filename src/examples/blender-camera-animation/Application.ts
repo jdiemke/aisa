@@ -1,10 +1,10 @@
 import { Canvas } from '../../Canvas';
-import { WavefrontScene } from './WavefrontScene';
+import { BlenderCameraScene } from './WavefrontScene';
 
 class Application {
 
     public main(): void {
-        const canvas: Canvas = new Canvas(Canvas.WIDTH, Canvas.HEIGHT, new WavefrontScene());
+        const canvas: Canvas = new Canvas(Canvas.WIDTH, Canvas.HEIGHT, new BlenderCameraScene());
         canvas.init();
     }
 

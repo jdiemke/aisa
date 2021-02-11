@@ -75,7 +75,7 @@ export class DemoScene extends AbstractScene {
         // initialize effects with progress
         return this.allProgress([
             // load music
-            this.sm.loadOgg(require('../../assets/sound/no-xs_4.ogg').default),
+            this.sm.loadOgg(require('../../assets/sound/NotMixedorMastered.ogg').default),
 
             // font for stats
             TextureUtils.load(require('../../assets/font.png'), true).then(
@@ -91,7 +91,7 @@ export class DemoScene extends AbstractScene {
 
             // load and initialze effects
             import('./parts/Scene1').then(plug => this.initScene(framebuffer, plug)), // cubicles
-            import('./parts/Scene2').then(plug => this.initScene(framebuffer, plug)), // phone
+            import('./parts/Scene2').then(plug => this.initScene(framebuffer, plug)), // telephone
             import('./parts/Scene3').then(plug => this.initScene(framebuffer, plug)), // title screen here
             import('./parts/Scene4').then(plug => this.initScene(framebuffer, plug)), // pizza delivery guy
             import('./parts/Scene5').then(plug => this.initScene(framebuffer, plug)), // pizza party
@@ -100,60 +100,20 @@ export class DemoScene extends AbstractScene {
             import('./parts/Scene6').then(plug => this.initScene(framebuffer, plug)), // spikeball + plane deformation
             import('./parts/Scene7').then(plug => this.initScene(framebuffer, plug)), // cube + rotozoomer
             import('./parts/Scene8').then(plug => this.initScene(framebuffer, plug)), // ledplasma + voxelcubes
+            import('./parts/Scene9').then(plug => this.initScene(framebuffer, plug)), // blender camera
+            import('./parts/Scene10').then(plug => this.initScene(framebuffer, plug)), // MetalHeadzScene
+            import('./parts/Scene11').then(plug => this.initScene(framebuffer, plug)), // AbstractCube
+            import('./parts/Scene12').then(plug => this.initScene(framebuffer, plug)), // DofBallsScene
+            import('./parts/Scene13').then(plug => this.initScene(framebuffer, plug)), // TorusKnotTunnelScene
+            import('./parts/Scene14').then(plug => this.initScene(framebuffer, plug)), // GearsScene
+            import('./parts/Scene15').then(plug => this.initScene(framebuffer, plug)), // BakedLighting
+            import('./parts/Scene16').then(plug => this.initScene(framebuffer, plug)), // ParticleStreamsScene
+            import('./parts/Scene17').then(plug => this.initScene(framebuffer, plug)), // HoodlumScene
+            import('./parts/Scene18').then(plug => this.initScene(framebuffer, plug)), // TwisterScene
+            import('./parts/Scene19').then(plug => this.initScene(framebuffer, plug)), // RazorScene
 
-
-            /* todo: move examples into their own scenes
-            import('./parts/Scene9').then(plug => this.initScene(framebuffer, plug)),
-            import('./parts/Scene10').then(plug => this.initScene(framebuffer, plug)),
-            import('./parts/Scene11').then(plug => this.initScene(framebuffer, plug)),
-            import('./parts/Scene12').then(plug => this.initScene(framebuffer, plug)),
-            */
-
-            import('../metalheadz/MetalHeadzScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../abstract-cube/AbstractCube').then(plug => this.initScene(framebuffer, plug)),
-            import('../dof-balls/DofBallsScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../torus-knot-tunnel/TorusKnotTunnelScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../gears/GearsScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../md2/Md2ModelScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../baked-lighting/BakedLighting').then(plug => this.initScene(framebuffer, plug)),
-            import('../particle-streams/ParticleStreamsScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../torus/TorusScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../torus-knot/TorusKnotScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../platonian/PlatonianScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../cube-tunnel/CubeTunnelScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../sine-scroller/SineScrollerScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../hoodlum/HoodlumScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../polar-voxels/PolarVoxelsScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../particle-torus/ParticleTorusScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../toxic-dots/ToxicDotsScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../particle-system/ParticleSystemScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../voxel-landscape-fade/VoxelLandcapeFadeScene').then(plug => this.initScene(framebuffer, plug)),
-            /*
-            import('../plane-deformation/PlaneDeformationScene').then(plug => this.initScene(framebuffer, plug, 8, require('../../assets/textures/tex4_256.png'))),
-            import('../plane-deformation-floor/PlaneDeformationFloorScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../plane-deformation-tunnel/PlaneDeformationTunnelScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../bump-map/BumpMap').then(plug => this.initScene(framebuffer, plug)),
-            import('../gears-2/Gears2Scene').then(plug => this.initScene(framebuffer, plug)),
-
-            import('../lens/LensScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../razor/RazorScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../metaballs/MetaballsScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../moving-torus/MovingTorusScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../pixel-effect/PixelEffectScene').then(plug => { this.initScene(framebuffer, plug); }),
-            import('../rotating-gears/RotatingGearsScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../textured-torus/TexturedTorusScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../third-person-camera/ThirdPersonCameraScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../titan-effect/TitanEffectScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../twister/TwisterScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../voxel-landscape/VoxelLandscapeScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../wavefront/WavefrontScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../wavefront-texture/WaveFrontTextureScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../cinematic-scroller/CinematicScroller').then(plug => this.initScene(framebuffer, plug)),
-            import('../scrolling-background/ScrollingBackgroundScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../bobs/Bobs').then(plug => this.initScene(framebuffer, plug)),
-            import('../flood-fill/FloodFillScene').then(plug => this.initScene(framebuffer, plug)),
-            import('../different-md2/DifferentMd2ModelScene').then(plug => this.initScene(framebuffer, plug)),
-            */
+            // end
+            import('./parts/Scene20').then(plug => this.initScene(framebuffer, plug)), // sinescroller
 
         ], (percent: number) => {
             // update the progress bar via canvas
@@ -436,7 +396,7 @@ export class DemoScene extends AbstractScene {
                 this.timeMilliseconds);
         }
 
-        this.BlockFade.renderScanlines(framebuffer, this._bass.getValue(this._row));
+        this.BlockFade.renderScanlines(framebuffer, this._bass && this._bass.getValue(this._row));
 
         // show FPS, time and effect number on canvas
         this.drawStats(framebuffer);
@@ -503,7 +463,7 @@ export class DemoScene extends AbstractScene {
         return new Promise((resolve) => {
             if (this._demoMode) {
                 this.sm._syncDevice.setConfig({
-                    'rocketXML': require('../../assets/sound/no-xs_4.rocket').default
+                    'rocketXML': require('../../assets/sound/demo.rocket').default
                 });
                 this.sm._syncDevice.init('demo');
 

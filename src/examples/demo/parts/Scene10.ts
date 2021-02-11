@@ -1,19 +1,19 @@
 import { Framebuffer } from '../../../Framebuffer';
-import { PlasmaScene } from '../../plasma/PlasmaScene';
+import { MetalHeadzScene } from '../../metalheadz/MetalHeadzScene';
 
 export class Scene10 {
-    private PlasmaScene: PlasmaScene;
+    private MetalHeadzScene: MetalHeadzScene;
     public init(framebuffer: Framebuffer): Promise<any> {
 
-        this.PlasmaScene = new PlasmaScene();
+        this.MetalHeadzScene = new MetalHeadzScene();
 
         return Promise.all([
-            this.PlasmaScene.init(framebuffer),
+            this.MetalHeadzScene.init(framebuffer),
         ])
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        this.PlasmaScene.render(framebuffer, time);
+        this.MetalHeadzScene.render(framebuffer, time);
     }
 
 }

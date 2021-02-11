@@ -22,8 +22,7 @@ export class TwisterScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
-        const time: number = Date.now();
+    public render(framebuffer: Framebuffer, time: number): void {
         framebuffer.drawScaledTextureClipBi(
             0,
             0,

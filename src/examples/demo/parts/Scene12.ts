@@ -1,19 +1,19 @@
 import { Framebuffer } from '../../../Framebuffer';
-import { PlasmaScene } from '../../plasma/PlasmaScene';
+import { DofBallsScene } from '../../dof-balls/DofBallsScene';
 
 export class Scene12 {
-    private PlasmaScene: PlasmaScene;
+    private DofBallsScene: DofBallsScene;
     public init(framebuffer: Framebuffer): Promise<any> {
 
-        this.PlasmaScene = new PlasmaScene();
+        this.DofBallsScene = new DofBallsScene();
 
         return Promise.all([
-            this.PlasmaScene.init(framebuffer),
+            this.DofBallsScene.init(framebuffer),
         ])
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        this.PlasmaScene.render(framebuffer, time);
+        this.DofBallsScene.render(framebuffer, time);
     }
 
 }

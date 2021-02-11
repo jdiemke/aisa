@@ -16,7 +16,7 @@ import CameraPathFile from '../../assets/camera-path.jsx';
 import { BlenderCameraAnimator } from '../../animation/BlenderCameraAnimator';
 import { SkyBox } from '../../SkyBox';
 
-export class WavefrontScene extends AbstractScene {
+export class BlenderCameraScene extends AbstractScene {
 
     private static readonly CLEAR_COLOR: number = Color.ORANGE.toPackedFormat();
 
@@ -33,22 +33,25 @@ export class WavefrontScene extends AbstractScene {
     private path: Array<CameraKeyFrame>;
     private skyBox: SkyBox;
 
+    private light1: PointLight;
+    private light2: PointLight;
+
     public init(framebuffer: Framebuffer): Promise<any> {
         framebuffer.renderingPipeline.setCullFace(CullFace.BACK);
 
-        const light1: PointLight = new PointLight();
-        light1.ambientIntensity = new Vector4f(1, 1, 1, 1);
-        light1.diffuseIntensity = new Vector4f(1, 0.0, 1, 1);
-        light1.specularIntensity = new Vector4f(0.5, 0.5, 0.7, 1);
-        light1.position = new Vector4f(0, -10, -1, 1);
+        this.light1 = new PointLight();
+        this.light1.ambientIntensity = new Vector4f(1, 1, 1, 1);
+        this.light1.diffuseIntensity = new Vector4f(1, 0.0, 1, 1);
+        this.light1.specularIntensity = new Vector4f(0.5, 0.5, 0.7, 1);
+        this.light1.position = new Vector4f(0, -10, -1, 1);
 
-        const light2: PointLight = new PointLight();
-        light2.ambientIntensity = new Vector4f(0.5, 0.5, 1, 1);
-        light2.diffuseIntensity = new Vector4f(0.3, 0.3, 1, 1);
-        light2.specularIntensity = new Vector4f(0.8, 0.8, 0.8, 1);
-        light2.position = new Vector4f(3, 0, -2, 1);
+        this.light2 = new PointLight();
+        this.light2.ambientIntensity = new Vector4f(0.5, 0.5, 1, 1);
+        this.light2.diffuseIntensity = new Vector4f(0.3, 0.3, 1, 1);
+        this.light2.specularIntensity = new Vector4f(0.8, 0.8, 0.8, 1);
+        this.light2.position = new Vector4f(3, 0, -2, 1);
 
-        framebuffer.renderingPipeline.setLights([light1, light2]);
+        framebuffer.renderingPipeline.setLights([this.light1, this.light2]);
 
         console.log(CameraPathFile);
         this.skyBox = new SkyBox();
@@ -66,8 +69,11 @@ export class WavefrontScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
+    public render(framebuffer: Framebuffer, timeInput: number): void {
         const currentTime: number = Date.now();
+        framebuffer.renderingPipeline.setCullFace(CullFace.BACK);
+        framebuffer.renderingPipeline.setLights([this.light1, this.light2]);
+
 
         if (currentTime > this.fpsStartTime + 1000) {
             this.fpsStartTime = currentTime;
@@ -80,7 +86,7 @@ export class WavefrontScene extends AbstractScene {
         const cameraAnimator = new BlenderCameraAnimator();
         cameraAnimator.setKeyFrames(this.path);
 
-        const modelViewMartrix: Matrix4f = cameraAnimator.getViewMatrix(time);
+        const modelViewMartrix: Matrix4f = cameraAnimator.getViewMatrix(timeInput);
 
         // framebuffer.clearColorBuffer(WavefrontScene.CLEAR_COLOR);
         this.skyBox.draw(framebuffer, modelViewMartrix);
@@ -92,8 +98,8 @@ export class WavefrontScene extends AbstractScene {
 
         // TODO: move loop into render pipeline
         // TODO: use frame position for interpolation speed
-        let faces: number= 0;
-        for (let j = 0; j <this.meshes.length; j++) {
+        let faces: number = 0;
+        for (let j = 0; j < this.meshes.length; j++) {
             framebuffer.renderingPipeline.draw(framebuffer, this.meshes[j], modelViewMartrix);
             faces += this.meshes[j].faces.length;
         }
