@@ -1,19 +1,21 @@
 import { Framebuffer } from '../../../Framebuffer';
-import { PlasmaScene } from '../../plasma/PlasmaScene';
+import { BlenderCameraScene } from '../../blender-camera-animation/WavefrontScene';
+
 
 export class Scene9 {
-    private PlasmaScene: PlasmaScene;
+    private BlenderCameraScene: BlenderCameraScene;
     public init(framebuffer: Framebuffer): Promise<any> {
 
-        this.PlasmaScene = new PlasmaScene();
+        this.BlenderCameraScene = new BlenderCameraScene();
 
         return Promise.all([
-            this.PlasmaScene.init(framebuffer),
+            this.BlenderCameraScene.init(framebuffer),
         ])
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        this.PlasmaScene.render(framebuffer, time);
+        framebuffer.clearColorBuffer(0)
+        this.BlenderCameraScene.render(framebuffer, time);
     }
 
 }

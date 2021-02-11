@@ -1,6 +1,6 @@
-import { CameraKeyFrame } from "../animation/CameraKeyFrame";
-import { Vector3f } from "../math";
-import { CameraFrame, CameraPath } from "./CameraPath";
+import { CameraKeyFrame } from '../animation/CameraKeyFrame';
+import { Vector3f } from '../math';
+import { CameraFrame, CameraPath } from './CameraPath';
 
 export class CameraLoader {
 
@@ -11,39 +11,34 @@ export class CameraLoader {
 
             const json: any = JSON.parse(text);
             const cameraPath: CameraPath = new CameraPath();
-         //   console.log(json);
-
             const keys = new Array<CameraKeyFrame>();
 
-            for(let i = 0; i < json.length; i++) {
+            for (let i = 0; i < json.length; i++) {
                 const frame = json[i];
 
-                let myFrame = new CameraFrame(
+                const myFrame = new CameraFrame(
                     frame.frame,
                     new Vector3f(
                         frame.location[0],
                         frame.location[1],
                         frame.location[2]
-                        ),
+                    ),
                     new Vector3f(
                         frame.rotation[0],
                         frame.rotation[1],
                         frame.rotation[2]
                     ));
 
-                  //  console.log(myFrame);
-                    cameraPath.frames.push(myFrame);
-                    keys.push(new CameraKeyFrame( new Vector3f(
-                        frame.location[0],
-                        frame.location[2],
-                        -frame.location[1]
-
-                        ),
+                cameraPath.frames.push(myFrame);
+                keys.push(new CameraKeyFrame(new Vector3f(
+                    frame.location[0],
+                    frame.location[2],
+                    -frame.location[1]
+                ),
                     new Vector3f(
-                        frame.rotation[0] -  90*0.0174533,//frame.rotation[2],
+                        frame.rotation[0] - 90 * 0.0174533,
                         frame.rotation[2],
                         frame.rotation[1]
-
                     )));
 
             }
