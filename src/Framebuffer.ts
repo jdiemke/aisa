@@ -52,8 +52,8 @@ export class Framebuffer {
     public texturedTriangleRasterizer = new TexturedTriangleRasterizer(this);
 
     public scaleClipBlitter = new ScaleClipBlitter(this);
-    public renderingPipeline = new FlatShadingRenderingPipeline(this);
-    public texturedRenderingPipeline = new TexturingRenderingPipeline(this);
+    public renderingPipeline: FlatShadingRenderingPipeline;
+    public texturedRenderingPipeline: TexturingRenderingPipeline;
     public lineRasterizer = new LineRasterizerDda(this);
     public lineRasterizerNo = new LineRasterizerNoZ(this);
     public tmpGlitch: Uint32Array;
@@ -83,7 +83,8 @@ export class Framebuffer {
         this.unsignedIntArray = new Uint8ClampedArray(arrayBuffer);
         this.framebuffer = new Uint32Array(arrayBuffer);
         this.tmpGlitch = new Uint32Array(width * height);
-
+        this.renderingPipeline = new FlatShadingRenderingPipeline(this);
+        this.texturedRenderingPipeline = new TexturingRenderingPipeline(this);
         Framebuffer.minWindow = new Vector2f(0, 0);
         Framebuffer.maxWindow = new Vector2f(width - 1, height - 1);
     }
@@ -287,7 +288,7 @@ export class Framebuffer {
         return 0xff000000 | r << 16 | g << 8 | b;
     }
 
-    public drawTextureRect(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Uint32Array, pixelWidth: number,  alpha2: number): void {
+    public drawTextureRect(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Uint32Array, pixelWidth: number, alpha2: number): void {
         let texIndex = xt + yt * pixelWidth;
         let frIndex = xs + ys * this.width;
 
@@ -2733,7 +2734,8 @@ export class Framebuffer {
             }
         }
 
-        this.drawTextureRectAdd(0, 0, 0, 0, this.width, this.height, dirt, 0.03 + 0.15 * scale);
+        // this.drawTextureRectAdd(0, 0, 0, 0, this.width, this.height, dirt, 0.03 + 0.15 * scale);
+        this.drawScaledTextureClipBi(0, 0, this.width, this.height, dirt, 0.03 + 0.15 * scale);
     }
 
     public drawLineDDA(start: Vector3f, end: Vector3f, color: number): void {

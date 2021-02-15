@@ -37,7 +37,7 @@ export class TwisterScene extends AbstractScene {
         for (let i: number = 10; i < framebuffer.height - 10; i++) {
             const xoff = (Math.sin(a + i * 0.01) * 50) | 0;
             const rot = Math.sin(a * 0.4 + i * 0.0021) * Math.PI * 2;
-            let scale = 32;
+            let scale = 42;
             const x1 = (Math.sin(rot) * scale) | 0;
             const x2 = (Math.sin(Math.PI * 2 / 4 + rot) * scale) | 0;
             const x3 = (Math.sin(Math.PI * 2 / 4 * 2 + rot) * scale) | 0;
@@ -47,36 +47,42 @@ export class TwisterScene extends AbstractScene {
                 scale = Math.max(0, Math.sin(Math.PI * 2 / 4 * 1.5 + rot));
                 const dist = x2 - x1;
                 const xPos = x1 + 120 + xoff;
-                this.drawSpan(framebuffer, dist, xPos, i, scale, texture);
+                this.drawSpan(framebuffer, dist, xPos, i, scale, texture, time);
             }
 
             if (x3 > x2) {
                 scale = Math.max(0, Math.sin(Math.PI * 2 / 4 * 2.5 + rot));
                 const dist = x3 - x2;
                 const xPos = x2 + 120 + xoff;
-                this.drawSpan(framebuffer, dist, xPos, i, scale, texture);
+                this.drawSpan(framebuffer, dist, xPos, i, scale, texture, time);
             }
 
             if (x4 > x3) {
                 scale = Math.max(0, Math.sin(Math.PI * 2 / 4 * 3.5 + rot));
                 const dist = x4 - x3;
                 const xPos = x3 + 120 + xoff;
-                this.drawSpan(framebuffer, dist, xPos, i, scale, texture);
+                this.drawSpan(framebuffer, dist, xPos, i, scale, texture, time);
             }
 
             if (x1 > x4) {
                 scale = Math.max(0, Math.sin(Math.PI * 2 / 4 * 4.5 + rot));
                 const dist = x1 - x4;
                 const xPos = x4 + 120 + xoff;
-                this.drawSpan(framebuffer, dist, xPos, i, scale, texture);
+                this.drawSpan(framebuffer, dist, xPos, i, scale, texture, time);
             }
         }
     }
 
-    private drawSpan(framebuffer: Framebuffer, dist: number,
-        xpos: number, ypos: number, scale: number, texture: Texture): void {
+    private drawSpan(
+        framebuffer: Framebuffer,
+        dist: number,
+        xpos: number,
+        ypos: number,
+        scale: number,
+        texture: Texture,
+        time: number): void {
         let framebufferIndex = xpos + ypos * framebuffer.width;
-        let textureIndex = (((ypos - Date.now() * 0.029) | 0) & 0xff) * texture.width;
+        let textureIndex = (((ypos - time * 0.029) | 0) & 0xff) * texture.width;
         const textureForwardDifference = texture.width / dist;
         const hightlight = Math.pow(scale, 11) * 115;
 

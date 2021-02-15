@@ -27,7 +27,7 @@ export class Scene7 {
     public render(framebuffer: Framebuffer, time: number): void {
         this.RotoZoomerScene.render(framebuffer, time);
         this.CubeScene.renderBackground(framebuffer, time);
-        framebuffer.drawTexture(0, ((framebuffer.height / 2) - (this.logo.height / 2)) | 0, this.logo, 1.0);
+        framebuffer.drawTexture(0, framebuffer.height - this.logo.height, this.logo, 1.0);
 
     }
 

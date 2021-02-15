@@ -28,7 +28,7 @@ export class Scene4 {
     public render(framebuffer: Framebuffer, time: number): void {
         this.PlasmaScene.render(framebuffer, time);
         framebuffer.drawTexture(50,  ((framebuffer.height / 2) - (this.image.height / 2)) | 0, this.image, 1.0);
-        framebuffer.drawTexture(framebuffer.width - this.pizza.width, ((framebuffer.height / 2) - (this.pizza.height / 2)) | 0, this.pizza, 1.0);
+        framebuffer.drawTexture(framebuffer.width - this.pizza.width, (framebuffer.height ) - (this.pizza.height ) | 0, this.pizza, 1.0);
     }
 
 }

@@ -56,7 +56,9 @@ export class RazorScene extends AbstractScene {
         ], this.dirt);
 
         const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
-        framebuffer.drawTexture(0, 0, texture3, 0.75);
+        // framebuffer.drawTexture(0, 0, texture3, 0.75);
+        framebuffer.drawScaledTextureClipBi(0, 0, framebuffer.width, framebuffer.height, texture3, .75);
+
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
         framebuffer.noise(time, this.noise, 0.04);
     }

@@ -2,6 +2,7 @@ import { Color } from '../../core/Color';
 import { Utils } from '../../core/Utils';
 import { Framebuffer } from '../../Framebuffer';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
+import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
 
@@ -102,12 +103,15 @@ export class BlockFade extends AbstractScene {
         transitionMethod: TransitionMethods,
         transitionValue: number,
         time: number) {
+        // temporary fix to solve pipeline always needing to be in single framebuffer
+        this.transitionFramebufferTo.renderingPipeline = new FlatShadingRenderingPipeline(this.transitionFramebufferTo);
+        framebuffer.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+
         // render the 'To' effect into the framebuffer
         transitionSceneTo.render(this.transitionFramebufferTo, time);
 
         // render 'From' effect into framebuffer
         transitionSceneFrom.render(framebuffer, time);
-
         // apply transition to framebuffer (fromEffect) using texture (toEffect) 0-255
         switch (transitionMethod) {
             case TransitionMethods.BLOCKFADE: // 0 - 12000
@@ -135,8 +139,8 @@ export class BlockFade extends AbstractScene {
 
     public blockFade(framebuffer: Framebuffer, pixelArray: Uint32Array, pixelArrayWidth: number, time: number, startTime: number) {
         const blockWidth = 20;
-        const horizontalUnits = Math.floor(framebuffer.width / blockWidth);
-        const verticalUnits = Math.floor(framebuffer.height / blockWidth);
+        const horizontalUnits = Math.ceil(framebuffer.width / blockWidth);
+        const verticalUnits = Math.ceil(framebuffer.height / blockWidth);
 
         const fadeArray = new Array<number>(horizontalUnits * verticalUnits);
         const rng = new RandomNumberGenerator();
@@ -211,9 +215,9 @@ export class BlockFade extends AbstractScene {
     public renderScanlines(framebuffer: Framebuffer, shiftAmount: number) {
         let i = 0;
 
-        const offRed = Math.round(2 * shiftAmount);
-        const offGreen = Math.round(5 * shiftAmount);
-        const offBlue = Math.round(2 * shiftAmount);
+        const offRed = (2 * shiftAmount) << 0;
+        const offGreen = (5 * shiftAmount) << 0;
+        const offBlue = (2 * shiftAmount) << 0;
 
         for (let y = 0; y < framebuffer.height; y++) {
 

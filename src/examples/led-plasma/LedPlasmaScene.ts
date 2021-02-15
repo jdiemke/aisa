@@ -31,8 +31,8 @@ export class LedPlasmaScene extends AbstractScene {
             Math.sin(-time * 1.2), 35.0 / 2.0 * Math.cos(-time * 1.2), 0));
         const difference: Vector3f = new Vector3f(0, 0, 0);
 
-        const horizontalUnits = Math.floor(framebuffer.width / 8);
-        const verticalUnits = Math.floor(framebuffer.height / 8);
+        const horizontalUnits = Math.ceil(framebuffer.width / 8);
+        const verticalUnits = Math.ceil(framebuffer.height / 8);
 
         for (let y = 0; y < verticalUnits; y++) {
             for (let x = 0; x < horizontalUnits; x++) {

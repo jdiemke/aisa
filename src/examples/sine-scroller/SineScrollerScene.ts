@@ -65,7 +65,7 @@ export class SineScrollerScene extends AbstractScene {
     public render(framebuffer: Framebuffer, time: number): void {
         this.drawStarField(framebuffer, time);
 
-        framebuffer.drawTexture(0, 0, this.texture2, 1.0);
+        framebuffer.drawTexture(framebuffer.width/2 - this.texture2.width/2, 0, this.texture2, 1.0);
 
         this.fontRenderer.drawText(framebuffer, 0, 102, ' # TEAM GENESIS # IS BACK IN 2018 WITH A NEW PC FIRST! \'STAR WARS - EMPIRE AT WAR\' DO YOU LIKE THIS?    ', time);
         this.fontRenderer2.drawText(framebuffer, 0, framebuffer.height - 20,
@@ -73,16 +73,17 @@ export class SineScrollerScene extends AbstractScene {
             '~< LETS GO ON WITH THE GENERAL BLAH BLAH      ', time * 1.6, false);
 
         // animated rainbow horizontal lines
-        for (let i: number = 0; i < 20; i++) {
+        const horizontalUnits = framebuffer.width / 16;
+        for (let i: number = 0; i < horizontalUnits; i++) {
             const myTime = time * 0.003;
-            const waveSum = i / 20 * 0.6;
+            const waveSum = i / horizontalUnits * 0.6;
             const red = (Math.cos(Math.PI * waveSum / 0.5 + myTime) + 1.0) * 0.5 * 255;
             const green = (Math.sin(Math.PI * waveSum / 0.5 + myTime) + 1.0) * 0.5 * 255;
             const blue = (Math.sin(myTime) + 1.0) * 0.5 * 255;
 
             const color: number = 255 << 24 | blue << 16 | green << 8 | red;
             framebuffer.drawRect(i * 16, 68, 16, color);
-            framebuffer.drawRect((19 - i) * 16, 168, 16, color);
+            framebuffer.drawRect(((horizontalUnits-1) - i) * 16, 168, 16, color);
         }
     }
 
