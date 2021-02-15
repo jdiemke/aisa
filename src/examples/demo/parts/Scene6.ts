@@ -31,7 +31,7 @@ export class Scene6 {
 
         this.PlaneDeformationScene.render(framebuffer, time);
         this.DistortedSphereScene.renderTransparent(framebuffer, time);
-        framebuffer.drawTexture(0, ((framebuffer.height / 2) - (this.logo.height / 2)) | 0, this.logo, 1.0);
+        framebuffer.drawTexture(0, framebuffer.height - this.logo.height, this.logo, 1.0);
     }
 
 }

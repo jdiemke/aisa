@@ -1,3 +1,4 @@
+import { Canvas } from '../Canvas';
 import { Vector4f } from '../math/index';
 import { Matrix4f } from '../math/Matrix4f';
 import { Plane } from '../math/Plane';
@@ -30,11 +31,14 @@ export class FrustumCuller {
             // new Vector4f(0.0, 0.0, 1.0, 0.0)
         ];
 
+        const halfWidth =  Canvas.WIDTH / 2;
+        const halfHeight = Canvas.HEIGHT / 2;
+        const magicWidth =  292;
         const vertices: Array<Vector4f> = [
-            new Vector4f(-160 / 2, -100 / 2, 292),
-            new Vector4f(160 / 2, -100 / 2, 292),
-            new Vector4f(160 / 2, 100 / 2, 292),
-            new Vector4f(-160 / 2, 100 / 2, 292),
+            new Vector4f(-halfWidth / 2, -halfHeight / 2, magicWidth),
+            new Vector4f(halfWidth / 2, -halfHeight / 2, magicWidth),
+            new Vector4f(halfWidth / 2, halfHeight / 2, magicWidth),
+            new Vector4f(-halfWidth / 2, halfHeight / 2, magicWidth),
         ];
         for (let i: number = 0; i < vertices.length; i++) {
             const normal: Vector4f = vertices[i].cross(vertices[(i + 1) % vertices.length]).normalize().mul(-1);

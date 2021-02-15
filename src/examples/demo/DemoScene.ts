@@ -16,6 +16,7 @@ import Stats = require('stats.js');
 
 // Video Recording Tool
 import { CanvasRecorder } from './canvas-record';
+import { Utils } from '../../core/Utils';
 
 export class DemoScene extends AbstractScene {
 
@@ -72,6 +73,8 @@ export class DemoScene extends AbstractScene {
 
         this.BlockFade = new BlockFade();
 
+        document.getElementById('debug').style.width = `${framebuffer.width * 2}px`;
+
         // initialize effects with progress
         return this.allProgress([
             // load music
@@ -94,7 +97,7 @@ export class DemoScene extends AbstractScene {
             import('./parts/Scene2').then(plug => this.initScene(framebuffer, plug)), // telephone
             import('./parts/Scene3').then(plug => this.initScene(framebuffer, plug)), // title screen here
             import('./parts/Scene4').then(plug => this.initScene(framebuffer, plug)), // pizza delivery guy
-            import('./parts/Scene5').then(plug => this.initScene(framebuffer, plug)), // pizza party
+            import('./parts/Scene5').then(plug => this.initScene(framebuffer, plug)), // replace with something else
 
             // oldskool effects start
             import('./parts/Scene6').then(plug => this.initScene(framebuffer, plug)), // spikeball + plane deformation
@@ -430,6 +433,9 @@ export class DemoScene extends AbstractScene {
         this._row = this.timeSeconds * this.ROW_RATE;
 
         this._currentEffect = this._effect.getValue(this._row).toFixed(1);
+
+        // dont try to run effects that were not loaded
+        this._currentEffect = Utils.clamp(this._currentEffect, 0, this.sceneList.length);
 
         // update JS rocket
         if (this.sm._audio.paused === false) {

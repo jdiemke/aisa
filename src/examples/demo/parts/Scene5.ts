@@ -1,21 +1,19 @@
 import { Framebuffer } from '../../../Framebuffer';
-import { Texture } from '../../../texture/Texture';
-import { TextureUtils } from '../../../texture/TextureUtils';
+import { TorusScene } from '../../torus/TorusScene';
 
-// pizza being delivered
-export class Scene5 {
-
-    private logo: Texture;
+export class Scene15 {
+    private TorusScene: TorusScene;
     public init(framebuffer: Framebuffer): Promise<any> {
+
+        this.TorusScene = new TorusScene();
+
         return Promise.all([
-            TextureUtils.load(require('../../../assets/logos/pizza-party.png'), true).then(
-                (texture: Texture) => this.logo = texture
-            ),
-        ]);
+            this.TorusScene.init(framebuffer),
+        ])
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        framebuffer.drawTexture(0, ((framebuffer.height / 2) - (this.logo.height / 2)) | 0, this.logo, 1.0);
+        this.TorusScene.render(framebuffer, time);
     }
 
 }

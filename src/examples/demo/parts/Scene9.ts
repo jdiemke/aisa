@@ -1,4 +1,5 @@
 import { Framebuffer } from '../../../Framebuffer';
+import { FlatShadingRenderingPipeline } from '../../../rendering-pipelines/FlatShadingRenderingPipeline';
 import { BlenderCameraScene } from '../../blender-camera-animation/WavefrontScene';
 
 
@@ -14,7 +15,8 @@ export class Scene9 {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        framebuffer.clearColorBuffer(0)
+        framebuffer.clearColorBuffer(0);
+        framebuffer.clearDepthBuffer();
         this.BlenderCameraScene.render(framebuffer, time);
     }
 
