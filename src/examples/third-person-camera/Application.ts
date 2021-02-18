@@ -4,7 +4,7 @@ import { ThirdPersonCameraScene } from './ThirdPersonCameraScene';
 class Application {
 
     public main(): void {
-        const canvas: Canvas = new Canvas(Canvas.WIDTH, Canvas.HEIGHT, new ThirdPersonCameraScene());
+        const canvas: Canvas = new Canvas(320, 200, new ThirdPersonCameraScene());
         canvas.init();
     }
 

@@ -1,9 +1,10 @@
-import { Canvas } from '../Canvas';
+
 import { Vector4f } from '../math/index';
 import { Matrix4f } from '../math/Matrix4f';
 import { Plane } from '../math/Plane';
 import { Sphere } from '../math/Sphere';
 import { Vector3f } from '../math/Vector3f';
+import { Framebuffer } from '../Framebuffer';
 
 export class FrustumCuller {
 
@@ -11,7 +12,7 @@ export class FrustumCuller {
     private pos: Vector4f;
     private normals: Array<Vector4f>;
 
-    public constructor() {
+    public constructor(framebuffer: Framebuffer) {
         this.planes = new Array<Plane>();
 
         for (let i: number = 0; i < 4; i++) {
@@ -31,8 +32,8 @@ export class FrustumCuller {
             // new Vector4f(0.0, 0.0, 1.0, 0.0)
         ];
 
-        const halfWidth =  Canvas.WIDTH / 2;
-        const halfHeight = Canvas.HEIGHT / 2;
+        const halfWidth =  framebuffer.width / 2;
+        const halfHeight = framebuffer.height / 2;
         const magicWidth =  292;
         const vertices: Array<Vector4f> = [
             new Vector4f(-halfWidth / 2, -halfHeight / 2, magicWidth),

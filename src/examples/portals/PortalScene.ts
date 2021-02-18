@@ -21,7 +21,7 @@ export class PortalScene extends AbstractScene {
 
         this.controllableCamera = new ControllableCamera(new Vector3f(14.84, 0, -19.25), -3.54, 0, 0);
         this.area = this.generateAreaPortalNetwork();
-        this.frustumCuller = new FrustumCuller();
+        this.frustumCuller = new FrustumCuller(framebuffer);
         this.portalRenderer = new PortalRenderer();
 
         document.addEventListener('keydown', (e: KeyboardEvent) => {

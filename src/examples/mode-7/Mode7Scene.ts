@@ -34,6 +34,8 @@ import { SpriteRenderer } from './SpriteRenderer';
  */
 export class Mode7Scene extends AbstractScene {
 
+
+    private static CANVAS_WIDTH = 320;
     private map: Texture;
     private mapHud: Texture;
     private pos: Texture;
@@ -424,7 +426,7 @@ export class Mode7Scene extends AbstractScene {
                 this.spriteRenderer.addSprite(
                     new Sprite(
                         Math.round(
-                            Canvas.WIDTH / 2 + cameraDirectionPerpDistance * projectionScale -
+                            Mode7Scene.CANVAS_WIDTH / 2 + cameraDirectionPerpDistance * projectionScale -
                             (texture.width * projectionScale * scale) / 2
                         ),
                         Math.round(horizonHeight + projectedY -

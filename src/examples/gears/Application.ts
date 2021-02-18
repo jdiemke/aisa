@@ -4,7 +4,7 @@ import { GearsScene } from './GearsScene';
 class Application {
 
     public static main(): void {
-        const canvas: Canvas = new Canvas(Canvas.WIDTH, Canvas.HEIGHT, new GearsScene());
+        const canvas: Canvas = new Canvas(320, 200, new GearsScene());
         canvas.init();
     }
 

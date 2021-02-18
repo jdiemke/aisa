@@ -185,8 +185,8 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
 
         let output = subject;
 
-        for (let j = 0; j < Framebuffer.clipRegion.length; j++) {
-            const edge = Framebuffer.clipRegion[j];
+        for (let j = 0; j < framebuffer.clipRegion.length; j++) {
+            const edge = framebuffer.clipRegion[j];
             const input = output;
             output = new Array<Vertex>();
             let S = input[input.length - 1];

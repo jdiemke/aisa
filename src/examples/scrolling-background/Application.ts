@@ -4,7 +4,7 @@ import { ScrollingBackgroundScene } from './ScrollingBackgroundScene';
 class Application {
 
     public static main(): void {
-        const canvas: Canvas = new Canvas(Canvas.WIDTH, Canvas.HEIGHT, new ScrollingBackgroundScene());
+        const canvas: Canvas = new Canvas(320, 200, new ScrollingBackgroundScene());
         canvas.init();
     }
 

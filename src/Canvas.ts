@@ -3,13 +3,6 @@ import { FullscreenUtils } from './fullscreen/FullscreenUtils';
 import { AbstractScene } from './scenes/AbstractScene';
 
 export class Canvas {
-    // 480 x 270 = /4 Fullscreen HD aspect ratio no black bars
-    // 384 x 216 = /5 Fullscreen HD aspect ratio no black bars
-    // 320 x 200 = Old skool resolution
-
-    // HD Resolution 1920 x 1080
-    public static readonly WIDTH = 1920 / 5;
-    public static readonly HEIGHT = 1080 / 5;
 
     public framebuffer: Framebuffer;
     private canvas: HTMLCanvasElement;
@@ -46,7 +39,7 @@ export class Canvas {
         this.framebuffer = new Framebuffer(width, height);
         this.boundRenderLoop = this.renderLoop.bind(this);
     }
-
+    
     public init(): void {
         // add canvas element to target element
         this.appendTo(document.getElementById('aisa'));

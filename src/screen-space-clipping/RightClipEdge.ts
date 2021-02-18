@@ -1,19 +1,21 @@
 import { Framebuffer } from '../Framebuffer';
-import { Vector3f } from '../math/Vector3f';
 import { TextureCoordinate } from '../TextureCoordinate';
 import { Vertex } from '../Vertex';
 import { AbstractClipEdge } from './AbstractClipEdge';
 import { Vector4f } from '../math/Vector4f';
-import { Canvas } from '../Canvas';
 
 export class RightClipEdge extends AbstractClipEdge {
 
+    constructor(private width: number) {
+        super();
+    }
+
     public isInside(p: Vertex): boolean {
-        return p.projection.x < Canvas.WIDTH;
+        return p.projection.x < this.width;
     }
 
     public isInside2(p: Vertex): boolean {
-        return p.position.x < Canvas.WIDTH;
+        return p.position.x < this.width;
     }
 
     public computeIntersection(p1: Vertex, p2: Vertex): Vertex {

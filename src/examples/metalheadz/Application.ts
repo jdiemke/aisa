@@ -4,7 +4,7 @@ import { MetalHeadzScene } from './MetalHeadzScene';
 class Application {
 
     public main(): void {
-        const canvas: Canvas = new Canvas(Canvas.WIDTH, Canvas.HEIGHT, new MetalHeadzScene());
+        const canvas: Canvas = new Canvas(320, 200, new MetalHeadzScene());
         canvas.init();
     }
 

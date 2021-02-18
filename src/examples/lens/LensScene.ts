@@ -29,14 +29,16 @@ export class LensScene extends AbstractScene {
     private lensArrayA: Array<number> = [this.lensDiameter * this.lensDiameter];
     private lensArrayB: Array<number> = [this.lensDiameter * this.lensDiameter];
 
-    private rightBorder: number = Canvas.WIDTH - this.lensDiameter; // hit right wall
-    private ballBase: number = Canvas.HEIGHT - this.lensDiameter;
+    private rightBorder: number;
+    private ballBase: number;
     private ballX: number = 0;          // horizontal position
     private ballY: number = 0;          // vertical position
     private ballXV: number = 2;         // horizontal velocity
     private ballYV: number = 0;         // vertical velocity
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.rightBorder = framebuffer.width - this.lensDiameter; // hit right wall
+        this.ballBase = framebuffer.height - this.lensDiameter;
 
         this.calculateTransformation(20);
 
@@ -58,7 +60,7 @@ export class LensScene extends AbstractScene {
 
 
         // move the lens around
-        this.moveWave(time);
+        this.moveWave(framebuffer, time);
         // this.moveBounce(time);
 
         // apply the lens effect
@@ -129,9 +131,9 @@ export class LensScene extends AbstractScene {
     }
 
     // sine wave movement
-    private moveWave(time: number): void {
-        this.ballX = (Canvas.WIDTH / 2) + Math.cos(3 * time * 0.0004) * (Canvas.WIDTH / 2 - this.lensRadius);
-        this.ballY = (Canvas.HEIGHT / 2) + Math.sin(2 * time * 0.0004) * (Canvas.HEIGHT / 2 - this.lensRadius);
+    private moveWave(framebuffer: Framebuffer, time: number): void {
+        this.ballX = (framebuffer.width / 2) + Math.cos(3 * time * 0.0004) * (framebuffer.width  / 2 - this.lensRadius);
+        this.ballY = (framebuffer.height  / 2) + Math.sin(2 * time * 0.0004) * (framebuffer.height / 2 - this.lensRadius);
 
         this.ballX = Math.floor(this.ballX - this.lensRadius);
         this.ballY = Math.floor(this.ballY - this.lensRadius);

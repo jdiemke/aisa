@@ -4,7 +4,7 @@ import { ParticleTorusScene } from './ParticleTorusScene';
 class Application {
 
     public static main(): void {
-        const canvas: Canvas = new Canvas(Canvas.WIDTH, Canvas.HEIGHT, new ParticleTorusScene());
+        const canvas: Canvas = new Canvas(320, 200, new ParticleTorusScene());
         canvas.init();
     }
 

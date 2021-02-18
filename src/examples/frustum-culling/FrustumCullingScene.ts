@@ -62,7 +62,7 @@ export class FrustumCullingScene extends AbstractScene {
         const modelViewMartrix: Matrix4f = cameraAnimator.getViewMatrix(elapsedTime);
 
 
-        const frustumCuller = new FrustumCuller();
+        const frustumCuller = new FrustumCuller(framebuffer);
         frustumCuller.updateFrustum(modelViewMartrix, cameraAnimator.pos);
 
         for (let j = 0; j < this.world.length; j++) {

@@ -35,12 +35,7 @@ export class Framebuffer {
     public static minWindow: Vector2f;
     public static maxWindow: Vector2f;
 
-    public static clipRegion = new Array<AbstractClipEdge>(
-        new RightClipEdge(),
-        new LeftClipEdge(),
-        new BottomClipEdge(),
-        new TopClipEdge()
-    );
+
     public framebuffer: Uint32Array;
     public wBuffer: Float32Array;
 
@@ -72,6 +67,7 @@ export class Framebuffer {
     private blenderObj5: any;
 
     private linerClipper = new CohenSutherlandLineClipper(this);
+    public clipRegion = Array<AbstractClipEdge>();
 
     constructor(width: number, height: number) {
         this.width = width;
@@ -87,6 +83,13 @@ export class Framebuffer {
         this.texturedRenderingPipeline = new TexturingRenderingPipeline(this);
         Framebuffer.minWindow = new Vector2f(0, 0);
         Framebuffer.maxWindow = new Vector2f(width - 1, height - 1);
+
+        this.clipRegion = new Array<AbstractClipEdge>(
+            new RightClipEdge(this.width),
+            new LeftClipEdge(),
+            new BottomClipEdge(),
+            new TopClipEdge()
+        );
     }
 
     public setCullFace(face: CullFace): void {

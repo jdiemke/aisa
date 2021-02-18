@@ -4,7 +4,7 @@ import { PlaneDeformationFloorScene } from './PlaneDeformationFloorScene';
 class Application {
 
     public static main(): void {
-        const canvas: Canvas = new Canvas(Canvas.WIDTH, Canvas.HEIGHT, new PlaneDeformationFloorScene());
+        const canvas: Canvas = new Canvas(320, 200, new PlaneDeformationFloorScene());
         canvas.init();
     }
 

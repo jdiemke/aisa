@@ -38,6 +38,7 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
     // it is possible to change the rasterizer here for
     // flat, gouroud, texture mapping etc.. should be done with clipper as well!
     private triangleRasterizer: AbstractTriangleRasterizer = null;
+    private clipper: SutherlandHodgman2DClipper;
 
     private projectedVertices: Array<Vector4f> = new Array<Vector4f>(
         new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1)
@@ -49,6 +50,7 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
 
     public constructor(framebuffer: Framebuffer) {
         super(framebuffer);
+        this.clipper = new SutherlandHodgman2DClipper(framebuffer);
 
         const light1: PointLight = new PointLight();
         light1.ambientIntensity = new Vector4f(1, 1, 1, 1);
@@ -257,7 +259,7 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
             return;
         }
 
-        const clippedPolygon: Array<Vertex> = SutherlandHodgman2DClipper.clipConvexPolygon(projected);
+        const clippedPolygon: Array<Vertex> = this.clipper.clipConvexPolygon(projected);
 
         if (clippedPolygon.length < 3) {
             return;
