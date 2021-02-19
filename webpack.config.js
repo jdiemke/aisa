@@ -63,6 +63,7 @@ module.exports = {
 		'wavefront-texture': './src/examples/wavefront-texture/Application.ts',
         'wavefront': './src/examples/wavefront/Application.ts',
         'blender-camera': './src/examples/blender-camera-animation/Application.ts',
+        'feedback-radial-blur': './src/examples/feedback-radial-blur/Application.ts',
 	},
 	mode: 'development',
 	output: {
@@ -394,6 +395,11 @@ module.exports = {
 			template: './src/index.html',
 			chunks: ['blender-camera'],
 			filename: 'blender-camera.html'
+		}),
+		new HtmlWebpackPlugin({
+			template: './src/index.html',
+			chunks: ['feedback-radial-blur'],
+			filename: 'feedback-radial-blur.html'
 		})
 	]
 }

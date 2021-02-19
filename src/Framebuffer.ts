@@ -867,7 +867,7 @@ export class Framebuffer {
             this.scaleClipBlitter.drawScaledTextureClip(
                 this.width / 2 - width / 2,
                 this.height / 2 - height / 2,
-                width, height, texture, 0.19 * (15 - i) / 15);
+                width, height, texture, 0.699+ 0.5* (15 - i) / 15);
             this.fastFramebufferCopy(this.tmpGlitch, this.framebuffer);
         }
     }
@@ -1693,8 +1693,8 @@ export class Framebuffer {
         this.clearDepthBuffer();
         const scale = 1.6;
 
-        let modelViewMartrix: Matrix4f = Matrix4f.constructYRotationMatrix(elapsedTime * 0.1).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));
-        modelViewMartrix = Matrix4f.constructZRotationMatrix(-elapsedTime * 0.02).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0, -21)
+        let modelViewMartrix: Matrix4f = Matrix4f.constructXRotationMatrix(elapsedTime * 0.1).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));
+        modelViewMartrix = Matrix4f.constructZRotationMatrix(-elapsedTime * 0.2).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0, -61)
             .multiplyMatrix(modelViewMartrix));
 
         this.renderingPipeline.draw(this, this.torus.getMesh(), modelViewMartrix);

@@ -6,18 +6,16 @@ import { Matrix4f } from '../../math';
 import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
 
-/**
- * TODO: use cube mesh and draw using drawObject2
- */
 export class CubeScene extends AbstractScene {
 
-    private static BACKGROUND_COLOR: number = Color.BLACK.toPackedFormat();
+    private static BACKGROUND_COLOR: number = Color.DARK_GRAY.toPackedFormat();
     private renderingPipeline: FlatShadingRenderingPipeline;
     private cubeMesh: Cube = new Cube();
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        framebuffer.setCullFace(CullFace.BACK);
         this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline.setCullFace(CullFace.BACK);
+        
         return Promise.all([]);
     }
 

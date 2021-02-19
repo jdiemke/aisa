@@ -38,6 +38,7 @@ field of computer graphics including clipping, triangle rasterization, geometric
 * [Fire](https://jdiemke.github.io/aisa/fire.html)
 * [Flood Fill](https://jdiemke.github.io/aisa/flood-fill.html)
 * [Frustum Culling](https://jdiemke.github.io/aisa/frustum-culling.html)
+* [Feedback Radial Blur](https://jdiemke.github.io/aisa/feedback-radial-blur.html)
 * [Gears](https://jdiemke.github.io/aisa/gears.html)
 * [Hoodlum](https://jdiemke.github.io/aisa/hoodlum.html)
 * [LED Plasma](https://jdiemke.github.io/aisa/led-plasma.html)
