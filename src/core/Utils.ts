@@ -11,7 +11,7 @@ export class Utils {
      * @type Number
      */
     public static clamp(input: number, min: number, max: number): number {
-        return Math.min(Math.max(input, min), max);
+        return input <= min ? min : input >= max ? max : input;
     };
 
     /**

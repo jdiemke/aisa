@@ -15,7 +15,7 @@ export class CubeScene extends AbstractScene {
     public init(framebuffer: Framebuffer): Promise<any> {
         this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.BACK);
-        
+
         return Promise.all([]);
     }
 

@@ -158,8 +158,10 @@ export class Scene extends AbstractScene {
 
 
         framebuffer.setCullFace(CullFace.FRONT);
+
         framebuffer.clearColorBuffer(Color.BLACK.toPackedFormat());
-       
+
+    //    framebuffer.shadingSphereClip(time * 0.01);
 
        // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.texture12.texture);
 
@@ -883,7 +885,7 @@ export class Scene extends AbstractScene {
           framebuffer.noise(time, this.noise);
   */
 
-        
+
 
         // TS SoftSynth Project
         // http://natureofcode.com/book/
@@ -937,10 +939,21 @@ export class Scene extends AbstractScene {
         // - https://www.youtube.com/watch?v=Oo-jlpvhTcY
 
 
+/*
 
-           
+                  this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
+                  this.framebuffer.drawScaledTextureClipBi(
+                      Math.round(320/2-width/2),
+                      Math.round(200/2-height/2),
+                      width, height, texture, 1.0);
+                  */
+
+
+
+
+
            // framebuffer.drawRadialBlur();
-         //  framebuffer.drawTexture(0,0, this.overlay, 1.0);
+
             framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
 
         
