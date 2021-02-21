@@ -61,6 +61,7 @@ field of computer graphics including clipping, triangle rasterization, geometric
 * [Quake 1 Model](https://jdiemke.github.io/aisa/mdl.html)
 * [Quake 2 Model (Dr. Freak)](https://jdiemke.github.io/aisa/md2.html)
 * [Quake 2 Model (Ratamahatta)](https://jdiemke.github.io/aisa/other-md2.html)
+* [Radial Blur](https://jdiemke.github.io/aisa/radial-blur.html)
 * [Razor Scene](https://jdiemke.github.io/aisa/razor.html)
 * [Rotating Gears (w. XM Music)](https://jdiemke.github.io/aisa/rotating-gears.html)
 * [Roto Zoomer](https://jdiemke.github.io/aisa/roto-zoomer.html)

@@ -3,6 +3,7 @@ import { Framebuffer } from '../../Framebuffer';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
+import { Color } from '../../core/Color';
 
 export class Scene extends AbstractScene {
 
@@ -57,6 +58,7 @@ export class Scene extends AbstractScene {
     private abstract: Texture;
     private myAudio: HTMLAudioElement;
     private spheremap: Texture;
+    private overlay: Texture;
 
     // move
     private fpsStartTime: number = Date.now();
@@ -114,6 +116,7 @@ export class Scene extends AbstractScene {
             this.createTexture(require('../../assets/heightmapSphere.png'), false).then(texture => this.heightmapSphere = texture),
             this.createTexture(require('../../assets/mask.png'), true).then(texture => this.mask = texture),
             this.createTexture(require('../../assets/dirt.png'), true).then(texture => this.dirt = texture),
+            this.createTexture(require('../../assets/haujobb-overlay.png'), true).then(texture => this.overlay = texture),
 
         ]).then(() => {
             // Web Audio API
@@ -151,12 +154,13 @@ export class Scene extends AbstractScene {
         }
         this.fpsCount++;
 
-        const time: number = (Date.now() - this.start);
+         let time: number = (Date.now() - this.start);
 
 
         framebuffer.setCullFace(CullFace.FRONT);
-        
-        framebuffer.shadingSphereClip(time * 0.01);
+        framebuffer.clearColorBuffer(Color.BLACK.toPackedFormat());
+       
+
        // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.texture12.texture);
 
 
@@ -932,63 +936,27 @@ export class Scene extends AbstractScene {
         // - https://www.youtube.com/watch?v=QT2ftidLTn4
         // - https://www.youtube.com/watch?v=Oo-jlpvhTcY
 
-        /*
-              // SCALE
-              let texture = new Texture();
-              texture.texture = this.accumulationBuffer;
-              texture.width = 320;
-              texture.height = 200;
-
-              let scale = 1 + (1+Math.sin(time*0.00006))*0.5*20;
-              let width = 320 *  scale;
-              let height = 200 * scale;
-
-              // looks crappy with linear interpolation!
-              // probably  bilinear is required here
 
 
-                  this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-                  this.framebuffer.drawScaledTextureClipBi(
-                      Math.round(320/2-width/2),
-                      Math.round(200/2-height/2),
-                      width, height, texture, 1.0);
-                  */
-
-                 
-            // RADIAL BLUR
-    let texture = new Texture();
-    texture.texture = this.accumulationBuffer;
-    texture.width = 320;
-    texture.height = 200;
-
-    let scale = 1.02;
-    let width = 320 *  scale;
-    let height = 200 * scale;
-
-    // looks crappy with linear interpolation!
-    // probably  bilinear is required here
-   // framebuffer.wireFrameSphereClipping(time * 0.009);
-
-        framebuffer.drawScaledTextureClipBi(
-            Math.round(320/2-width/2),
-            Math.round(200/2-height/2),
-            width, height, texture, 0.40);
-            
-        framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
            
            // framebuffer.drawRadialBlur();
-            
+         //  framebuffer.drawTexture(0,0, this.overlay, 1.0);
             framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
 
-        // this.framebuffer.noise(time, this.noise);
+        
+            
+           // framebuffer.noise(time, this.noise, 0.3);
 
-        // https://github.com/ninjadev/nin/blob/38e80381415934136c7bd97233a2792df2bffa8d/nin/dasBoot/shims.js
-        /*****/
-        /*
+            framebuffer.shadingSphereClip(time * 0.01);
+        
+        
+        time *= 1;
 
-        let scale =  (99-((time * 0.04) % 100))/99;
-        let width = (this.micro.width * scale * 2) | 0;
-        let height = (this.micro.height * scale * 2) | 0;
+        let count = (time * 0.0018);
+        let index =  (count |0) % 100;
+        let scale = 1- (count - (count | 0));
+        let width = (this.micro.width * scale * 6) | 0;
+        let height = (this.micro.height * scale * 6) | 0;
         let rng = new RandomNumberGenerator();
         rng.setSeed(22);
         let pos = [];
@@ -996,16 +964,42 @@ export class Scene extends AbstractScene {
             pos.push({x:rng.getFloat(), y: rng.getFloat()});
         }
 
-        let xpos = 20+(320-40) * pos[((time*0.04/99)%100)|0].x;
-        let ypos = 20+(200-40) * pos[((time*0.04/99)%100)|0].y;
-        this.framebuffer.drawScaledTextureClipAdd(
+        let xpos = 20+(320-40) * pos[index].x;
+        let ypos = 20+(200-40) * pos[index].y;
+        framebuffer.drawScaledTextureClipBiAdd(
             Math.round(xpos - width / 2),
             Math.round(ypos - height / 2),
-            width, height, this.micro, 1.0);
-            */
+           width, height, this.micro, 1.0);
+
+        
+
+     
+
+        // framebuffer.drawRadialBlur();
+       
+         //framebuffer.pixelate();
+
+           /*      
+              // SCALE
+              let texture = new Texture();
+              texture.texture = this.accumulationBuffer;
+              texture.width = 320;
+              texture.height = 200;
+
+              let scale2 = (1+Math.sin(time*0.0006))*0.5*2;
+              let width2 = 320 *  scale2;
+              let height2 = 200 * scale2;
+
+              // looks crappy with linear interpolation!
+              // probably  bilinear is required here
 
 
-        // this.framebuffer.drawRadialBlur();
+                  framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
+                  framebuffer.drawScaledTextureClipBi(
+                      Math.round(320/2-width2/2),
+                      Math.round(200/2-height2/2),
+                      width2|0, height2|0, texture, 1.0);
+               */   
 
         // NEW EFFECTS:
         // * https://www.youtube.com/watch?v=bg-MTl_nRiU

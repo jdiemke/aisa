@@ -50,7 +50,11 @@ export class ScaleClipBlitter {
         let index2 = (xStart) + (yStart) * this.framebuffer.width;
         for (let y = 0; y < newHeight; y++) {
             for (let x = 0; x < newWidth; x++) {
-                const textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
+                const xxInt = xx | 0;
+                const yyInt = yy | 0;
+                const textureIndex = xxInt + yyInt * texture.width;
+                //(xxInt > texture.width - 1 ? texture.width - 1 : xxInt) +
+                //(yyInt > texture.height - 1 ? texture.height - 1 : yyInt) * texture.width;
 
                 const alpha = (texture.texture[textureIndex] >> 24 & 0xff) * alphaScale;
                 const inverseAlpha = 1 - alpha;

@@ -68,6 +68,7 @@ export class Framebuffer {
 
     private linerClipper = new CohenSutherlandLineClipper(this);
     public clipRegion = Array<AbstractClipEdge>();
+    private texture = new Texture();
 
     constructor(width: number, height: number) {
         this.width = width;
@@ -341,7 +342,7 @@ export class Framebuffer {
     }
 
     public pixelate() {
-        const xoff = 20;
+        const xoff = 200;
         const yoff = 50;
 
         for (let x = 0; x < 10; x++) {
@@ -853,24 +854,7 @@ export class Framebuffer {
         }
     }
 
-    public drawRadialBlur(): void {
-        this.fastFramebufferCopy(this.tmpGlitch, this.framebuffer);
-        const texture = new Texture();
-        texture.texture = this.tmpGlitch;
-        texture.width = this.width;
-        texture.height = this.height;
-        let width = this.width;
-        let height = this.height;
-        for (let i = 0; i < 16; i++) {
-            width += this.width * 0.09;
-            height += this.height * 0.09;
-            this.scaleClipBlitter.drawScaledTextureClip(
-                this.width / 2 - width / 2,
-                this.height / 2 - height / 2,
-                width, height, texture, 0.699+ 0.5* (15 - i) / 15);
-            this.fastFramebufferCopy(this.tmpGlitch, this.framebuffer);
-        }
-    }
+
 
     public drawScaledTextureClipBi(xp: number, yp: number, width: number, height: number, texture: Texture, alphaBlend: number): void {
         const xStep = texture.width / width;
@@ -1693,9 +1677,8 @@ export class Framebuffer {
         this.clearDepthBuffer();
         const scale = 1.6;
 
-        let modelViewMartrix: Matrix4f = Matrix4f.constructXRotationMatrix(elapsedTime * 0.1).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));
-        modelViewMartrix = Matrix4f.constructZRotationMatrix(-elapsedTime * 0.2).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0, -61)
-            .multiplyMatrix(modelViewMartrix));
+        let modelViewMartrix: Matrix4f = Matrix4f.constructXRotationMatrix(elapsedTime * 0.3).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -61+ Math.sin(elapsedTime*0.3)*19).multiplyMatrix(Matrix4f.constructZRotationMatrix(-elapsedTime * 0.2).multiplyMatrix(modelViewMartrix));
 
         this.renderingPipeline.draw(this, this.torus.getMesh(), modelViewMartrix);
     }
