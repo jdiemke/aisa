@@ -1,7 +1,7 @@
 import { Framebuffer } from '../../../Framebuffer';
 import { TwisterScene } from '../../twister/TwisterScene';
 
-export class Scene19 {
+export class Scene18 {
     private TwisterScene: TwisterScene;
     public init(framebuffer: Framebuffer): Promise<any> {
 

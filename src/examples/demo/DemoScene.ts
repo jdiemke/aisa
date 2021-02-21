@@ -10,13 +10,14 @@ import { Texture, TextureUtils } from '../../texture';
 import { SoundManager } from '../../sound/SoundManager';
 import { Color } from '../../core/Color';
 import { BlockFade } from '../block-fade/BlockFade';
+import { LinkedList } from '../../core/LinkedList';
+import { Node } from '../../core/Node';
 
 // Stats
 import Stats = require('stats.js');
 
 // Video Recording Tool
 import { CanvasRecorder } from './canvas-record';
-import { Utils } from '../../core/Utils';
 
 export class DemoScene extends AbstractScene {
 
@@ -34,13 +35,14 @@ export class DemoScene extends AbstractScene {
 
     // Set to true when using *.rocket
     // set to false when using rocket editor using websocket
-    private _demoMode = true;
+    private _demoMode = false;
     private _recording = false;
     private canvasRecorder;
     private canvasRecordingOptions;
 
     // list of scenes
-    private sceneList: Array<AbstractScene>;
+    private sceneList: LinkedList;
+    private nodeInstance: Node;
 
     // scene variables | things you set through jsRocket
     private FOV = 50;
@@ -67,7 +69,7 @@ export class DemoScene extends AbstractScene {
     public init(framebuffer: Framebuffer): Promise<any> {
         this.sm = new SoundManager();
 
-        this.sceneList = new Array<AbstractScene>();
+        this.sceneList = new LinkedList();
 
         this.initControls(framebuffer.width);
 
@@ -117,6 +119,7 @@ export class DemoScene extends AbstractScene {
 
             // end
             import('./parts/Scene20').then(plug => this.initScene(framebuffer, plug)), // sinescroller
+            import('./parts/Scene20').then(plug => this.initScene(framebuffer, plug)), // sinescroller
 
         ], (percent: number) => {
             // update the progress bar via canvas
@@ -133,6 +136,29 @@ export class DemoScene extends AbstractScene {
             }
         });
     };
+
+    /**
+     * Adds list of AbstractScenes to sceneList array and initializes it
+     *
+     * @param   {Framebuffer} framebuffer            scene initializes with information in framebuffer such as width and height
+     * @param   {Object} plug                        imported class
+     * @returns {Promise<any>}                       resolves promise after completion
+     */
+    private initScene(framebuffer: Framebuffer, plug: {}, ...args: Array<any>): Promise<any> {
+        const constructorName = Object.keys(plug)[0];
+        this.sceneList.push(new plug[constructorName](...args));
+        return this.sceneList.getData(this.sceneList.length - 1).init(framebuffer);
+    }
+
+    // this runs after init() has finished
+    public onInit(): void {
+        this.nodeInstance = this.sceneList.head;
+        // duplicate node? - solution skip via JS rocket
+        console.info(this.sceneList.getNode(9));
+        console.info(this.sceneList.getNode(10));
+        console.info(this.sceneList.getNode(11)); // skip this - naming issue / TS compile issue?
+        console.info(this.sceneList.getNode(12));
+    }
 
     public recordVideo() {
         console.info('recording video...');
@@ -217,6 +243,7 @@ export class DemoScene extends AbstractScene {
         // stop
         tickerStopRef.addEventListener('click', () => {
             this.onPause();
+            this.nodeInstance = this.sceneList.head;
             this.seek(0);
         })
 
@@ -325,11 +352,6 @@ export class DemoScene extends AbstractScene {
         })
     }
 
-    // this runs after init() has finished
-    public onInit(): void {
-
-    }
-
     /**
      * Runs all promises in an array and runs callback with percentage of completion
      *
@@ -349,19 +371,6 @@ export class DemoScene extends AbstractScene {
     }
 
     /**
-     * Adds list of AbstractScenes to sceneList array and initializes it
-     *
-     * @param   {Framebuffer} framebuffer            scene initializes with information in framebuffer such as width and height
-     * @param   {Object} plug                        imported class
-     * @returns {Promise<any>}                       resolves promise after completion
-     */
-    private initScene(framebuffer: Framebuffer, plug: {}, ...args: Array<any>): Promise<any> {
-        const constructorName = Object.keys(plug)[0];
-        this.sceneList.push(new plug[constructorName](...args));
-        return this.sceneList[this.sceneList.length - 1].init(framebuffer);
-    }
-
-    /**
      * Adds JavaScript Performance Monitor and initializes it
      *
      * @param   {Object} args                        stat type[0-3], top in pixels, left in pixels
@@ -375,25 +384,19 @@ export class DemoScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer): void {
-
         // get time and values from music
-        this.updateMusic(framebuffer);
-
-        // use values from JS Rocket to determine which scene to show
-        const whichEffect = Number(this._currentEffect - 1);
-        const currentEffect = Math.trunc(whichEffect < 0 ? 0 : whichEffect);
+        this.updateMusic();
 
         // if the "effect" column in JSRocket is a whole number then run the effect by itself otherwise transition to next effect
-        if (Number.isInteger(whichEffect)) {
-            this.sceneList[currentEffect].render(framebuffer, this.timeMilliseconds);
+        if (Number.isInteger(this._currentEffect)) {
+            this.nodeInstance.data.render(framebuffer, this.timeMilliseconds)
         } else {
-            const nextEffect = Math.trunc(whichEffect + 1);
             // get the decimal from the current scene to pick which transition effect to use .5 = radial   .1 = fadein
             const decimalAsInt = Math.round((this._currentEffect - parseInt(this._currentEffect.toString(), 10)) * 10); // 10.5 returns 5
             this.BlockFade.transition(
                 framebuffer,
-                this.sceneList[currentEffect],
-                this.sceneList[nextEffect],
+                this.nodeInstance.data,
+                this.nodeInstance.hasNext() ? this.nodeInstance.next.data : this.nodeInstance.data,
                 decimalAsInt,
                 this._transition.getValue(this._row),
                 this.timeMilliseconds);
@@ -420,7 +423,7 @@ export class DemoScene extends AbstractScene {
         }
     }
 
-    private updateMusic(framebuffer: Framebuffer) {
+    private updateMusic() {
         // show message if rocket app is not running in background
         if (!this.sm._syncDevice.connected && !this._demoMode) {
             return;
@@ -429,13 +432,13 @@ export class DemoScene extends AbstractScene {
         // use audio time otherwise use date
         this.timeSeconds = this.sm._audio.currentTime;
         this.timeMilliseconds = this.timeSeconds * 1000;
-
         this._row = this.timeSeconds * this.ROW_RATE;
+        this._currentEffect = Number(this._effect.getValue(this._row).toFixed(1));
 
-        this._currentEffect = this._effect.getValue(this._row).toFixed(1);
-
-        // dont try to run effects that were not loaded
-        this._currentEffect = Utils.clamp(this._currentEffect, 0, this.sceneList.length);
+        this.nodeInstance =
+            this.sceneList.getNode(
+                this._currentEffect > this.sceneList.length ? this.sceneList.length - 1 : Math.floor(this._currentEffect)
+            );
 
         // update JS rocket
         if (this.sm._audio.paused === false) {

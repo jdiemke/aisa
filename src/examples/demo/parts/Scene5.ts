@@ -1,7 +1,7 @@
 import { Framebuffer } from '../../../Framebuffer';
 import { TorusScene } from '../../torus/TorusScene';
 
-export class Scene15 {
+export class Scene5 {
     private TorusScene: TorusScene;
     public init(framebuffer: Framebuffer): Promise<any> {
 
