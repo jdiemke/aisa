@@ -35,7 +35,7 @@ export class DemoScene extends AbstractScene {
 
     // Set to true when using *.rocket
     // set to false when using rocket editor using websocket
-    private _demoMode = false;
+    private _demoMode = true;
     private _recording = false;
     private canvasRecorder;
     private canvasRecordingOptions;
