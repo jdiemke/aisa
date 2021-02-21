@@ -1,21 +1,45 @@
-export class Node {
+/**
+ * Node implementation class. A node is a vertex in the list which contains data and pointers to the next node and previous node.
+ */
+export class DLNode<T> {
+    /**
+     * The data contained in the node.
+     */
+    private _data: T | null = null;
 
-    data: any;
-    next: Node;
-    prev: Node;
+    /**
+     * The edge or pointer to the next node.
+     */
+    private _next: DLNode<T> | null = null;
 
-    constructor(data: any) {
-        this.data = data;
-        this.next = this.next;
-        this.prev = this.prev;
+    /**
+     * The edge or pointer to the previous node.
+     */
+    private _previous: DLNode<T> | null = null;
+
+    constructor() { }
+
+    get data(): T | null {
+        return this._data;
     }
 
-    hasPrev(): boolean {
-        return this.prev !== null;
+    set data(data: T | null) {
+        this._data = data;
     }
 
-    hasNext(): boolean {
-        return this.next !== null;
+    get next(): DLNode<T> | null {
+        return this._next;
     }
 
+    set next(next: DLNode<T> | null) {
+        this._next = next;
+    }
+
+    get previous(): DLNode<T> | null {
+        return this._previous;
+    }
+
+    set previous(previous: DLNode<T> | null) {
+        this._previous = previous;
+    }
 }

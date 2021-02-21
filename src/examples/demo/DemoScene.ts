@@ -10,8 +10,8 @@ import { Texture, TextureUtils } from '../../texture';
 import { SoundManager } from '../../sound/SoundManager';
 import { Color } from '../../core/Color';
 import { BlockFade } from '../block-fade/BlockFade';
-import { LinkedList } from '../../core/LinkedList';
-import { Node } from '../../core/Node';
+import { DoublyLinkedList } from '../../core/LinkedList';
+import { DLNode } from '../../core/Node';
 
 // Stats
 import Stats = require('stats.js');
@@ -41,8 +41,8 @@ export class DemoScene extends AbstractScene {
     private canvasRecordingOptions;
 
     // list of scenes
-    private sceneList: LinkedList;
-    private nodeInstance: Node;
+    private sceneList: DoublyLinkedList<AbstractScene>;
+    private nodeInstance: DLNode<AbstractScene>;
 
     // scene variables | things you set through jsRocket
     private FOV = 50;
@@ -69,7 +69,7 @@ export class DemoScene extends AbstractScene {
     public init(framebuffer: Framebuffer): Promise<any> {
         this.sm = new SoundManager();
 
-        this.sceneList = new LinkedList();
+        this.sceneList = new DoublyLinkedList();;
 
         this.initControls(framebuffer.width);
 
@@ -144,20 +144,19 @@ export class DemoScene extends AbstractScene {
      * @param   {Object} plug                        imported class
      * @returns {Promise<any>}                       resolves promise after completion
      */
+    private count = 0;
     private initScene(framebuffer: Framebuffer, plug: {}, ...args: Array<any>): Promise<any> {
         const constructorName = Object.keys(plug)[0];
-        this.sceneList.push(new plug[constructorName](...args));
-        return this.sceneList.getData(this.sceneList.length - 1).init(framebuffer);
+        const newNode: DLNode<AbstractScene> = new DLNode();
+        newNode.data = new plug[constructorName](...args);
+        this.sceneList.insert(newNode, this.count);
+        return this.sceneList.getNode(this.count++).data.init(framebuffer);
     }
 
     // this runs after init() has finished
     public onInit(): void {
-        this.nodeInstance = this.sceneList.head;
-        // duplicate node? - solution skip via JS rocket
-        console.info(this.sceneList.getNode(9));
-        console.info(this.sceneList.getNode(10));
-        console.info(this.sceneList.getNode(11)); // skip this - naming issue / TS compile issue?
-        console.info(this.sceneList.getNode(12));
+        this.nodeInstance = this.sceneList.start;
+        console.info(this.sceneList)
     }
 
     public recordVideo() {
@@ -223,7 +222,6 @@ export class DemoScene extends AbstractScene {
         // Stats - Milliseconds per frame
         this.initStats(1, 100, width * 2);
 
-
         // Scene Playback Controls
         const tickerRef = document.getElementById('ticker');
         const tickerPlayRef = document.getElementById('ticker_play');
@@ -243,7 +241,7 @@ export class DemoScene extends AbstractScene {
         // stop
         tickerStopRef.addEventListener('click', () => {
             this.onPause();
-            this.nodeInstance = this.sceneList.head;
+            this.nodeInstance = this.sceneList.start;
             this.seek(0);
         })
 
@@ -396,7 +394,7 @@ export class DemoScene extends AbstractScene {
             this.BlockFade.transition(
                 framebuffer,
                 this.nodeInstance.data,
-                this.nodeInstance.hasNext() ? this.nodeInstance.next.data : this.nodeInstance.data,
+                this.nodeInstance.next.data,
                 decimalAsInt,
                 this._transition.getValue(this._row),
                 this.timeMilliseconds);
@@ -434,11 +432,7 @@ export class DemoScene extends AbstractScene {
         this.timeMilliseconds = this.timeSeconds * 1000;
         this._row = this.timeSeconds * this.ROW_RATE;
         this._currentEffect = Number(this._effect.getValue(this._row).toFixed(1));
-
-        this.nodeInstance =
-            this.sceneList.getNode(
-                this._currentEffect > this.sceneList.length ? this.sceneList.length - 1 : Math.floor(this._currentEffect)
-            );
+        this.nodeInstance = this.sceneList.getNode(Math.floor(this._currentEffect));
 
         // update JS rocket
         if (this.sm._audio.paused === false) {
