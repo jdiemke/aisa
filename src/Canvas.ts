@@ -39,7 +39,7 @@ export class Canvas {
         this.framebuffer = new Framebuffer(width, height);
         this.boundRenderLoop = this.renderLoop.bind(this);
     }
-    
+
     public init(): void {
         // add canvas element to target element
         this.appendTo(document.getElementById('aisa'));

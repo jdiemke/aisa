@@ -155,7 +155,7 @@ export class Scene extends AbstractScene {
 
 
         framebuffer.setCullFace(CullFace.FRONT);
-        
+
         framebuffer.shadingSphereClip(time * 0.01);
        // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.texture12.texture);
 
@@ -879,7 +879,7 @@ export class Scene extends AbstractScene {
           framebuffer.noise(time, this.noise);
   */
 
-        
+
 
         // TS SoftSynth Project
         // http://natureofcode.com/book/
@@ -954,16 +954,16 @@ export class Scene extends AbstractScene {
                       width, height, texture, 1.0);
                   */
 
-                 
+
             // RADIAL BLUR
-    let texture = new Texture();
+    const texture = new Texture();
     texture.texture = this.accumulationBuffer;
     texture.width = 320;
     texture.height = 200;
 
-    let scale = 1.02;
-    let width = 320 *  scale;
-    let height = 200 * scale;
+    const scale = 1.02;
+    const width = 320 *  scale;
+    const height = 200 * scale;
 
     // looks crappy with linear interpolation!
     // probably  bilinear is required here
@@ -973,11 +973,11 @@ export class Scene extends AbstractScene {
             Math.round(320/2-width/2),
             Math.round(200/2-height/2),
             width, height, texture, 0.40);
-            
+
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
-           
+
            // framebuffer.drawRadialBlur();
-            
+
             framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
 
         // this.framebuffer.noise(time, this.noise);

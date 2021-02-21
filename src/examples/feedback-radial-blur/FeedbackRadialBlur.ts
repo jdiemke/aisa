@@ -7,7 +7,7 @@ export class FeedbackRadialBlur extends AbstractScene {
 
     private tunnelScene: TorusKnotTunnelScene = new TorusKnotTunnelScene();
     private accumulationBuffer: Uint32Array;
-    
+
     public init(framebuffer: Framebuffer): Promise<any> {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
 
@@ -28,19 +28,19 @@ export class FeedbackRadialBlur extends AbstractScene {
         texture.width = 320;
         texture.height = 200;
 
-        let scaleX = 1.018;
-        let scaleY = 1.018;
-        let width = 320 * scaleX;
-        let height = 200 * scaleY;
+        const scaleX = 1.018;
+        const scaleY = 1.018;
+        const width = 320 * scaleX;
+        const height = 200 * scaleY;
 
         const alphaScale = (Math.sin(time * 0.00005) * 0.5) + 0.5;
 
         framebuffer.drawScaledTextureClipBi(
-            Math.round(320/2-width/2),
-            Math.round(200/2-height/2),
+            Math.round(320 / 2 - width / 2),
+            Math.round(200 / 2 - height / 2),
             width, height, texture, 1.0 * alphaScale
         );
-            
+
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
     }
 

@@ -39,39 +39,7 @@
 			<key interpolation="0" row="1360" value="18"/>
 			<key interpolation="0" row="1424" value="18.5"/>
 			<key interpolation="0" row="1440" value="19"/>
-			<key interpolation="0" row="1504" value="19.5"/>
 			<key interpolation="0" row="1520" value="20"/>
-			<key interpolation="0" row="1584" value="20.5"/>
-			<key interpolation="0" row="1600" value="21"/>
-			<key interpolation="0" row="1680" value="22"/>
-			<key interpolation="0" row="1760" value="23"/>
-			<key interpolation="0" row="1840" value="24"/>
-			<key interpolation="0" row="1920" value="25"/>
-			<key interpolation="0" row="2000" value="26"/>
-			<key interpolation="0" row="2080" value="27"/>
-			<key interpolation="0" row="2160" value="28"/>
-			<key interpolation="0" row="2240" value="29"/>
-			<key interpolation="0" row="2320" value="30"/>
-			<key interpolation="0" row="2400" value="31"/>
-			<key interpolation="0" row="2480" value="32"/>
-			<key interpolation="0" row="2560" value="33"/>
-			<key interpolation="0" row="2640" value="34"/>
-			<key interpolation="0" row="2720" value="35"/>
-			<key interpolation="0" row="2800" value="36"/>
-			<key interpolation="0" row="2880" value="37"/>
-			<key interpolation="0" row="2960" value="38"/>
-			<key interpolation="0" row="3040" value="39"/>
-			<key interpolation="0" row="3120" value="40"/>
-			<key interpolation="0" row="3200" value="41"/>
-			<key interpolation="0" row="3280" value="42"/>
-			<key interpolation="0" row="3360" value="43"/>
-			<key interpolation="0" row="3368" value="44"/>
-			<key interpolation="0" row="3376" value="45"/>
-			<key interpolation="0" row="3384" value="46"/>
-			<key interpolation="0" row="3392" value="47"/>
-			<key interpolation="0" row="3400" value="48"/>
-			<key interpolation="0" row="3408" value="49"/>
-			<key interpolation="0" row="3416" value="50"/>
 		</track>
 		<track name="transition">
 			<key interpolation="1" row="0" value="0"/>
@@ -112,10 +80,6 @@
 			<key interpolation="0" row="1359" value="255"/>
 			<key interpolation="1" row="1424" value="0"/>
 			<key interpolation="0" row="1439" value="255"/>
-			<key interpolation="1" row="1504" value="0"/>
-			<key interpolation="0" row="1519" value="255"/>
-			<key interpolation="1" row="1584" value="0"/>
-			<key interpolation="0" row="1599" value="255"/>
 		</track>
 		<track name="rotation">
 			<key interpolation="2" row="0" value="0"/>
