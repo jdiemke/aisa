@@ -65,6 +65,7 @@ module.exports = {
         'blender-camera': './src/examples/blender-camera-animation/Application.ts',
         'feedback-radial-blur': './src/examples/feedback-radial-blur/Application.ts',
         'radial-blur': './src/examples/radial-blur/Application.ts',
+        'room': './src/examples/room/Application.ts',
 	},
 	mode: 'development',
 	output: {
@@ -406,6 +407,11 @@ module.exports = {
 			template: './src/index.html',
 			chunks: ['radial-blur'],
 			filename: 'radial-blur.html'
+		}),
+		new HtmlWebpackPlugin({
+			template: './src/index.html',
+			chunks: ['room'],
+			filename: 'room.html'
 		})
 	]
 }

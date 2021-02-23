@@ -22,9 +22,11 @@ import { TopClipEdge } from './screen-space-clipping/TopClipEdge';
 import { Texture } from './texture/Texture';
 import { TextureCoordinate } from './TextureCoordinate';
 import { Vertex } from './Vertex';
+import { BlenderJsonParser } from './blender/BlenderJsonParser';
+import { Material } from './shading/material/Material';
+import { PointLight } from './shading/light/PointLight';
 
-// let roomJson = <any>require('./assets/room.json');
-// let hoodlumJson = <any>require('./assets/hoodlum.json');
+
 // let labJson2 = <any>require('./assets/lab2.json');
 // let bakedJson = <any>require('./assets/abstract.json');
 
@@ -63,8 +65,6 @@ export class Framebuffer {
     private unsignedIntArray: Uint8ClampedArray;
 
     private torus = new Torus();
-    private blenderObj4: any;
-    private blenderObj5: any;
 
     private linerClipper = new CohenSutherlandLineClipper(this);
     public clipRegion = Array<AbstractClipEdge>();
@@ -102,8 +102,7 @@ export class Framebuffer {
     }
 
     public precompute(): void {
-        // this.blenderObj4 = this.getBlenderScene(roomJson, false);
-        // this.blengetBlenderScene(hoodlumJson, false);
+        //this.blengetBlenderScene(hoodlumJson, false);
         // this.sphere = this.createSphere();
         // this.plane = this.createPlane();
         // this.cylinder = this.createCylinder();
@@ -1590,55 +1589,40 @@ export class Framebuffer {
         );
     }
 
-    public drawBlenderScene5(elapsedTime: number, texture: Array<{ tex: Texture, scale: number, alpha: number }>, dirt: Texture): void {
+    public drawParticleStreams(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, noClear: boolean = false, light: Vector3f) {
 
-        this.clearDepthBuffer();
+        const points: Array<Vector3f> = new Array<Vector3f>();
+        const num = 50;
+        const num2 = 10;
+        const scale = 2.1;
 
-        const camera: Matrix4f =
-            Matrix4f.constructTranslationMatrix(0, 0, -54 + (Math.sin(elapsedTime * 0.0006) * 0.5 + 0.5) * 9).multiplyMatrix(
-                Matrix4f.constructXRotationMatrix((Math.sin(elapsedTime * 0.00014) * 0.5 + 0.5) * 0.8 - 0.1).multiplyMatrix(
-                    Matrix4f.constructYRotationMatrix(-elapsedTime * 0.0002).multiplyMatrix(
 
-                        Matrix4f.constructTranslationMatrix(0, -13, 0)
-                    )));
+               
 
-        let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(9, 9, 9));
+            const points2: Array<Vector3f> = new Array<Vector3f>(points.length);
+           
 
-        for (let j = 0; j < this.blenderObj4.length; j++) {
-            const model = this.blenderObj4[j];
-            if (j !== 0 && j !== 2) {
-                this.renderingPipeline.draw(this, model, mv);
-            }
+                const transformed = framebuffer.project( light);
 
-            if (j === 0) {
-                this.renderingPipeline.draw(this, model, mv);
-            }
-            if (j === 2) {
-                this.renderingPipeline.draw(this, model, mv);
-            }
+                points2.push(transformed);
+           
 
-        }
+            points2.sort((a, b) => {
+                return a.z - b.z;
+            });
 
-        mv = camera.multiplyMatrix(
-            Matrix4f.constructTranslationMatrix(0, 14.2, -4).multiplyMatrix(Matrix4f.constructScaleMatrix(7, 7, 9).multiplyMatrix(
-                Matrix4f.constructXRotationMatrix(
-                    Math.PI * 2 * this.cosineInterpolate(0, 1300, Math.floor(elapsedTime * 0.7) % 4000)))
-            ));
-
-        const model2 = this.blenderObj5[0];
-        this.renderingPipeline.draw(this, model2, mv);
-
-        const scale: number = 8;
-        mv = camera.multiplyMatrix(
-            Matrix4f.constructTranslationMatrix(0, 19, 0).multiplyMatrix(
-                Matrix4f.constructScaleMatrix(scale, scale, scale)));
-
-        //   this.shadingSphereEnvDisp2(elapsedTime * 0.0003, mv);
-
-        const lensflareScreenSpace = this.project(camera.multiply(new Vector3f(20, 19, -90)));
-
-        this.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.15, texture, dirt);
+            points2.forEach(element => {
+                // let size = -(2.0 * 192 / (element.z));
+                const size = -(80.3 * 192 / (element.z));
+                
+                    framebuffer.drawParticle2(
+                        Math.round(element.x - size / 2),
+                        Math.round(element.y - size / 2),
+                        Math.round(size), Math.round(size), texture, 1/element.z, 1.0, 0,200);
+            });
+        
     }
+
 
     public drawPlaneDeformation(elapsedTime: number, texture: Texture): void {
         // optimize
@@ -2721,7 +2705,7 @@ export class Framebuffer {
         }
 
         // this.drawTextureRectAdd(0, 0, 0, 0, this.width, this.height, dirt, 0.03 + 0.15 * scale);
-        this.drawScaledTextureClipBi(0, 0, this.width, this.height, dirt, 0.03 + 0.15 * scale);
+        this.drawScaledTextureClipBi(0, 0, this.width, this.height, dirt, 0.15 + 0.20 * scale);
     }
 
     public drawLineDDA(start: Vector3f, end: Vector3f, color: number): void {

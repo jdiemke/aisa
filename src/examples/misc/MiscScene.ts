@@ -870,6 +870,7 @@ export class MiscScene extends AbstractScene {
 
         framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
 
+ 
 
         // TS SoftSynth Project
         // http://natureofcode.com/book/

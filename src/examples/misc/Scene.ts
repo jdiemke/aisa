@@ -823,7 +823,8 @@ export class Scene extends AbstractScene {
              */
 
 
-        // this.framebuffer.drawBlenderScene(time*0.5, this.texture4, null);
+
+       
 
         // TODO:
         // * build level in code (portals and areas)
@@ -859,7 +860,6 @@ export class Scene extends AbstractScene {
          * - dof
          */
 
-        // this.framebuffer.drawRadialBlur();
 
 
         // framebuffer.shadingSphereClip(time*0.005);
@@ -900,16 +900,16 @@ export class Scene extends AbstractScene {
         // https://www.html5rocks.com/en/tutorials/webaudio/intro/
 
         // this.framebuffer.drawTexture(0, 0, this.displacementMap, 0.8);
-        /*
-        this.framebuffer.drawPolarDistotion3(time, this.revision);
-        this.framebuffer.setCullFace(CullFace.FRONT);
-        this.framebuffer.shadingSphere(time * 0.004);
+        
+       // framebuffer.drawPolarDistotion3(time, this.revision);
+       // framebuffer.setCullFace(CullFace.FRONT);
+       // framebuffer.shadingSphereClip(time * 0.004);
         // Motion Blur
-        let texture = new Texture(this.accumulationBuffer, 320, 200);
+       // let texture = new Texture(this.accumulationBuffer, 320, 200);
         //this.framebuffer.drawTexture(0, 0, texture, 0.75);
-        this.framebuffer.fastFramebufferCopy(this.accumulationBuffer, this.framebuffer.framebuffer);
-        this.framebuffer.glitchScreen(time, this.noise);
-        */
+       // framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
+        //framebuffer.glitchScreen(time, this.noise);
+        
 
         // TODO:
         // - Progress Bar for Loading
@@ -960,6 +960,7 @@ export class Scene extends AbstractScene {
             
            // framebuffer.noise(time, this.noise, 0.3);
 
+           /*
             framebuffer.shadingSphereClip(time * 0.01);
         
         
@@ -985,21 +986,21 @@ export class Scene extends AbstractScene {
            width, height, this.micro, 1.0);
 
         
-
+*/
      
 
         // framebuffer.drawRadialBlur();
        
          //framebuffer.pixelate();
-
-           /*      
+/*
+                 
               // SCALE
               let texture = new Texture();
               texture.texture = this.accumulationBuffer;
               texture.width = 320;
               texture.height = 200;
 
-              let scale2 = (1+Math.sin(time*0.0006))*0.5*2;
+              let scale2 = (1+Math.sin(time*0.0001))*0.5*10+1;
               let width2 = 320 *  scale2;
               let height2 = 200 * scale2;
 
@@ -1012,7 +1013,7 @@ export class Scene extends AbstractScene {
                       Math.round(320/2-width2/2),
                       Math.round(200/2-height2/2),
                       width2|0, height2|0, texture, 1.0);
-               */   
+                 */
 
         // NEW EFFECTS:
         // * https://www.youtube.com/watch?v=bg-MTl_nRiU

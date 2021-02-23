@@ -3,9 +3,6 @@ import { Vector3f } from '../../math';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 
-/**
- * TODO: extract lens into effect class
- */
 export class StarfieldScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer): void {

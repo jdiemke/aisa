@@ -43,7 +43,7 @@ export class AbstractGeometricObject {
             transformedNormals: normals.map(() => new Vector4f(0, 0, 0, 0))
         };
     }
-
+    
     public getMesh(): FlatshadedMesh {
         return this.mesh;
     }
