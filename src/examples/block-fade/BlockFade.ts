@@ -103,9 +103,6 @@ export class BlockFade extends AbstractScene {
         transitionMethod: TransitionMethods,
         transitionValue: number,
         time: number) {
-        // temporary fix to solve pipeline always needing to be in single framebuffer
-        this.transitionFramebufferTo.renderingPipeline = new FlatShadingRenderingPipeline(this.transitionFramebufferTo);
-        framebuffer.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
 
         // render the 'To' effect into the framebuffer
         transitionSceneTo.render(this.transitionFramebufferTo, time);

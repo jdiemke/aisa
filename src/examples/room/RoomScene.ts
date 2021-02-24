@@ -5,6 +5,7 @@ import { Texture, TextureUtils } from '../../texture';
 import { Material } from '../../shading/material/Material';
 import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
+import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 
 let roomJson = <any>require('./../../assets/room.json');
 let hoodlumJson = <any>require('./../../assets/hoodlum.json');
@@ -22,8 +23,11 @@ export class RoomScene extends AbstractScene {
     private blenderObj4: FlatshadedMesh[];
     private blenderObj5: FlatshadedMesh[];
 
+    private renderingPipeline: FlatShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline.setFramebuffer(framebuffer);
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         this.blenderObj4 = BlenderJsonParser.parse(roomJson, false);
         this.blenderObj5 = BlenderJsonParser.parse(hoodlumJson, false);
@@ -93,17 +97,17 @@ export class RoomScene extends AbstractScene {
         for (let j = 0; j < this.blenderObj4.length; j++) {
             const model = this.blenderObj4[j];
             if (j !== 0 && j !== 2) {
-                framebuffer.renderingPipeline.setMaterial(mat1);
-                framebuffer.renderingPipeline.draw(framebuffer, model, mv);
+                this.renderingPipeline.setMaterial(mat1);
+                this.renderingPipeline.draw(framebuffer, model, mv);
             }
 
             if (j === 0) {
-                framebuffer.renderingPipeline.setMaterial(mat2);
-                framebuffer.renderingPipeline.draw(framebuffer, model, mv);
+                this.renderingPipeline.setMaterial(mat2);
+                this.renderingPipeline.draw(framebuffer, model, mv);
             }
             if (j === 2) {
-                framebuffer.renderingPipeline.setMaterial(mat3);
-                framebuffer.renderingPipeline.draw(framebuffer, model, mv);
+                this.renderingPipeline.setMaterial(mat3);
+                this.renderingPipeline.draw(framebuffer, model, mv);
             }
 
         }
@@ -121,8 +125,8 @@ export class RoomScene extends AbstractScene {
             mat4.specularColor = new Vector4f(0.6, 0.6, 0.6, 0);
             mat4.shininess = 80;
         const model2 = this.blenderObj5[0];
-        framebuffer.renderingPipeline.setMaterial(mat4);
-        framebuffer.renderingPipeline.draw(framebuffer, model2, mv);
+        this.renderingPipeline.setMaterial(mat4);
+        this.renderingPipeline.draw(framebuffer, model2, mv);
 
         const scale: number = 8*3;
         mv = camera.multiplyMatrix(

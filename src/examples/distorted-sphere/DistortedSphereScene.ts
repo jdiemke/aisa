@@ -7,6 +7,15 @@ import { Vertex } from '../../Vertex';
 import { TextureCoordinate } from '../../TextureCoordinate';
 import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
+import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
+
+interface IndexMesh {
+    points: Array<Vector4f>,
+    points2: Array<Vector4f>,
+    normals: Array<Vector4f>,
+    normals2: Array<Vector4f>,
+    index: Array<number>
+} 
 
 /**
  * TODO: extract lens into effect class
@@ -16,9 +25,11 @@ export class DistortedSphereScene extends AbstractScene {
     private heightmapSphere: Texture;
 
     private env: Texture;
-    private obj: any;
+    private obj: IndexMesh;
+    private texturedRenderingPipeline: TexturingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
         return Promise.all([
             TextureUtils.load(require('../../assets/heightmapSphere.png'), false).then(
                 texture => this.heightmapSphere = texture
@@ -184,7 +195,7 @@ export class DistortedSphereScene extends AbstractScene {
     public shadingSphereEnvDisp2(framebuffer: Framebuffer, elapsedTime: number, modelViewMartrix: Matrix4f): void {
         const result = this.obj;
 
-        const scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
+        
         for (let i = 0; i < result.points.length; i++) {
             const y = result.points[i].z;
             const x = result.points[i].x;
@@ -204,9 +215,6 @@ export class DistortedSphereScene extends AbstractScene {
         const index = result.index;
         const normals = result.normals;
 
-        const norm: Vector4f = new Vector4f(0, 0, 0);
-        const norm2: Vector4f = new Vector4f(0, 0, 0);
-        const cross: Vector4f = new Vector4f(0, 0, 0);
         for (let i = 0; i < index.length; i += 3) {
             const v1: Vector4f = points[index[i]];
             const v2: Vector4f = points[index[i + 1]];
@@ -260,8 +268,6 @@ export class DistortedSphereScene extends AbstractScene {
 
             if (framebuffer.isTriangleCCW(v1, v2, v3)) {
 
-                const color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
-
                 vertexArray[0].position = v1;
                 framebuffer.fakeSphere(n1, vertex1);
 
@@ -285,9 +291,9 @@ export class DistortedSphereScene extends AbstractScene {
                     v3.y > framebuffer.maxWindow.y) {
 
 
-                    framebuffer.texturedRenderingPipeline.clipConvexPolygon2(framebuffer, vertexArray);
+                    this.texturedRenderingPipeline.clipConvexPolygon2(framebuffer, vertexArray);
                 } else {
-                    framebuffer.texturedTriangleRasterizer.drawTriangleDDA(framebuffer, vertexArray[0], vertexArray[1], vertexArray[2]);
+                    this.texturedRenderingPipeline.triangleRasterizer.drawTriangleDDA(framebuffer, vertexArray[0], vertexArray[1], vertexArray[2]);
                 }
             }
         }

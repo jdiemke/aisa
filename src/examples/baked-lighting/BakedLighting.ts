@@ -7,6 +7,7 @@ import { SkyBox } from '../../SkyBox';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { BlenderLoader } from '../../model/blender/BlenderLoader';
+import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 
 /**
  * TODO:
@@ -22,8 +23,10 @@ export class BakedLighting extends AbstractScene {
     private noise: Texture;
     private blenderObj8: Array<TexturedMesh>;
     private accumulationBuffer: Uint32Array;
+    private texturedRenderingPipeline: TexturingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         framebuffer.setCullFace(CullFace.BACK);
         this.skyBox = new SkyBox();
@@ -44,7 +47,7 @@ export class BakedLighting extends AbstractScene {
 
     public render(framebuffer: Framebuffer, time: number): void {
 
-        framebuffer.texturedRenderingPipeline.setCullFace(CullFace.BACK);
+        this.texturedRenderingPipeline.setCullFace(CullFace.BACK);
 
         this.drawBlenderScene7(framebuffer, time - 1100000);
         /*
@@ -79,8 +82,8 @@ export class BakedLighting extends AbstractScene {
 
         framebuffer.clearDepthBuffer();
         framebuffer.setTexture(this.baked);
-        framebuffer.texturedRenderingPipeline.setModelViewMatrix(mv);
-        framebuffer.texturedRenderingPipeline.drawMeshArray(framebuffer, this.blenderObj8);
+        this.texturedRenderingPipeline.setModelViewMatrix(mv);
+        this.texturedRenderingPipeline.drawMeshArray(framebuffer, this.blenderObj8);
     }
 
 }

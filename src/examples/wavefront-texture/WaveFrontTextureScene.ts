@@ -6,6 +6,7 @@ import { WavefrontLoader } from '../../model/wavefront-obj/WavefrontLoader';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
+import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 
 /**
  * TODO: extract lens into effect class
@@ -14,9 +15,11 @@ export class WaveFrontTextureScene extends AbstractScene {
 
     private platonian: Texture;
     private platonianMesh: Array<TexturedMesh>;
+    private texturedRenderingPipeline: TexturingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        framebuffer.setCullFace(CullFace.FRONT);
+        this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
+        this.texturedRenderingPipeline.setCullFace(CullFace.BACK);
 
         return Promise.all([
             TextureUtils.load(require('../../assets/baked_susanna.png'), false).then(
@@ -35,8 +38,9 @@ export class WaveFrontTextureScene extends AbstractScene {
         framebuffer.clearDepthBuffer();
 
         framebuffer.setTexture(this.platonian);
-        framebuffer.texturedRenderingPipeline.setModelViewMatrix(this.getModelViewMatrix(elapsedTime));
-        framebuffer.texturedRenderingPipeline.drawMeshArray(framebuffer, this.platonianMesh);
+        this.texturedRenderingPipeline.setFramebuffer(framebuffer);
+        this.texturedRenderingPipeline.setModelViewMatrix(this.getModelViewMatrix(elapsedTime));
+        this.texturedRenderingPipeline.drawMeshArray(framebuffer, this.platonianMesh);
     }
 
     private getModelViewMatrix(elapsedTime: number): Matrix4f {

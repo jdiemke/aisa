@@ -7,6 +7,8 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { BlenderLoader } from './../../model/blender/BlenderLoader';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
+import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
+import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 
 export class HoodlumScene extends AbstractScene {
 
@@ -18,7 +20,12 @@ export class HoodlumScene extends AbstractScene {
     private hoodlumLogoMesh: Array<FlatshadedMesh>;
     private accumulationBuffer: Uint32Array;
 
+    private texturedRenderingPipeline: TexturingRenderingPipeline;
+    private renderingPipeline: FlatShadingRenderingPipeline;
+
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
+        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         return Promise.all([
             TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
@@ -37,7 +44,7 @@ export class HoodlumScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        framebuffer.texturedRenderingPipeline.setCullFace(CullFace.BACK);
+        this.texturedRenderingPipeline.setCullFace(CullFace.BACK);
         framebuffer.setCullFace(CullFace.BACK);
 
         // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
@@ -66,8 +73,8 @@ export class HoodlumScene extends AbstractScene {
 
         let mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(13, 13, 13));
 
-        framebuffer.texturedRenderingPipeline.setModelViewMatrix(mv);
-        framebuffer.texturedRenderingPipeline.drawMeshArray(framebuffer, this.spaceLabMesh);
+        this.texturedRenderingPipeline.setModelViewMatrix(mv);
+        this.texturedRenderingPipeline.drawMeshArray(framebuffer, this.spaceLabMesh);
 
         mv = camera.multiplyMatrix(
             Matrix4f.constructTranslationMatrix(0, -5.5, 0).multiplyMatrix(
@@ -77,7 +84,7 @@ export class HoodlumScene extends AbstractScene {
             ));
 
         const model = this.hoodlumLogoMesh[0];
-        framebuffer.renderingPipeline.draw(framebuffer, model, mv);
+        this.renderingPipeline.draw(framebuffer, model, mv);
 
         const points: Array<Vector3f> = new Array<Vector3f>();
         const num = 10;

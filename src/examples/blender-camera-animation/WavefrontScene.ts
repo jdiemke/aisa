@@ -15,6 +15,7 @@ import { ModelViewMatrix } from '../md2/ModelViewMatrix';
 import CameraPathFile from '../../assets/camera-path.jsx';
 import { BlenderCameraAnimator } from '../../animation/BlenderCameraAnimator';
 import { SkyBox } from '../../SkyBox';
+import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 
 export class BlenderCameraScene extends AbstractScene {
 
@@ -36,8 +37,11 @@ export class BlenderCameraScene extends AbstractScene {
     private light1: PointLight;
     private light2: PointLight;
 
+    private renderingPipeline: FlatShadingRenderingPipeline;
+
     public init(framebuffer: Framebuffer): Promise<any> {
-        framebuffer.renderingPipeline.setCullFace(CullFace.BACK);
+        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline.setCullFace(CullFace.BACK);
 
         this.light1 = new PointLight();
         this.light1.ambientIntensity = new Vector4f(1, 1, 1, 1);
@@ -51,7 +55,7 @@ export class BlenderCameraScene extends AbstractScene {
         this.light2.specularIntensity = new Vector4f(0.8, 0.8, 0.8, 1);
         this.light2.position = new Vector4f(3, 0, -2, 1);
 
-        framebuffer.renderingPipeline.setLights([this.light1, this.light2]);
+        this.renderingPipeline.setLights([this.light1, this.light2]);
 
         console.log(CameraPathFile);
         this.skyBox = new SkyBox();
@@ -71,8 +75,8 @@ export class BlenderCameraScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer, timeInput: number): void {
         const currentTime: number = Date.now();
-        framebuffer.renderingPipeline.setCullFace(CullFace.BACK);
-        framebuffer.renderingPipeline.setLights([this.light1, this.light2]);
+        this.renderingPipeline.setCullFace(CullFace.BACK);
+        this.renderingPipeline.setLights([this.light1, this.light2]);
 
 
         if (currentTime > this.fpsStartTime + 1000) {
@@ -100,7 +104,7 @@ export class BlenderCameraScene extends AbstractScene {
         // TODO: use frame position for interpolation speed
         let faces: number = 0;
         for (let j = 0; j < this.meshes.length; j++) {
-            framebuffer.renderingPipeline.draw(framebuffer, this.meshes[j], modelViewMartrix);
+            this.renderingPipeline.draw(framebuffer, this.meshes[j], modelViewMartrix);
             faces += this.meshes[j].faces.length;
         }
 

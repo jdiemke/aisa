@@ -5,14 +5,17 @@ import { Matrix4f } from '../../math/Matrix4f';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
+import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 
 export class TorusScene extends AbstractScene {
 
     private razorLogo: Texture;
     private torus: Torus = new Torus();
+    private renderingPipeline: FlatShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        framebuffer.setCullFace(CullFace.BACK);
+        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline.setCullFace(CullFace.BACK);
 
         return Promise.all([
             TextureUtils.load(require('./assets/razor1911.png'), true).then(
@@ -22,7 +25,7 @@ export class TorusScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        framebuffer.setCullFace(CullFace.BACK);
+        
         this.drawTitanEffect(framebuffer, time);
         this.shadingTorus(framebuffer, time * 0.02);
         framebuffer.drawTexture(framebuffer.width / 2 - this.razorLogo.width / 2, 0, this.razorLogo, 1.0);
@@ -35,7 +38,7 @@ export class TorusScene extends AbstractScene {
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.08));
         modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -24).multiplyMatrix(modelViewMartrix);
 
-        framebuffer.renderingPipeline.draw(framebuffer, this.torus.getMesh(), modelViewMartrix);
+        this.renderingPipeline.draw(framebuffer, this.torus.getMesh(), modelViewMartrix);
     }
 
 

@@ -8,6 +8,7 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { LinearFog } from '../../shading/fog/LinearFog';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
+import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 
 export class TorusKnotScene extends AbstractScene {
 
@@ -16,10 +17,12 @@ export class TorusKnotScene extends AbstractScene {
     private noise: Texture;
     private micro: Texture;
     private startTime: number;
+    private renderingPipeline: FlatShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        framebuffer.renderingPipeline.setCullFace(CullFace.BACK);
-        framebuffer.renderingPipeline.setFog(new LinearFog(-160, -380, new Vector4f(0, 0, 0, 1)));
+        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline.setCullFace(CullFace.BACK);
+        this.renderingPipeline.setFog(new LinearFog(-160, -380, new Vector4f(0, 0, 0, 1)));
         this.startTime = Date.now();
         return Promise.all([
             TextureUtils.load(require('../../assets/rave.png'), false).then(
@@ -144,7 +147,7 @@ export class TorusKnotScene extends AbstractScene {
         modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(time * 0.04) * 20,
             Math.sin(time * 0.05) * 8 - smash * 5, -28 - 250).multiplyMatrix(modelViewMartrix);
 
-        framebuffer.renderingPipeline.draw(framebuffer, this.torus.getMesh(), modelViewMartrix);
+        this.renderingPipeline.draw(framebuffer, this.torus.getMesh(), modelViewMartrix);
     }
 
 }

@@ -4,13 +4,16 @@ import { Torus } from '../../geometrical-objects/Torus';
 import { Matrix4f } from '../../math/index';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
+import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 
 export class MovingTorusScene extends AbstractScene {
 
     private background: Texture;
     private torus: Torus = new Torus();
+    private renderingPipeline: FlatShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
         framebuffer.setCullFace(CullFace.BACK);
 
         return Promise.all([
@@ -44,7 +47,7 @@ export class MovingTorusScene extends AbstractScene {
         modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.04) * 25,
             Math.sin(elapsedTime * 0.05) * 9, -24).multiplyMatrix(modelViewMartrix);
 
-        framebuffer.renderingPipeline.draw(framebuffer, this.torus.getMesh(), modelViewMartrix);
+        this.renderingPipeline.draw(framebuffer, this.torus.getMesh(), modelViewMartrix);
     }
 
 }

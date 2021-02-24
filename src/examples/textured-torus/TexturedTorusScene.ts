@@ -4,6 +4,8 @@ import { Matrix4f, Vector3f, Vector4f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { TextureCoordinate } from '../../TextureCoordinate';
+import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
+import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 
 export class TexturedTorusScene extends AbstractScene {
 
@@ -11,10 +13,14 @@ export class TexturedTorusScene extends AbstractScene {
     private abstract: Texture;
     private texture4: Texture;
 
-    private torusMesh: any;
+    private torusMesh: TexturedMesh;
+
+    private texturedRenderingPipleine: TexturingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        framebuffer.setCullFace(CullFace.BACK);
+        this.texturedRenderingPipleine = new TexturingRenderingPipeline(framebuffer);
+        this.texturedRenderingPipleine.setCullFace(CullFace.BACK);
+        this.texturedRenderingPipleine.setFramebuffer(framebuffer);
 
         this.torusMesh = this.computeTexturedTorusMesh();
 
@@ -46,8 +52,8 @@ export class TexturedTorusScene extends AbstractScene {
             , -45)
             .multiplyMatrix(modelViewMartrix);
 
-        framebuffer.texturedRenderingPipeline.setModelViewMatrix(modelViewMartrix);
-        framebuffer.texturedRenderingPipeline.draw(framebuffer, this.torusMesh);
+        this.texturedRenderingPipleine.setModelViewMatrix(modelViewMartrix);
+        this.texturedRenderingPipleine.draw(framebuffer, this.torusMesh);
     }
 
 
@@ -55,7 +61,7 @@ export class TexturedTorusScene extends AbstractScene {
         return new Vector3f(Math.sin(alpha) * 10, 0, Math.cos(alpha) * 10);
     }
 
-    private computeTexturedTorusMesh(): any {
+    private computeTexturedTorusMesh(): TexturedMesh {
         const points: Array<Vector4f> = [];
         const textCoords: Array<TextureCoordinate> = [];
 
@@ -112,7 +118,7 @@ export class TexturedTorusScene extends AbstractScene {
             }
         }
 
-        const torus = {
+        const torus: TexturedMesh = {
             points,
             points2: points.map(() => new Vector4f(0, 0, 0)),
             uv: textCoords,

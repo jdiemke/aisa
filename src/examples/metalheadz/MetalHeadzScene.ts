@@ -20,8 +20,10 @@ export class MetalHeadzScene extends AbstractScene {
     private blenderObjMetal: any;
 
     private accumulationBuffer: Uint32Array;
+    private texturedRenderingPipeline: TexturingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         framebuffer.setCullFace(CullFace.BACK);
         this.skyBox = new SkyBox();
@@ -53,7 +55,7 @@ export class MetalHeadzScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        framebuffer.texturedRenderingPipeline.setCullFace(CullFace.BACK);
+        this.texturedRenderingPipeline.setCullFace(CullFace.BACK);
         const elapsedTime: number = 0.2 * time;
 
         framebuffer.clearDepthBuffer();
@@ -66,7 +68,7 @@ export class MetalHeadzScene extends AbstractScene {
         framebuffer.clearDepthBuffer();
         framebuffer.setTexture(this.metalheadz);
 
-        const renderingPipeline: TexturingRenderingPipeline = framebuffer.texturedRenderingPipeline;
+        const renderingPipeline: TexturingRenderingPipeline = this.texturedRenderingPipeline;
 
         renderingPipeline.setModelViewMatrix(mv);
         renderingPipeline.drawMeshArray(framebuffer, this.blenderObjMetal);

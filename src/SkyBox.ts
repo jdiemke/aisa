@@ -2,6 +2,7 @@ import { Framebuffer } from './Framebuffer';
 import { Matrix4f, Vector4f } from './math';
 import { Texture, TextureUtils } from './texture';
 import { TextureCoordinate } from './TextureCoordinate';
+import { TexturingRenderingPipeline } from './rendering-pipelines/TexturingRenderingPipeline';
 
 export class SkyBox {
 
@@ -12,7 +13,9 @@ export class SkyBox {
     private right: Texture;
     private up: Texture;
 
+    private texturedRenderingPipeline: TexturingRenderingPipeline = new TexturingRenderingPipeline(null);
     public init(): Promise<any> {
+
         return Promise.all([
             TextureUtils.load(require('./assets/skybox/skybox_back.png'), false).then(
                 (texture: Texture) => this.back = texture
@@ -36,6 +39,7 @@ export class SkyBox {
 
     // move code from framebuffer into draw method!
     public draw(framebuffer: Framebuffer, mv: Matrix4f): void {
+        this.texturedRenderingPipeline.setFramebuffer(framebuffer);
         this.drawSkyBox(framebuffer, mv.getRotation());
     }
 
@@ -98,8 +102,9 @@ export class SkyBox {
             };
 
             framebuffer.setTexture(textures[i]);
-            framebuffer.texturedRenderingPipeline.setModelViewMatrix(mv);
-            framebuffer.texturedRenderingPipeline.draw(framebuffer, skyBoxSideModel);
+            this.texturedRenderingPipeline.setFramebuffer(framebuffer);
+            this.texturedRenderingPipeline.setModelViewMatrix(mv);
+            this.texturedRenderingPipeline.draw(framebuffer, skyBoxSideModel);
 
         }
 
@@ -139,8 +144,8 @@ export class SkyBox {
         };
 
         framebuffer.setTexture(this.up);
-        framebuffer.texturedRenderingPipeline.setModelViewMatrix(mv);
-        framebuffer.texturedRenderingPipeline.draw(framebuffer, skyBoxSideModel);
+        this.texturedRenderingPipeline.setModelViewMatrix(mv);
+        this.texturedRenderingPipeline.draw(framebuffer, skyBoxSideModel);
 
 
         camera =
@@ -181,8 +186,8 @@ export class SkyBox {
         };
 
         framebuffer.setTexture(this.down);
-        framebuffer.texturedRenderingPipeline.setModelViewMatrix(mv);
-        framebuffer.texturedRenderingPipeline.draw(framebuffer, skyBoxSideModel);
+        this.texturedRenderingPipeline.setModelViewMatrix(mv);
+        this.texturedRenderingPipeline.draw(framebuffer, skyBoxSideModel);
     }
 
 }

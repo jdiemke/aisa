@@ -10,6 +10,8 @@ import { ModelViewMatrix } from './ModelViewMatrix';
 import { WavefrontLoader } from '../../model/wavefront-obj/WavefrontLoader';
 import { ThirdPersonCamera } from '../../camera/ThirdPersonCamera';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
+import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
+import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 
 /**
  * http://tfc.duke.free.fr/coding/mdl-specs-en.html
@@ -33,9 +35,11 @@ export class Md2ModelScene extends AbstractScene {
     private fps: number = 0;
 
     private meshes: Array<FlatshadedMesh>;
+    private renderingPipeline: FlatShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
+        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline.setCullFace(CullFace.BACK);
         this.startTime = Date.now();
         return Promise.all([
             TextureUtils.load(require('../../assets/md2/texture2.jpg'), false).then(
@@ -70,7 +74,7 @@ export class Md2ModelScene extends AbstractScene {
         this.computeCameraMovement(time * 0.6);
 
         framebuffer.setTexture(this.ogroTexture);
-        framebuffer.renderingPipeline.draw(framebuffer, this.meshes[0], this.modelViewMatrix.getMatrix());
+        this.renderingPipeline.draw(framebuffer, this.meshes[0], this.modelViewMatrix.getMatrix());
 
         framebuffer.drawText(8, 8, 'FPS: ' + this.fps.toString(), this.texture4);
         framebuffer.drawText(8, 16, 'FACES: ' + this.meshes[0].faces.length, this.texture4);
@@ -78,8 +82,9 @@ export class Md2ModelScene extends AbstractScene {
 
     private computeCameraMovement(elapsedTime: number): void {
         this.modelViewMatrix.setIdentity();
-        this.modelViewMatrix.trans(0, 0, -5);
+        this.modelViewMatrix.trans(0, 0, -2.7);
         this.modelViewMatrix.yRotate(-elapsedTime * 0.002);
+        this.modelViewMatrix.xRotate(-elapsedTime * 0.001);
     }
 
 }

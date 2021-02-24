@@ -5,6 +5,7 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { BlenderLoader } from '../../model/blender/BlenderLoader';
+import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 
 export class TunnelScene extends AbstractScene {
 
@@ -12,8 +13,10 @@ export class TunnelScene extends AbstractScene {
     private metalheadz: Texture;
     private blenderObjMetal: Array<TexturedMesh>;
     private accumulationBuffer: Uint32Array;
+    private texturedRenderingPipeline: TexturingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         return Promise.all([
             BlenderLoader.loadWithTexture(require('../../assets/jsx/metalheadz.jsx')).then(
@@ -39,8 +42,8 @@ export class TunnelScene extends AbstractScene {
         framebuffer.clearDepthBuffer();
         framebuffer.setTexture(this.metalheadz);
 
-        framebuffer.texturedRenderingPipeline.setModelViewMatrix(mv);
-        framebuffer.texturedRenderingPipeline.drawMeshArray(framebuffer, this.blenderObjMetal);
+        this.texturedRenderingPipeline.setModelViewMatrix(mv);
+        this.texturedRenderingPipeline.drawMeshArray(framebuffer, this.blenderObjMetal);
 
         const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         framebuffer.drawTexture(0, 0, texture3, 0.75);

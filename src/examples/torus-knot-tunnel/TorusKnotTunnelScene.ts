@@ -10,6 +10,7 @@ import { LinearFog } from '../../shading/fog/LinearFog';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
+import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 
 export class TorusKnotTunnelScene extends AbstractScene {
 
@@ -18,10 +19,12 @@ export class TorusKnotTunnelScene extends AbstractScene {
     private cocoon: Texture;
     private torusKnot: TorusKnot = new TorusKnot(true);
     private fog: Fog = new LinearFog(-50, -240, new Vector4f(0.67, 0.4, 0.5, 1.0));
+    private renderingPipeline: FlatShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        framebuffer.renderingPipeline.setCullFace(CullFace.FRONT);
-        framebuffer.renderingPipeline.setFog(this.fog);
+        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline.setCullFace(CullFace.FRONT);
+        this.renderingPipeline.setFog(this.fog);
 
         return Promise.all([
             TextureUtils.generateProceduralNoise().then((texture: Texture) => this.noise = texture),
@@ -35,7 +38,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        framebuffer.renderingPipeline.setCullFace(CullFace.FRONT);
+        this.renderingPipeline.setCullFace(CullFace.FRONT);
         this.torusTunnel(framebuffer, time * 0.019, this.particleTexture);
         framebuffer.drawScaledTextureClipAdd(
             framebuffer.width / 2 - this.cocoon.width / 2,
@@ -155,7 +158,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
         modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -10).multiplyMatrix(modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.04)));
         modelViewMartrix = Matrix4f.constructZRotationMatrix(elapsedTime * 0.01).multiplyMatrix(finalMatrix);
 
-        framebuffer.renderingPipeline.draw(framebuffer, this.torusKnot.getMesh(), modelViewMartrix);
+        this.renderingPipeline.draw(framebuffer, this.torusKnot.getMesh(), modelViewMartrix);
     }
 
     private torusFunction3(alpha: number): Vector4f {

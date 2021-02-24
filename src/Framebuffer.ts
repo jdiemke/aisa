@@ -49,8 +49,8 @@ export class Framebuffer {
     public texturedTriangleRasterizer = new TexturedTriangleRasterizer(this);
 
     public scaleClipBlitter = new ScaleClipBlitter(this);
-    public renderingPipeline: FlatShadingRenderingPipeline;
-    public texturedRenderingPipeline: TexturingRenderingPipeline;
+    //public renderingPipeline: FlatShadingRenderingPipeline;
+    //public texturedRenderingPipeline: TexturingRenderingPipeline;
     public lineRasterizer = new LineRasterizerDda(this);
     public lineRasterizerNo = new LineRasterizerNoZ(this);
     public tmpGlitch: Uint32Array;
@@ -80,8 +80,8 @@ export class Framebuffer {
         this.unsignedIntArray = new Uint8ClampedArray(arrayBuffer);
         this.framebuffer = new Uint32Array(arrayBuffer);
         this.tmpGlitch = new Uint32Array(width * height);
-        this.renderingPipeline = new FlatShadingRenderingPipeline(this);
-        this.texturedRenderingPipeline = new TexturingRenderingPipeline(this);
+        //this.renderingPipeline = new FlatShadingRenderingPipeline(this);
+        //this.texturedRenderingPipeline = new TexturingRenderingPipeline(this);
         this.minWindow = new Vector2f(0, 0);
         this.maxWindow = new Vector2f(width - 1, height - 1);
 
@@ -1689,7 +1689,7 @@ export class Framebuffer {
         let modelViewMartrix: Matrix4f = Matrix4f.constructXRotationMatrix(elapsedTime * 0.3).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));
         modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -61+ Math.sin(elapsedTime*0.3)*19).multiplyMatrix(Matrix4f.constructZRotationMatrix(-elapsedTime * 0.2).multiplyMatrix(modelViewMartrix));
 
-        this.renderingPipeline.draw(this, this.torus.getMesh(), modelViewMartrix);
+        //this.renderingPipeline.draw(this, this.torus.getMesh(), modelViewMartrix);
     }
 
     public torusFunction(alpha: number): Vector3f {

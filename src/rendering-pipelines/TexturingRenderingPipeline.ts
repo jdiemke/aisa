@@ -11,7 +11,7 @@ import { TexturedMesh } from './TexturedMesh';
 
 export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
 
-    private triangleRasterizer: AbstractTriangleRasterizer = null;
+    public triangleRasterizer: AbstractTriangleRasterizer = null;
 
     private vertexArray: Array<Vertex> = new Array<Vertex>(
         new Vertex(), new Vertex(), new Vertex()
@@ -27,6 +27,10 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
         super(framebuffer);
         this.setAlpha(1.0);
         this.triangleRasterizer = new TexturedTriangleRasterizer(framebuffer);
+    }
+
+    public setFramebuffer(framebuffer: Framebuffer) {
+        this.framebuffer = framebuffer;
     }
 
     public enableAlphaBlending(): void {

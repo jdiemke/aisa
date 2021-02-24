@@ -78,6 +78,10 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
         this.triangleRasterizer = new GouraudShadingTriangleRasterizer(framebuffer);
     }
 
+    public setFramebuffer(framebuffer: Framebuffer) {
+        this.framebuffer = framebuffer;
+    }
+
     public setFog(fog: Fog): void {
         this.fog = fog;
     }

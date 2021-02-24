@@ -9,6 +9,7 @@ import { PointLight } from '../../shading/light/PointLight';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { ModelViewMatrix } from '../md2/ModelViewMatrix';
+import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 
 export class WavefrontScene extends AbstractScene {
 
@@ -24,9 +25,12 @@ export class WavefrontScene extends AbstractScene {
     private fps: number = 0;
 
     private meshes: Array<FlatshadedMesh>;
+    private renderingPipeline: FlatShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        framebuffer.renderingPipeline.setCullFace(CullFace.BACK);
+        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline.setCullFace(CullFace.BACK);
+        this.renderingPipeline.setFramebuffer(framebuffer);
 
         const light1: PointLight = new PointLight();
         light1.ambientIntensity = new Vector4f(1, 1, 1, 1);
@@ -40,7 +44,8 @@ export class WavefrontScene extends AbstractScene {
         light2.specularIntensity = new Vector4f(0.8, 0.8, 0.8, 1);
         light2.position = new Vector4f(3, 0, -2, 1);
 
-        framebuffer.renderingPipeline.setLights([light1, light2]);
+        this.renderingPipeline.setLights([light1, light2]);
+
 
         this.startTime = Date.now();
         return Promise.all([
@@ -69,7 +74,7 @@ export class WavefrontScene extends AbstractScene {
 
         this.computeCameraMovement(time * 0.6);
 
-        framebuffer.renderingPipeline.draw(framebuffer, this.meshes[0], this.modelViewMatrix.getMatrix());
+        this.renderingPipeline.draw(framebuffer, this.meshes[0], this.modelViewMatrix.getMatrix());
 
         framebuffer.drawText(8, 8, 'FPS: ' + this.fps.toString(), this.texture4);
         framebuffer.drawText(8, 16, 'FACES: ' + this.meshes[0].faces.length, this.texture4);

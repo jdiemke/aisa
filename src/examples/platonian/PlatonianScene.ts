@@ -5,6 +5,7 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { BlenderLoader } from '../../model/blender/BlenderLoader';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
+import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 
 /**
  * TODO: extract lens into effect class
@@ -17,9 +18,12 @@ export class PlatonianScene extends AbstractScene {
     private platonianMesh: any;
     private accumulationBuffer: Uint32Array;
 
+    private texturedRenderingPipeline: TexturingRenderingPipeline;
+
     public init(framebuffer: Framebuffer): Promise<any> {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         framebuffer.setCullFace(CullFace.BACK);
+        this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
 
         return Promise.all([
             BlenderLoader.loadWithTexture(require('../../assets/jsx/platonian_backed.jsx')).then(
@@ -63,8 +67,8 @@ export class PlatonianScene extends AbstractScene {
         const mv: Matrix4f = camera.multiplyMatrix(Matrix4f.constructScaleMatrix(13, 13, 13));
 
         framebuffer.setTexture(this.platonian);
-        framebuffer.texturedRenderingPipeline.setModelViewMatrix(mv);
-        framebuffer.texturedRenderingPipeline.drawMeshArray(framebuffer, this.platonianMesh);
+        this.texturedRenderingPipeline.setModelViewMatrix(mv);
+        this.texturedRenderingPipeline.drawMeshArray(framebuffer, this.platonianMesh);
     }
 
 }

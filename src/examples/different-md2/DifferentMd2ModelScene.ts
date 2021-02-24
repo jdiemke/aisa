@@ -8,6 +8,7 @@ import { TextureUtils } from '../../texture/TextureUtils';
 import { MD2Loader } from '../../model/md2/MD2Loader';
 import { MD2Model } from '../../model/md2/MD2Model';
 import { ModelViewMatrix } from '../md2/ModelViewMatrix';
+import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 
 /**
  * http://tfc.duke.free.fr/coding/mdl-specs-en.html
@@ -28,9 +29,12 @@ export class DifferentMd2ModelScene extends AbstractScene {
     private fpsStartTime: number = Date.now();
     private fpsCount: number = 0;
     private fps: number = 0;
+    private texturedRenderingPipeline: TexturingRenderingPipeline;
+
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
+        this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
+        this.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
         this.startTime = Date.now();
         return Promise.all([
             TextureUtils.load(require('../../assets/md2/hueteotl.png'), false).then(
@@ -43,7 +47,7 @@ export class DifferentMd2ModelScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        framebuffer.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
+        this.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
         if (time > this.fpsStartTime + 1000) {
             this.fpsStartTime = time;
             this.fps = this.fpsCount;
@@ -57,8 +61,8 @@ export class DifferentMd2ModelScene extends AbstractScene {
         this.computeCameraMovement(time * 0.6);
 
         framebuffer.setTexture(this.ogroTexture);
-        framebuffer.texturedRenderingPipeline.setModelViewMatrix(this.modelViewMatrix.getMatrix());
-        framebuffer.texturedRenderingPipeline.draw(framebuffer, this.md2.getMesh(time));
+        this.texturedRenderingPipeline.setModelViewMatrix(this.modelViewMatrix.getMatrix());
+        this.texturedRenderingPipeline.draw(framebuffer, this.md2.getMesh(time));
     }
 
     private computeCameraMovement(elapsedTime: number): void {
