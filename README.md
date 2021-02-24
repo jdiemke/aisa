@@ -66,6 +66,7 @@ field of computer graphics including clipping, triangle rasterization, geometric
 * [Room](https://jdiemke.github.io/aisa/room.html)
 * [Rotating Gears (w. XM Music)](https://jdiemke.github.io/aisa/rotating-gears.html)
 * [Roto Zoomer](https://jdiemke.github.io/aisa/roto-zoomer.html)
+* [Roto Zoom Demo](https://jdiemke.github.io/aisa/roto-zoom-demo.html)
 * [Scrolling Background](https://jdiemke.github.io/aisa/scrolling-background.html)
 * [Sine Scroller (w. XM Music)](https://jdiemke.github.io/aisa/sine-scroller.html)
 * [SNES Mode7](https://jdiemke.github.io/aisa/mode-7.html)

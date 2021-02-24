@@ -34,8 +34,8 @@ export class Framebuffer {
 
     public static PIXEL_SIZE_IN_BYTES = 4;
 
-    public static minWindow: Vector2f;
-    public static maxWindow: Vector2f;
+    public minWindow: Vector2f;
+    public maxWindow: Vector2f;
 
 
     public framebuffer: Uint32Array;
@@ -82,14 +82,14 @@ export class Framebuffer {
         this.tmpGlitch = new Uint32Array(width * height);
         this.renderingPipeline = new FlatShadingRenderingPipeline(this);
         this.texturedRenderingPipeline = new TexturingRenderingPipeline(this);
-        Framebuffer.minWindow = new Vector2f(0, 0);
-        Framebuffer.maxWindow = new Vector2f(width - 1, height - 1);
+        this.minWindow = new Vector2f(0, 0);
+        this.maxWindow = new Vector2f(width - 1, height - 1);
 
         this.clipRegion = new Array<AbstractClipEdge>(
-            new RightClipEdge(this.width),
-            new LeftClipEdge(),
-            new BottomClipEdge(),
-            new TopClipEdge()
+            new RightClipEdge(this),
+            new LeftClipEdge(this),
+            new BottomClipEdge(this),
+            new TopClipEdge(this)
         );
     }
 
@@ -239,6 +239,31 @@ export class Framebuffer {
             }
             texIndex += texture.width - width;
             frIndex += this.width - width;
+        }
+    }
+
+
+    public drawTextureColorized(x: number, y: number, texture: Texture, color: Color): void {
+    
+        let frIndex = x + y * this.width;
+        let texIndex = 0;
+
+        for (let h = 0; h < texture.height; h++) {
+            for (let w = 0; w < texture.width; w++) {
+                const txPixel = texture.texture[texIndex];
+              
+
+                const r =  (txPixel >> 0 & 0xff) * color.r /255;
+                const g = (txPixel >> 8 & 0xff) *  color.g /255;
+                const b =  (txPixel >> 16 & 0xff) *  color.b /255;
+
+                this.framebuffer[frIndex] = r | (g << 8) | (b << 16) | (255 << 24);
+             
+                texIndex++;
+                frIndex++;
+            }
+
+            frIndex += this.width - texture.width;
         }
     }
 
@@ -1222,9 +1247,9 @@ export class Framebuffer {
     }
 
     public drawBox() {
-        const height = Framebuffer.maxWindow.y - Framebuffer.minWindow.y + 1;
-        const width = Framebuffer.maxWindow.x - Framebuffer.minWindow.x + 1;
-        let index = Framebuffer.minWindow.y * this.width + Framebuffer.minWindow.x;
+        const height = this.maxWindow.y - this.minWindow.y + 1;
+        const width = this.maxWindow.x - this.minWindow.x + 1;
+        let index = this.minWindow.y * this.width + this.minWindow.x;
         for (let i = 0; i < height; i++) {
             this.framebuffer.fill(255 << 24 | 55 << 16 | 55 << 8 | 55, index, index + width);
             index += this.width;
@@ -1295,10 +1320,10 @@ export class Framebuffer {
 
         // draw clip region
         const colred = 255 << 24 | 230 << 16 | this.height << 16 | this.height;
-        this.drawLineDDA(new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.minWindow.y - 1, 0), new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.maxWindow.y + 1, 0), colred);
-        this.drawLineDDA(new Vector3f(Framebuffer.maxWindow.x + 1, Framebuffer.minWindow.y - 1, 0), new Vector3f(Framebuffer.maxWindow.x + 1, Framebuffer.maxWindow.y + 1, 0), colred);
-        this.drawLineDDA(new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.minWindow.y - 1, 0), new Vector3f(Framebuffer.maxWindow.x + 1, Framebuffer.minWindow.y - 1, 0), colred);
-        this.drawLineDDA(new Vector3f(Framebuffer.minWindow.x - 1, Framebuffer.maxWindow.y + 1, 0), new Vector3f(Framebuffer.maxWindow.x + 2, Framebuffer.maxWindow.y + 1, 0), colred);
+        this.drawLineDDA(new Vector3f(this.minWindow.x - 1, this.minWindow.y - 1, 0), new Vector3f(this.minWindow.x - 1, this.maxWindow.y + 1, 0), colred);
+        this.drawLineDDA(new Vector3f(this.maxWindow.x + 1, this.minWindow.y - 1, 0), new Vector3f(this.maxWindow.x + 1, this.maxWindow.y + 1, 0), colred);
+        this.drawLineDDA(new Vector3f(this.minWindow.x - 1, this.minWindow.y - 1, 0), new Vector3f(this.maxWindow.x + 1, this.minWindow.y - 1, 0), colred);
+        this.drawLineDDA(new Vector3f(this.minWindow.x - 1, this.maxWindow.y + 1, 0), new Vector3f(this.maxWindow.x + 2, this.maxWindow.y + 1, 0), colred);
 
         this.drawBox();
 

@@ -271,18 +271,18 @@ export class DistortedSphereScene extends AbstractScene {
                 vertexArray[2].position = v3;
                 framebuffer.fakeSphere(n3, vertex3);
 
-                if (v1.x < Framebuffer.minWindow.x ||
-                    v2.x < Framebuffer.minWindow.x ||
-                    v3.x < Framebuffer.minWindow.x ||
-                    v1.x > Framebuffer.maxWindow.x ||
-                    v2.x > Framebuffer.maxWindow.x ||
-                    v3.x > Framebuffer.maxWindow.x ||
-                    v1.y < Framebuffer.minWindow.y ||
-                    v2.y < Framebuffer.minWindow.y ||
-                    v3.y < Framebuffer.minWindow.y ||
-                    v1.y > Framebuffer.maxWindow.y ||
-                    v2.y > Framebuffer.maxWindow.y ||
-                    v3.y > Framebuffer.maxWindow.y) {
+                if (v1.x < framebuffer.minWindow.x ||
+                    v2.x < framebuffer.minWindow.x ||
+                    v3.x < framebuffer.minWindow.x ||
+                    v1.x > framebuffer.maxWindow.x ||
+                    v2.x > framebuffer.maxWindow.x ||
+                    v3.x > framebuffer.maxWindow.x ||
+                    v1.y < framebuffer.minWindow.y ||
+                    v2.y < framebuffer.minWindow.y ||
+                    v3.y < framebuffer.minWindow.y ||
+                    v1.y > framebuffer.maxWindow.y ||
+                    v2.y > framebuffer.maxWindow.y ||
+                    v3.y > framebuffer.maxWindow.y) {
 
 
                     framebuffer.texturedRenderingPipeline.clipConvexPolygon2(framebuffer, vertexArray);

@@ -8,7 +8,10 @@ export class RotoZoomerScene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         return Promise.all([
-            TextureUtils.load(require('../../assets/logo.png'), false).then(
+            /*TextureUtils.load(require('../../assets/logo.png'), false).then(
+                (texture: Texture) => this.logoTexture = texture
+            ),*/
+            TextureUtils.load(require('../../assets/xray.png'), false).then(
                 (texture: Texture) => this.logoTexture = texture
             ),
         ]);
@@ -39,7 +42,7 @@ export class RotoZoomerScene extends AbstractScene {
             texYCoordInner = texYCoord;
 
             for (let x = 0; x < framebuffer.width; x++) {
-                framebuffer.framebuffer[framebufferPos++] = this.logoTexture.texture[(texXCoordInner & 63) + (texYCoordInner & 0xff) * 64];
+                framebuffer.framebuffer[framebufferPos++] = this.logoTexture.texture[(texXCoordInner & 127) + (texYCoordInner & 127) * 128];
 
                 texXCoordInner += xStepX;
                 texYCoordInner += xStepY;

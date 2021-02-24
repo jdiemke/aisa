@@ -14,10 +14,10 @@ export class SutherlandHodgman2DClipper {
 
     constructor(private framebuffer: Framebuffer) {
         this.clipRegion = new Array<AbstractClipEdge>(
-            new RightClipEdge(framebuffer.width),
-            new LeftClipEdge(),
-            new BottomClipEdge(),
-            new TopClipEdge()
+            new RightClipEdge(framebuffer),
+            new LeftClipEdge(framebuffer),
+            new BottomClipEdge(framebuffer),
+            new TopClipEdge(framebuffer)
         );
 
     }

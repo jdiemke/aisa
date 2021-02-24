@@ -66,6 +66,7 @@ module.exports = {
         'feedback-radial-blur': './src/examples/feedback-radial-blur/Application.ts',
         'radial-blur': './src/examples/radial-blur/Application.ts',
         'room': './src/examples/room/Application.ts',
+        'roto-zoom-demo': './src/examples/roto-zoom-demo/Application.ts',
 	},
 	mode: 'development',
 	output: {
@@ -412,6 +413,11 @@ module.exports = {
 			template: './src/index.html',
 			chunks: ['room'],
 			filename: 'room.html'
+		}),
+		new HtmlWebpackPlugin({
+			template: './src/index.html',
+			chunks: ['roto-zoom-demo'],
+			filename: 'roto-zoom-demo.html'
 		})
 	]
 }

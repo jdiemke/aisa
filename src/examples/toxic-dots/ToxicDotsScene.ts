@@ -62,8 +62,8 @@ export class ToxicDotsScene extends AbstractScene {
         for (let i = 0; i < points2.length; i++) {
             const v1 = points2[i];
             const color = 0xffbbffbb;
-            if (v1.x > Framebuffer.minWindow.x && v1.x < Framebuffer.maxWindow.x &&
-                v1.y > Framebuffer.minWindow.y && v1.y < Framebuffer.maxWindow.y) {
+            if (v1.x > framebuffer.minWindow.x && v1.x < framebuffer.maxWindow.x &&
+                v1.y > framebuffer.minWindow.y && v1.y < framebuffer.maxWindow.y) {
                 framebuffer.drawPixel(v1.x, v1.y, color);
             }
         }

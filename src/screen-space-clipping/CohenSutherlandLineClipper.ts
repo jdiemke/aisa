@@ -41,17 +41,17 @@ export class CohenSutherlandLineClipper {
                 }
 
                 if ((code1 & CohenSutherlandLineClipper.REGION_CODE_TOP) !== CohenSutherlandLineClipper.REGION_CODE_CENTER) {
-                    p1.x = (p1.x + (p2.x - p1.x) * (Framebuffer.maxWindow.y - p1.y) / (p2.y - p1.y));
-                    p1.y = Framebuffer.maxWindow.y;
+                    p1.x = (p1.x + (p2.x - p1.x) * (this.framebuffer.maxWindow.y - p1.y) / (p2.y - p1.y));
+                    p1.y = this.framebuffer.maxWindow.y;
                 } else if ((code1 & CohenSutherlandLineClipper.REGION_CODE_BOTTOM) !== CohenSutherlandLineClipper.REGION_CODE_CENTER) {
-                    p1.x = (p1.x + (p2.x - p1.x) * (Framebuffer.minWindow.y - p1.y) / (p2.y - p1.y));
-                    p1.y = Framebuffer.minWindow.y;
+                    p1.x = (p1.x + (p2.x - p1.x) * (this.framebuffer.minWindow.y - p1.y) / (p2.y - p1.y));
+                    p1.y = this.framebuffer.minWindow.y;
                 } else if ((code1 & CohenSutherlandLineClipper.REGION_CODE_RIGHT) !== CohenSutherlandLineClipper.REGION_CODE_CENTER) {
-                    p1.y = (p1.y + (p2.y - p1.y) * (Framebuffer.maxWindow.x - p1.x) / (p2.x - p1.x));
-                    p1.x = Framebuffer.maxWindow.x;
+                    p1.y = (p1.y + (p2.y - p1.y) * (this.framebuffer.maxWindow.x - p1.x) / (p2.x - p1.x));
+                    p1.x = this.framebuffer.maxWindow.x;
                 } else if ((code1 & CohenSutherlandLineClipper.REGION_CODE_LEFT) !== CohenSutherlandLineClipper.REGION_CODE_CENTER) {
-                    p1.y = (p1.y + (p2.y - p1.y) * (Framebuffer.minWindow.x - p1.x) / (p2.x - p1.x));
-                    p1.x = Framebuffer.minWindow.x;
+                    p1.y = (p1.y + (p2.y - p1.y) * (this.framebuffer.minWindow.x - p1.x) / (p2.x - p1.x));
+                    p1.x = this.framebuffer.minWindow.x;
                 }
 
                 code1 = this.computeRegionCode(p1);
@@ -74,15 +74,15 @@ export class CohenSutherlandLineClipper {
     public computeRegionCode(point: Vector3f): number {
         let regionCode: number = CohenSutherlandLineClipper.REGION_CODE_CENTER;
 
-        if (point.x < Framebuffer.minWindow.x) {
+        if (point.x < this.framebuffer.minWindow.x) {
             regionCode |= CohenSutherlandLineClipper.REGION_CODE_LEFT;
-        } else if (point.x > Framebuffer.maxWindow.x) {
+        } else if (point.x > this.framebuffer.maxWindow.x) {
             regionCode |= CohenSutherlandLineClipper.REGION_CODE_RIGHT;
         }
 
-        if (point.y < Framebuffer.minWindow.y) {
+        if (point.y < this.framebuffer.minWindow.y) {
             regionCode |= CohenSutherlandLineClipper.REGION_CODE_BOTTOM;
-        } else if (point.y > Framebuffer.maxWindow.y) {
+        } else if (point.y > this.framebuffer.maxWindow.y) {
             regionCode |= CohenSutherlandLineClipper.REGION_CODE_TOP;
         }
 
