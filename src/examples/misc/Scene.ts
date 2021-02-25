@@ -224,18 +224,14 @@ export class Scene extends AbstractScene {
         this.framebuffer.setCullFace(CullFace.BACK);
         this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
         this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
-    } else if (time < 360000) {
-        this.framebuffer.drawParticleTorus(time, this.particleTexture);
-        this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
-    } else if (time < 380000) {
-        // THE NEXT LINE IS THE BOTTLENECK NOT THE SPHERE!
-        this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
-        this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
-    } else if (time < 420000) {
-        this.framebuffer.setCullFace(CullFace.BACK);
-        this.framebuffer.setBob(this.spheremap);
-        this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
-        this.framebuffer.shadingSphereEnv(time * 0.0002);
+    } else if (time < 360000) {*/
+        
+
+        framebuffer.setCullFace(CullFace.BACK);
+        framebuffer.setTexture(this.spheremap);
+        framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.texture5.texture);
+       // framebuffer.shadingSphereEnv(time * 0.0002);/*
+       /*
     } else if (time < 440000) {
         this.framebuffer.raveMoview(time, this.rave);
         this.framebuffer.setCullFace(CullFace.BACK);

@@ -67,6 +67,7 @@ module.exports = {
         'radial-blur': './src/examples/radial-blur/Application.ts',
         'room': './src/examples/room/Application.ts',
         'roto-zoom-demo': './src/examples/roto-zoom-demo/Application.ts',
+        'psychadelic-plane-deformation': './src/examples/psychadelic-plane-deformation/Application.ts',
 	},
 	mode: 'development',
 	output: {
@@ -418,6 +419,14 @@ module.exports = {
 			template: './src/index.html',
 			chunks: ['roto-zoom-demo'],
 			filename: 'roto-zoom-demo.html'
-		})
+        }),
+		new HtmlWebpackPlugin({
+			template: './src/index.html',
+			chunks: ['psychadelic-plane-deformation'],
+			filename: 'psychadelic-plane-deformation.html'
+        })
+        
+
+        
 	]
 }

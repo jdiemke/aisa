@@ -54,14 +54,14 @@ export class DistortedSphereScene extends AbstractScene {
         const scale: number = 3.7;
 
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale)
-            .multiplyMatrix(Matrix4f.constructYRotationMatrix(time * 0.0007)
-                .multiplyMatrix(Matrix4f.constructXRotationMatrix(time * 0.0006)));
+            .multiplyMatrix(Matrix4f.constructYRotationMatrix(time * 0.0001)
+                .multiplyMatrix(Matrix4f.constructXRotationMatrix(time * 0.0001)));
 
         modelViewMartrix = Matrix4f.constructTranslationMatrix(-0, -0,
             -10 - (Math.sin(time * 0.0006) * 0.5 + 0.5) * 6)
             .multiplyMatrix(modelViewMartrix);
         framebuffer.clearDepthBuffer();
-        this.shadingSphereEnvDisp2(framebuffer, time * 0.0000004, modelViewMartrix);
+        this.shadingSphereEnvDisp2(framebuffer, time * 0.0004, modelViewMartrix);
     }
 
     public createSphere() {
@@ -200,7 +200,7 @@ export class DistortedSphereScene extends AbstractScene {
             const y = result.points[i].z;
             const x = result.points[i].x;
             const length = Math.sqrt(x * x + y * y);
-            let rot = Math.sin(result.points[i].y * 0.539 + (10 - length) * 0.05 + elapsedTime * 0.9) * 4.5;
+            let rot = Math.sin(result.points[i].y * 0.539 + Math.max(20 - length*2,0) * 0.06 + elapsedTime * 0.9) * 4.5;
             rot *= Math.sin(elapsedTime * 0.25) * 0.5 + 0.5;
             result.points2[i].y = result.points[i].y;
             result.points2[i].x = result.points[i].x * Math.cos(rot) - result.points[i].z * Math.sin(rot);
@@ -215,20 +215,26 @@ export class DistortedSphereScene extends AbstractScene {
         const index = result.index;
         const normals = result.normals;
 
+        let norm: Vector4f = new Vector4f(0, 0, 0);
+        let norm2: Vector4f = new Vector4f(0, 0, 0);
+        let cross: Vector4f = new Vector4f(0, 0, 0);
         for (let i = 0; i < index.length; i += 3) {
             const v1: Vector4f = points[index[i]];
             const v2: Vector4f = points[index[i + 1]];
             const v3: Vector4f = points[index[i + 2]];
 
 
-            const normal = v2.sub(v1).cross(v3.sub(v1));
-            normals[index[i]] = normals[index[i]].add(normal);
-            normals[index[i + 1]] = normals[index[i + 1]].add(normal);
-            normals[index[i + 2]] = normals[index[i + 2]].add(normal);
+            norm.sub2(v2, v1);
+            norm2.sub2(v3, v1);
+            cross.cross2(norm, norm2);
+            let normal = cross;
+            normals[index[i]].add2(normals[index[i]], normal);
+            normals[index[i + 1]].add2(normals[index[i + 1]], normal);
+            normals[index[i + 2]].add2(normals[index[i + 2]], normal);
         }
 
         for (let i = 0; i < normals.length; i++) {
-            normals[i] = normals[i].normalize();
+            normals[i].normalize2();
         }
 
         const points2: Array<Vector4f> = result.points2;

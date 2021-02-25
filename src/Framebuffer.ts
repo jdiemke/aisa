@@ -103,7 +103,7 @@ export class Framebuffer {
 
     public precompute(): void {
         //this.blengetBlenderScene(hoodlumJson, false);
-        // this.sphere = this.createSphere();
+   
         // this.plane = this.createPlane();
         // this.cylinder = this.createCylinder();
         // this.cylinder2 = this.createCylinder2(texture);
@@ -1485,43 +1485,6 @@ export class Framebuffer {
         }
     }
 
-    /**
-     * This code is pretty slow. About 12 fps with 6 x slowdown int chrome!
-     * FIXME:
-     * - optimize
-     * - precompute dist & angle
-     * - maybe use 8 * 8 block interpolation
-     */
-    public drawPlanedeformationTunnelV2(elapsedTime: number, texture: Texture) {
-        let i = 0;
-        for (let y = 0; y < this.height; y++) {
-            for (let x = 0; x < this.width; x++) {
-                const scale = 1.2;
-                const xdist = (x - this.width / 2) + Math.sin(elapsedTime * 0.0001) * 80 * scale;
-                const ydist = (y - this.height / 2) + Math.cos(elapsedTime * 0.0001) * 80 * scale;
-                const xdist2 = (x - this.width / 2) + Math.sin(elapsedTime * 0.0001 + Math.PI) * 80 * scale;
-                const ydist2 = (y - this.height / 2) + Math.cos(elapsedTime * 0.0001 + Math.PI) * 80 * scale;
-                let dist = 256 * 20 / Math.max(1.0, Math.sqrt(xdist * xdist + ydist * ydist));
-                dist += Math.sin(Math.atan2(xdist, ydist) * 5) * 8;
-                let dist2 = 256 * 20 / Math.max(1.0, Math.sqrt(xdist2 * xdist2 + ydist2 * ydist2));
-                dist2 += Math.sin(Math.atan2(xdist2, ydist2) * 5) * 8;
-                const finalDist = dist - dist2 + elapsedTime * 0.019;
-
-                let angle = (Math.atan2(xdist, ydist) / Math.PI + 1.0) * 128.5 + elapsedTime * 0.0069;
-                angle -= (Math.atan2(xdist2, ydist2) / Math.PI + 1.0) * 128.5 + elapsedTime * 0.0069;
-
-                // FIXME: scale by 256
-                const color1 = texture.texture[(finalDist & 0xff) + (angle & 0xff) * 255];
-                const cScale = Math.min(60 / (dist * 2), 1.0) * Math.min(60 / (dist2 * 2), 1.0);
-                const r = (color1 & 0xff) * cScale;
-                const g = (color1 >> 8 & 0xff) * cScale;
-                const b = (color1 >> 16 & 0xff) * cScale;
-
-                this.framebuffer[i++] = r | g << 8 | b << 16 | 255 << 24;
-            }
-        }
-    }
-
     public drawLedTunnel(elapsedTime: number, texture: Texture) {
         for (let y = 0; y < 25; y++) {
             for (let x = 0; x < 40; x++) {
@@ -1680,16 +1643,6 @@ export class Framebuffer {
                 this.framebuffer[framebufferIndex++] = color;
             }
         }
-    }
-
-    public shadingSphereClip(elapsedTime: number): void {
-        this.clearDepthBuffer();
-        const scale = 1.6;
-
-        let modelViewMartrix: Matrix4f = Matrix4f.constructXRotationMatrix(elapsedTime * 0.3).multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale));
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -61+ Math.sin(elapsedTime*0.3)*19).multiplyMatrix(Matrix4f.constructZRotationMatrix(-elapsedTime * 0.2).multiplyMatrix(modelViewMartrix));
-
-        //this.renderingPipeline.draw(this, this.torus.getMesh(), modelViewMartrix);
     }
 
     public torusFunction(alpha: number): Vector3f {
@@ -2029,135 +1982,7 @@ export class Framebuffer {
         };
     }
 
-    /*
-    public shadingSphereEnv(elapsedTime: number): void {
-
-        this.wBuffer.fill(100);
-
-        let result = this.sphere;
-
-        for (let i = 0; i < result.points.length; i++) {
-            result.points2[i].y = result.points[i].y;
-            result.points2[i].x = result.points[i].x + Math.sin(result.points[i].y * 5.2 + elapsedTime * 5.83) * 0.3;
-            result.points2[i].z = result.points[i].z + Math.sin(result.points[i].x * 10.2 + elapsedTime * 3.83) * 0.15;
-            result.normals[i].x = 0;
-            result.normals[i].y = 0;
-            result.normals[i].z = 0;
-        }
-
-        let points = result.points2;
-        let index = result.index;
-        let normals = result.normals;
-
-        let norm: Vector3f = new Vector3f(0, 0, 0);
-        let norm2: Vector3f = new Vector3f(0, 0, 0);
-        let cross: Vector3f = new Vector3f(0, 0, 0);
-        for (let i = 0; i < index.length; i += 3) {
-            let v1: Vector3f = points[index[i]];
-            let v2: Vector3f = points[index[i + 1]];
-            let v3: Vector3f = points[index[i + 2]];
-            norm.sub2(v2, v1);
-            norm2.sub2(v3, v1);
-            cross.cross2(norm, norm2);
-            let normal = cross;
-            normals[index[i]].add2(normals[index[i]], normal);
-            normals[index[i + 1]].add2(normals[index[i + 1]], normal);
-            normals[index[i + 2]].add2(normals[index[i + 2]], normal);
-        }
-
-        // FIXME: speed up
-        // - remove normalie from lighting
-        // - remove normalize after normal transformation!
-        // - precreate array for transformed vertices and normals
-
-        for (let i = 0; i < normals.length; i++) {
-            normals[i].normalize2();
-        }
-
-        let scale = 37.1;
-
-        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 3.25));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 2.3));
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 1.0) * 46, Math.sin(elapsedTime * 1.2) * 20
-            , -85)
-            .multiplyMatrix(modelViewMartrix);
-
-        let points2: Array<Vector3f> = result.points2;
-        let normals2: Array<Vector3f> = result.normals2;
-
-        let normalMatrix = modelViewMartrix.computeNormalMatrix();
-
-        for (let n = 0; n < normals.length; n++) {
-            normalMatrix.multiplyArr(normals[n], normals2[n]);
-        }
-
-        for (let p = 0; p < points.length; p++) {
-            let transformed = modelViewMartrix.multiply(points[p]);
-
-            points2[p].x = Math.round((this.width * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
-            points2[p].y = Math.round((this.height * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
-            points2[p].z = transformed.z;
-        }
-
-        let vertex1 = new Vertex();
-        vertex1.textureCoordinate = new TextureCoordinate();
-        let vertex2 = new Vertex();
-        vertex2.textureCoordinate = new TextureCoordinate();
-        let vertex3 = new Vertex();
-        vertex3.textureCoordinate = new TextureCoordinate();
-        let vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
-        for (let i = 0; i < index.length; i += 3) {
-
-            // Only render triangles with CCW-ordered vertices
-            //
-            // Reference:
-            // David H. Eberly (this.height6).
-            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
-            // p. 69. Morgan Kaufmann Publishers, United States.
-            //
-            let v1 = points2[index[i]];
-            let n1 = normals2[index[i]];
-
-            let v2 = points2[index[i + 1]];
-            let n2 = normals2[index[i + 1]];
-
-            let v3 = points2[index[i + 2]];
-            let n3 = normals2[index[i + 2]];
-
-            if (this.isTriangleCCW(v1, v2, v3)) {
-
-                let color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
-
-                vertexArray[0].position = v1;
-                this.fakeSphere(n1, vertex1);
-
-                vertexArray[1].position = v2;
-                this.fakeSphere(n2, vertex2);
-
-                vertexArray[2].position = v3;
-                this.fakeSphere(n3, vertex3);
-
-                if (v1.x < Framebuffer.minWindow.x ||
-                    v2.x < Framebuffer.minWindow.x ||
-                    v3.x < Framebuffer.minWindow.x ||
-                    v1.x > Framebuffer.maxWindow.x ||
-                    v2.x > Framebuffer.maxWindow.x ||
-                    v3.x > Framebuffer.maxWindow.x ||
-                    v1.y < Framebuffer.minWindow.y ||
-                    v2.y < Framebuffer.minWindow.y ||
-                    v3.y < Framebuffer.minWindow.y ||
-                    v1.y > Framebuffer.maxWindow.y ||
-                    v2.y > Framebuffer.maxWindow.y ||
-                    v3.y > Framebuffer.maxWindow.y) {
-
-                    this.clipConvexPolygon2(vertexArray, color);
-                } else {
-                    this.texturedTriangleRasterizer.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], color);
-                }
-            }
-        }
-    }
-    */
+    
 
     /*
     public shadingPlaneEnv(elapsedTime: number): void {
