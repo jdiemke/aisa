@@ -31,8 +31,8 @@ export class WaveFrontTextureScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
-        const elapsedTime: number = Date.now();
+    public render(framebuffer: Framebuffer, time: number): void {
+        const elapsedTime: number = time;
 
         framebuffer.clearColorBuffer(Color.BLACK.toPackedFormat());
         framebuffer.clearDepthBuffer();

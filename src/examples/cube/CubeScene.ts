@@ -8,7 +8,7 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 
 export class CubeScene extends AbstractScene {
 
-    private static BACKGROUND_COLOR: number = Color.DARK_GRAY.toPackedFormat();
+    private static BACKGROUND_COLOR: number = Color.BLACK.toPackedFormat();
     private renderingPipeline: FlatShadingRenderingPipeline;
     private cubeMesh: Cube = new Cube();
 

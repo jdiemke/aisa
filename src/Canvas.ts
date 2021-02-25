@@ -7,8 +7,8 @@ export class Canvas {
     public framebuffer: Framebuffer;
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
-
-    private boundRenderLoop: (time: number) => void;
+    private startTime: number;
+    private boundRenderLoop: FrameRequestCallback;
 
     constructor(width: number, height: number, private scene: AbstractScene) {
         this.canvas = document.createElement('canvas');
@@ -54,13 +54,14 @@ export class Canvas {
         this.scene.init(this.framebuffer).then(
             () => {
                 this.scene.onInit();
+                this.startTime = Date.now();
                 this.renderLoop(0);
             }
         );
     }
 
     public renderLoop(time: number): void {
-        this.scene.render(this.framebuffer, time);
+        this.scene.render(this.framebuffer, Date.now() - this.startTime);
         this.flipBackbuffer();
         requestAnimationFrame(this.boundRenderLoop);
     }

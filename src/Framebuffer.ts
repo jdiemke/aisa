@@ -202,7 +202,7 @@ export class Framebuffer {
         for (let i = 0; i < 50; i++) {
             for (let x = 0; x < this.width; x++) {
                 this.framebuffer[(start + i) * this.width + x] = this.framebuffer[(start - i * 3 - 1) * this.width + x +
-                    this.interpolate(0, 50, i) * (Math.sin(Date.now() * 0.002 + i * 0.2) * 10) | 0];
+                    this.interpolate(0, 50, i) * (Math.sin(Date.now() * 0.002 + i * 0.2) * 14) | 0];
             }
         }
     }
