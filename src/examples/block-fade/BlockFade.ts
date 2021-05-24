@@ -91,10 +91,10 @@ export class BlockFade extends AbstractScene {
     /**
      * Transitions from one effect to another using using "transition" value from JSRocket
      *
-     * @param  {Framebuffer} framebuffer            pixels
-     * @param  {Any} transitionSceneFrom            previous effect
-     * @param  {Any} transitionSceneTo              effect we are transitioning to
-     * @param  {number} transitionMethod            transition effect to use (blend, wipe, crossfade, etc)
+     * @param  {Framebuffer} framebuffer             pixels
+     * @param  {AbstractScene} transitionSceneFrom   previous effect
+     * @param  {AbstractScene} transitionSceneTo     effect we are transitioning to
+     * @param  {number} transitionMethod             transition effect to use (blend, wipe, crossfade, etc)
      */
     public transition(
         framebuffer: Framebuffer,

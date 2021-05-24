@@ -6,7 +6,6 @@
 // Core
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
 import { SoundManager } from '../../sound/SoundManager';
 import { Color } from '../../core/Color';
 import { BlockFade } from '../block-fade/BlockFade';
@@ -24,18 +23,7 @@ export class DemoScene extends AbstractScene {
     // Sound Manager
     private sm: SoundManager;
 
-    // Beats per minute of your demo tune
-    private BPM = 120;
-
-    // The resolution between two beats, four is usually fine,- eight adds a bit more finer control
-    private ROWS_PER_BEAT = 8;
-
-    // we calculate this now, so we can translate between rows and seconds later on
-    private ROW_RATE = this.BPM / 60 * this.ROWS_PER_BEAT;
-
-    // Set to true when using *.rocket
-    // set to false when using rocket editor using websocket
-    private _demoMode = true;
+    // Video Recorder
     private _recording = false;
     private canvasRecorder;
     private canvasRecordingOptions;
@@ -44,18 +32,7 @@ export class DemoScene extends AbstractScene {
     private sceneList: DoublyLinkedList<AbstractScene>;
     private nodeInstance: DLNode<AbstractScene>;
 
-    // scene variables | things you set through jsRocket
-    private FOV = 50;
-    private _cameraRotation;
-    private _cameraDistance;
-    private _effect;
-    private _transition;
-    private _snare;
-    private _bass;
-    private _fov;
 
-    // the current row we're on
-    private _row = 0;
     private _currentEffect = 0;
     private tickerPointerRef;
     private timeSeconds = 0;
@@ -64,7 +41,6 @@ export class DemoScene extends AbstractScene {
 
     // stats
     private stats: Array<Stats>;
-    private bmpFont: Texture;
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.sm = new SoundManager();
@@ -82,14 +58,10 @@ export class DemoScene extends AbstractScene {
             // load music
             this.sm.loadOgg(require('../../assets/sound/NotMixedorMastered.ogg').default),
 
-            // font for stats
-            TextureUtils.load(require('../../assets/font.png'), true).then(
-                (texture: Texture) => {
-                    return this.bmpFont = texture;
-                }),
-
             // load *.rocket file
-            this.prepareSync(),
+            // Set to true when using *.rocket
+            // set to false when using rocket editor using websocket
+            this.sm.prepareSync(require('../../assets/sound/demo.rocket').default, true),
 
             // we use this for transitions
             this.BlockFade.init(framebuffer),
@@ -138,7 +110,7 @@ export class DemoScene extends AbstractScene {
     };
 
     /**
-     * Adds list of AbstractScenes to sceneList array and initializes it
+     * Adds AbstractScenes to sceneList array and initializes it
      *
      * @param   {Framebuffer} framebuffer            scene initializes with information in framebuffer such as width and height
      * @param   {Object} plug                        imported class
@@ -156,7 +128,6 @@ export class DemoScene extends AbstractScene {
     // this runs after init() has finished
     public onInit(): void {
         this.nodeInstance = this.sceneList.start;
-        console.info(this.sceneList)
     }
 
     public recordVideo() {
@@ -205,8 +176,8 @@ export class DemoScene extends AbstractScene {
     private seek(time: number) {
         this.sm._audio.currentTime = time;
         // update rocket editor position to new timeline location
-        if (!this._demoMode) {
-            this.sm._syncDevice.update(this.sm._audio.currentTime * this.ROW_RATE);
+        if (!this.sm._demoMode) {
+            this.sm._syncDevice.update(this.sm._audio.currentTime * this.sm.ROW_RATE);
         }
     }
 
@@ -235,12 +206,12 @@ export class DemoScene extends AbstractScene {
 
         // play
         tickerPlayRef.addEventListener('click', () => {
-            this.onPlay();
+            this.sm.onPlay();
         })
 
         // stop
         tickerStopRef.addEventListener('click', () => {
-            this.onPause();
+            this.sm.onPause();
             this.nodeInstance = this.sceneList.start;
             this.seek(0);
         })
@@ -249,7 +220,7 @@ export class DemoScene extends AbstractScene {
         tickerRecordRef.addEventListener('click', () => {
             if (!this._recording) {
                 tickerRecordRef.style.color = 'red';
-                this.onPlay(); // start playing from cursor
+                this.sm.onPlay(); // start playing from cursor
                 this.recordVideo();
             } else {
                 tickerRecordRef.style.color = 'white';
@@ -261,9 +232,9 @@ export class DemoScene extends AbstractScene {
         // pause
         tickerPauseRef.addEventListener('click', () => {
             if (this.sm._audio.paused) {
-                this.onPlay();
+                this.sm.onPlay();
             } else {
-                this.onPause();
+                this.sm.onPause();
             }
         })
 
@@ -396,11 +367,11 @@ export class DemoScene extends AbstractScene {
                 this.nodeInstance.data,
                 this.nodeInstance.next.data,
                 decimalAsInt,
-                this._transition.getValue(this._row),
+                this.sm._transition.getValue(this.sm._row),
                 this.timeMilliseconds);
         }
 
-        this.BlockFade.renderScanlines(framebuffer, this._bass && this._bass.getValue(this._row));
+        this.BlockFade.renderScanlines(framebuffer, this.sm._bass && this.sm._bass.getValue(this.sm._row));
 
         // show FPS, time and effect number on canvas
         this.drawStats(framebuffer);
@@ -408,8 +379,8 @@ export class DemoScene extends AbstractScene {
 
     // find the prev/next section and jump to it
     private jump(time: number, direction: number) {
-        this._row = time * this.ROW_RATE;
-        const effectJump = this._effect.getValue(this._row).toFixed(1);
+        this.sm._row = time * this.sm.ROW_RATE;
+        const effectJump = this.sm._effect.getValue(this.sm._row).toFixed(1);
         if (Math.trunc(this._currentEffect) !== Math.trunc(effectJump)) {
             this.seek(time);
         } else {
@@ -423,15 +394,15 @@ export class DemoScene extends AbstractScene {
 
     private updateMusic() {
         // show message if rocket app is not running in background
-        if (!this.sm._syncDevice.connected && !this._demoMode) {
+        if (!this.sm._syncDevice.connected && !this.sm._demoMode) {
             return;
         }
 
         // use audio time otherwise use date
         this.timeSeconds = this.sm._audio.currentTime;
         this.timeMilliseconds = this.timeSeconds * 1000;
-        this._row = this.timeSeconds * this.ROW_RATE;
-        this._currentEffect = Number(this._effect.getValue(this._row).toFixed(1));
+        this.sm._row = this.timeSeconds * this.sm.ROW_RATE;
+        this._currentEffect = Number(this.sm._effect.getValue(this.sm._row).toFixed(1));
         this.nodeInstance = this.sceneList.getNode(Math.floor(this._currentEffect));
 
         // update JS rocket
@@ -441,15 +412,15 @@ export class DemoScene extends AbstractScene {
             // row 1 back - thus Rocket spasming out
 
             // this informs Rocket where we are
-            this.sm._syncDevice.update(this._row);
+            this.sm._syncDevice.update(this.sm._row);
         }
         this.tickerPointerRef.style.left = (this.timeSeconds * 100 / this.sm._audio.duration) + '%';
     }
 
     // debug info
     private drawStats(framebuffer: Framebuffer) {
-        if (!this.sm._syncDevice.connected && !this._demoMode) {
-            framebuffer.drawText(8, 18, 'Rocket not connected'.toUpperCase(), this.bmpFont);
+        if (!this.sm._syncDevice.connected && !this.sm._demoMode) {
+            console.error('Rocket not connected.');
             return;
         } else {
             // get values from JS rocket
@@ -460,63 +431,6 @@ export class DemoScene extends AbstractScene {
         for (const p of this.stats) {
             p.update();
         }
-    }
-
-    prepareSync(): Promise<void> {
-        return new Promise((resolve) => {
-            if (this._demoMode) {
-                this.sm._syncDevice.setConfig({
-                    'rocketXML': require('../../assets/sound/demo.rocket').default
-                });
-                this.sm._syncDevice.init('demo');
-
-            } else {
-                this.sm._syncDevice.init();
-            };
-
-            // XML file from JS Rocket library was loaded and parsed, make sure your ogg is ready
-            this.sm._syncDevice.on('ready', () => this.onSyncReady());
-
-            // [JS Rocket - Arrow keys] whenever you change the row, a value or interpolation mode this will get called
-            this.sm._syncDevice.on('update', (newRow: number) => this.onSyncUpdate(newRow));
-
-            // [JS Rocket - Spacebar] in Rocket calls one of those
-            this.sm._syncDevice.on('play', () => this.onPlay());
-            this.sm._syncDevice.on('pause', () => this.onPause());
-            resolve()
-        });
-    }
-
-    onSyncReady() {
-        this.sm._syncDevice.connected = true;
-        this._effect = this.sm._syncDevice.getTrack('effect');
-        this._snare = this.sm._syncDevice.getTrack('snare');
-        this._bass = this.sm._syncDevice.getTrack('bass');
-        this._cameraRotation = this.sm._syncDevice.getTrack('rotation');
-        this._cameraDistance = this.sm._syncDevice.getTrack('distance');
-        this._fov = this.sm._syncDevice.getTrack('FOV');
-        this._transition = this.sm._syncDevice.getTrack('transition');
-    }
-
-    // row is only given if you navigate, or change a value on the row in Rocket
-    // on interpolation change (hit [i]) no row value is sent, as the current there is the upper row of your block
-    onSyncUpdate(newRow: number) {
-        if (!isNaN(newRow)) {
-            this._row = newRow;
-        }
-        this.sm._audio.currentTime = newRow / this.ROW_RATE;
-    }
-
-    onPlay() {
-        console.log('[onPlay]');
-        this.sm._audio.currentTime = this._row / this.ROW_RATE;
-        this.sm._audio.play();
-    }
-
-    onPause() {
-        console.info('[onPause]');
-        this._row = this.sm._audio.currentTime * this.ROW_RATE;
-        this.sm._audio.pause();
     }
 
 }

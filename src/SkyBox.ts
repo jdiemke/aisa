@@ -3,6 +3,7 @@ import { Matrix4f, Vector4f } from './math';
 import { Texture, TextureUtils } from './texture';
 import { TextureCoordinate } from './TextureCoordinate';
 import { TexturingRenderingPipeline } from './rendering-pipelines/TexturingRenderingPipeline';
+import { TexturedMesh } from './rendering-pipelines/TexturedMesh';
 
 export class SkyBox {
 
@@ -54,7 +55,7 @@ export class SkyBox {
 
         let camera: Matrix4f;
         let mv: Matrix4f;
-        let skyBoxSideModel: any;
+        let skyBoxSideModel: TexturedMesh;
 
         const skyPoints = [
             new Vector4f(1, 1, -1, 1),
@@ -77,8 +78,6 @@ export class SkyBox {
 
             // skybox: starz
             skyBoxSideModel = {
-                normals: [],
-                normals2: [],
                 points: skyPoints,
                 points2: skyPoints.map(x => new Vector4f(0, 0, 0)),
                 uv: [
@@ -119,8 +118,7 @@ export class SkyBox {
 
         // skybox: starz
         skyBoxSideModel = {
-            normals: [],
-            normals2: [],
+
             points: skyPoints,
             points2: skyPoints.map(x => new Vector4f(0, 0, 0)),
             uv: [
@@ -161,8 +159,6 @@ export class SkyBox {
 
         // skybox: starz
         skyBoxSideModel = {
-            normals: [],
-            normals2: [],
             points: skyPoints,
             points2: skyPoints.map(x => new Vector4f(0, 0, 0)),
             uv: [

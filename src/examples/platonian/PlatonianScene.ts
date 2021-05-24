@@ -15,7 +15,7 @@ export class PlatonianScene extends AbstractScene {
     private blurred: Texture;
     private platonian: Texture;
     private noise: Texture;
-    private platonianMesh: any;
+    private platonianMesh: Array<TexturedMesh>;
     private accumulationBuffer: Uint32Array;
 
     private texturedRenderingPipeline: TexturingRenderingPipeline;
