@@ -35,8 +35,6 @@ export class DemoScene extends AbstractScene {
 
     private _currentEffect = 0;
     private tickerPointerRef;
-    private timeSeconds = 0;
-    private timeMilliseconds = 0;
     private BlockFade: BlockFade;
 
     // stats
@@ -177,7 +175,7 @@ export class DemoScene extends AbstractScene {
         this.sm._audio.currentTime = time;
         // update rocket editor position to new timeline location
         if (!this.sm._demoMode) {
-            this.sm._syncDevice.update(this.sm._audio.currentTime * this.sm.ROW_RATE);
+            this.sm._syncDevice.update(this.sm._audio.currentTime * this.sm.musicProperties.ROW_RATE);
         }
     }
 
@@ -354,24 +352,30 @@ export class DemoScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer): void {
         // get time and values from music
-        this.updateMusic();
+        this.sm.updateMusic();
 
-        // if the "effect" column in JSRocket is a whole number then run the effect by itself otherwise transition to next effect
+        // get which effect to run
+        this.nodeInstance = this.sceneList.getNode(Math.floor(this.sm.musicProperties.currentEffect));
+
+        // update timeline
+        this.tickerPointerRef.style.left = (this.sm.musicProperties.timeSeconds * 100 / this.sm._audio.duration) + '%';
+
+        // if the "effect" column in JSRocket is a whole number then run the effect by itself
         if (Number.isInteger(this._currentEffect)) {
-            this.nodeInstance.data.render(framebuffer, this.timeMilliseconds)
+            this.nodeInstance.data.render(framebuffer, this.sm.musicProperties.timeMilliseconds)
         } else {
-            // get the decimal from the current scene to pick which transition effect to use .5 = radial   .1 = fadein
+            // run transition get the decimal from the current scene to pick which transition effect to use .5 = radial   .1 = fadein
             const decimalAsInt = Math.round((this._currentEffect - parseInt(this._currentEffect.toString(), 10)) * 10); // 10.5 returns 5
             this.BlockFade.transition(
                 framebuffer,
                 this.nodeInstance.data,
                 this.nodeInstance.next.data,
                 decimalAsInt,
-                this.sm._transition.getValue(this.sm._row),
-                this.timeMilliseconds);
+                this.sm.musicProperties.sceneData.transition.getValue(this.sm._row),
+                this.sm.musicProperties.timeMilliseconds);
         }
 
-        this.BlockFade.renderScanlines(framebuffer, this.sm._bass && this.sm._bass.getValue(this.sm._row));
+        this.BlockFade.renderScanlines(framebuffer, this.sm.musicProperties.sceneData.bass && this.sm.musicProperties.sceneData.bass.getValue(this.sm._row));
 
         // show FPS, time and effect number on canvas
         this.drawStats(framebuffer);
@@ -379,8 +383,8 @@ export class DemoScene extends AbstractScene {
 
     // find the prev/next section and jump to it
     private jump(time: number, direction: number) {
-        this.sm._row = time * this.sm.ROW_RATE;
-        const effectJump = this.sm._effect.getValue(this.sm._row).toFixed(1);
+        this.sm._row = time * this.sm.musicProperties.ROW_RATE;
+        const effectJump = this.sm.musicProperties.sceneData.effect.getValue(this.sm._row).toFixed(1);
         if (Math.trunc(this._currentEffect) !== Math.trunc(effectJump)) {
             this.seek(time);
         } else {
@@ -392,6 +396,10 @@ export class DemoScene extends AbstractScene {
         }
     }
 
+
+
+
+    /*
     private updateMusic() {
         // show message if rocket app is not running in background
         if (!this.sm._syncDevice.connected && !this.sm._demoMode) {
@@ -399,9 +407,9 @@ export class DemoScene extends AbstractScene {
         }
 
         // use audio time otherwise use date
-        this.timeSeconds = this.sm._audio.currentTime;
-        this.timeMilliseconds = this.timeSeconds * 1000;
-        this.sm._row = this.timeSeconds * this.sm.ROW_RATE;
+        this.sm.timeSeconds = this.sm._audio.currentTime;
+        this.sm.timeMilliseconds = this.sm.timeSeconds * 1000;
+        this.sm._row = this.sm.timeSeconds * this.sm.ROW_RATE;
         this._currentEffect = Number(this.sm._effect.getValue(this.sm._row).toFixed(1));
         this.nodeInstance = this.sceneList.getNode(Math.floor(this._currentEffect));
 
@@ -414,8 +422,9 @@ export class DemoScene extends AbstractScene {
             // this informs Rocket where we are
             this.sm._syncDevice.update(this.sm._row);
         }
-        this.tickerPointerRef.style.left = (this.timeSeconds * 100 / this.sm._audio.duration) + '%';
+        
     }
+    */
 
     // debug info
     private drawStats(framebuffer: Framebuffer) {
@@ -425,7 +434,7 @@ export class DemoScene extends AbstractScene {
         } else {
             // get values from JS rocket
             document.getElementById('scene').innerText = this._currentEffect.toString();
-            document.getElementById('time').innerText = this.timeSeconds.toFixed(2);
+            document.getElementById('time').innerText = this.sm.musicProperties.timeSeconds.toFixed(2);
         }
         // update FPS and Memory usage
         for (const p of this.stats) {
