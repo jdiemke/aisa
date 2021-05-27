@@ -11,12 +11,21 @@ type musicProperties = {
     ROW_RATE: number;
     timeSeconds: number;
     timeMilliseconds: number;
-    currentEffect: number;
     sceneData: sceneVariables;
 }
 
 // scene variables | things you set through jsRocket
 type sceneVariables = {
+    cameraRotation: number;
+    cameraDistance: number;
+    effect: number;
+    transition: number;
+    snare: number;
+    bass: number;
+    fov: number;
+}
+
+type sceneData = {
     cameraRotation: any;
     cameraDistance: any;
     effect: any;
@@ -33,6 +42,7 @@ export class SoundManager {
 
     public _syncDevice;
     public _audio = new Audio();
+    public isPlaying = false;
 
     // use true for release mode
     public _demoMode = true;
@@ -40,7 +50,9 @@ export class SoundManager {
     // the current row we're on
     public _row = 0;
 
+    //  container for audio values to be used by effects (time, bass, effect, transitions)
     public musicProperties: musicProperties;
+    public sceneData: sceneData;
 
     public constructor() {
 
@@ -48,27 +60,32 @@ export class SoundManager {
         this._syncDevice = new JSRocket.SyncDevice();
         this._syncDevice.connected = false;
 
-
-
         this.musicProperties = {
-            BPM: null,
-            ROWS_PER_BEAT: null,
-            ROW_RATE: null,
-            timeSeconds: null,
-            timeMilliseconds: null,
-            currentEffect: null,
+            BPM: 0,
+            ROWS_PER_BEAT: 0,
+            ROW_RATE: 0,
+            timeSeconds: 0,
+            timeMilliseconds: 0,
             sceneData: {
-                cameraRotation: null,
-                cameraDistance: null,
-                effect: null,
-                transition: null,
-                snare: null,
-                bass: null,
-                fov: null
+                cameraRotation: 0,
+                cameraDistance: 0,
+                effect: 0,
+                transition: 0,
+                snare: 0,
+                bass: 0,
+                fov: 0
             }
         }
 
-
+        this.sceneData = {
+            cameraRotation: null,
+            cameraDistance: null,
+            effect: null,
+            transition: null,
+            snare: null,
+            bass: null,
+            fov: null
+        }
     }
 
     public playExtendedModule(filename: string): Promise<void> {
@@ -156,13 +173,24 @@ export class SoundManager {
         this.musicProperties.ROW_RATE = this.musicProperties.BPM / 60 * this.musicProperties.ROWS_PER_BEAT;
 
         this._syncDevice.connected = true;
-        this.musicProperties.sceneData.effect = this._syncDevice.getTrack('effect');
-        this.musicProperties.sceneData.snare = this._syncDevice.getTrack('snare');
-        this.musicProperties.sceneData.bass = this._syncDevice.getTrack('bass');
-        this.musicProperties.sceneData.cameraRotation = this._syncDevice.getTrack('rotation');
-        this.musicProperties.sceneData.cameraDistance = this._syncDevice.getTrack('distance');
-        this.musicProperties.sceneData.fov = this._syncDevice.getTrack('FOV');
-        this.musicProperties.sceneData.transition = this._syncDevice.getTrack('transition');
+
+        this.sceneData.effect = this._syncDevice.getTrack('effect');
+        this.sceneData.snare = this._syncDevice.getTrack('snare');
+        this.sceneData.bass = this._syncDevice.getTrack('bass');
+        this.sceneData.cameraRotation = this._syncDevice.getTrack('rotation');
+        this.sceneData.cameraDistance = this._syncDevice.getTrack('distance');
+        this.sceneData.fov = this._syncDevice.getTrack('FOV');
+        this.sceneData.transition = this._syncDevice.getTrack('transition');
+
+
+        this._audio.onpause = () => {
+            this.isPlaying =  false;
+        };
+
+        this._audio.onplay = () => {
+            this.isPlaying =  true;
+        }
+
     }
 
     // row is only given if you navigate, or change a value on the row in Rocket
@@ -184,9 +212,17 @@ export class SoundManager {
         // update music properties
         this.musicProperties.timeSeconds = this._audio.currentTime;
         this.musicProperties.timeMilliseconds = this.musicProperties.timeSeconds * 1000;
-        this.musicProperties.currentEffect = Number(this.musicProperties.sceneData['effect'].getValue(this._row).toFixed(1));
-
         this._row = this.musicProperties.timeSeconds * this.musicProperties.ROW_RATE;
+
+        this.musicProperties.sceneData = {
+            cameraRotation: this.sceneData.cameraRotation.getValue(this._row),
+            cameraDistance: this.sceneData.cameraDistance.getValue(this._row),
+            effect: this.sceneData.effect.getValue(this._row),
+            transition: this.sceneData.transition.getValue(this._row),
+            snare: this.sceneData.snare.getValue(this._row),
+            bass: this.sceneData.bass.getValue(this._row),
+            fov: this.sceneData.fov.getValue(this._row)
+        }
 
         // update JS rocket
         if (this._audio.paused === false) {
@@ -203,13 +239,42 @@ export class SoundManager {
     onPlay() {
         console.log('[onPlay]');
         this._audio.currentTime = this._row / this.musicProperties.ROW_RATE;
-        this._audio.play();
+
+        console.info('this._audio.paused', this._audio.paused)
+
+
+
+        
+        if ( !this.isPlaying) {
+
+            let playPromise = this._audio.play();
+
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    // Automatic playback started!
+                    // Show playing UI.
+                    // We can now safely pause video...
+                    //this._audio.play();
+                    this.isPlaying = true;
+                })
+                    .catch(error => {
+                        // Auto-play was prevented
+                        // Show paused UI.
+                    });
+            }
+        }
+
     }
+
+    
 
     onPause() {
         console.info('[onPause]');
         this._row = this._audio.currentTime * this.musicProperties.ROW_RATE;
-        this._audio.pause();
+
+        if (!this._audio.paused && this.isPlaying) {
+            this._audio.pause();
+        }
     }
 
 }
