@@ -39,16 +39,11 @@ export class SoundManager {
 
     public audioContext: AudioContext;
     public songLengthSeconds: number;
-
     public _syncDevice;
     public _audio = new Audio();
     public isPlaying = false;
-
-    // use true for release mode
-    public _demoMode = true;
-
-    // the current row we're on
-    public _row = 0;
+    public _demoMode = true;    // use true for release mode
+    public _row = 0;    // the current row we're on
 
     //  container for audio values to be used by effects (time, bass, effect, transitions)
     public musicProperties: musicProperties;
@@ -171,9 +166,7 @@ export class SoundManager {
         this.musicProperties.BPM = 120;
         this.musicProperties.ROWS_PER_BEAT = 8;
         this.musicProperties.ROW_RATE = this.musicProperties.BPM / 60 * this.musicProperties.ROWS_PER_BEAT;
-
         this._syncDevice.connected = true;
-
         this.sceneData.effect = this._syncDevice.getTrack('effect');
         this.sceneData.snare = this._syncDevice.getTrack('snare');
         this.sceneData.bass = this._syncDevice.getTrack('bass');
@@ -182,13 +175,12 @@ export class SoundManager {
         this.sceneData.fov = this._syncDevice.getTrack('FOV');
         this.sceneData.transition = this._syncDevice.getTrack('transition');
 
-
         this._audio.onpause = () => {
-            this.isPlaying =  false;
+            this.isPlaying = false;
         };
 
         this._audio.onplay = () => {
-            this.isPlaying =  true;
+            this.isPlaying = true;
         }
 
     }
@@ -201,7 +193,6 @@ export class SoundManager {
         }
         this._audio.currentTime = newRow / this.musicProperties.ROW_RATE;
     }
-
 
     updateMusic() {
         // show message if rocket app is not running in background
@@ -235,38 +226,20 @@ export class SoundManager {
         }
     }
 
-
     onPlay() {
         console.log('[onPlay]');
         this._audio.currentTime = this._row / this.musicProperties.ROW_RATE;
-
-        console.info('this._audio.paused', this._audio.paused)
-
-
-
-        
-        if ( !this.isPlaying) {
-
+        if (!this.isPlaying) {
             let playPromise = this._audio.play();
-
             if (playPromise !== undefined) {
                 playPromise.then(_ => {
-                    // Automatic playback started!
-                    // Show playing UI.
-                    // We can now safely pause video...
-                    //this._audio.play();
                     this.isPlaying = true;
                 })
                     .catch(error => {
-                        // Auto-play was prevented
-                        // Show paused UI.
                     });
             }
         }
-
     }
-
-    
 
     onPause() {
         console.info('[onPause]');
