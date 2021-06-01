@@ -2,7 +2,6 @@ import { Color } from '../../core/Color';
 import { Utils } from '../../core/Utils';
 import { Framebuffer } from '../../Framebuffer';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
-import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
 
@@ -91,10 +90,10 @@ export class BlockFade extends AbstractScene {
     /**
      * Transitions from one effect to another using using "transition" value from JSRocket
      *
-     * @param  {Framebuffer} framebuffer            pixels
-     * @param  {Any} transitionSceneFrom            previous effect
-     * @param  {Any} transitionSceneTo              effect we are transitioning to
-     * @param  {number} transitionMethod            transition effect to use (blend, wipe, crossfade, etc)
+     * @param  {Framebuffer} framebuffer             pixels
+     * @param  {AbstractScene} transitionSceneFrom   previous effect
+     * @param  {AbstractScene} transitionSceneTo     effect we are transitioning to
+     * @param  {number} transitionMethod             transition effect to use (blend, wipe, crossfade, etc)
      */
     public transition(
         framebuffer: Framebuffer,
@@ -110,7 +109,7 @@ export class BlockFade extends AbstractScene {
         // render 'From' effect into framebuffer
         transitionSceneFrom.render(framebuffer, time);
         // apply transition to framebuffer (fromEffect) using texture (toEffect) 0-255
-        switch (transitionMethod) {
+        switch (Math.trunc(transitionMethod)) {
             case TransitionMethods.BLOCKFADE: // 0 - 12000
                 this.blockFade(framebuffer, this.transitionFramebufferTo.framebuffer, this.transitionFramebufferTo.width, Utils.map(transitionValue, 0, 255, 0, 12000), 0);
                 break;

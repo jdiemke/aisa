@@ -6,7 +6,6 @@
 // Core
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
 import { SoundManager } from '../../sound/SoundManager';
 import { Color } from '../../core/Color';
 import { BlockFade } from '../block-fade/BlockFade';
@@ -24,18 +23,7 @@ export class DemoScene extends AbstractScene {
     // Sound Manager
     private sm: SoundManager;
 
-    // Beats per minute of your demo tune
-    private BPM = 120;
-
-    // The resolution between two beats, four is usually fine,- eight adds a bit more finer control
-    private ROWS_PER_BEAT = 8;
-
-    // we calculate this now, so we can translate between rows and seconds later on
-    private ROW_RATE = this.BPM / 60 * this.ROWS_PER_BEAT;
-
-    // Set to true when using *.rocket
-    // set to false when using rocket editor using websocket
-    private _demoMode = true;
+    // Video Recorder
     private _recording = false;
     private canvasRecorder;
     private canvasRecordingOptions;
@@ -44,27 +32,13 @@ export class DemoScene extends AbstractScene {
     private sceneList: DoublyLinkedList<AbstractScene>;
     private nodeInstance: DLNode<AbstractScene>;
 
-    // scene variables | things you set through jsRocket
-    private FOV = 50;
-    private _cameraRotation;
-    private _cameraDistance;
-    private _effect;
-    private _transition;
-    private _snare;
-    private _bass;
-    private _fov;
-
-    // the current row we're on
-    private _row = 0;
-    private _currentEffect = 0;
     private tickerPointerRef;
-    private timeSeconds = 0;
-    private timeMilliseconds = 0;
+
+    // transitions
     private BlockFade: BlockFade;
 
     // stats
     private stats: Array<Stats>;
-    private bmpFont: Texture;
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.sm = new SoundManager();
@@ -82,19 +56,16 @@ export class DemoScene extends AbstractScene {
             // load music
             this.sm.loadOgg(require('../../assets/sound/NotMixedorMastered.ogg').default),
 
-            // font for stats
-            TextureUtils.load(require('../../assets/font.png'), true).then(
-                (texture: Texture) => {
-                    return this.bmpFont = texture;
-                }),
-
             // load *.rocket file
-            this.prepareSync(),
+            // Set to true when using *.rocket from file system
+            // set to false when using rocket editor using websocket
+            this.sm.prepareSync(require('../../assets/sound/demo.rocket').default, true),
 
             // we use this for transitions
             this.BlockFade.init(framebuffer),
 
             // load and initialze effects
+            import('./parts/Scene1').then(plug => this.initScene(framebuffer, plug)), // cubicles
             import('./parts/Scene1').then(plug => this.initScene(framebuffer, plug)), // cubicles
             import('./parts/Scene2').then(plug => this.initScene(framebuffer, plug)), // telephone
             import('./parts/Scene3').then(plug => this.initScene(framebuffer, plug)), // title screen here
@@ -138,7 +109,7 @@ export class DemoScene extends AbstractScene {
     };
 
     /**
-     * Adds list of AbstractScenes to sceneList array and initializes it
+     * Adds AbstractScenes to sceneList array and initializes it
      *
      * @param   {Framebuffer} framebuffer            scene initializes with information in framebuffer such as width and height
      * @param   {Object} plug                        imported class
@@ -156,7 +127,6 @@ export class DemoScene extends AbstractScene {
     // this runs after init() has finished
     public onInit(): void {
         this.nodeInstance = this.sceneList.start;
-        console.info(this.sceneList)
     }
 
     public recordVideo() {
@@ -205,8 +175,8 @@ export class DemoScene extends AbstractScene {
     private seek(time: number) {
         this.sm._audio.currentTime = time;
         // update rocket editor position to new timeline location
-        if (!this._demoMode) {
-            this.sm._syncDevice.update(this.sm._audio.currentTime * this.ROW_RATE);
+        if (!this.sm._demoMode) {
+            this.sm._syncDevice.update(this.sm._audio.currentTime * this.sm.musicProperties.ROW_RATE);
         }
     }
 
@@ -225,7 +195,6 @@ export class DemoScene extends AbstractScene {
         // Scene Playback Controls
         const tickerRef = document.getElementById('ticker');
         const tickerPlayRef = document.getElementById('ticker_play');
-        const tickerPauseRef = document.getElementById('ticker_pause');
         const tickerStopRef = document.getElementById('ticker_stop');
         const tickerNextRef = document.getElementById('ticker_next');
         const tickerBackRef = document.getElementById('ticker_back');
@@ -233,38 +202,54 @@ export class DemoScene extends AbstractScene {
         const tickerScreenshotRef = document.getElementById('ticker_screenshot');
         this.tickerPointerRef = document.getElementById('ticker_pointer');
 
-        // play
-        tickerPlayRef.addEventListener('click', () => {
-            this.onPlay();
-        })
-
         // stop
         tickerStopRef.addEventListener('click', () => {
-            this.onPause();
+            this.sm.onPause();
             this.nodeInstance = this.sceneList.start;
             this.seek(0);
+
+            tickerPlayRef.classList.add('fa-play');
+            tickerPlayRef.classList.remove('fa-pause');
+
+            // save video if recoding
+            if (this._recording) {
+                tickerRecordRef.style.color = 'white';
+                this.saveVideo();
+            }
         })
 
         // record video
         tickerRecordRef.addEventListener('click', () => {
             if (!this._recording) {
                 tickerRecordRef.style.color = 'red';
-                this.onPlay(); // start playing from cursor
+                this.sm.onPlay(); // start playing from cursor
                 this.recordVideo();
+                tickerPlayRef.classList.remove('fa-play');
+                tickerPlayRef.classList.add('fa-pause');
             } else {
                 tickerRecordRef.style.color = 'white';
-                tickerPauseRef.click();
+                this.sm.onPause();
                 this.saveVideo();
+                tickerPlayRef.classList.add('fa-play');
+                tickerPlayRef.classList.remove('fa-pause');
+
             }
         })
 
-        // pause
-        tickerPauseRef.addEventListener('click', () => {
-            if (this.sm._audio.paused) {
-                this.onPlay();
+        // play / pause
+        tickerPlayRef.addEventListener('click', () => {
+            if (this.sm._audio.paused && !this.sm.isPlaying) {
+                this.sm.onPlay();
+                tickerPlayRef.setAttribute('title', 'pause');
+                tickerPlayRef.classList.remove('fa-play');
+                tickerPlayRef.classList.add('fa-pause');
             } else {
-                this.onPause();
+                this.sm.onPause();
+                tickerPlayRef.setAttribute('title', 'play');
+                tickerPlayRef.classList.add('fa-play');
+                tickerPlayRef.classList.remove('fa-pause');
             }
+            // toggle play to pause icon
         })
 
         // save screenshot in PNG format
@@ -305,6 +290,7 @@ export class DemoScene extends AbstractScene {
 
         // keyboard navigation controls
         document.addEventListener('keydown', (e: KeyboardEvent) => {
+            console.info(e.key)
             switch (e.key) {
                 case 'MediaStop':
                     tickerStopRef.click();
@@ -312,7 +298,7 @@ export class DemoScene extends AbstractScene {
                 // play or pause
                 case 'MediaPlayPause':
                 case ' ':
-                    tickerPauseRef.click();
+                    tickerPlayRef.click();
                     break;
                 // navigate timeline backward
                 case 'ArrowLeft':
@@ -383,140 +369,74 @@ export class DemoScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer): void {
         // get time and values from music
-        this.updateMusic();
+        this.sm.updateMusic();
 
-        // if the "effect" column in JSRocket is a whole number then run the effect by itself otherwise transition to next effect
-        if (Number.isInteger(this._currentEffect)) {
-            this.nodeInstance.data.render(framebuffer, this.timeMilliseconds)
+        // get which effect to run
+        this.nodeInstance = this.sceneList.getNode(this.sm.musicProperties.sceneData.effect);
+
+        // update timeline
+        this.tickerPointerRef.style.left = (this.sm.musicProperties.timeSeconds * 100 / this.sm._audio.duration) + '%';
+
+        // if "transitionType" in JSRocket is zero then run the effect by itself
+        if (this.sm.musicProperties.sceneData.transitionType === 0) {
+            this.nodeInstance.data.render(framebuffer, this.sm.musicProperties.timeMilliseconds)
         } else {
-            // get the decimal from the current scene to pick which transition effect to use .5 = radial   .1 = fadein
-            const decimalAsInt = Math.round((this._currentEffect - parseInt(this._currentEffect.toString(), 10)) * 10); // 10.5 returns 5
+            // otherwise blend two effects together
             this.BlockFade.transition(
                 framebuffer,
                 this.nodeInstance.data,
                 this.nodeInstance.next.data,
-                decimalAsInt,
-                this._transition.getValue(this._row),
-                this.timeMilliseconds);
+                this.sm.musicProperties.sceneData.transitionType,
+                this.sm.musicProperties.sceneData.transitionValue,
+                this.sm.musicProperties.timeMilliseconds);
         }
 
-        this.BlockFade.renderScanlines(framebuffer, this._bass && this._bass.getValue(this._row));
+        this.BlockFade.renderScanlines(framebuffer, this.sm.musicProperties.sceneData.bass && this.sm.musicProperties.sceneData.bass);
 
         // show FPS, time and effect number on canvas
         this.drawStats(framebuffer);
     }
 
-    // find the prev/next section and jump to it
+    /**
+     * find the prev/next effect and jump to it
+     *
+     * @param   {number} time       where we are in the audio timeline
+     * @param   {number} direction  direction to skip -1 goes backwards.  1 goes forward
+     */
     private jump(time: number, direction: number) {
-        this._row = time * this.ROW_RATE;
-        const effectJump = this._effect.getValue(this._row).toFixed(1);
-        if (Math.trunc(this._currentEffect) !== Math.trunc(effectJump)) {
-            this.seek(time);
-        } else {
-            if (time >= 0) {
-                this.jump(time + (0.06 * direction), direction);
+        this.sm._row = time * this.sm.musicProperties.ROW_RATE;
+        const effectJump = Number(this.sm.sceneData.effect.getValue(this.sm._row).toFixed(1));
+        if (Math.trunc(this.sm.musicProperties.sceneData.effect) !== Math.trunc(effectJump) && effectJump >= 1) {
+            // if running into transition effect 2.5..then keep searching and only land on whole numbers
+            if (parseInt(effectJump.toString(), 10) !== effectJump) {
+                this.jump(time + (0.12 * direction), direction);
             } else {
+                this.seek(time);
+            }
+        } else {
+            if (time >= 0 && effectJump < this.sceneList.length - 3) {
+                this.jump(time + (0.12 * direction), direction);
+            } else {
+                // go back to the beginning
                 this.seek(0);
             }
         }
     }
 
-    private updateMusic() {
-        // show message if rocket app is not running in background
-        if (!this.sm._syncDevice.connected && !this._demoMode) {
-            return;
-        }
-
-        // use audio time otherwise use date
-        this.timeSeconds = this.sm._audio.currentTime;
-        this.timeMilliseconds = this.timeSeconds * 1000;
-        this._row = this.timeSeconds * this.ROW_RATE;
-        this._currentEffect = Number(this._effect.getValue(this._row).toFixed(1));
-        this.nodeInstance = this.sceneList.getNode(Math.floor(this._currentEffect));
-
-        // update JS rocket
-        if (this.sm._audio.paused === false) {
-            // otherwise we may jump into a point in the audio where there's
-            // no timeframe, resulting in Rocket setting row 2 and we report
-            // row 1 back - thus Rocket spasming out
-
-            // this informs Rocket where we are
-            this.sm._syncDevice.update(this._row);
-        }
-        this.tickerPointerRef.style.left = (this.timeSeconds * 100 / this.sm._audio.duration) + '%';
-    }
-
     // debug info
     private drawStats(framebuffer: Framebuffer) {
-        if (!this.sm._syncDevice.connected && !this._demoMode) {
-            framebuffer.drawText(8, 18, 'Rocket not connected'.toUpperCase(), this.bmpFont);
+        if (!this.sm._syncDevice.connected && !this.sm._demoMode) {
+            console.error('Rocket not connected.');
             return;
         } else {
             // get values from JS rocket
-            document.getElementById('scene').innerText = this._currentEffect.toString();
-            document.getElementById('time').innerText = this.timeSeconds.toFixed(2);
+            document.getElementById('scene').innerText = this.sm.musicProperties.sceneData.effect.toString();
+            document.getElementById('time').innerText = this.sm.musicProperties.timeSeconds.toFixed(2);
         }
         // update FPS and Memory usage
         for (const p of this.stats) {
             p.update();
         }
-    }
-
-    prepareSync(): Promise<void> {
-        return new Promise((resolve) => {
-            if (this._demoMode) {
-                this.sm._syncDevice.setConfig({
-                    'rocketXML': require('../../assets/sound/demo.rocket').default
-                });
-                this.sm._syncDevice.init('demo');
-
-            } else {
-                this.sm._syncDevice.init();
-            };
-
-            // XML file from JS Rocket library was loaded and parsed, make sure your ogg is ready
-            this.sm._syncDevice.on('ready', () => this.onSyncReady());
-
-            // [JS Rocket - Arrow keys] whenever you change the row, a value or interpolation mode this will get called
-            this.sm._syncDevice.on('update', (newRow: number) => this.onSyncUpdate(newRow));
-
-            // [JS Rocket - Spacebar] in Rocket calls one of those
-            this.sm._syncDevice.on('play', () => this.onPlay());
-            this.sm._syncDevice.on('pause', () => this.onPause());
-            resolve()
-        });
-    }
-
-    onSyncReady() {
-        this.sm._syncDevice.connected = true;
-        this._effect = this.sm._syncDevice.getTrack('effect');
-        this._snare = this.sm._syncDevice.getTrack('snare');
-        this._bass = this.sm._syncDevice.getTrack('bass');
-        this._cameraRotation = this.sm._syncDevice.getTrack('rotation');
-        this._cameraDistance = this.sm._syncDevice.getTrack('distance');
-        this._fov = this.sm._syncDevice.getTrack('FOV');
-        this._transition = this.sm._syncDevice.getTrack('transition');
-    }
-
-    // row is only given if you navigate, or change a value on the row in Rocket
-    // on interpolation change (hit [i]) no row value is sent, as the current there is the upper row of your block
-    onSyncUpdate(newRow: number) {
-        if (!isNaN(newRow)) {
-            this._row = newRow;
-        }
-        this.sm._audio.currentTime = newRow / this.ROW_RATE;
-    }
-
-    onPlay() {
-        console.log('[onPlay]');
-        this.sm._audio.currentTime = this._row / this.ROW_RATE;
-        this.sm._audio.play();
-    }
-
-    onPause() {
-        console.info('[onPause]');
-        this._row = this.sm._audio.currentTime * this.ROW_RATE;
-        this.sm._audio.pause();
     }
 
 }

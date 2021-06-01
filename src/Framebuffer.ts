@@ -49,8 +49,8 @@ export class Framebuffer {
     public texturedTriangleRasterizer = new TexturedTriangleRasterizer(this);
 
     public scaleClipBlitter = new ScaleClipBlitter(this);
-    //public renderingPipeline: FlatShadingRenderingPipeline;
-    //public texturedRenderingPipeline: TexturingRenderingPipeline;
+    // public renderingPipeline: FlatShadingRenderingPipeline;
+    // public texturedRenderingPipeline: TexturingRenderingPipeline;
     public lineRasterizer = new LineRasterizerDda(this);
     public lineRasterizerNo = new LineRasterizerNoZ(this);
     public tmpGlitch: Uint32Array;
@@ -80,8 +80,8 @@ export class Framebuffer {
         this.unsignedIntArray = new Uint8ClampedArray(arrayBuffer);
         this.framebuffer = new Uint32Array(arrayBuffer);
         this.tmpGlitch = new Uint32Array(width * height);
-        //this.renderingPipeline = new FlatShadingRenderingPipeline(this);
-        //this.texturedRenderingPipeline = new TexturingRenderingPipeline(this);
+        // this.renderingPipeline = new FlatShadingRenderingPipeline(this);
+        // this.texturedRenderingPipeline = new TexturingRenderingPipeline(this);
         this.minWindow = new Vector2f(0, 0);
         this.maxWindow = new Vector2f(width - 1, height - 1);
 
@@ -102,8 +102,7 @@ export class Framebuffer {
     }
 
     public precompute(): void {
-        //this.blengetBlenderScene(hoodlumJson, false);
-   
+        // this.blengetBlenderScene(hoodlumJson, false);
         // this.plane = this.createPlane();
         // this.cylinder = this.createCylinder();
         // this.cylinder2 = this.createCylinder2(texture);
@@ -244,21 +243,21 @@ export class Framebuffer {
 
 
     public drawTextureColorized(x: number, y: number, texture: Texture, color: Color): void {
-    
+
         let frIndex = x + y * this.width;
         let texIndex = 0;
 
         for (let h = 0; h < texture.height; h++) {
             for (let w = 0; w < texture.width; w++) {
                 const txPixel = texture.texture[texIndex];
-              
 
-                const r =  (txPixel >> 0 & 0xff) * color.r /255;
-                const g = (txPixel >> 8 & 0xff) *  color.g /255;
-                const b =  (txPixel >> 16 & 0xff) *  color.b /255;
+
+                const r = (txPixel >> 0 & 0xff) * color.r / 255;
+                const g = (txPixel >> 8 & 0xff) * color.g / 255;
+                const b = (txPixel >> 16 & 0xff) * color.b / 255;
 
                 this.framebuffer[frIndex] = r | (g << 8) | (b << 16) | (255 << 24);
-             
+
                 texIndex++;
                 frIndex++;
             }
@@ -1585,30 +1584,30 @@ export class Framebuffer {
         const scale = 2.1;
 
 
-               
 
-            const points2: Array<Vector3f> = new Array<Vector3f>(points.length);
-           
 
-                const transformed = framebuffer.project( light);
+        const points2: Array<Vector3f> = new Array<Vector3f>(points.length);
 
-                points2.push(transformed);
-           
 
-            points2.sort((a, b) => {
-                return a.z - b.z;
-            });
+        const transformed = framebuffer.project(light);
 
-            points2.forEach(element => {
-                // let size = -(2.0 * 192 / (element.z));
-                const size = -(80.3 * 192 / (element.z));
-                
-                    framebuffer.drawParticle2(
-                        Math.round(element.x - size / 2),
-                        Math.round(element.y - size / 2),
-                        Math.round(size), Math.round(size), texture, 1/element.z, 1.0, 0,200);
-            });
-        
+        points2.push(transformed);
+
+
+        points2.sort((a, b) => {
+            return a.z - b.z;
+        });
+
+        points2.forEach(element => {
+            // let size = -(2.0 * 192 / (element.z));
+            const size = -(80.3 * 192 / (element.z));
+
+            framebuffer.drawParticle2(
+                Math.round(element.x - size / 2),
+                Math.round(element.y - size / 2),
+                Math.round(size), Math.round(size), texture, 1 / element.z, 1.0, 0, 200);
+        });
+
     }
 
 
@@ -1982,7 +1981,7 @@ export class Framebuffer {
         };
     }
 
-    
+
 
     /*
     public shadingPlaneEnv(elapsedTime: number): void {
