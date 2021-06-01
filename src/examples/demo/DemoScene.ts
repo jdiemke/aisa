@@ -240,16 +240,15 @@ export class DemoScene extends AbstractScene {
         tickerPlayRef.addEventListener('click', () => {
             if (this.sm._audio.paused && !this.sm.isPlaying) {
                 this.sm.onPlay();
-                tickerPlayRef.setAttribute('title','pause');
+                tickerPlayRef.setAttribute('title', 'pause');
                 tickerPlayRef.classList.remove('fa-play');
                 tickerPlayRef.classList.add('fa-pause');
             } else {
                 this.sm.onPause();
-                tickerPlayRef.setAttribute('title','play');
+                tickerPlayRef.setAttribute('title', 'play');
                 tickerPlayRef.classList.add('fa-play');
                 tickerPlayRef.classList.remove('fa-pause');
-           }
-            
+            }
             // toggle play to pause icon
         })
 
@@ -378,18 +377,17 @@ export class DemoScene extends AbstractScene {
         // update timeline
         this.tickerPointerRef.style.left = (this.sm.musicProperties.timeSeconds * 100 / this.sm._audio.duration) + '%';
 
-        // if the "effect" column in JSRocket is a whole number then run the effect by itself
-        if (Number.isInteger(this.sm.musicProperties.sceneData.effect)) {
+        // if "transitionType" in JSRocket is zero then run the effect by itself
+        if (this.sm.musicProperties.sceneData.transitionType === 0) {
             this.nodeInstance.data.render(framebuffer, this.sm.musicProperties.timeMilliseconds)
         } else {
-            // run transition get the decimal from the current scene to pick which transition effect to use .5 = radial   .1 = fadein
-            const decimalAsInt = Math.round((this.sm.musicProperties.sceneData.effect - parseInt(this.sm.musicProperties.sceneData.effect.toString(), 10)) * 10); // 10.5 returns 5
+            // otherwise blend two effects together
             this.BlockFade.transition(
                 framebuffer,
                 this.nodeInstance.data,
                 this.nodeInstance.next.data,
-                decimalAsInt,
-                this.sm.musicProperties.sceneData.transition,
+                this.sm.musicProperties.sceneData.transitionType,
+                this.sm.musicProperties.sceneData.transitionValue,
                 this.sm.musicProperties.timeMilliseconds);
         }
 

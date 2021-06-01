@@ -2,7 +2,6 @@ import { Color } from '../../core/Color';
 import { Utils } from '../../core/Utils';
 import { Framebuffer } from '../../Framebuffer';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
-import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
 
@@ -110,7 +109,7 @@ export class BlockFade extends AbstractScene {
         // render 'From' effect into framebuffer
         transitionSceneFrom.render(framebuffer, time);
         // apply transition to framebuffer (fromEffect) using texture (toEffect) 0-255
-        switch (transitionMethod) {
+        switch (Math.trunc(transitionMethod)) {
             case TransitionMethods.BLOCKFADE: // 0 - 12000
                 this.blockFade(framebuffer, this.transitionFramebufferTo.framebuffer, this.transitionFramebufferTo.width, Utils.map(transitionValue, 0, 255, 0, 12000), 0);
                 break;

@@ -19,7 +19,8 @@ type sceneVariables = {
     cameraRotation: number;
     cameraDistance: number;
     effect: number;
-    transition: number;
+    transitionType: number;
+    transitionValue: number;
     snare: number;
     bass: number;
     fov: number;
@@ -29,7 +30,8 @@ type sceneData = {
     cameraRotation: any;
     cameraDistance: any;
     effect: any;
-    transition: any;
+    transitionType: any;
+    transitionValue: any;
     snare: any;
     bass: any;
     fov: any;
@@ -65,7 +67,8 @@ export class SoundManager {
                 cameraRotation: 0,
                 cameraDistance: 0,
                 effect: 0,
-                transition: 0,
+                transitionType: 0,
+                transitionValue: 0,
                 snare: 0,
                 bass: 0,
                 fov: 0
@@ -76,7 +79,8 @@ export class SoundManager {
             cameraRotation: null,
             cameraDistance: null,
             effect: null,
-            transition: null,
+            transitionType: null,
+            transitionValue: null,
             snare: null,
             bass: null,
             fov: null
@@ -173,7 +177,8 @@ export class SoundManager {
         this.sceneData.cameraRotation = this._syncDevice.getTrack('rotation');
         this.sceneData.cameraDistance = this._syncDevice.getTrack('distance');
         this.sceneData.fov = this._syncDevice.getTrack('FOV');
-        this.sceneData.transition = this._syncDevice.getTrack('transition');
+        this.sceneData.transitionType = this._syncDevice.getTrack('transitionType');
+        this.sceneData.transitionValue = this._syncDevice.getTrack('transitionValue');
 
         this._audio.onpause = () => {
             this.isPlaying = false;
@@ -209,7 +214,8 @@ export class SoundManager {
             cameraRotation: this.sceneData.cameraRotation.getValue(this._row),
             cameraDistance: this.sceneData.cameraDistance.getValue(this._row),
             effect: this.sceneData.effect.getValue(this._row),
-            transition: this.sceneData.transition.getValue(this._row),
+            transitionType: this.sceneData.transitionType.getValue(this._row),
+            transitionValue: this.sceneData.transitionValue.getValue(this._row),
             snare: this.sceneData.snare.getValue(this._row),
             bass: this.sceneData.bass.getValue(this._row),
             fov: this.sceneData.fov.getValue(this._row)
@@ -230,7 +236,7 @@ export class SoundManager {
         console.log('[onPlay]');
         this._audio.currentTime = this._row / this.musicProperties.ROW_RATE;
         if (!this.isPlaying) {
-            let playPromise = this._audio.play();
+            const playPromise = this._audio.play();
             if (playPromise !== undefined) {
                 playPromise.then(_ => {
                     this.isPlaying = true;
