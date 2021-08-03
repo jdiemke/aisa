@@ -73,6 +73,7 @@ field of computer graphics including clipping, triangle rasterization, geometric
 * [Stanford Bunny](https://jdiemke.github.io/aisa/bunny.html)
 * [Stanford Dragon](https://jdiemke.github.io/aisa/wavefront.html)
 * [Starfield](https://jdiemke.github.io/aisa/starfield.html)
+* [Text Zoomer](https://jdiemke.github.io/aisa/text-zoomer.html)
 * [Textured Torus](https://jdiemke.github.io/aisa/textured-torus.html)
 * [Titan Effect](https://jdiemke.github.io/aisa/titan-effect.html)
 * [Torus Knot Tunnel](https://jdiemke.github.io/aisa/torus-knot-tunnel.html)
