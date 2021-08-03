@@ -66,6 +66,7 @@ module.exports = {
         'feedback-radial-blur': './src/examples/feedback-radial-blur/Application.ts',
         'radial-blur': './src/examples/radial-blur/Application.ts',
         'room': './src/examples/room/Application.ts',
+        'text-zoomer': './src/examples/text-zoomer/Application.ts',
         'roto-zoom-demo': './src/examples/roto-zoom-demo/Application.ts',
         'psychadelic-plane-deformation': './src/examples/psychadelic-plane-deformation/Application.ts',
 	},
@@ -424,6 +425,11 @@ module.exports = {
 			template: './src/index.html',
 			chunks: ['psychadelic-plane-deformation'],
 			filename: 'psychadelic-plane-deformation.html'
+        }),
+		new HtmlWebpackPlugin({
+			template: './src/index.html',
+			chunks: ['text-zoomer'],
+			filename: 'text-zoomer.html'
         })
         
 

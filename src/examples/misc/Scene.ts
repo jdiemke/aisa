@@ -229,7 +229,8 @@ export class Scene extends AbstractScene {
 
         framebuffer.setCullFace(CullFace.BACK);
         framebuffer.setTexture(this.spheremap);
-        framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.texture5.texture);
+        
+       // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.texture5.texture);
        // framebuffer.shadingSphereEnv(time * 0.0002);/*
        /*
     } else if (time < 440000) {
@@ -953,39 +954,9 @@ export class Scene extends AbstractScene {
             framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
 
         
-            
-           // framebuffer.noise(time, this.noise, 0.3);
-
-           /*
-            framebuffer.shadingSphereClip(time * 0.01);
-        
-        
-        time *= 1;
-
-        let count = (time * 0.0018);
-        let index =  (count |0) % 100;
-        let scale = 1- (count - (count | 0));
-        let width = (this.micro.width * scale * 6) | 0;
-        let height = (this.micro.height * scale * 6) | 0;
-        let rng = new RandomNumberGenerator();
-        rng.setSeed(22);
-        let pos = [];
-        for(let i=0; i < 100; i++) {
-            pos.push({x:rng.getFloat(), y: rng.getFloat()});
-        }
-
-        let xpos = 20+(320-40) * pos[index].x;
-        let ypos = 20+(200-40) * pos[index].y;
-        framebuffer.drawScaledTextureClipBiAdd(
-            Math.round(xpos - width / 2),
-            Math.round(ypos - height / 2),
-           width, height, this.micro, 1.0);
+          
 
         
-*/
-     
-
-        // framebuffer.drawRadialBlur();
        
          //framebuffer.pixelate();
 /*
