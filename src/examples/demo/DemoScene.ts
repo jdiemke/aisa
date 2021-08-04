@@ -90,7 +90,6 @@ export class DemoScene extends AbstractScene {
 
             // end
             import('./parts/Scene20').then(plug => this.initScene(framebuffer, plug)), // sinescroller
-            import('./parts/Scene20').then(plug => this.initScene(framebuffer, plug)), // sinescroller
 
         ], (percent: number) => {
             // update the progress bar via canvas
@@ -126,7 +125,6 @@ export class DemoScene extends AbstractScene {
 
     // this runs after init() has finished
     public onInit(): void {
-        this.nodeInstance = this.sceneList.start;
     }
 
     public recordVideo() {
