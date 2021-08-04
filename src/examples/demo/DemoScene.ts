@@ -288,7 +288,6 @@ export class DemoScene extends AbstractScene {
 
         // keyboard navigation controls
         document.addEventListener('keydown', (e: KeyboardEvent) => {
-            console.info(e.key)
             switch (e.key) {
                 case 'MediaStop':
                     tickerStopRef.click();
