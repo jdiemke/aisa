@@ -1,6 +1,7 @@
 import { CameraKeyFrame } from '../animation/CameraKeyFrame';
 import { Vector3f } from '../math';
-import { CameraFrame, CameraPath } from './CameraPath';
+import { CameraPath } from './CameraPath';
+import { CameraFrame } from './CameraFrame';
 
 export class CameraLoader {
 

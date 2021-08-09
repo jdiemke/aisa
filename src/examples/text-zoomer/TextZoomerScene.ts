@@ -23,40 +23,40 @@ export class TextZoomerScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer, time: number): void {
         framebuffer.clearColorBuffer(Color.BLACK.toPackedFormat());
-        
-          
+
+
         framebuffer.noise(time, this.noise, 0.3);
 
-           
-           
-        
-        
+
+
+
+
         time *= .3;
 
-        let count = (time * 0.0018);
-        let index =  (count |0) % 100;
+        const count = (time * 0.0018);
+        const index =  (count |0) % 100;
         let scale = (count - (count | 0));
-        let alpha = (framebuffer.cosineInterpolate(0, 0.2, scale)* (1-framebuffer.cosineInterpolate(0.8, 1.0, scale)))*0.75;
+        const alpha = (framebuffer.cosineInterpolate(0, 0.2, scale)* (1-framebuffer.cosineInterpolate(0.8, 1.0, scale)))*0.75;
         scale = 1*3/(scale*50);
-        let width = (this.micro.width * scale * 6) | 0;
-        let height = (this.micro.height * scale * 6) | 0;
-        let rng = new RandomNumberGenerator();
+        const width = (this.micro.width * scale * 6) | 0;
+        const height = (this.micro.height * scale * 6) | 0;
+        const rng = new RandomNumberGenerator();
         rng.setSeed(22);
-        let pos = [];
+        const pos = [];
         for(let i=0; i < 100; i++) {
             pos.push({x:rng.getFloat(), y: rng.getFloat()});
         }
 
-        let xpos = 20+(320-40) * pos[index].x;
-        let ypos = 20+(200-40) * pos[index].y;
+        const xpos = 20+(320-40) * pos[index].x;
+        const ypos = 20+(200-40) * pos[index].y;
         framebuffer.drawScaledTextureClipBiAdd(
             Math.round(xpos - width / 2),
             Math.round(ypos - height / 2),
            width, height, this.micro, alpha);
 
-        
 
-     
+
+
     }
 
 }

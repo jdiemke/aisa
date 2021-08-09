@@ -8,9 +8,9 @@ export class RadialBlur extends AbstractScene {
     hoodlumLogo: Texture;
     abstract: Texture;
 
-    
+
     public init(framebuffer: Framebuffer): Promise<any> {
-    
+
         return Promise.all([
             TextureUtils.load(require('../../assets/hoodlumLogo.png'), true).then(texture => this.hoodlumLogo = texture),
             TextureUtils.load(require('../../assets/abstract.png'), false).then(texture => this.abstract = texture),
@@ -18,11 +18,11 @@ export class RadialBlur extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-      this.drawPlanedeformationTunnelV2(framebuffer, time, this.abstract);
-      framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
+        this.drawPlanedeformationTunnelV2(framebuffer, time, this.abstract);
+        framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
     }
 
-        /**
+    /**
      * This code is pretty slow. About 12 fps with 6 x slowdown int chrome!
      * FIXME:
      * - optimize
@@ -49,7 +49,7 @@ export class RadialBlur extends AbstractScene {
 
                 // FIXME: scale by 256
                 const color1 = texture.texture[(finalDist & 0xff) + (angle & 0xff) * 255];
-                const cScale = Math.min(60 / (dist ), 1.0) * Math.min(60 / (dist2 ), 1.0);
+                const cScale = Math.min(60 / (dist), 1.0) * Math.min(60 / (dist2), 1.0);
                 const r = (color1 & 0xff) * cScale;
                 const g = (color1 >> 8 & 0xff) * cScale;
                 const b = (color1 >> 16 & 0xff) * cScale;

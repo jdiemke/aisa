@@ -25,7 +25,7 @@ export class TorusScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        
+
         this.drawTitanEffect(framebuffer, time);
         this.shadingTorus(framebuffer, time * 0.02);
         framebuffer.drawTexture(framebuffer.width / 2 - this.razorLogo.width / 2, 0, this.razorLogo, 1.0);

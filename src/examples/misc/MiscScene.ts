@@ -870,7 +870,7 @@ export class MiscScene extends AbstractScene {
 
         framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
 
- 
+
 
         // TS SoftSynth Project
         // http://natureofcode.com/book/
@@ -1232,7 +1232,7 @@ export class MiscScene extends AbstractScene {
     }
 
     public createTexture(path: any, hasAlpha: boolean): Promise<Texture> {
-        return new Promise<Texture>((resolve) => {
+        return new Promise<Texture>((resolve: (texture?: Texture) => void): void => {
             const img = new Image();
             img.onload = () => {
                 const texture = new Texture();
@@ -1241,7 +1241,7 @@ export class MiscScene extends AbstractScene {
                 texture.height = img.height;
                 resolve(texture);
             };
-            img.onerror = () => resolve();
+            img.onerror = (): void => resolve();
             img.src = path.default;
         });
     }

@@ -15,7 +15,7 @@ interface IndexMesh {
     normals: Array<Vector4f>,
     normals2: Array<Vector4f>,
     index: Array<number>
-} 
+}
 
 /**
  * TODO: extract lens into effect class
@@ -195,7 +195,7 @@ export class DistortedSphereScene extends AbstractScene {
     public shadingSphereEnvDisp2(framebuffer: Framebuffer, elapsedTime: number, modelViewMartrix: Matrix4f): void {
         const result = this.obj;
 
-        
+
         for (let i = 0; i < result.points.length; i++) {
             const y = result.points[i].z;
             const x = result.points[i].x;
@@ -215,9 +215,9 @@ export class DistortedSphereScene extends AbstractScene {
         const index = result.index;
         const normals = result.normals;
 
-        let norm: Vector4f = new Vector4f(0, 0, 0);
-        let norm2: Vector4f = new Vector4f(0, 0, 0);
-        let cross: Vector4f = new Vector4f(0, 0, 0);
+        const norm: Vector4f = new Vector4f(0, 0, 0);
+        const norm2: Vector4f = new Vector4f(0, 0, 0);
+        const cross: Vector4f = new Vector4f(0, 0, 0);
         for (let i = 0; i < index.length; i += 3) {
             const v1: Vector4f = points[index[i]];
             const v2: Vector4f = points[index[i + 1]];
@@ -227,7 +227,7 @@ export class DistortedSphereScene extends AbstractScene {
             norm.sub2(v2, v1);
             norm2.sub2(v3, v1);
             cross.cross2(norm, norm2);
-            let normal = cross;
+            const normal = cross;
             normals[index[i]].add2(normals[index[i]], normal);
             normals[index[i + 1]].add2(normals[index[i + 1]], normal);
             normals[index[i + 2]].add2(normals[index[i + 2]], normal);

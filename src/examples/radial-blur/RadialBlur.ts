@@ -8,7 +8,7 @@ export class RadialBlur extends AbstractScene {
     private tunnelScene: TorusKnotScene = new TorusKnotScene();
     public tmpGlitch: Uint32Array;
     private texture = new Texture();
-    
+
     public init(framebuffer: Framebuffer): Promise<any> {
         this.tmpGlitch = new Uint32Array(framebuffer.width * framebuffer.height);
 
@@ -23,7 +23,7 @@ export class RadialBlur extends AbstractScene {
     }
 
     private applyRadialBlur(framebuffer: Framebuffer, time: number): void {
-        
+
         framebuffer.fastFramebufferCopy(this.tmpGlitch, framebuffer.framebuffer);
         const intensity: number = (Math.sin(time * 0.0002) * 0.5 + 0.5)* 4;
         this.texture.texture = this.tmpGlitch;

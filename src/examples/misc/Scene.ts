@@ -154,7 +154,7 @@ export class Scene extends AbstractScene {
         }
         this.fpsCount++;
 
-         let time: number = (Date.now() - this.start);
+         const time: number = (Date.now() - this.start);
 
 
         framebuffer.setCullFace(CullFace.FRONT);
@@ -225,11 +225,11 @@ export class Scene extends AbstractScene {
         this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
         this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
     } else if (time < 360000) {*/
-        
+
 
         framebuffer.setCullFace(CullFace.BACK);
         framebuffer.setTexture(this.spheremap);
-        
+
        // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.texture5.texture);
        // framebuffer.shadingSphereEnv(time * 0.0002);/*
        /*
@@ -821,7 +821,7 @@ export class Scene extends AbstractScene {
 
 
 
-       
+
 
         // TODO:
         // * build level in code (portals and areas)
@@ -897,16 +897,16 @@ export class Scene extends AbstractScene {
         // https://www.html5rocks.com/en/tutorials/webaudio/intro/
 
         // this.framebuffer.drawTexture(0, 0, this.displacementMap, 0.8);
-        
+
        // framebuffer.drawPolarDistotion3(time, this.revision);
        // framebuffer.setCullFace(CullFace.FRONT);
        // framebuffer.shadingSphereClip(time * 0.004);
         // Motion Blur
        // let texture = new Texture(this.accumulationBuffer, 320, 200);
-        //this.framebuffer.drawTexture(0, 0, texture, 0.75);
+        // this.framebuffer.drawTexture(0, 0, texture, 0.75);
        // framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
-        //framebuffer.glitchScreen(time, this.noise);
-        
+        // framebuffer.glitchScreen(time, this.noise);
+
 
         // TODO:
         // - Progress Bar for Loading
@@ -953,14 +953,14 @@ export class Scene extends AbstractScene {
 
             framebuffer.drawText(8, 18, 'FPS: ' + this.fps.toString(), this.texture4);
 
-        
-          
 
-        
-       
-         //framebuffer.pixelate();
+
+
+
+
+         // framebuffer.pixelate();
 /*
-                 
+
               // SCALE
               let texture = new Texture();
               texture.texture = this.accumulationBuffer;
@@ -1218,7 +1218,7 @@ export class Scene extends AbstractScene {
     }
 
     public createTexture(path: any, hasAlpha: boolean): Promise<Texture> {
-        return new Promise<Texture>((resolve) => {
+        return new Promise<Texture>(((resolve: (texture?: Texture) => void): void => {
             const img = new Image();
             img.onload = () => {
                 const texture = new Texture();
@@ -1229,7 +1229,7 @@ export class Scene extends AbstractScene {
             };
             img.onerror = () => resolve();
             img.src = path.default;
-        });
+        }));
     }
 
     getImageData(image: HTMLImageElement, withAlpha: boolean = false): Uint32Array {
