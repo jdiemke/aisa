@@ -57,7 +57,7 @@ export class DemoScene {
             // load *.rocket file
             // Set to true when using *.rocket from file system
             // set to false when using rocket editor using websocket
-            this.sm.prepareSync(require('../../assets/sound/demo.rocket').default, false),
+            this.sm.prepareSync(require('../../assets/sound/demo.rocket').default, true),
 
             // we use this for transitions
             this.BlockFade.init(framebuffer),
