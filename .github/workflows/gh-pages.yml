@@ -1,5 +1,5 @@
 # .github/workflows/gh-pages.yml
-# https://github.com/marketplace/actions/github-pages-custom-deploy
+# https://github.com/peaceiris/actions-gh-pages
 
 name: Github Pages Publish
 
@@ -35,5 +35,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.ref == 'refs/heads/master' }}
         with:
+          # external_repository: jdiemke/jdiemke.github.io
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+          publish_dir: ./dist
