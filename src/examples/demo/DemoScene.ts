@@ -18,7 +18,7 @@ import Stats = require('stats.js');
 // Video Recording Tool
 import { CanvasRecorder } from './canvas-record';
 
-export class DemoScene extends AbstractScene {
+export class DemoScene {
 
     // Sound Manager
     private sm: SoundManager;
@@ -48,8 +48,6 @@ export class DemoScene extends AbstractScene {
         this.initControls(framebuffer.width);
 
         this.BlockFade = new BlockFade();
-
-        document.getElementById('debug').style.width = `${framebuffer.width * 2}px`;
 
         // initialize effects with progress
         return this.allProgress([
@@ -114,13 +112,12 @@ export class DemoScene extends AbstractScene {
      * @param   {Object} plug                        imported class
      * @returns {Promise<any>}                       resolves promise after completion
      */
-    private count = 0;
     private initScene(framebuffer: Framebuffer, plug: {}, ...args: Array<any>): Promise<any> {
         const constructorName = Object.keys(plug)[0];
         const newNode: DLNode<AbstractScene> = new DLNode();
         newNode.data = new plug[constructorName](...args);
-        this.sceneList.insert(newNode, this.count);
-        return this.sceneList.getNode(this.count++).data.init(framebuffer);
+        this.sceneList.insert(newNode, this.sceneList.length-1);
+        return this.sceneList.getNode(this.sceneList.length-2).data.init(framebuffer);
     }
 
     // this runs after init() has finished
@@ -189,6 +186,8 @@ export class DemoScene extends AbstractScene {
 
         // Stats - Milliseconds per frame
         this.initStats(1, 100, width * 2);
+
+        document.getElementById('debug').style.width = `${width * 2}px`;
 
         // Scene Playback Controls
         const tickerRef = document.getElementById('ticker');
@@ -388,7 +387,10 @@ export class DemoScene extends AbstractScene {
                 this.sm.musicProperties.timeMilliseconds);
         }
 
-        this.BlockFade.renderScanlines(framebuffer, this.sm.musicProperties.sceneData.bass && this.sm.musicProperties.sceneData.bass);
+        // sync to bass
+        // TODO: send musicProperties instead of timeMilliseconds
+        // so all scenes can act on any channel
+        this.BlockFade.renderScanlines(framebuffer, this.sm.musicProperties.sceneData.bass * 2  );
 
         // show FPS, time and effect number on canvas
         this.drawStats(framebuffer);

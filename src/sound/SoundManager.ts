@@ -16,25 +16,19 @@ type musicProperties = {
 
 // scene variables | things you set through jsRocket
 type sceneVariables = {
-    cameraRotation: number;
-    cameraDistance: number;
     effect: number;
     transitionType: number;
     transitionValue: number;
     snare: number;
     bass: number;
-    fov: number;
 }
 
 type sceneData = {
-    cameraRotation: any;
-    cameraDistance: any;
     effect: any;
     transitionType: any;
     transitionValue: any;
     snare: any;
     bass: any;
-    fov: any;
 }
 
 export class SoundManager {
@@ -64,26 +58,20 @@ export class SoundManager {
             timeSeconds: 0,
             timeMilliseconds: 0,
             sceneData: {
-                cameraRotation: 0,
-                cameraDistance: 0,
                 effect: 0,
                 transitionType: 0,
                 transitionValue: 0,
                 snare: 0,
-                bass: 0,
-                fov: 0
+                bass: 0
             }
         }
 
         this.sceneData = {
-            cameraRotation: null,
-            cameraDistance: null,
             effect: null,
             transitionType: null,
             transitionValue: null,
             snare: null,
             bass: null,
-            fov: null
         }
     }
 
@@ -174,9 +162,6 @@ export class SoundManager {
         this.sceneData.effect = this._syncDevice.getTrack('effect');
         this.sceneData.snare = this._syncDevice.getTrack('snare');
         this.sceneData.bass = this._syncDevice.getTrack('bass');
-        this.sceneData.cameraRotation = this._syncDevice.getTrack('rotation');
-        this.sceneData.cameraDistance = this._syncDevice.getTrack('distance');
-        this.sceneData.fov = this._syncDevice.getTrack('FOV');
         this.sceneData.transitionType = this._syncDevice.getTrack('transitionType');
         this.sceneData.transitionValue = this._syncDevice.getTrack('transitionValue');
 
@@ -211,14 +196,11 @@ export class SoundManager {
         this._row = this.musicProperties.timeSeconds * this.musicProperties.ROW_RATE;
 
         this.musicProperties.sceneData = {
-            cameraRotation: this.sceneData.cameraRotation.getValue(this._row),
-            cameraDistance: this.sceneData.cameraDistance.getValue(this._row),
             effect: this.sceneData.effect.getValue(this._row),
             transitionType: this.sceneData.transitionType.getValue(this._row),
             transitionValue: this.sceneData.transitionValue.getValue(this._row),
             snare: this.sceneData.snare.getValue(this._row),
             bass: this.sceneData.bass.getValue(this._row),
-            fov: this.sceneData.fov.getValue(this._row)
         }
 
         // update JS rocket
