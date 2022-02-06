@@ -6,6 +6,7 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
+import { Color } from '../../core/Color';
 
 export class TorusScene extends AbstractScene {
 
@@ -25,10 +26,12 @@ export class TorusScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
+        framebuffer.clearColorBuffer(Color.BLACK.toPackedFormat());
 
-        this.drawTitanEffect(framebuffer, time);
-        this.shadingTorus(framebuffer, time * 0.02);
-        framebuffer.drawTexture(framebuffer.width / 2 - this.razorLogo.width / 2, 0, this.razorLogo, 1.0);
+
+        // this.drawTitanEffect(framebuffer, time);
+        this.shadingTorus(framebuffer, time * 0.0003);
+        // framebuffer.drawTexture(framebuffer.width / 2 - this.razorLogo.width / 2, 0, this.razorLogo, 1.0);
     }
 
     public shadingTorus(framebuffer: Framebuffer, elapsedTime: number): void {
