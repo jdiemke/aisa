@@ -1,3 +1,4 @@
+import { debug } from 'console';
 import { Color } from '../core/Color';
 import { Utils } from '../core/Utils';
 import { Framebuffer } from '../Framebuffer';
@@ -55,24 +56,24 @@ export class FlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
     }
 
     // https://kitsunegames.com/assets/software-3d-rendering-in-javascript-pt2/result/
-    public fillTriangle(v0, v1, v2, color: Color) {
+    public fillTriangle(v0: Vertex, v1: Vertex, v2: Vertex) {
 
-        if (this.isCcw(v0, v1, v2)) {
+        if (this.isCcw(v0.projection, v1.projection, v2.projection)) {
             return;
         }
 
-        const minX = Math.floor(Math.min(v0.x, v1.x, v2.x));
-        const maxX = Math.ceil(Math.max(v0.x, v1.x, v2.x));
-        const minY = Math.floor(Math.min(v0.y, v1.y, v2.y));
-        const maxY = Math.ceil(Math.max(v0.y, v1.y, v2.y));
+        const minX = Math.floor(Math.min(v0.projection.x, v1.projection.x, v2.projection.x));
+        const maxX = Math.ceil(Math.max(v0.projection.x, v1.projection.x, v2.projection.x));
+        const minY = Math.floor(Math.min(v0.projection.y, v1.projection.y, v2.projection.y));
+        const maxY = Math.ceil(Math.max(v0.projection.y, v1.projection.y, v2.projection.y));
 
         // precalculate the area of the parallelogram defined by our triangle
-        const area = this.cross(v0, v1, v2);
+        const area = this.cross(v0.projection, v1.projection, v2.projection);
 
         // calculate edges
-        const edge0 = { x: v2.x - v1.x, y: v2.y - v1.y };
-        const edge1 = { x: v0.x - v2.x, y: v0.y - v2.y };
-        const edge2 = { x: v1.x - v0.x, y: v1.y - v0.y };
+        const edge0 = { x: v2.projection.x - v1.projection.x, y: v2.projection.y - v1.projection.y };
+        const edge1 = { x: v0.projection.x - v2.projection.x, y: v0.projection.y - v2.projection.y };
+        const edge2 = { x: v1.projection.x - v0.projection.x, y: v1.projection.y - v0.projection.y };
 
         // calculate which edges are right edges so we can easily skip them
         // right edges go up, or (bottom edges) are horizontal edges that go right
@@ -89,7 +90,7 @@ export class FlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
             g: undefined,
             b: undefined,
             a: undefined,
-            z: null
+            z: 0
         };
 
         for (let y = minY; y < maxY; y += .5) {
@@ -100,9 +101,9 @@ export class FlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
                 // calculate vertex weights
                 // should divide these by area, but we do that later
                 // so we divide once, not three times
-                const w0 = this.cross(v1, v2, p);
-                const w1 = this.cross(v2, v0, p);
-                const w2 = this.cross(v0, v1, p);
+                const w0 = this.cross(v1.projection, v2.projection, p);
+                const w1 = this.cross(v2.projection, v0.projection, p);
+                const w2 = this.cross(v0.projection, v1.projection, p);
 
                 // if the point is not inside our polygon, skip fragment
                 if (w0 < 0 || w1 < 0 || w2 < 0) {
@@ -115,15 +116,24 @@ export class FlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
                 }
 
                 // interpolate our vertices
-                fragment.r = (w0 * v0.r + w1 * v1.r + w2 * v2.r) / area;
-                fragment.g = (w0 * v0.g + w1 * v1.g + w2 * v2.g) / area;
-                fragment.b = (w0 * v0.b + w1 * v1.b + w2 * v2.b) / area;
-                fragment.a = (w0 * v0.x + w1 * v1.x + w2 * v2.x) / area;
-                fragment.z = (w0 * v0.z + w1 * v1.z + w2 * v2.z) / area;
+                fragment.r = (w0 * v0.color.r + w1 * v1.color.r + w2 * v2.color.r) / area;
+                fragment.g = (w0 * v0.color.g + w1 * v1.color.g + w2 * v2.color.g) / area;
+                fragment.b = (w0 * v0.color.b + w1 * v1.color.b + w2 * v2.color.b) / area;
+                fragment.a = (w0 * v0.projection.x + w1 * v1.projection.x + w2 * v2.projection.x) / area;
+                fragment.z = (w0 * v0.projection.z + w1 * v1.projection.z + w2 * v2.projection.z) / area;
+
+                let fragColor = new Color(
+                    fragment.r, fragment.g, fragment.b, fragment.a
+                )
 
                 // this can be optimized to only draw aliased pixels on the edges
-                this.framebuffer.drawPixelAntiAliasedSpacial(x, y, color.toPackedFormat());
-                // this.framebuffer.drawPixelAliased(x, y, color.toPackedFormat());
+
+                //if (this.depthBuffer.testDepth(p.x, p.y, fragment.z)) {
+
+
+                this.framebuffer.drawPixelAntiAliasedSpacial(x, y, fragColor.toPackedFormat());
+                // this.framebuffer.drawPixelAntiAliased(x, y, color.toPackedFormat());
+                //}
 
             }
         }
@@ -185,10 +195,7 @@ export class FlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
      * Internally DDA is used for edge-walking.
      */
     public drawTriangleDDA(framebuffer: Framebuffer, p1: Vertex, p2: Vertex, p3: Vertex): void {
-        this.fillTriangle(
-            { x: p1.projection.x, y: p1.projection.y, z: p1.projection.z },
-            { x: p2.projection.x, y: p2.projection.y, z: p2.projection.z },
-            { x: p3.projection.x, y: p3.projection.y, z: p3.projection.z }, p1.color)
+        this.fillTriangle(p1, p2, p3);
     }
 
     private fillBottomFlatTriangle(v1: Vertex, v2: Vertex, v3: Vertex): void {
