@@ -2,7 +2,7 @@ import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { Matrix4f } from '../../math';
-import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { BlenderLoader } from '../../model/blender/BlenderLoader';
@@ -16,11 +16,11 @@ export class RotatingGearsScene extends AbstractScene {
     private gearsMesh: Array<FlatshadedMesh>;
 
     private accumulationBuffer: Uint32Array;
-    private renderingPipeline: FlatShadingRenderingPipeline;
+    private renderingPipeline: GouraudShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
-        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.FRONT);
 
         return Promise.all([

@@ -4,7 +4,7 @@ import { Framebuffer } from '../../Framebuffer';
 import { Cube } from '../../geometrical-objects/Cube';
 import { Matrix4f } from '../../math/Matrix4f';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
-import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
 import { Vector4f } from '../../math';
@@ -17,14 +17,14 @@ import { PointLight } from '../../shading/light/PointLight';
 export class CubeTunnelScene extends AbstractScene {
 
     private static BACKGROUND_COLOR: number = Color.DARK_GRAY.toPackedFormat();
-    private renderingPipeline: FlatShadingRenderingPipeline;
+    private renderingPipeline: GouraudShadingRenderingPipeline;
     private cubeMesh: Cube = new Cube();
     private accumulationBuffer: Uint32Array;
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         framebuffer.setCullFace(CullFace.BACK);
-        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
 
         const light1: PointLight = new PointLight();
         light1.ambientIntensity = new Vector4f(1, 1, 1, 1);

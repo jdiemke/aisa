@@ -8,7 +8,7 @@ import { Texture, TextureUtils } from '../../texture';
 import { BlenderLoader } from './../../model/blender/BlenderLoader';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
-import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 
 export class HoodlumScene extends AbstractScene {
 
@@ -21,11 +21,11 @@ export class HoodlumScene extends AbstractScene {
     private accumulationBuffer: Uint32Array;
 
     private texturedRenderingPipeline: TexturingRenderingPipeline;
-    private renderingPipeline: FlatShadingRenderingPipeline;
+    private renderingPipeline: GouraudShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
-        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         return Promise.all([
             TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(

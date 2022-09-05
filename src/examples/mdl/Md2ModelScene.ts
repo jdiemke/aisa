@@ -11,7 +11,7 @@ import { WavefrontLoader } from '../../model/wavefront-obj/WavefrontLoader';
 import { ThirdPersonCamera } from '../../camera/ThirdPersonCamera';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
-import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 
 /**
  * http://tfc.duke.free.fr/coding/mdl-specs-en.html
@@ -35,10 +35,10 @@ export class Md2ModelScene extends AbstractScene {
     private fps: number = 0;
 
     private meshes: Array<FlatshadedMesh>;
-    private renderingPipeline: FlatShadingRenderingPipeline;
+    private renderingPipeline: GouraudShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.BACK);
         this.startTime = Date.now();
         return Promise.all([

@@ -3,7 +3,6 @@ import { Framebuffer } from '../Framebuffer';
 import { FlatshadedMesh } from '../geometrical-objects/FlatshadedMesh';
 import { Vector4f } from '../math/index';
 import { Matrix4f } from '../math/Matrix4f';
-import { FlatShadingTriangleRasterizer } from '../rasterizer/FlatShadingTriangleRasterizer';
 import { SutherlandHodgman2DClipper } from '../screen-space-clipping/SutherlandHodgman2DClipper';
 import { Fog } from '../shading/fog/Fog';
 import { PhongLighting } from '../shading/illumination-models/PhongLighting';
@@ -12,6 +11,7 @@ import { Material } from '../shading/material/Material';
 import { Vertex } from '../Vertex';
 import { AbstractRenderingPipeline } from './AbstractRenderingPipeline';
 import { AbstractTriangleRasterizer } from '../rasterizer/AbstractTriangleRasterizer';
+import { GouraudShadingTriangleRasterizer } from '../rasterizer/GouraudShadingTriangleRasterizer';
 
 /**
  * TODO:
@@ -26,7 +26,7 @@ import { AbstractTriangleRasterizer } from '../rasterizer/AbstractTriangleRaster
  * - generate object only once
  * - dont use temp arrays / instead use always the same array preallocated
  */
-export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
+export class GouraudShadingRenderingPipeline extends AbstractRenderingPipeline {
 
     private fog: Fog = null;
     private lights: Array<PointLight> = null;
@@ -72,7 +72,7 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
         mat.shininess = 2;
 
         this.material = mat;
-        this.triangleRasterizer = new FlatShadingTriangleRasterizer(framebuffer);
+        this.triangleRasterizer = new GouraudShadingTriangleRasterizer(framebuffer);
     }
 
     public setFramebuffer(framebuffer: Framebuffer) {

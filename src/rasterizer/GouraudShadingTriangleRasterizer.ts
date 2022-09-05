@@ -12,6 +12,16 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
     private colorInterpolator3: ColorInterpolator = new ColorInterpolator();
     private rowColorInterpolator: ColorInterpolator = new ColorInterpolator();
 
+    private slope1: number;
+    private slope2: number;
+    private zslope1: number;
+    private zslope2: number;
+    private curz1: number;
+    private curz2: number;
+    private xPosition: number;
+    private xPosition2: number;
+    private yPosition: number;
+
     constructor(private framebuffer: Framebuffer) {
         super();
     }
@@ -69,110 +79,45 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
     private fillBottomFlatTriangle(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void {
         const yDistance: number = v3.projection.y - v1.projection.y;
 
-        const slope1: number = (v2.projection.x - v1.projection.x) / yDistance;
-        const slope2: number = (v3.projection.x - v1.projection.x) / yDistance;
+        this.slope1 = (v2.projection.x - v1.projection.x) / yDistance;
+        this.slope2 = (v3.projection.x - v1.projection.x) / yDistance;
 
         this.colorInterpolator1.setup(v1.color, v2.color, yDistance);
         this.colorInterpolator2.setup(v1.color, v3.color, yDistance);
 
-        const zslope1: number = (1 / v2.projection.z - 1 / v1.projection.z) / yDistance;
-        const zslope2: number = (1 / v3.projection.z - 1 / v1.projection.z) / yDistance;
+        this.zslope1 = (1 / v2.projection.z - 1 / v1.projection.z) / yDistance;
+        this.zslope2 = (1 / v3.projection.z - 1 / v1.projection.z) / yDistance;
 
-        let curz1: number = 1.0 / v1.projection.z;
-        let curz2: number = 1.0 / v1.projection.z;
+        this.curz1 = 1.0 / v1.projection.z;
+        this.curz2 = 1.0 / v1.projection.z;
 
-        let xPosition: number = v1.projection.x;
-        let xPosition2: number = v1.projection.x;
-        let yPosition: number = v1.projection.y;
+        this.xPosition = v1.projection.x;
+        this.xPosition2 = v1.projection.x;
+        this.yPosition = v1.projection.y;
 
-        for (let i = 0; i < yDistance; i++) {
-            const length = Math.round(xPosition2) - Math.round(xPosition);
-            this.rowColorInterpolator.setup(
-                this.colorInterpolator1.startColor, this.colorInterpolator2.startColor, length);
-            let framebufferIndex = Math.round(yPosition) * framebuffer.width + Math.round(xPosition);
-            const spanzStep = (curz2 - curz1) / length;
-            let wStart = curz1;
-            for (let j = 0; j < length; j++) {
-                if (wStart < framebuffer.wBuffer[framebufferIndex]) {
-                    framebuffer.wBuffer[framebufferIndex] = wStart;
-                    framebuffer.framebuffer[framebufferIndex] =
-                        this.rowColorInterpolator.startColor.toPackedFormat();
-                }
-                framebufferIndex++;
-                wStart += spanzStep;
-                this.rowColorInterpolator.startColor.r += this.rowColorInterpolator.colorSlope.r;
-                this.rowColorInterpolator.startColor.g += this.rowColorInterpolator.colorSlope.g;
-                this.rowColorInterpolator.startColor.b += this.rowColorInterpolator.colorSlope.b;
-            }
-
-            xPosition += slope1;
-            xPosition2 += slope2;
-            yPosition++;
-
-            this.colorInterpolator1.startColor.r += this.colorInterpolator1.colorSlope.r;
-            this.colorInterpolator1.startColor.g += this.colorInterpolator1.colorSlope.g;
-            this.colorInterpolator1.startColor.b += this.colorInterpolator1.colorSlope.b;
-
-            this.colorInterpolator2.startColor.r += this.colorInterpolator2.colorSlope.r;
-            this.colorInterpolator2.startColor.g += this.colorInterpolator2.colorSlope.g;
-            this.colorInterpolator2.startColor.b += this.colorInterpolator2.colorSlope.b;
-
-            curz1 += zslope1;
-            curz2 += zslope2;
-        }
+        this.drawSpan(yDistance, this.colorInterpolator1, this.colorInterpolator2);
     }
 
     private fillTopFlatTriangle(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void {
         const yDistance = v3.projection.y - v1.projection.y;
-        const slope1 = (v3.projection.x - v1.projection.x) / yDistance;
-        const slope2 = (v3.projection.x - v2.projection.x) / yDistance;
+        this.slope1 = (v3.projection.x - v1.projection.x) / yDistance;
+        this.slope2 = (v3.projection.x - v2.projection.x) / yDistance;
 
 
         this.colorInterpolator1.setup(v1.color, v3.color, yDistance);
         this.colorInterpolator2.setup(v2.color, v3.color, yDistance);
 
-        const zslope1 = (1 / v3.projection.z - 1 / v1.projection.z) / yDistance;
-        const zslope2 = (1 / v3.projection.z - 1 / v2.projection.z) / yDistance;
+        this.zslope1 = (1 / v3.projection.z - 1 / v1.projection.z) / yDistance;
+        this.zslope2 = (1 / v3.projection.z - 1 / v2.projection.z) / yDistance;
 
-        let curz1 = 1.0 / v1.projection.z;
-        let curz2 = 1.0 / v2.projection.z;
+        this.curz1 = 1.0 / v1.projection.z;
+        this.curz2 = 1.0 / v2.projection.z;
 
-        let xPosition = v1.projection.x;
-        let xPosition2 = v2.projection.x;
-        let yPosition = v1.projection.y;
+        this.xPosition = v1.projection.x;
+        this.xPosition2 = v2.projection.x;
+        this.yPosition = v1.projection.y;
 
-        for (let i = 0; i < yDistance; i++) {
-            const length = Math.round(xPosition2) - Math.round(xPosition);
-            this.rowColorInterpolator.setup(
-                this.colorInterpolator1.startColor, this.colorInterpolator2.startColor, length);
-            let framebufferIndex = Math.round(yPosition) * framebuffer.width + Math.round(xPosition);
-            for (let j = 0; j < length; j++) {
-                const wStart = (curz2 - curz1) / (length) * j + curz1;
-                if (wStart < framebuffer.wBuffer[framebufferIndex]) {
-                    framebuffer.wBuffer[framebufferIndex] = wStart;
-                    framebuffer.framebuffer[framebufferIndex] = this.rowColorInterpolator.startColor.toPackedFormat();
-                }
-                framebufferIndex++;
-                this.rowColorInterpolator.startColor.r += this.rowColorInterpolator.colorSlope.r;
-                this.rowColorInterpolator.startColor.g += this.rowColorInterpolator.colorSlope.g;
-                this.rowColorInterpolator.startColor.b += this.rowColorInterpolator.colorSlope.b;
-            }
-
-            xPosition += slope1;
-            xPosition2 += slope2;
-            yPosition++;
-
-            this.colorInterpolator1.startColor.r += this.colorInterpolator1.colorSlope.r;
-            this.colorInterpolator1.startColor.g += this.colorInterpolator1.colorSlope.g;
-            this.colorInterpolator1.startColor.b += this.colorInterpolator1.colorSlope.b;
-
-            this.colorInterpolator2.startColor.r += this.colorInterpolator2.colorSlope.r;
-            this.colorInterpolator2.startColor.g += this.colorInterpolator2.colorSlope.g;
-            this.colorInterpolator2.startColor.b += this.colorInterpolator2.colorSlope.b;
-
-            curz1 += zslope1;
-            curz2 += zslope2;
-        }
+        this.drawSpan(yDistance, this.colorInterpolator1, this.colorInterpolator2);
     }
 
     private fillLongRightTriangle(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void {
@@ -182,97 +127,32 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
         this.colorInterpolator1.setup(v1.color, v2.color, yDistanceLeft);
         this.colorInterpolator2.setup(v1.color, v3.color, yDistanceRight);
 
+        this.slope1 = (v2.projection.x - v1.projection.x) / yDistanceLeft;
+        this.slope2 = (v3.projection.x - v1.projection.x) / yDistanceRight;
 
-        let slope1 = (v2.projection.x - v1.projection.x) / yDistanceLeft;
-        const slope2 = (v3.projection.x - v1.projection.x) / yDistanceRight;
+        this.zslope1 = (1 / v2.projection.z - 1 / v1.projection.z) / yDistanceLeft;
+        this.zslope2 = (1 / v3.projection.z - 1 / v1.projection.z) / yDistanceRight;
 
-        let zslope1 = (1 / v2.projection.z - 1 / v1.projection.z) / yDistanceLeft;
-        const zslope2 = (1 / v3.projection.z - 1 / v1.projection.z) / yDistanceRight;
+        this.curz1 = 1.0 / v1.projection.z;
+        this.curz2 = 1.0 / v1.projection.z;
 
-        let curz1 = 1.0 / v1.projection.z;
-        let curz2 = 1.0 / v1.projection.z;
+        this.xPosition = v1.projection.x;
+        this.xPosition2 = v1.projection.x;
+        this.yPosition = v1.projection.y;
 
-        let xPosition = v1.projection.x;
-        let xPosition2 = v1.projection.x;
-        let yPosition = v1.projection.y;
+        this.drawSpan(yDistanceLeft, this.colorInterpolator1, this.colorInterpolator2);
 
-        for (let i = 0; i < yDistanceLeft; i++) {
-            const length = Math.round(xPosition2) - Math.round(xPosition);
-            this.rowColorInterpolator.setup(
-                this.colorInterpolator1.startColor, this.colorInterpolator2.startColor, length);
-            let framebufferIndex = Math.round(yPosition) * framebuffer.width + Math.round(xPosition);
-            const spanzStep = (curz2 - curz1) / length;
-            let wStart = curz1;
-            for (let j = 0; j < length; j++) {
-                if (wStart < framebuffer.wBuffer[framebufferIndex]) {
-                    framebuffer.wBuffer[framebufferIndex] = wStart;
-                    framebuffer.framebuffer[framebufferIndex] = this.rowColorInterpolator.startColor.toPackedFormat();
-                }
-                framebufferIndex++;
-                wStart += spanzStep;
-                this.rowColorInterpolator.startColor.r += this.rowColorInterpolator.colorSlope.r;
-                this.rowColorInterpolator.startColor.g += this.rowColorInterpolator.colorSlope.g;
-                this.rowColorInterpolator.startColor.b += this.rowColorInterpolator.colorSlope.b;
-            }
-
-            xPosition += slope1;
-            xPosition2 += slope2;
-            yPosition++;
-
-            this.colorInterpolator1.startColor.r += this.colorInterpolator1.colorSlope.r;
-            this.colorInterpolator1.startColor.g += this.colorInterpolator1.colorSlope.g;
-            this.colorInterpolator1.startColor.b += this.colorInterpolator1.colorSlope.b;
-
-            this.colorInterpolator2.startColor.r += this.colorInterpolator2.colorSlope.r;
-            this.colorInterpolator2.startColor.g += this.colorInterpolator2.colorSlope.g;
-            this.colorInterpolator2.startColor.b += this.colorInterpolator2.colorSlope.b;
-
-            curz1 += zslope1;
-            curz2 += zslope2;
-        }
 
         yDistanceLeft = v3.projection.y - v2.projection.y;
         this.colorInterpolator3.setup(v2.color, v3.color, yDistanceLeft);
-        slope1 = (v3.projection.x - v2.projection.x) / yDistanceLeft;
-        zslope1 = (1 / v3.projection.z - 1 / v2.projection.z) / yDistanceLeft;
+        this.slope1 = (v3.projection.x - v2.projection.x) / yDistanceLeft;
+        this.zslope1 = (1 / v3.projection.z - 1 / v2.projection.z) / yDistanceLeft;
 
-        xPosition = v2.projection.x;
-        yPosition = v2.projection.y;
+        this.xPosition = v2.projection.x;
+        this.yPosition = v2.projection.y;
 
-        for (let i = 0; i < yDistanceLeft; i++) {
-            const length = Math.round(xPosition2) - Math.round(xPosition);
-            this.rowColorInterpolator.setup(
-                this.colorInterpolator3.startColor, this.colorInterpolator2.startColor, length);
-            let framebufferIndex = Math.round(yPosition) * framebuffer.width + Math.round(xPosition);
-            const spanzStep = (curz2 - curz1) / length;
-            let wStart = curz1;
-            for (let j = 0; j < length; j++) {
-                if (wStart < framebuffer.wBuffer[framebufferIndex]) {
-                    framebuffer.wBuffer[framebufferIndex] = wStart;
-                    framebuffer.framebuffer[framebufferIndex] = this.rowColorInterpolator.startColor.toPackedFormat();
-                }
-                framebufferIndex++;
-                wStart += spanzStep;
-                this.rowColorInterpolator.startColor.r += this.rowColorInterpolator.colorSlope.r;
-                this.rowColorInterpolator.startColor.g += this.rowColorInterpolator.colorSlope.g;
-                this.rowColorInterpolator.startColor.b += this.rowColorInterpolator.colorSlope.b;
-            }
+        this.drawSpan(yDistanceLeft, this.colorInterpolator3, this.colorInterpolator2);
 
-            xPosition += slope1;
-            xPosition2 += slope2;
-            yPosition++;
-
-            this.colorInterpolator2.startColor.r += this.colorInterpolator2.colorSlope.r;
-            this.colorInterpolator2.startColor.g += this.colorInterpolator2.colorSlope.g;
-            this.colorInterpolator2.startColor.b += this.colorInterpolator2.colorSlope.b;
-
-            this.colorInterpolator3.startColor.r += this.colorInterpolator3.colorSlope.r;
-            this.colorInterpolator3.startColor.g += this.colorInterpolator3.colorSlope.g;
-            this.colorInterpolator3.startColor.b += this.colorInterpolator3.colorSlope.b;
-
-            curz1 += zslope1;
-            curz2 += zslope2;
-        }
     }
 
 
@@ -283,95 +163,70 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
         this.colorInterpolator2.setup(v1.color, v2.color, yDistanceRight);
         this.colorInterpolator1.setup(v1.color, v3.color, yDistanceLeft);
 
-        let slope2 = (v2.projection.x - v1.projection.x) / yDistanceRight;
-        const slope1 = (v3.projection.x - v1.projection.x) / yDistanceLeft;
+        this.slope2 = (v2.projection.x - v1.projection.x) / yDistanceRight;
+        this.slope1 = (v3.projection.x - v1.projection.x) / yDistanceLeft;
 
-        let zslope2 = (1 / v2.projection.z - 1 / v1.projection.z) / yDistanceRight;
-        const zslope1 = (1 / v3.projection.z - 1 / v1.projection.z) / yDistanceLeft;
+        this.zslope2 = (1 / v2.projection.z - 1 / v1.projection.z) / yDistanceRight;
+        this.zslope1 = (1 / v3.projection.z - 1 / v1.projection.z) / yDistanceLeft;
 
-        let curz1 = 1.0 / v1.projection.z;
-        let curz2 = 1.0 / v1.projection.z;
+        this.curz1 = 1.0 / v1.projection.z;
+        this.curz2 = 1.0 / v1.projection.z;
 
-        let xPosition = v1.projection.x;
-        let xPosition2 = v1.projection.x;
-        let yPosition = v1.projection.y;
+        this.xPosition = v1.projection.x;
+        this.xPosition2 = v1.projection.x;
+        this.yPosition = v1.projection.y;
 
-        for (let i = 0; i < yDistanceRight; i++) {
-            const length = Math.round(xPosition2) - Math.round(xPosition);
-            this.rowColorInterpolator.setup(
-                this.colorInterpolator1.startColor, this.colorInterpolator2.startColor, length);
-            let framebufferIndex = Math.round(yPosition) * framebuffer.width + Math.round(xPosition);
-            const spanzStep = (curz2 - curz1) / length;
-            let wStart = curz1;
-            for (let j = 0; j < length; j++) {
-                if (wStart < framebuffer.wBuffer[framebufferIndex]) {
-                    framebuffer.wBuffer[framebufferIndex] = wStart;
-                    framebuffer.framebuffer[framebufferIndex] = this.rowColorInterpolator.startColor.toPackedFormat();
-                }
-                framebufferIndex++;
-                wStart += spanzStep;
-                this.rowColorInterpolator.startColor.r += this.rowColorInterpolator.colorSlope.r;
-                this.rowColorInterpolator.startColor.g += this.rowColorInterpolator.colorSlope.g;
-                this.rowColorInterpolator.startColor.b += this.rowColorInterpolator.colorSlope.b;
-            }
+        this.drawSpan(yDistanceRight, this.colorInterpolator1, this.colorInterpolator2);
 
-            xPosition += slope1;
-            xPosition2 += slope2;
-            yPosition++;
-            this.colorInterpolator1.startColor.r += this.colorInterpolator1.colorSlope.r;
-            this.colorInterpolator1.startColor.g += this.colorInterpolator1.colorSlope.g;
-            this.colorInterpolator1.startColor.b += this.colorInterpolator1.colorSlope.b;
-
-            this.colorInterpolator2.startColor.r += this.colorInterpolator2.colorSlope.r;
-            this.colorInterpolator2.startColor.g += this.colorInterpolator2.colorSlope.g;
-            this.colorInterpolator2.startColor.b += this.colorInterpolator2.colorSlope.b;
-
-            curz1 += zslope1;
-            curz2 += zslope2;
-        }
 
         yDistanceRight = v3.projection.y - v2.projection.y;
         this.colorInterpolator3.setup(v2.color, v3.color, yDistanceRight);
-        slope2 = (v3.projection.x - v2.projection.x) / yDistanceRight;
-        zslope2 = (1 / v3.projection.z - 1 / v2.projection.z) / yDistanceRight;
+        this.slope2 = (v3.projection.x - v2.projection.x) / yDistanceRight;
+        this.zslope2 = (1 / v3.projection.z - 1 / v2.projection.z) / yDistanceRight;
 
-        curz2 = 1.0 / v2.projection.z;
-        xPosition2 = v2.projection.x;
-        yPosition = v2.projection.y;
+        this.curz2 = 1.0 / v2.projection.z;
+        this.xPosition2 = v2.projection.x;
+        this.yPosition = v2.projection.y;
 
-        for (let i = 0; i < yDistanceRight; i++) {
-            const length = Math.round(xPosition2) - Math.round(xPosition);
+        this.drawSpan(yDistanceRight, this.colorInterpolator1, this.colorInterpolator3);
+
+    }
+
+    drawSpan(distance: number, colorInterpolator1: ColorInterpolator, colorInterpolator2: ColorInterpolator) {
+        for (let i = 0; i < distance; i++) {
+            const length = Math.round(this.xPosition2) - Math.round(this.xPosition);
             this.rowColorInterpolator.setup(
-                this.colorInterpolator1.startColor, this.colorInterpolator3.startColor, length);
-            let framebufferIndex = Math.round(yPosition) * framebuffer.width + Math.round(xPosition)
-            const spanzStep = (curz2 - curz1) / length;
-            let wStart = curz1;
+                colorInterpolator1.startColor, colorInterpolator2.startColor, length);
+            let framebufferIndex = Math.round(this.yPosition) * this.framebuffer.width + Math.round(this.xPosition);
+            const spanzStep = (this.curz2 - this.curz1) / length;
+            let wStart = this.curz1;
             for (let j = 0; j < length; j++) {
-                if (wStart < framebuffer.wBuffer[framebufferIndex]) {
-                    framebuffer.wBuffer[framebufferIndex] = wStart;
-                    framebuffer.framebuffer[framebufferIndex] = this.rowColorInterpolator.startColor.toPackedFormat();
+                if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
+                    this.framebuffer.wBuffer[framebufferIndex] = wStart;
+                    this.framebuffer.framebuffer[framebufferIndex] =
+                        this.rowColorInterpolator.startColor.toPackedFormat();
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
-
                 this.rowColorInterpolator.startColor.r += this.rowColorInterpolator.colorSlope.r;
                 this.rowColorInterpolator.startColor.g += this.rowColorInterpolator.colorSlope.g;
                 this.rowColorInterpolator.startColor.b += this.rowColorInterpolator.colorSlope.b;
             }
 
-            xPosition += slope1;
-            xPosition2 += slope2;
-            yPosition++;
-            this.colorInterpolator1.startColor.r += this.colorInterpolator1.colorSlope.r;
-            this.colorInterpolator1.startColor.g += this.colorInterpolator1.colorSlope.g;
-            this.colorInterpolator1.startColor.b += this.colorInterpolator1.colorSlope.b;
+            this.xPosition += this.slope1;
+            this.xPosition2 += this.slope2;
+            this.yPosition++;
 
-            this.colorInterpolator3.startColor.r += this.colorInterpolator3.colorSlope.r;
-            this.colorInterpolator3.startColor.g += this.colorInterpolator3.colorSlope.g;
-            this.colorInterpolator3.startColor.b += this.colorInterpolator3.colorSlope.b;
+            colorInterpolator1.startColor.r += colorInterpolator1.colorSlope.r;
+            colorInterpolator1.startColor.g += colorInterpolator1.colorSlope.g;
+            colorInterpolator1.startColor.b += colorInterpolator1.colorSlope.b;
 
-            curz1 += zslope1;
-            curz2 += zslope2;
+            colorInterpolator2.startColor.r += colorInterpolator2.colorSlope.r;
+            colorInterpolator2.startColor.g += colorInterpolator2.colorSlope.g;
+            colorInterpolator2.startColor.b += colorInterpolator2.colorSlope.b;
+
+            this.curz1 += this.zslope1;
+            this.curz2 += this.zslope2;
         }
     }
 

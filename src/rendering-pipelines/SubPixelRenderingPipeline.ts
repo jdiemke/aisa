@@ -3,7 +3,8 @@ import { Framebuffer } from '../Framebuffer';
 import { FlatshadedMesh } from '../geometrical-objects/FlatshadedMesh';
 import { Vector4f } from '../math/index';
 import { Matrix4f } from '../math/Matrix4f';
-import { FlatShadingTriangleRasterizer } from '../rasterizer/FlatShadingTriangleRasterizer';
+import { SubPixelTriangleRasterizer } from '../rasterizer/SubPixelTriangleRasterizer';
+
 import { SutherlandHodgman2DClipper } from '../screen-space-clipping/SutherlandHodgman2DClipper';
 import { Fog } from '../shading/fog/Fog';
 import { PhongLighting } from '../shading/illumination-models/PhongLighting';
@@ -15,18 +16,9 @@ import { AbstractTriangleRasterizer } from '../rasterizer/AbstractTriangleRaster
 
 /**
  * TODO:
- * - object with position, rotation, material, color
- * - remove tempp matrix objects: instead store one global MV  matrix and manipulate
- *   it directly without generating temp amtrices every frame
- * - no lighting for culled triangles
- * - only z clip if necessary (no clip, fully visible)
- * Optimization:
- * - no shading / only texture mapping (use function pointers to set correct rasterization function)
- * - use delta step method from black art of 3d programming
- * - generate object only once
- * - dont use temp arrays / instead use always the same array preallocated
+ * fix backface occlusion / add z-clipping
  */
-export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
+export class SubPixelRenderingPipeline extends AbstractRenderingPipeline {
 
     private fog: Fog = null;
     private lights: Array<PointLight> = null;
@@ -72,7 +64,7 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
         mat.shininess = 2;
 
         this.material = mat;
-        this.triangleRasterizer = new FlatShadingTriangleRasterizer(framebuffer);
+        this.triangleRasterizer = new SubPixelTriangleRasterizer(framebuffer);
     }
 
     public setFramebuffer(framebuffer: Framebuffer) {
@@ -165,11 +157,6 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
                 if (output.length < 3) {
                     return;
                 }
-                /*
-                                const projected: Array<Vertex> = output.map<Vertex>((v: Vertex) => {
-                                    v.projection = this.project(v.position);
-                                    return v;
-                                });*/
 
                 for (let j: number = 0; j < output.length; j++) {
                     output[j].projection = this.project(output[j].position);
@@ -182,15 +169,15 @@ export class FlatShadingRenderingPipeline extends AbstractRenderingPipeline {
 
     public project(t1: { x: number, y: number, z: number }): Vector4f {
         return new Vector4f(
-            Math.round((this.framebuffer.width / 2) + (292 * t1.x / (-t1.z))),
-            Math.round((this.framebuffer.height / 2) - (t1.y * 292 / (-t1.z))),
+            ((this.framebuffer.width / 2) + (292 * t1.x / (-t1.z))),
+            ((this.framebuffer.height / 2) - (t1.y * 292 / (-t1.z))),
             t1.z
         );
     }
 
     public project2(t1: { x: number, y: number, z: number }, result: Vector4f): void {
-        result.x = Math.round((this.framebuffer.width / 2) + (292 * t1.x / (-t1.z)));
-        result.y = Math.round((this.framebuffer.height / 2) - (t1.y * 292 / (-t1.z)));
+        result.x = ((this.framebuffer.width / 2) + (292 * t1.x / (-t1.z)));
+        result.y = ((this.framebuffer.height / 2) - (t1.y * 292 / (-t1.z)));
         result.z = t1.z;
     }
 

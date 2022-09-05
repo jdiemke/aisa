@@ -10,7 +10,7 @@ import { LinearFog } from '../../shading/fog/LinearFog';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
-import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 
 export class TorusKnotTunnelScene extends AbstractScene {
 
@@ -19,10 +19,10 @@ export class TorusKnotTunnelScene extends AbstractScene {
     private cocoon: Texture;
     private torusKnot: TorusKnot = new TorusKnot(true);
     private fog: Fog = new LinearFog(-50, -240, new Vector4f(0.67, 0.4, 0.5, 1.0));
-    private renderingPipeline: FlatShadingRenderingPipeline;
+    private renderingPipeline: GouraudShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.FRONT);
         this.renderingPipeline.setFog(this.fog);
 

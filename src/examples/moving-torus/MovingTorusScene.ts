@@ -4,16 +4,16 @@ import { Torus } from '../../geometrical-objects/Torus';
 import { Matrix4f } from '../../math/index';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
-import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 
 export class MovingTorusScene extends AbstractScene {
 
     private background: Texture;
     private torus: Torus = new Torus();
-    private renderingPipeline: FlatShadingRenderingPipeline;
+    private renderingPipeline: GouraudShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         framebuffer.setCullFace(CullFace.BACK);
 
         return Promise.all([

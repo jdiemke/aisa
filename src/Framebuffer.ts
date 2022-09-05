@@ -160,6 +160,52 @@ export class Framebuffer {
 
     }
 
+    /**
+     * Renders a pixel using fractional x,y coordinates
+     * blended with the framebuffer background
+     *
+     * @param  {x} number                 this can be a float
+     * @param  {y} number                 this can be a float
+     * @param  {color} number             color to blend into framebuffer
+     */
+    drawPixelAntiAliased(x: number, y: number, color: number) {
+        if ((x < 0 || x >= this.width) || (y < 0 || y >= this.height)) return;
+        const roundedX = Math.floor(x);
+        const roundedY = Math.floor(y);
+        const percentX = 1 - Math.abs(x - roundedX);
+        const percentY = 1 - Math.abs(y - roundedY);
+        const percent = percentX * percentY;
+        this.drawPixel3(roundedX, roundedY, color, percent);
+    }
+
+    /**
+     * Renders a pixel using fractional x,y coordinates
+     * to the framebuffer background
+     */
+    drawPixelAliased(x: number, y: number, color: number) {
+        if ((x < 0 || x >= this.width) || (y < 0 || y >= this.height)) return;
+        const roundedX = Math.round(x);
+        const roundedY = Math.round(y)
+        this.drawPixel(roundedX, roundedY, color);
+    }
+
+    /**
+     * Renders a pixel using fractional x,y coordinates
+     * blended with the framebuffer background in a 4x4 matrix
+     * https://en.wikipedia.org/wiki/Spatial_anti-aliasing
+     */
+    drawPixelAntiAliasedSpacial(x: number, y: number, color: number) {
+        if ((x < 0 || x >= this.width) || (y < 0 || y >= this.height)) return;
+        for (let roundedX = Math.floor(x); roundedX <= Math.ceil(x); roundedX++) {
+            for (let roundedY = Math.floor(y); roundedY <= Math.ceil(y); roundedY++) {
+                const percentX = 1 - Math.abs(x - roundedX);
+                const percentY = 1 - Math.abs(y - roundedY);
+                const percent = percentX * percentY;
+                this.drawPixel4(roundedX, roundedY, color, percent);
+            }
+        }
+    }
+
     public readPixel(x: number, y: number): number {
         return this.framebuffer[x + y * this.width];
     }
@@ -286,7 +332,8 @@ export class Framebuffer {
      *
      * @param  {number} c1
      * @param  {number} c2
-     * @return {number}     difference between c1 and c2 from 0-255
+     * @param  {number} alpha number ranging from 0-255
+     * @return {number}     color blended difference between c1 and c2
      */
     public static blend(c1: number, c2: number, nAlpha: number): number {
 

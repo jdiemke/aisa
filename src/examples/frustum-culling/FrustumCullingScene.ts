@@ -9,7 +9,7 @@ import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { Matrix4f, Vector3f } from '../../math';
 import { Sphere } from '../../math/Sphere';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
-import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture';
 import { BlenderLoader } from '../../model/blender/BlenderLoader';
@@ -18,10 +18,10 @@ export class FrustumCullingScene extends AbstractScene {
 
     private world: Array<[FlatshadedMesh, Sphere]>;
 
-    private renderingPipeline: FlatShadingRenderingPipeline;
+    private renderingPipeline: GouraudShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.BACK);
 
         return Promise.all([
