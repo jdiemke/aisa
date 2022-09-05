@@ -13,6 +13,7 @@ module.exports = {
 		'cinematic-scroller': './src/examples/cinematic-scroller/Application.ts',
 		'cube-tunnel': './src/examples/cube-tunnel/Application.ts',
 		'cube': './src/examples/cube/Application.ts',
+		'cube-subpixel': './src/examples/cube-subpixel/Application.ts',
 		'demo': './src/examples/demo/Application.ts',
 		'distorted-sphere': './src/examples/distorted-sphere/Application.ts',
         'dof-balls': './src/examples/dof-balls/Application.ts',
@@ -159,6 +160,11 @@ module.exports = {
 			template: './src/index.html',
 			chunks: ['cube'],
 			filename: 'cube.html'
+		}),
+        new HtmlWebpackPlugin({
+			template: './src/index.html',
+			chunks: ['cube-subpixel'],
+			filename: 'cube-subpixel.html'
 		}),
 		new HtmlWebpackPlugin({
 			template: './src/index.html',
