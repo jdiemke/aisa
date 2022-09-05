@@ -8,7 +8,7 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { LinearFog } from '../../shading/fog/LinearFog';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
-import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 
 export class TorusKnotScene extends AbstractScene {
 
@@ -17,10 +17,10 @@ export class TorusKnotScene extends AbstractScene {
     private noise: Texture;
     private micro: Texture;
     private startTime: number;
-    private renderingPipeline: FlatShadingRenderingPipeline;
+    private renderingPipeline: GouraudShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.BACK);
         this.renderingPipeline.setFog(new LinearFog(-160, -380, new Vector4f(0, 0, 0, 1)));
         this.startTime = Date.now();

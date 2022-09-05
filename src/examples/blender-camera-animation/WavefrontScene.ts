@@ -15,7 +15,7 @@ import { ModelViewMatrix } from '../md2/ModelViewMatrix';
 import CameraPathFile from '../../assets/camera-path.jsx';
 import { BlenderCameraAnimator } from '../../animation/BlenderCameraAnimator';
 import { SkyBox } from '../../SkyBox';
-import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 
 export class BlenderCameraScene extends AbstractScene {
 
@@ -37,10 +37,10 @@ export class BlenderCameraScene extends AbstractScene {
     private light1: PointLight;
     private light2: PointLight;
 
-    private renderingPipeline: FlatShadingRenderingPipeline;
+    private renderingPipeline: GouraudShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.BACK);
 
         this.light1 = new PointLight();

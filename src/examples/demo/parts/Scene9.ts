@@ -1,5 +1,5 @@
 import { Framebuffer } from '../../../Framebuffer';
-import { FlatShadingRenderingPipeline } from '../../../rendering-pipelines/FlatShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '../../../rendering-pipelines/GouraudShadingRenderingPipeline';
 import { BlenderCameraScene } from '../../blender-camera-animation/WavefrontScene';
 
 

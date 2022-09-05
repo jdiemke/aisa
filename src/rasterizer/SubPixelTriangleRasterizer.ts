@@ -115,9 +115,9 @@ export class SubPixelTriangleRasterizer extends AbstractTriangleRasterizer {
 
                 // this can be optimized to only draw aliased pixels on the edges
 
-                 if (this.depthBuffer.testDepth(x, y, fragment.z)) {
+                // if (this.depthBuffer.testDepth(x, y, fragment.z)) {
                 this.framebuffer.drawPixelAntiAliasedSpacial(x, y, fragColor.toPackedFormat());
-                }
+                // }
 
             }
         }

@@ -8,7 +8,7 @@ import { Matrix4f, Vector3f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { Color } from '../../core/Color';
-import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 
 /**
  * TODO: extract lens into effect class
@@ -27,10 +27,10 @@ export class RazorScene extends AbstractScene {
     private icosahedron: Sphere; // Icosahedron;
 
     private accumulationBuffer: Uint32Array;
-    private renderingPipeline: FlatShadingRenderingPipeline;
+    private renderingPipeline: GouraudShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         this.renderingPipeline.setCullFace(CullFace.BACK);
 

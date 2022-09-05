@@ -3,7 +3,7 @@ import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Cube } from '../../geometrical-objects/Cube';
 import { Matrix4f } from '../../math';
-import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { TextureUtils, Texture } from '../../texture/index';
 
@@ -13,7 +13,7 @@ import { TextureUtils, Texture } from '../../texture/index';
 export class VoxelBallsScene extends AbstractScene {
 
     private static BACKGROUND_COLOR: number = Color.YELLOW.toPackedFormat();
-    private renderingPipeline: FlatShadingRenderingPipeline;
+    private renderingPipeline: GouraudShadingRenderingPipeline;
     private cubeMesh: Cube = new Cube();
     private blurred: Texture;
     private accumulationBuffer: Uint32Array;
@@ -21,7 +21,7 @@ export class VoxelBallsScene extends AbstractScene {
     public init(framebuffer: Framebuffer): Promise<any> {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         framebuffer.setCullFace(CullFace.BACK);
-        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         return Promise.all([
             TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture

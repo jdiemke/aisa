@@ -9,7 +9,7 @@ import { PointLight } from '../../shading/light/PointLight';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { ModelViewMatrix } from '../md2/ModelViewMatrix';
-import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 
 export class WavefrontScene extends AbstractScene {
 
@@ -25,10 +25,10 @@ export class WavefrontScene extends AbstractScene {
     private fps: number = 0;
 
     private meshes: Array<FlatshadedMesh>;
-    private renderingPipeline: FlatShadingRenderingPipeline;
+    private renderingPipeline: GouraudShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.BACK);
         this.renderingPipeline.setFramebuffer(framebuffer);
 

@@ -4,7 +4,7 @@ import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { Vector4f } from '../../math';
 import { Matrix4f } from '../../math/Matrix4f';
-import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { PointLight } from '../../shading/light/PointLight';
 import { Material } from '../../shading/material/Material';
@@ -19,11 +19,11 @@ export class BunnyScene extends AbstractScene {
 
     private blurred: Texture;
     private noise: Texture;
-    private renderingPipeline: FlatShadingRenderingPipeline;
+    private renderingPipeline: GouraudShadingRenderingPipeline;
     private scene: Array<FlatshadedMesh>;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.BACK);
         this.renderingPipeline.setLights(this.constructSceneLights());
         this.renderingPipeline.setMaterial(this.constructSceneMaterial());

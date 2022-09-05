@@ -5,7 +5,7 @@ import { Texture, TextureUtils } from '../../texture';
 import { Material } from '../../shading/material/Material';
 import { BlenderLoader } from './../../model/blender/BlenderLoader';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
-import { FlatShadingRenderingPipeline } from '../../rendering-pipelines/FlatShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 
 export class RoomScene extends AbstractScene {
 
@@ -17,10 +17,10 @@ export class RoomScene extends AbstractScene {
     private dirt: Texture;
     private blenderObj4: Array<FlatshadedMesh>;
     private blenderObj5: Array<FlatshadedMesh>;
-    private renderingPipeline: FlatShadingRenderingPipeline;
+    private renderingPipeline: GouraudShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.renderingPipeline = new FlatShadingRenderingPipeline(framebuffer);
+        this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setFramebuffer(framebuffer);
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
 
