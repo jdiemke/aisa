@@ -43,7 +43,7 @@ export class DemoScene {
     public init(framebuffer: Framebuffer): Promise<any> {
         this.sm = new SoundManager();
 
-        this.sceneList = new DoublyLinkedList();;
+        this.sceneList = new DoublyLinkedList();
 
         this.initControls(framebuffer.width);
 
@@ -103,7 +103,7 @@ export class DemoScene {
                 p.update();
             }
         });
-    };
+    }
 
     /**
      * Adds AbstractScenes to sceneList array and initializes it
@@ -112,7 +112,7 @@ export class DemoScene {
      * @param   {Object} plug                        imported class
      * @returns {Promise<any>}                       resolves promise after completion
      */
-    private initScene(framebuffer: Framebuffer, plug: {}, ...args: Array<any>): Promise<any> {
+    private initScene(framebuffer: Framebuffer, plug: unknown, ...args: Array<any>): Promise<any> {
         const constructorName = Object.keys(plug)[0];
         const newNode: DLNode<AbstractScene> = new DLNode();
         newNode.data = new plug[constructorName](...args);
@@ -336,10 +336,10 @@ export class DemoScene {
      * Runs all promises in an array and runs callback with percentage of completion
      *
      * @param   {Array<Promise<any>>} promises       array of promises to run
-     * @param   {Function} progressCallback          function to run sending percenetage after individual promise is complete
+     * @param   {Function} progressCallback          function sending percentage after individual promise is complete
      * @returns {Promise<any>}                       promise resolve after all promises are complete
      */
-    private allProgress(promsises: Array<Promise<any>>, progressCallback: Function): Promise<any> {
+    private allProgress(promsises: Array<Promise<any>>, progressCallback: (percentage: number) => void): Promise<any> {
         let d = 0;
         for (const p of promsises) {
             p.then(() => {

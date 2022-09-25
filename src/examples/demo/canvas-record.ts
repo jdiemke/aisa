@@ -50,7 +50,6 @@ export class CanvasRecorder {
         let recorder = new MediaRecorder(stream, { mimeType, ...recorderOptions });
 
         recorder.ondataavailable = event => {
-            // tslint:disable-next-line:no-unused-expression
             event.data.size && chunks.push(event.data);
         };
         recorder.onstop = () => {

@@ -12,7 +12,7 @@ export class Utils {
      */
     public static clamp(input: number, min: number, max: number): number {
         return input <= min ? min : input >= max ? max : input;
-    };
+    }
 
     /**
      * Re-maps a number from one range to another.
@@ -73,7 +73,6 @@ export class Utils {
     // This is a port of Ken Perlin's Java code. The
     // original Java code is at http://cs.nyu.edu/%7Eperlin/noise/.
     // Note that in this version, a number from 0 to 1 is returned.
-    // tslint:disable-next-line:new-parens
     public static PerlinNoise = new function () {
 
         this.noise = (x: number, y: number, z: number) => {
@@ -130,6 +129,38 @@ export class Utils {
             return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
         }
         function scale(n) { return (1 + n) / 2; }
+    }
+
+    /**
+     * Cubic interpolation is the simplest method that offers true continuity between samples. 
+     * It estimates values corresponding to intermediate samples present between the original or previous samples
+     *
+     * @param  {number} y0           sample 1
+     * @param  {number} y1           sample 2
+     * @param  {number} y2           sample 3
+     * @param  {number} y3           sample 4
+     * @param  {number} mu           behaves the same way for interpolating between the sample y1 to y2
+     */
+    public static CubicInterpolate(y0: number, y1: number, y2: number, y3: number, mu: number): number {
+        const mu2 = mu * mu;
+        const a0 = y3 - y2 - y0 + y1;
+        const a1 = y0 - y1 - a0;
+        const a2 = y2 - y0;
+        const a3 = y1;
+        return (a0 * mu * mu2 + a1 * mu2 + a2 * mu + a3);
+    }
+
+    /**
+     * Cosine interpolation serves to provide a smooth transition between adjacent samples. 
+     * It estimates values corresponding to intermediate samples present between the original or previous samples
+     *
+     * @param  {number} y0           sample 1
+     * @param  {number} y1           sample 2
+     * @param  {number} mu           behaves the same way for interpolating between the sample 1 to 2
+     */
+    public static CosineInterpolate(y1: number, y2: number, mu: number): number {
+        const mu2 = (1 - Math.cos(mu * Math.PI)) / 2;
+        return (y1 * (1 - mu2) + y2 * mu2);
     }
 
 }

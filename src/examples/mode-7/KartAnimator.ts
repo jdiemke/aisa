@@ -39,17 +39,11 @@ export class KartAnimator {
     }
 
     private CubicInterpolate(y0: number, y1: number, y2: number, y3: number, mu: number): number {
-        let a0: number;
-        let a1: number;
-        let a2: number;
-        let a3: number;
-        let mu2: number;
-
-        mu2 = mu * mu;
-        a0 = -0.5 * y0 + 1.5 * y1 - 1.5 * y2 + 0.5 * y3;
-        a1 = y0 - 2.5 * y1 + 2 * y2 - 0.5 * y3;
-        a2 = -0.5 * y0 + 0.5 * y2;
-        a3 = y1;
+        const mu2 = mu * mu;
+        const a0 = -0.5 * y0 + 1.5 * y1 - 1.5 * y2 + 0.5 * y3;
+        const a1 = y0 - 2.5 * y1 + 2 * y2 - 0.5 * y3;
+        const a2 = -0.5 * y0 + 0.5 * y2;
+        const a3 = y1;
 
         return (a0 * mu * mu2 + a1 * mu2 + a2 * mu + a3);
     }

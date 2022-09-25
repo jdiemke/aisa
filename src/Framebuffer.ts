@@ -1696,10 +1696,9 @@ export class Framebuffer {
     }
 
     public cosineInterpolate(y1: number, y2: number, mu: number): number {
-        let mu2: number;
         if (mu <= y1) { return 0; }
         if (mu >= y2) { return 1; }
-        mu2 = (mu - y1) / (y2 - y1);
+        const mu2 = (mu - y1) / (y2 - y1);
         return (1 - Math.cos(mu2 * Math.PI)) / 2;
     }
 

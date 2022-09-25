@@ -67,7 +67,7 @@ export class PlasmaScene extends AbstractScene {
             const r = this.cos256(arrlen / rf, i + rd);
             const g = this.cos256(arrlen / gf, i + gd);
             const b = this.cos256(arrlen / bf, i + bd);
-            this.colorGrad[i] = new Color(r, g, b, 255).toPackedFormat();;
+            this.colorGrad[i] = new Color(r, g, b, 255).toPackedFormat();
         }
     }
 

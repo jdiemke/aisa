@@ -46,11 +46,9 @@ export class PolarVoxelsScene extends AbstractScene {
         const eye = 10;
 
         for (let x = 0; x < framebuffer.width; x++) {
-            let dirX;
-            let dirY;
 
-            dirX = Math.cos(time * 0.0001 + Math.PI * 2 / framebuffer.width * x) * 1.99;
-            dirY = Math.sin(time * 0.0001 + Math.PI * 2 / framebuffer.width * x) * 1.99;
+            const dirX = Math.cos(time * 0.0001 + Math.PI * 2 / framebuffer.width * x) * 1.99;
+            const dirY = Math.sin(time * 0.0001 + Math.PI * 2 / framebuffer.width * x) * 1.99;
 
             let highestPoint = 0;
 

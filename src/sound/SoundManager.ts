@@ -139,7 +139,7 @@ export class SoundManager {
 
             } else {
                 this._syncDevice.init();
-            };
+            }
 
             // XML file from JS Rocket library was loaded and parsed, make sure your ogg is ready
             this._syncDevice.on('ready', () => this.onSyncReady());

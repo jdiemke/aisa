@@ -41,7 +41,7 @@ export class MD2Model {
         const faces: Array<{
             vertices: Array<number>,
             uv: Array<number>
-        }> = new Array();
+        }> = [];
 
         this.triangles.forEach((triangle: MD2Triangle) => {
 

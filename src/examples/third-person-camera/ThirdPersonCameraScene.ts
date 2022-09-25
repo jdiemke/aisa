@@ -68,23 +68,17 @@ export class ThirdPersonCameraScene extends AbstractScene {
         this.startTime = Date.now();
         return Promise.all([
             TextureUtils.load(require('../../assets/md2/hueteotl.png'), false).then(
-                (texture: Texture) => this.ogroTexture = texture
-            ),
+                (texture: Texture) => this.ogroTexture = texture),
             TextureUtils.load(require('../../assets/md2/weapon.png'), false).then(
-                (texture: Texture) => this.weaponTexture = texture
-            ),
+                (texture: Texture) => this.weaponTexture = texture),
             MD2Loader.load(require('../../assets/md2/tris.md2')).then(
-                (mesh: MD2Model) => this.md2 = mesh
-            ),
+                (mesh: MD2Model) => this.md2 = mesh),
             MD2Loader.load(require('../../assets/md2/weapon.md2')).then(
-                (mesh: MD2Model) => this.weapon = mesh
-            ),
+                (mesh: MD2Model) => this.weapon = mesh),
             TextureUtils.load(require('../../assets/font.png'), true).then(
                 (texture: Texture) => this.texture4 = texture),
-            ,
             TextureUtils.load(require('../../assets/fontred.png'), true).then(
                 (texture: Texture) => this.fontred = texture),
-            ,
             TextureUtils.load(require('../../assets/ground.png'), true).then(
                 (texture: Texture) => this.ground = texture),
             TextureUtils.load(require('../../assets/glow.png'), true).then(

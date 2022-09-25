@@ -1,4 +1,3 @@
-// tslint:disable:no-namespace
 // Type definitions for jsRocket 1.0.1
 // https://github.com/rocket/rocket/tree/master/js
 
