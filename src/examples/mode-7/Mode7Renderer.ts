@@ -18,7 +18,6 @@ export class Camera {
 
 }
 
-// tslint:disable-next-line:max-classes-per-file
 export class Mode7Renderer {
 
     private camera: Camera;
