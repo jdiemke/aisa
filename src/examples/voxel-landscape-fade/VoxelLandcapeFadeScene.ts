@@ -187,10 +187,9 @@ export class VoxelLandScapeFadeScene extends AbstractScene {
             const ym: number = (y >> 11) & this.MAPWIDTH_MIN_1;  // mod 512
             const idx: number = (ym << this.MAP_BIT_SIZE) + xm;
             const hi: number = this.heightMap[idx] >> 2;
-            let texel: number;
 
             // fade out to the distance
-            texel = Framebuffer.blend(this.texelMap[idx], 0xFF000000, i);
+            const texel = Framebuffer.blend(this.texelMap[idx], 0xFF000000, i);
             // texel = this.texelMap[idx];
 
             // while (hi > z && j3 > 0) {

@@ -16,7 +16,6 @@ export class PixelInterpolator {
 }
 
 function CosineInterpolate(y1: number, y2: number, mu: number): number {
-    let mu2: number;
-    mu2 = (1 - Math.cos(mu * Math.PI)) / 2;
+    const mu2 = (1 - Math.cos(mu * Math.PI)) / 2;
     return (y1 * (1 - mu2) + y2 * mu2);
 }

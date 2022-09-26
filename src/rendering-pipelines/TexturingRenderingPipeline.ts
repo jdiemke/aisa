@@ -207,7 +207,7 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
                 }
                 S = point;
             }
-        };
+        }
 
         if (output.length < 3) {
             return;
