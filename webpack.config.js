@@ -1,9 +1,9 @@
 
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const isProduction = process.env.NODE_ENV == "production";
 
-module.exports = /** @type { import('webpack').Configuration } */ ({
-//module.exports = {
+const config = {
     entry: {
         'third-person-camera': './src/examples/third-person-camera/Application.ts',
         'abstract-cube': './src/examples/abstract-cube/Application.ts',
@@ -79,12 +79,14 @@ module.exports = /** @type { import('webpack').Configuration } */ ({
         static: {
             directory: path.join(__dirname, './dist'),
         },
+        // Enable gzip compression for everything served
         compress: true,
         port: 8080,
         client: {
             progress: true,
         },
-
+        // opens web browser after serve
+        open: false
     },
     resolve: {
         extensions: ['.ts', '.js'],
@@ -100,23 +102,14 @@ module.exports = /** @type { import('webpack').Configuration } */ ({
         maxEntrypointSize: 8000000
     },
     module: {
-
-        // https://webpack.js.org/guides/asset-modules/
         rules: [
             {
                 test: /\.ts$/,
-                // use: 'ts-loader',
-                type: 'asset'
-            },
-            {
-                test: /\.html$/,
-                // use: 'html-loader',
-                type: 'asset/resource'
+                use: 'ts-loader'
             },
             {
                 test: /\.(png|jpg|mp3|ogg|md2|mdl|tga|xm|obj|rocket|jsx)$/,
-                // use: 'file-loader'
-                type: 'asset/resource'
+                use: 'file-loader'
             }
         ]
     },
@@ -460,5 +453,13 @@ module.exports = /** @type { import('webpack').Configuration } */ ({
             filename: 'text-zoomer.html'
         })
     ]
-});
+}
 
+module.exports = () => {
+    if (isProduction) {
+        config.mode = "production";
+    } else {
+        config.mode = "development";
+    }
+    return config;
+};
