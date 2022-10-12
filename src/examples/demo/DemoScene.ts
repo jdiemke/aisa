@@ -1,7 +1,10 @@
-// Synthwave
-// https://codepen.io/H2xDev/pen/YMPJeP
-// https://codepen.io/H2xDev/details/MRYoEM
-// https://codepen.io/H2xDev/pen/dyPGKBy
+/*
+Name          : Aisa Demo
+Release Date  : TBD
+Platform      : JavaScript
+Category      : Demo
+Notes         : Software rendered effects written in Typescript
+*/
 
 // Core
 import { Framebuffer } from '../../Framebuffer';
@@ -32,7 +35,8 @@ export class DemoScene {
     private sceneList: DoublyLinkedList<AbstractScene>;
     private nodeInstance: DLNode<AbstractScene>;
 
-    private tickerPointerRef;
+    // moving line marking current place in the timeline
+    private tickerPointerRef: HTMLElement;
 
     // transitions
     private BlockFade: BlockFade;
@@ -69,8 +73,6 @@ export class DemoScene {
             import('./parts/Scene3').then(plug => this.initScene(framebuffer, plug)), // title screen here
             import('./parts/Scene4').then(plug => this.initScene(framebuffer, plug)), // pizza delivery guy
             import('./parts/Scene5').then(plug => this.initScene(framebuffer, plug)), // replace with something else
-
-            // oldskool effects start
             import('./parts/Scene6').then(plug => this.initScene(framebuffer, plug)), // spikeball + plane deformation
             import('./parts/Scene7').then(plug => this.initScene(framebuffer, plug)), // cube + rotozoomer
             import('./parts/Scene8').then(plug => this.initScene(framebuffer, plug)), // ledplasma + voxelcubes
@@ -85,8 +87,6 @@ export class DemoScene {
             import('./parts/Scene17').then(plug => this.initScene(framebuffer, plug)), // HoodlumScene
             import('./parts/Scene18').then(plug => this.initScene(framebuffer, plug)), // TwisterScene
             import('./parts/Scene19').then(plug => this.initScene(framebuffer, plug)), // RazorScene
-
-            // end
             import('./parts/Scene20').then(plug => this.initScene(framebuffer, plug)), // sinescroller
 
         ], (percent: number) => {
@@ -116,14 +116,26 @@ export class DemoScene {
         const constructorName = Object.keys(plug)[0];
         const newNode: DLNode<AbstractScene> = new DLNode();
         newNode.data = new plug[constructorName](...args);
-        this.sceneList.insert(newNode, this.sceneList.length-1);
-        return this.sceneList.getNode(this.sceneList.length-2).data.init(framebuffer);
+        this.sceneList.insert(newNode, this.sceneList.length - 1);
+        return this.sceneList.getNode(this.sceneList.length - 2).data.init(framebuffer);
     }
 
     // this runs after init() has finished
     public onInit(): void {
-    }
 
+        // jump to last effect in timeline for local development reloading
+        const jumpTo = localStorage.getItem('lastTime');
+        if (jumpTo) {
+            this.seek(Number(jumpTo));
+        }
+
+        // remember last sound preferences
+        const isMuted = localStorage.getItem('soundToggle') === 'true';
+        this.toggleSound(document.getElementById('ticker_volume'), isMuted);
+    }
+    /**
+     * Records a video and sound using CanvasRecorder
+     */
     public recordVideo() {
         console.info('recording video...');
         this._recording = true;
@@ -175,6 +187,28 @@ export class DemoScene {
         }
     }
 
+    /**
+     * Turns music volume on or off
+     *
+     * @param  {ref} HTMLElement        volume icon to toggle
+     * @param  {isMuted} boolean        on or off
+     */
+    private toggleSound(ref: HTMLElement, isMuted: boolean) {
+        if (isMuted) {
+            ref.setAttribute('title', 'enable sound');
+            ref.classList.remove('fa-volume-up');
+            ref.classList.add('fa-volume-off');
+        } else {
+            ref.setAttribute('title', 'mute sound');
+            ref.classList.remove('fa-volume-off');
+            ref.classList.add('fa-volume-up');
+        }
+        this.sm._audio.muted = isMuted;
+    }
+
+    /**
+     * Setup debug tools for local development
+     */
     private initControls(width: number) {
         this.stats = new Array<Stats>();
 
@@ -197,6 +231,7 @@ export class DemoScene {
         const tickerBackRef = document.getElementById('ticker_back');
         const tickerRecordRef = document.getElementById('ticker_record');
         const tickerScreenshotRef = document.getElementById('ticker_screenshot');
+        const tickerVolumeRef = document.getElementById('ticker_volume');
         this.tickerPointerRef = document.getElementById('ticker_pointer');
 
         // stop
@@ -229,7 +264,6 @@ export class DemoScene {
                 this.saveVideo();
                 tickerPlayRef.classList.add('fa-play');
                 tickerPlayRef.classList.remove('fa-pause');
-
             }
         })
 
@@ -246,8 +280,13 @@ export class DemoScene {
                 tickerPlayRef.classList.add('fa-play');
                 tickerPlayRef.classList.remove('fa-pause');
             }
-            // toggle play to pause icon
         })
+
+        // toggle audio and save preference for subsequent reloads
+        tickerVolumeRef.addEventListener('click', () => {
+            this.toggleSound(tickerVolumeRef, !this.sm._audio.muted);
+            localStorage.setItem('soundToggle', String(this.sm._audio.muted));
+        });
 
         // save screenshot in PNG format
         tickerScreenshotRef.addEventListener('click', () => {
@@ -363,15 +402,12 @@ export class DemoScene {
         document.body.appendChild(statsObj.dom);
     }
 
-    public render(framebuffer: Framebuffer): void {
+    public render(framebuffer: Framebuffer) {
         // get time and values from music
         this.sm.updateMusic();
 
         // get which effect to run
         this.nodeInstance = this.sceneList.getNode(this.sm.musicProperties.sceneData.effect);
-
-        // update timeline
-        this.tickerPointerRef.style.left = (this.sm.musicProperties.timeSeconds * 100 / this.sm._audio.duration) + '%';
 
         // if "transitionType" in JSRocket is zero then run the effect by itself
         if (this.sm.musicProperties.sceneData.transitionType === 0) {
@@ -387,13 +423,11 @@ export class DemoScene {
                 this.sm.musicProperties.timeMilliseconds);
         }
 
-        // sync to bass
-        // TODO: send musicProperties instead of timeMilliseconds
-        // so all scenes can act on any channel
-        this.BlockFade.renderScanlines(framebuffer, this.sm.musicProperties.sceneData.bass * 2  );
+        // TODO: send musicProperties instead of timeMilliseconds so all scenes can act on any channel
+        this.BlockFade.renderScanlines(framebuffer, this.sm.musicProperties.sceneData.bass * 2);
 
-        // show FPS, time and effect number on canvas
-        this.drawStats(framebuffer);
+        // comment out for release
+        this.drawStats();
     }
 
     /**
@@ -422,8 +456,17 @@ export class DemoScene {
         }
     }
 
-    // debug info
-    private drawStats(framebuffer: Framebuffer) {
+    /**
+     * Show FPS, Memory Usage and js rocket time and effect number
+     */
+    private drawStats() {
+
+        // update timeline marker
+        this.tickerPointerRef.style.left = (this.sm.musicProperties.timeSeconds * 100 / this.sm._audio.duration) + '%';
+
+        // keep current time in local storage to stay in place during reloads
+        localStorage.setItem('lastTime', String(this.sm.musicProperties.timeSeconds));
+
         if (!this.sm._syncDevice.connected && !this.sm._demoMode) {
             console.error('Rocket not connected.');
             return;

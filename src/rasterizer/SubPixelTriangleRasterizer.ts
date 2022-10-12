@@ -43,7 +43,7 @@ export class SubPixelTriangleRasterizer extends AbstractTriangleRasterizer {
     }
 
     // https://kitsunegames.com/assets/software-3d-rendering-in-javascript-pt2/result/
-    public fillTriangle(v0: Vertex, v1: Vertex, v2: Vertex) {
+    public fillTriangle(framebuffer: Framebuffer, v0: Vertex, v1: Vertex, v2: Vertex) {
 
         if (this.isCcw(v0.projection, v1.projection, v2.projection)) {
             return;
@@ -116,7 +116,7 @@ export class SubPixelTriangleRasterizer extends AbstractTriangleRasterizer {
                 // this can be optimized to only draw aliased pixels on the edges
 
                 // if (this.depthBuffer.testDepth(x, y, fragment.z)) {
-                this.framebuffer.drawPixelAntiAliasedSpacial(x, y, fragColor.toPackedFormat());
+                framebuffer.drawPixelAntiAliasedSpacial(x, y, fragColor.toPackedFormat());
                 // }
 
             }
@@ -128,7 +128,7 @@ export class SubPixelTriangleRasterizer extends AbstractTriangleRasterizer {
      * Internally DDA is used for edge-walking.
      */
     public drawTriangleDDA(framebuffer: Framebuffer, p1: Vertex, p2: Vertex, p3: Vertex): void {
-        this.fillTriangle(p1, p2, p3);
+        this.fillTriangle(framebuffer, p1, p2, p3);
         // this.drawTriangleDDAOriginal(framebuffer, p1, p2, p3);
     }
 

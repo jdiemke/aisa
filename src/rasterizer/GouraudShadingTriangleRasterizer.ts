@@ -95,7 +95,7 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
         this.xPosition2 = v1.projection.x;
         this.yPosition = v1.projection.y;
 
-        this.drawSpan(yDistance, this.colorInterpolator1, this.colorInterpolator2);
+        this.drawSpan(framebuffer, yDistance, this.colorInterpolator1, this.colorInterpolator2);
     }
 
     private fillTopFlatTriangle(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void {
@@ -117,7 +117,7 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
         this.xPosition2 = v2.projection.x;
         this.yPosition = v1.projection.y;
 
-        this.drawSpan(yDistance, this.colorInterpolator1, this.colorInterpolator2);
+        this.drawSpan(framebuffer, yDistance, this.colorInterpolator1, this.colorInterpolator2);
     }
 
     private fillLongRightTriangle(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void {
@@ -140,7 +140,7 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
         this.xPosition2 = v1.projection.x;
         this.yPosition = v1.projection.y;
 
-        this.drawSpan(yDistanceLeft, this.colorInterpolator1, this.colorInterpolator2);
+        this.drawSpan(framebuffer, yDistanceLeft, this.colorInterpolator1, this.colorInterpolator2);
 
 
         yDistanceLeft = v3.projection.y - v2.projection.y;
@@ -151,7 +151,7 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
         this.xPosition = v2.projection.x;
         this.yPosition = v2.projection.y;
 
-        this.drawSpan(yDistanceLeft, this.colorInterpolator3, this.colorInterpolator2);
+        this.drawSpan(framebuffer, yDistanceLeft, this.colorInterpolator3, this.colorInterpolator2);
 
     }
 
@@ -176,7 +176,7 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
         this.xPosition2 = v1.projection.x;
         this.yPosition = v1.projection.y;
 
-        this.drawSpan(yDistanceRight, this.colorInterpolator1, this.colorInterpolator2);
+        this.drawSpan(framebuffer, yDistanceRight, this.colorInterpolator1, this.colorInterpolator2);
 
 
         yDistanceRight = v3.projection.y - v2.projection.y;
@@ -188,22 +188,22 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
         this.xPosition2 = v2.projection.x;
         this.yPosition = v2.projection.y;
 
-        this.drawSpan(yDistanceRight, this.colorInterpolator1, this.colorInterpolator3);
+        this.drawSpan(framebuffer, yDistanceRight, this.colorInterpolator1, this.colorInterpolator3);
 
     }
 
-    drawSpan(distance: number, colorInterpolator1: ColorInterpolator, colorInterpolator2: ColorInterpolator) {
+    drawSpan(framebuffer: Framebuffer, distance: number, colorInterpolator1: ColorInterpolator, colorInterpolator2: ColorInterpolator) {
         for (let i = 0; i < distance; i++) {
             const length = Math.round(this.xPosition2) - Math.round(this.xPosition);
             this.rowColorInterpolator.setup(
                 colorInterpolator1.startColor, colorInterpolator2.startColor, length);
-            let framebufferIndex = Math.round(this.yPosition) * this.framebuffer.width + Math.round(this.xPosition);
+            let framebufferIndex = Math.round(this.yPosition) * framebuffer.width + Math.round(this.xPosition);
             const spanzStep = (this.curz2 - this.curz1) / length;
             let wStart = this.curz1;
             for (let j = 0; j < length; j++) {
-                if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
-                    this.framebuffer.wBuffer[framebufferIndex] = wStart;
-                    this.framebuffer.framebuffer[framebufferIndex] =
+                if (wStart < framebuffer.wBuffer[framebufferIndex]) {
+                    framebuffer.wBuffer[framebufferIndex] = wStart;
+                    framebuffer.framebuffer[framebufferIndex] =
                         this.rowColorInterpolator.startColor.toPackedFormat();
                 }
                 framebufferIndex++;
