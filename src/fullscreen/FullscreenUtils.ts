@@ -4,10 +4,16 @@ export class FullscreenUtils {
         if (!this.fullscreen) {
             FullscreenUtils.enterFullscreen(element);
             this.fullscreen = true;
+            this.setStyle(element, 'cursor: none');
         } else {
             FullscreenUtils.exitFullscreen();
             this.fullscreen = false;
+            this.setStyle(element, 'cursor: zoom-in');
         }
+    }
+
+    private static setStyle(el, css) {
+        el.setAttribute('style', el.getAttribute('style') + ';' + css);
     }
 
     public static enterFullscreen(element: Element): void {
