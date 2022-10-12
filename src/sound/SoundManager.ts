@@ -122,7 +122,7 @@ export class SoundManager {
             .then((response: Response) => {
                 this._audio.src = filename;
                 this._audio.load();
-                this._audio.preload = 'true';
+                this._audio.preload = 'auto';
                 this._audio.loop = true;
                 this._audio.autoplay = false;
             })
