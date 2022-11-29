@@ -24,19 +24,17 @@ import { CanvasRecorder } from './canvas-record';
 export class DemoScene {
 
     // Sound Manager
-    private sm: SoundManager;
+    private soundManager: SoundManager;
 
     // Video Recorder
-    private _recording = false;
-    private canvasRecorder;
-    private canvasRecordingOptions;
+    private canvasRecorder: CanvasRecorder;
 
     // list of scenes
     private sceneList: DoublyLinkedList<AbstractScene>;
     private nodeInstance: DLNode<AbstractScene>;
 
     // moving line marking current place in the timeline
-    private tickerPointerRef: HTMLElement;
+    private timelineRef: HTMLInputElement;
 
     // transitions
     private BlockFade: BlockFade;
@@ -45,7 +43,7 @@ export class DemoScene {
     private stats: Array<Stats>;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.sm = new SoundManager();
+        this.soundManager = new SoundManager();
 
         this.sceneList = new DoublyLinkedList();
 
@@ -56,12 +54,16 @@ export class DemoScene {
         // initialize effects with progress
         return this.allProgress([
             // load music
-            this.sm.loadOgg(require('../../assets/sound/NotMixedorMastered.ogg').default),
+            import('../../assets/sound/NotMixedorMastered.ogg').then(musicData => {
+                this.soundManager.loadOgg(musicData.default)
+            }),
 
             // load *.rocket file
-            // Set to true when using *.rocket from file system
-            // set to false when using rocket editor using websocket
-            this.sm.prepareSync(require('../../assets/sound/demo.rocket').default, true),
+            import('../../assets/sound/demo.rocket').then(rocketData => {
+                // Set to true when using *.rocket from file system
+                // set to false when using rocket editor using websocket
+                this.soundManager.prepareSync(rocketData.default, true);
+            }),
 
             // we use this for transitions
             this.BlockFade.init(framebuffer),
@@ -117,93 +119,19 @@ export class DemoScene {
         const newNode: DLNode<AbstractScene> = new DLNode();
         newNode.data = new plug[constructorName](...args);
         this.sceneList.insert(newNode, this.sceneList.length - 1);
-        return this.sceneList.getNode(this.sceneList.length - 2).data.init(framebuffer);
+        return newNode.data.init(framebuffer);
     }
 
     // this runs after init() has finished
     public onInit(): void {
 
-        // jump to last effect in timeline for local development reloading
-        const jumpTo = localStorage.getItem('lastTime');
-        if (jumpTo) {
-            this.seek(Number(jumpTo));
-        }
+        this.canvasRecorder = new CanvasRecorder();
 
-        // remember last sound preferences
-        const isMuted = localStorage.getItem('soundToggle') === 'true';
-        this.toggleSound(document.getElementById('ticker_volume'), isMuted);
-    }
-    /**
-     * Records a video and sound using CanvasRecorder
-     */
-    public recordVideo() {
-        console.info('recording video...');
-        this._recording = true;
-        const date = new Date();
+        // jump to last effect in timeline and set mute vs unmuted
+        this.soundManager.initTimeline();
 
-        // options
-        this.canvasRecordingOptions = {
-            filename: `Aisa ${date.toISOString().slice(0, 10)} at ${date
-                .toTimeString()
-                .slice(0, 8)
-                .replace(/:/g, '.')}.webm`,
-            frameRate: 60,
-            download: true,
-            recorderOptions: {
-                // mimeType: 'video/x-matroska;codecs=avc1',
-                mimeType: 'video/webm',
-                // mimeType: 'video/webm; codecs=vp9',
-                audioBitsPerSecond: 128000, // 128 Kbit/sec
-                // videoBitsPerSecond: 2500000 // 2.5 Mbit/sec
-                videoBitsPerSecond: 5000000 // 2.5 Mbit/sec
-            }
-        }
-
-        // Create recorder
-        const canvasRecorder = new CanvasRecorder();
-        const canvasObj = document.getElementById('aisa-canvas');
-        this.canvasRecorder = canvasRecorder.createCanvasRecorder(canvasObj, this.canvasRecordingOptions, this.sm._audio);
-        this.canvasRecorder.start();
-    }
-
-    private saveVideo() {
-        // Stop and dispose
-        this.canvasRecorder.stop();
-        this.canvasRecorder.dispose();
-        this._recording = false;
-        console.info(`saved video as ${this.canvasRecordingOptions.filename}`);
-    }
-
-    /**
-     * Jumps to a point in the audio timeline in milliseconds
-     *
-     * @param  {number} time            time in milliseconds
-     */
-    private seek(time: number) {
-        this.sm._audio.currentTime = time;
-        // update rocket editor position to new timeline location
-        if (!this.sm._demoMode) {
-            this.sm._syncDevice.update(this.sm._audio.currentTime * this.sm.musicProperties.ROW_RATE);
-        }
-    }
-
-    /**
-     * Turns music volume on or off
-     *
-     * @param  {ref} HTMLElement        volume icon to toggle
-     * @param  {isMuted} boolean        on or off
-     */
-    private toggleSound(ref: HTMLElement, isMuted: boolean) {
-        if (isMuted) {
-            ref.setAttribute('title', 'enable sound');
-            ref.classList.remove('fa-volume-up');
-            ref.classList.add('fa-volume-off');
-        } else {
-            ref.setAttribute('title', 'mute sound');
-            ref.classList.remove('fa-volume-off');
-            ref.classList.add('fa-volume-up');
-        }
-        this.sm._audio.muted = isMuted;
+        // show debug / timeline navigator
+        document.getElementById('debug').style.display = 'block';
     }
 
     /**
@@ -224,7 +152,6 @@ export class DemoScene {
         document.getElementById('debug').style.width = `${width * 2}px`;
 
         // Scene Playback Controls
-        const tickerRef = document.getElementById('ticker');
         const tickerPlayRef = document.getElementById('ticker_play');
         const tickerStopRef = document.getElementById('ticker_stop');
         const tickerNextRef = document.getElementById('ticker_next');
@@ -232,36 +159,40 @@ export class DemoScene {
         const tickerRecordRef = document.getElementById('ticker_record');
         const tickerScreenshotRef = document.getElementById('ticker_screenshot');
         const tickerVolumeRef = document.getElementById('ticker_volume');
-        this.tickerPointerRef = document.getElementById('ticker_pointer');
+
+        // timeline
+        this.timelineRef = document.getElementById('timeline') as HTMLInputElement;
 
         // stop
         tickerStopRef.addEventListener('click', () => {
-            this.sm.onPause();
+            this.soundManager.onPause();
             this.nodeInstance = this.sceneList.start;
-            this.seek(0);
+            this.soundManager.seek(0);
 
             tickerPlayRef.classList.add('fa-play');
             tickerPlayRef.classList.remove('fa-pause');
 
             // save video if recoding
-            if (this._recording) {
+            if (this.canvasRecorder.recording) {
                 tickerRecordRef.style.color = 'white';
-                this.saveVideo();
+                this.canvasRecorder.saveVideo();
             }
         })
 
         // record video
         tickerRecordRef.addEventListener('click', () => {
-            if (!this._recording) {
+            if (!this.canvasRecorder.recording) {
+                // start audio and video recording
                 tickerRecordRef.style.color = 'red';
-                this.sm.onPlay(); // start playing from cursor
-                this.recordVideo();
+                this.soundManager.onPlay();
+                this.canvasRecorder.recordVideo(this.soundManager.audio);
                 tickerPlayRef.classList.remove('fa-play');
                 tickerPlayRef.classList.add('fa-pause');
             } else {
+                // pause audio and save video file
                 tickerRecordRef.style.color = 'white';
-                this.sm.onPause();
-                this.saveVideo();
+                this.soundManager.onPause();
+                this.canvasRecorder.saveVideo();
                 tickerPlayRef.classList.add('fa-play');
                 tickerPlayRef.classList.remove('fa-pause');
             }
@@ -269,13 +200,13 @@ export class DemoScene {
 
         // play / pause
         tickerPlayRef.addEventListener('click', () => {
-            if (this.sm._audio.paused && !this.sm.isPlaying) {
-                this.sm.onPlay();
+            if (this.soundManager.audio.paused && !this.soundManager.isPlaying) {
+                this.soundManager.onPlay();
                 tickerPlayRef.setAttribute('title', 'pause');
                 tickerPlayRef.classList.remove('fa-play');
                 tickerPlayRef.classList.add('fa-pause');
             } else {
-                this.sm.onPause();
+                this.soundManager.onPause();
                 tickerPlayRef.setAttribute('title', 'play');
                 tickerPlayRef.classList.add('fa-play');
                 tickerPlayRef.classList.remove('fa-pause');
@@ -284,8 +215,8 @@ export class DemoScene {
 
         // toggle audio and save preference for subsequent reloads
         tickerVolumeRef.addEventListener('click', () => {
-            this.toggleSound(tickerVolumeRef, !this.sm._audio.muted);
-            localStorage.setItem('soundToggle', String(this.sm._audio.muted));
+            this.soundManager.toggleSound(tickerVolumeRef, !this.soundManager.audio.muted);
+            localStorage.setItem('soundToggle', String(this.soundManager.audio.muted));
         });
 
         // save screenshot in PNG format
@@ -305,24 +236,29 @@ export class DemoScene {
 
         // next
         tickerNextRef.addEventListener('click', () => {
-            this.jump(this.sm._audio.currentTime, 1);
+            this.soundManager.jump(this.soundManager.audio.currentTime, 1, this.sceneList.length);
         })
 
         // back
         tickerBackRef.addEventListener('click', () => {
-            this.jump(this.sm._audio.currentTime, -1);
+            this.soundManager.jump(this.soundManager.audio.currentTime, -1, this.sceneList.length);
         })
 
         // seek
-        tickerRef.addEventListener('click', (e) => {
-            const time = e.offsetX * this.sm._audio.duration / tickerRef.getBoundingClientRect().width;
-            this.seek(time);
+        this.timelineRef.addEventListener('input', (e) => {
+            const time = Number((e.target as HTMLInputElement).value);
+            const newSeek = time * this.soundManager.audio.duration / 1000;
+            this.soundManager.seek(newSeek);
         });
 
-        // don't seek when clicking on the pointer
-        this.tickerPointerRef.addEventListener('click', (e) => {
+        // seek with scrollwheel
+        document.addEventListener("wheel", (e) => {
+            const directionToScroll = (e.deltaY < 0) ? -0.06 : 0.06;
+            this.soundManager.audio.currentTime = this.soundManager.audio.currentTime + directionToScroll;
+            // prevent page scroll
+            e.preventDefault();
             e.stopPropagation();
-        });
+        }, { passive: false })
 
         // keyboard navigation controls
         document.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -337,21 +273,21 @@ export class DemoScene {
                     break;
                 // navigate timeline backward
                 case 'ArrowLeft':
-                    this.sm._audio.currentTime = this.sm._audio.currentTime - 0.06;
+                    this.soundManager.audio.currentTime = this.soundManager.audio.currentTime - 0.06;
                     break;
                 // navigate timeline forward
                 case 'ArrowRight':
-                    this.sm._audio.currentTime = this.sm._audio.currentTime + 0.06;
+                    this.soundManager.audio.currentTime = this.soundManager.audio.currentTime + 0.06;
                     break;
                 // jump to next effect
                 case 'MediaTrackNext':
                 case 'ArrowUp':
-                    this.jump(this.sm._audio.currentTime, 1);
+                    this.soundManager.jump(this.soundManager.audio.currentTime, 1, this.sceneList.length);
                     break;
                 // jump to previous effect
                 case 'MediaTrackPrevious':
                 case 'ArrowDown':
-                    this.jump(this.sm._audio.currentTime, -1);
+                    this.soundManager.jump(this.soundManager.audio.currentTime, -1, this.sceneList.length);
                     break;
                 // toggle full screen
                 case 'f':
@@ -378,15 +314,15 @@ export class DemoScene {
      * @param   {Function} progressCallback          function sending percentage after individual promise is complete
      * @returns {Promise<any>}                       promise resolve after all promises are complete
      */
-    private allProgress(promsises: Array<Promise<any>>, progressCallback: (percentage: number) => void): Promise<any> {
+    private allProgress(promises: Array<Promise<any>>, progressCallback: (percentage: number) => void): Promise<any> {
         let d = 0;
-        for (const p of promsises) {
+        for (const p of promises) {
             p.then(() => {
                 d++;
-                progressCallback(d / promsises.length);
+                progressCallback(d / promises.length);
             });
         }
-        return Promise.all(promsises);
+        return Promise.all(promises);
     }
 
     /**
@@ -394,7 +330,7 @@ export class DemoScene {
      *
      * @param   {Object} args                        stat type[0-3], top in pixels, left in pixels
      */
-    private initStats(...args: Array<any>) {
+    private initStats(...args: Array<number>) {
         this.stats.push(new Stats());
         const statsObj = this.stats[this.stats.length - 1];
         statsObj.showPanel(args[0]);
@@ -404,56 +340,30 @@ export class DemoScene {
 
     public render(framebuffer: Framebuffer) {
         // get time and values from music
-        this.sm.updateMusic();
+        this.soundManager.updateMusic();
 
         // get which effect to run
-        this.nodeInstance = this.sceneList.getNode(this.sm.musicProperties.sceneData.effect);
+        this.nodeInstance = this.sceneList.getNode(this.soundManager.musicProperties.sceneData.effect);
 
         // if "transitionType" in JSRocket is zero then run the effect by itself
-        if (this.sm.musicProperties.sceneData.transitionType === 0) {
-            this.nodeInstance.data.render(framebuffer, this.sm.musicProperties.timeMilliseconds)
+        if (this.soundManager.musicProperties.sceneData.transitionType === 0) {
+            this.nodeInstance.data.render(framebuffer, this.soundManager.musicProperties.timeMilliseconds)
         } else {
             // otherwise blend two effects together
             this.BlockFade.transition(
                 framebuffer,
                 this.nodeInstance.data,
                 this.nodeInstance.next.data,
-                this.sm.musicProperties.sceneData.transitionType,
-                this.sm.musicProperties.sceneData.transitionValue,
-                this.sm.musicProperties.timeMilliseconds);
+                this.soundManager.musicProperties.sceneData.transitionType,
+                this.soundManager.musicProperties.sceneData.transitionValue,
+                this.soundManager.musicProperties.timeMilliseconds);
         }
 
         // TODO: send musicProperties instead of timeMilliseconds so all scenes can act on any channel
-        this.BlockFade.renderScanlines(framebuffer, this.sm.musicProperties.sceneData.bass * 2);
+        this.BlockFade.renderScanlines(framebuffer, this.soundManager.musicProperties.sceneData.bass * 2);
 
         // comment out for release
         this.drawStats();
-    }
-
-    /**
-     * find the prev/next effect and jump to it
-     *
-     * @param   {number} time       where we are in the audio timeline
-     * @param   {number} direction  direction to skip -1 goes backwards.  1 goes forward
-     */
-    private jump(time: number, direction: number) {
-        this.sm._row = time * this.sm.musicProperties.ROW_RATE;
-        const effectJump = Number(this.sm.sceneData.effect.getValue(this.sm._row).toFixed(1));
-        if (Math.trunc(this.sm.musicProperties.sceneData.effect) !== Math.trunc(effectJump) && effectJump >= 1) {
-            // if running into transition effect 2.5..then keep searching and only land on whole numbers
-            if (parseInt(effectJump.toString(), 10) !== effectJump) {
-                this.jump(time + (0.12 * direction), direction);
-            } else {
-                this.seek(time);
-            }
-        } else {
-            if (time >= 0 && effectJump < this.sceneList.length - 3) {
-                this.jump(time + (0.12 * direction), direction);
-            } else {
-                // go back to the beginning
-                this.seek(0);
-            }
-        }
     }
 
     /**
@@ -462,18 +372,18 @@ export class DemoScene {
     private drawStats() {
 
         // update timeline marker
-        this.tickerPointerRef.style.left = (this.sm.musicProperties.timeSeconds * 100 / this.sm._audio.duration) + '%';
+        this.timelineRef.value = String((this.soundManager.musicProperties.timeSeconds * 1000 / this.soundManager.audio.duration));
 
         // keep current time in local storage to stay in place during reloads
-        localStorage.setItem('lastTime', String(this.sm.musicProperties.timeSeconds));
+        localStorage.setItem('lastTime', String(this.soundManager.musicProperties.timeSeconds));
 
-        if (!this.sm._syncDevice.connected && !this.sm._demoMode) {
+        if (!this.soundManager.syncDevice.connected && !this.soundManager.demoMode) {
             console.error('Rocket not connected.');
             return;
         } else {
             // get values from JS rocket
-            document.getElementById('scene').innerText = this.sm.musicProperties.sceneData.effect.toString();
-            document.getElementById('time').innerText = this.sm.musicProperties.timeSeconds.toFixed(2);
+            document.getElementById('scene').innerText = this.soundManager.musicProperties.sceneData.effect.toString();
+            document.getElementById('time').innerText = this.soundManager.musicProperties.timeSeconds.toFixed(2);
         }
         // update FPS and Memory usage
         for (const p of this.stats) {
