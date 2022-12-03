@@ -2,12 +2,21 @@ import fileExtension from 'file-loader';
 
 export class CanvasRecorder {
 
-    public getType(filename) {
+    public recording: boolean;
+    private canvasRecordingOptions;
+    private canvasRecorder;
+    private audioTrack: MediaStreamTrack;
+
+    public constructor() {
+        this.recording = false;
+    }
+
+    public getType(filename: string) {
         const ext = fileExtension(filename);
         return ['mkv'].includes(ext) ? 'video/x-matroska;codecs=avc1' : 'video/webm';
     }
 
-    public createCanvasRecorder(canvas, options = {}, audioCtx) {
+    public createCanvasRecorder(canvas: HTMLCanvasElement, options = {}, audio: HTMLMediaElement) {
         const date = new Date();
         let link = null;
 
@@ -38,14 +47,17 @@ export class CanvasRecorder {
 
         let stream = canvas.captureStream(frameRate);
 
-        // get the audio track:
-        const ctx = new AudioContext();
-        const dest = ctx.createMediaStreamDestination();
-        const sourceNode = ctx.createMediaElementSource(audioCtx);
-        sourceNode.connect(dest);
-        sourceNode.connect(ctx.destination)
-        const audioTrack = dest.stream.getAudioTracks()[0];
-        stream.addTrack(audioTrack);
+        if (!this.canvasRecorder) {
+            // get the audio track:
+            const ctx = new AudioContext();
+            const dest = ctx.createMediaStreamDestination();
+            const sourceNode = ctx.createMediaElementSource(audio);
+            sourceNode.connect(dest);
+            sourceNode.connect(ctx.destination);
+            this.audioTrack = dest.stream.getAudioTracks()[0];
+        }
+
+        stream.addTrack(this.audioTrack);
 
         let recorder = new MediaRecorder(stream, { mimeType, ...recorderOptions });
 
@@ -74,12 +86,8 @@ export class CanvasRecorder {
             set filename(name) {
                 link.download = name;
             },
-            step() {
-                stream.getVideoTracks()[0].requestFrame();
-            },
             stop() {
                 recorder.stop();
-
                 return chunks;
             },
             dispose() {
@@ -91,5 +99,40 @@ export class CanvasRecorder {
         };
     }
 
-    // module.exports = createCanvasRecorder;
+    /**
+     * Records a video and sound using CanvasRecorder
+     */
+    public recordVideo(sound: HTMLMediaElement) {
+        console.info('recording video...');
+        this.recording = true;
+        const date = new Date();
+
+        // options
+        this.canvasRecordingOptions = {
+            filename: `Aisa ${date.toISOString().slice(0, 10)} at ${date
+                .toTimeString()
+                .slice(0, 8)
+                .replace(/:/g, '.')}.webm`,
+            frameRate: 60,
+            download: true,
+            recorderOptions: {
+                mimeType: 'video/webm',
+                audioBitsPerSecond: 128000, // 128 Kbit/sec
+                videoBitsPerSecond: 5000000 // 2.5 Mbit/sec
+            }
+        }
+
+        // Create canvas video recorder
+        const canvasObj = document.getElementById('aisa-canvas');
+        this.canvasRecorder = this.createCanvasRecorder(canvasObj as HTMLCanvasElement, this.canvasRecordingOptions, sound);
+        this.canvasRecorder.start();
+    }
+
+    public saveVideo() {
+        // Stop and dispose
+        this.canvasRecorder.stop();
+        this.canvasRecorder.dispose();
+        this.recording = false;
+        console.info(`saved video as ${this.canvasRecordingOptions.filename}`);
+    }
 }

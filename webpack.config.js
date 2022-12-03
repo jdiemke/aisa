@@ -74,6 +74,7 @@ const config = {
         'psychadelic-plane-deformation': './src/examples/psychadelic-plane-deformation/Application.ts',
     },
     mode: 'development',
+    devtool: "source-map",
 
     devServer: {
         static: {

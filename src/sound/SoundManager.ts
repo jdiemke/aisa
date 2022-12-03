@@ -11,18 +11,10 @@ type musicProperties = {
     ROW_RATE: number;
     timeSeconds: number;
     timeMilliseconds: number;
-    sceneData: sceneVariables;
+    sceneData: sceneData;
 }
 
 // scene variables | things you set through jsRocket
-type sceneVariables = {
-    effect: number;
-    transitionType: number;
-    transitionValue: number;
-    snare: number;
-    bass: number;
-}
-
 type sceneData = {
     effect: any;
     transitionType: any;
@@ -35,11 +27,11 @@ export class SoundManager {
 
     public audioContext: AudioContext;
     public songLengthSeconds: number;
-    public _syncDevice;
-    public _audio = new Audio();
+    public syncDevice;
+    public audio = new Audio();
     public isPlaying = false;
-    public _demoMode = true;    // use true for release mode
-    public _row = 0;    // the current row we're on
+    public demoMode = true;    // use true for release mode
+    public row = 0;    // the current row we're on
 
     //  container for audio values to be used by effects (time, bass, effect, transitions)
     public musicProperties: musicProperties;
@@ -48,8 +40,8 @@ export class SoundManager {
     public constructor() {
 
         // Initialize JS Rocket
-        this._syncDevice = new JSRocket.SyncDevice();
-        this._syncDevice.connected = false;
+        this.syncDevice = new JSRocket.SyncDevice();
+        this.syncDevice.connected = false;
 
         this.musicProperties = {
             BPM: 0,
@@ -74,7 +66,12 @@ export class SoundManager {
             bass: null,
         }
     }
-
+    /**
+     * Load and play module music tracker files
+     *
+     * @param {string} filename      module file to load
+     * @returns {Promise<Response>}  fetch response
+     */
     public playExtendedModule(filename: string): Promise<void> {
         return fetch(filename)
             .then((response: Response) => response.arrayBuffer())
@@ -101,7 +98,7 @@ export class SoundManager {
             .then((arrayBuffer: ArrayBuffer) => {
                 if (arrayBuffer) {
                     this.audioContext.decodeAudioData(arrayBuffer,
-                        (buffer) => {
+                        (buffer: AudioBuffer) => {
                             const sourceBuffer = this.audioContext.createBufferSource();
                             console.info('ogg create buffer');
                             sourceBuffer.buffer = buffer;
@@ -117,39 +114,36 @@ export class SoundManager {
             });
     }
 
-    public loadOgg(filename: string): Promise<void> {
-        return fetch(filename)
-            .then((response: Response) => {
-                this._audio.src = filename;
-                this._audio.load();
-                this._audio.preload = 'auto';
-                this._audio.loop = true;
-                this._audio.autoplay = false;
-            })
+    public loadOgg(filename: string) {
+        this.audio.src = filename;
+        this.audio.load();
+        this.audio.preload = 'auto';
+        this.audio.loop = true;
+        this.audio.autoplay = false;
     }
 
     prepareSync(filename: string, demoMode: boolean): Promise<void> {
-        this._demoMode = demoMode;
+        this.demoMode = demoMode;
         return new Promise((resolve) => {
-            if (this._demoMode) {
-                this._syncDevice.setConfig({
+            if (this.demoMode) {
+                this.syncDevice.setConfig({
                     'rocketXML': filename
                 });
-                this._syncDevice.init('demo');
+                this.syncDevice.init('demo');
 
             } else {
-                this._syncDevice.init();
+                this.syncDevice.init();
             }
 
             // XML file from JS Rocket library was loaded and parsed, make sure your ogg is ready
-            this._syncDevice.on('ready', () => this.onSyncReady());
+            this.syncDevice.on('ready', () => this.onSyncReady());
 
             // [JS Rocket - Arrow keys] whenever you change the row, a value or interpolation mode this will get called
-            this._syncDevice.on('update', (newRow: number) => this.onSyncUpdate(newRow));
+            this.syncDevice.on('update', (newRow: number) => this.onSyncUpdate(newRow));
 
             // [JS Rocket - Spacebar] in Rocket calls one of those
-            this._syncDevice.on('play', () => this.onPlay());
-            this._syncDevice.on('pause', () => this.onPause());
+            this.syncDevice.on('play', () => this.onPlay());
+            this.syncDevice.on('pause', () => this.onPause());
             resolve()
         });
     }
@@ -158,18 +152,18 @@ export class SoundManager {
         this.musicProperties.BPM = 120;
         this.musicProperties.ROWS_PER_BEAT = 8;
         this.musicProperties.ROW_RATE = this.musicProperties.BPM / 60 * this.musicProperties.ROWS_PER_BEAT;
-        this._syncDevice.connected = true;
-        this.sceneData.effect = this._syncDevice.getTrack('effect');
-        this.sceneData.snare = this._syncDevice.getTrack('snare');
-        this.sceneData.bass = this._syncDevice.getTrack('bass');
-        this.sceneData.transitionType = this._syncDevice.getTrack('transitionType');
-        this.sceneData.transitionValue = this._syncDevice.getTrack('transitionValue');
+        this.syncDevice.connected = true;
+        this.sceneData.effect = this.syncDevice.getTrack('effect');
+        this.sceneData.snare = this.syncDevice.getTrack('snare');
+        this.sceneData.bass = this.syncDevice.getTrack('bass');
+        this.sceneData.transitionType = this.syncDevice.getTrack('transitionType');
+        this.sceneData.transitionValue = this.syncDevice.getTrack('transitionValue');
 
-        this._audio.onpause = () => {
+        this.audio.onpause = () => {
             this.isPlaying = false;
         };
 
-        this._audio.onplay = () => {
+        this.audio.onplay = () => {
             this.isPlaying = true;
         }
 
@@ -179,51 +173,52 @@ export class SoundManager {
     // on interpolation change (hit [i]) no row value is sent, as the current there is the upper row of your block
     onSyncUpdate(newRow: number) {
         if (!isNaN(newRow)) {
-            this._row = newRow;
+            this.row = newRow;
         }
-        this._audio.currentTime = newRow / this.musicProperties.ROW_RATE;
+        this.audio.currentTime = newRow / this.musicProperties.ROW_RATE;
     }
 
     updateMusic() {
         // show message if rocket app is not running in background
-        if (!this._syncDevice.connected && !this._demoMode) {
+        if (!this.syncDevice.connected && !this.demoMode) {
             return;
         }
 
         // update music properties
-        this.musicProperties.timeSeconds = this._audio.currentTime;
+        this.musicProperties.timeSeconds = this.audio.currentTime;
         this.musicProperties.timeMilliseconds = this.musicProperties.timeSeconds * 1000;
-        this._row = this.musicProperties.timeSeconds * this.musicProperties.ROW_RATE;
+        this.row = this.musicProperties.timeSeconds * this.musicProperties.ROW_RATE;
 
         this.musicProperties.sceneData = {
-            effect: this.sceneData.effect.getValue(this._row),
-            transitionType: this.sceneData.transitionType.getValue(this._row),
-            transitionValue: this.sceneData.transitionValue.getValue(this._row),
-            snare: this.sceneData.snare.getValue(this._row),
-            bass: this.sceneData.bass.getValue(this._row),
+            effect: this.sceneData.effect.getValue(this.row),
+            transitionType: this.sceneData.transitionType.getValue(this.row),
+            transitionValue: this.sceneData.transitionValue.getValue(this.row),
+            snare: this.sceneData.snare.getValue(this.row),
+            bass: this.sceneData.bass.getValue(this.row),
         }
 
         // update JS rocket
-        if (this._audio.paused === false) {
+        if (this.audio.paused === false) {
             // otherwise we may jump into a point in the audio where there's
             // no timeframe, resulting in Rocket setting row 2 and we report
             // row 1 back - thus Rocket spasming out
 
             // this informs Rocket where we are
-            this._syncDevice.update(this._row);
+            this.syncDevice.update(this.row);
         }
     }
 
     onPlay() {
         console.log('[onPlay]');
-        this._audio.currentTime = this._row / this.musicProperties.ROW_RATE;
+        this.audio.currentTime = this.row / this.musicProperties.ROW_RATE;
         if (!this.isPlaying) {
-            const playPromise = this._audio.play();
+            const playPromise = this.audio.play();
             if (playPromise !== undefined) {
-                playPromise.then(_ => {
+                playPromise.then(() => {
                     this.isPlaying = true;
                 })
                     .catch(error => {
+                        console.log(error);
                     });
             }
         }
@@ -231,11 +226,110 @@ export class SoundManager {
 
     onPause() {
         console.info('[onPause]');
-        this._row = this._audio.currentTime * this.musicProperties.ROW_RATE;
+        this.row = this.audio.currentTime * this.musicProperties.ROW_RATE;
 
-        if (!this._audio.paused && this.isPlaying) {
-            this._audio.pause();
+        if (!this.audio.paused && this.isPlaying) {
+            this.audio.pause();
         }
     }
+
+    /**
+     * find the prev/next effect and jump to it
+     *
+     * @param   {number} time       where we are in the audio timeline
+     * @param   {number} direction  direction to skip -1 goes backwards.  1 goes forward
+     */
+    public jump(time: number, direction: number, sceneLength: number) {
+        this.row = time * this.musicProperties.ROW_RATE;
+        const effectJump = Number(this.sceneData.effect.getValue(this.row).toFixed(1));
+        if (Math.trunc(Number(this.musicProperties.sceneData.effect)) !== Math.trunc(effectJump) && effectJump >= 1) {
+            // if running into transition effect 2.5..then keep searching and only land on whole numbers
+            if (parseInt(effectJump.toString(), 10) !== effectJump) {
+                this.jump(time + (0.12 * direction), direction, sceneLength);
+            } else {
+                this.seek(time);
+            }
+        } else {
+            if (time >= 0 && effectJump < sceneLength - 3) {
+                this.jump(time + (0.12 * direction), direction, sceneLength);
+            } else {
+                // go back to the beginning
+                this.seek(0);
+            }
+        }
+    }
+
+    /**
+     * Jumps to a point in the audio timeline in milliseconds
+     *
+     * @param  {number} time            time in milliseconds
+     */
+    public seek(time: number) {
+        this.audio.currentTime = time;
+        // update rocket editor position to new timeline location
+        if (!this.demoMode) {
+            this.syncDevice.update(this.audio.currentTime * this.musicProperties.ROW_RATE);
+        }
+    }
+
+    /**
+     * Turns music volume on or off
+     *
+     * @param  {HTMLElement} ref         volume icon to toggle
+     * @param  {boolean} isMuted         on or off
+     */
+    public toggleSound(ref: HTMLElement, isMuted: boolean) {
+        if (isMuted) {
+            ref.setAttribute('title', 'enable sound');
+            ref.classList.remove('fa-volume-up');
+            ref.classList.add('fa-volume-off');
+        } else {
+            ref.setAttribute('title', 'mute sound');
+            ref.classList.remove('fa-volume-off');
+            ref.classList.add('fa-volume-up');
+        }
+        this.audio.muted = isMuted;
+    }
+
+    /**
+     * Restore position of timeline & mute preference on reload
+     */
+    public initTimeline() {
+        // jump to last position on timeline for local development reloading
+        const jumpTo = localStorage.getItem('lastTime');
+        if (jumpTo) {
+            this.seek(Number(jumpTo));
+        }
+
+        // remember last sound preferences
+        const isMuted = localStorage.getItem('soundToggle') === 'true';
+        this.toggleSound(document.getElementById('ticker_volume'), isMuted);
+    }
+
+    /*
+    // todo: add effect # markers to timeline
+    fetch(rocketData.default).then(response => response.text())
+        .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
+        .then(data => {
+            const tracks: Element[] = Array.from(data.documentElement.getElementsByTagName("track"));
+            tracks.forEach((element) => {
+                if (element.getAttribute("name") === 'effect') {
+                    const keys: Element[] = Array.from(element.getElementsByTagName("key"));
+                    keys.forEach((elementKey) => {
+                        const p = document.createElement("option");
+                        const value = elementKey.getAttribute('row').valueOf();
+                        const label = elementKey.getAttribute('value').valueOf();
+
+                        // remap rows to a range between 0 and 1000
+                        const newValue = Utils.map(Number(label), 0, 1520, 0, 1000);
+
+                        p.value = value;
+                        p.label = label;
+                        // this.tickmarkRef.appendChild(p);
+                    })
+                }
+            });
+        });
+        */
 
 }
