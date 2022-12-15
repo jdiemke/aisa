@@ -11,7 +11,7 @@ class Example {
         return this;
     }
 
-    withCustomPath(path) {
+    withCustomEntryPoint(path) {
         this.path = path;
         return this;
     }
