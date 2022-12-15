@@ -10,7 +10,7 @@ module.exports.getEntryPoints = () => {
 };
 
 module.exports.getHtmlWebpackPlugins = () => examples.map(example => new HtmlWebpackPlugin({
-    template: './src/index.html',
+    template: example.template != undefined ? example.template : './src/index.html',
     chunks: [example.name],
     filename: `${example.name}.html`
 }));
