@@ -70,6 +70,4 @@ const examples = [
     new Example('psychadelic-plane-deformation'),
 ];
 
-console.log(examples);
-
 module.exports = examples;
