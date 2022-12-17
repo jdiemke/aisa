@@ -2,7 +2,6 @@ import { BoundingVolume } from './BoundingVolume';
 import { Vector4f } from './index';
 import { Matrix4f } from './Matrix4f';
 import { Plane } from './Plane';
-import { Vector3f } from './Vector3f';
 
 export class Sphere implements BoundingVolume {
 

@@ -1,6 +1,5 @@
 import { Vector4f } from '../math/Vector4f';
 import { AbstractGeometricObject } from './AbstractGeometricObject';
-import { Mesh } from './Mesh';
 import { Vector3f } from '../math/Vector3f';
 
 export class Torus extends AbstractGeometricObject {

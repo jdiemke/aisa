@@ -8,7 +8,7 @@ export class ScrollingBackgroundScene extends AbstractScene {
     private logoTexture: Texture;
     private startTime: number = Date.now();
 
-    public init(framebuffer: Framebuffer): Promise<any> {
+    public init(): Promise<any> {
         return Promise.all([
             TextureUtils.load(require('../../assets/pandabear.png'), false).then(
                 (texture: Texture) => this.logoTexture = texture

@@ -188,11 +188,10 @@ export class Matrix4f {
         return inverseRotation;
     }
 
-    static constructShadowMatrix(modelView: Matrix4f): Matrix4f {
+    static constructShadowMatrix(): Matrix4f {
         const planePoint: Vector3f = new Vector3f(0, -1.5, 0);
         const planeNormal: Vector3f = new Vector3f(0, 1, 0);
         const lightPosition: Vector3f = new Vector3f(0, 11, 0);
-        // modelView.multiplyArr(new Vector3f(20, 8, 20),lightPosition);
 
         const d = -planePoint.dot(planeNormal);
         const NdotL = planeNormal.x * lightPosition.x +

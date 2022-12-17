@@ -50,8 +50,6 @@ export class PortalRenderer {
         framebuffer.clearDepthBuffer();
         const points: Array<Vector4f> = polygon.vertices;
 
-        const scale = 0.8;
-
         const modelViewMartrix = matrix;
 
         const points2: Array<Vector3f> = new Array<Vector3f>();

@@ -2,7 +2,6 @@ import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { TorusKnot } from '../../geometrical-objects/TorusKnot';
 import { Matrix4f } from '../../math/Matrix4f';
-import { Vector3f, } from '../../math/Vector3f';
 import { Vector4f } from '../../math/Vector4f';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Fog } from '../../shading/fog/Fog';
@@ -39,7 +38,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer, time: number): void {
         this.renderingPipeline.setCullFace(CullFace.FRONT);
-        this.torusTunnel(framebuffer, time * 0.019, this.particleTexture);
+        this.torusTunnel(framebuffer, time * 0.019);
         framebuffer.drawScaledTextureClipAdd(
             framebuffer.width / 2 - this.cocoon.width / 2,
             framebuffer.height / 2 - this.cocoon.height / 2,
@@ -116,7 +115,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
         }
     }
 
-    public torusTunnel(framebuffer: Framebuffer, elapsedTime: number, texture: Texture): void {
+    public torusTunnel(framebuffer: Framebuffer, elapsedTime: number): void {
         framebuffer.clearDepthBuffer();
 
         const scale = 1.0;

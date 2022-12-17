@@ -57,7 +57,6 @@ export class BlenderCameraScene extends AbstractScene {
 
         this.renderingPipeline.setLights([this.light1, this.light2]);
 
-        console.log(CameraPathFile);
         this.skyBox = new SkyBox();
         this.startTime = Date.now();
         return Promise.all([
@@ -86,7 +85,6 @@ export class BlenderCameraScene extends AbstractScene {
         }
         this.fpsCount++;
 
-        const time: number = Date.now() - this.startTime;
         const cameraAnimator = new BlenderCameraAnimator();
         cameraAnimator.setKeyFrames(this.path);
 
@@ -96,7 +94,7 @@ export class BlenderCameraScene extends AbstractScene {
         this.skyBox.draw(framebuffer, modelViewMartrix);
         framebuffer.clearDepthBuffer();
 
-        this.computeCameraMovement(time * 0.6);
+        this.computeCameraMovement();
 
 
 
@@ -113,7 +111,7 @@ export class BlenderCameraScene extends AbstractScene {
         framebuffer.drawText(8, 16, 'FACES: ' + faces, this.texture4);
     }
 
-    private computeCameraMovement(elapsedTime: number): void {
+    private computeCameraMovement(): void {
         this.modelViewMatrix.setIdentity();
         this.modelViewMatrix.trans(0, 0, -15);
 

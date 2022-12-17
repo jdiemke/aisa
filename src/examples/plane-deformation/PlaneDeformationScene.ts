@@ -1,5 +1,4 @@
 import { Framebuffer } from '../../Framebuffer';
-import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { Color } from '../../core/Color';
 import { Utils } from '../../core/Utils';
@@ -234,10 +233,10 @@ export class PlaneDeformationScene {
                 const xdist = (x - (framebuffer.width / 2)) / (framebuffer.width / 2);
                 const ydist = (y - framebuffer.height / 2) / (framebuffer.height / 2);
                 const alpha = 1;// 1 - Math.min(1, (1 / Math.abs(ydist / 10)));
-                const a = Math.atan2(ydist, xdist) + Date.now() * 0.0004;
-                const v = (a * 3 / Math.PI + Date.now() * 0.0004) * 128 % 256;
+                const a = Math.atan2(ydist, xdist) + elapsedTime * 0.0004;
+                const v = (a * 3 / Math.PI + elapsedTime * 0.0004) * 128 % 256;
                 const d = Math.sqrt(xdist * xdist + ydist * ydist);
-                const u = (1 / (d + 0.5 + 0.5 * Math.sin(5 * a)) * 32 + Date.now() * 0.03) % 256;
+                const u = (1 / (d + 0.5 + 0.5 * Math.sin(5 * a)) * 32 + elapsedTime * 0.03) % 256;
                 const color1 = this.texture.texture[(u | 0) + (v | 0) * 256];
                 const r = (((color1 >> 0) & 0xff) * (alpha)) | 0;
                 const g = (((color1 >> 8) & 0xff) * (alpha)) | 0;

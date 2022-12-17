@@ -1,6 +1,6 @@
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
+import { Texture } from '../../texture';
 import { RotoZoomerScene } from '../roto-zoomer/RotoZoomerScene';
 import { Color } from '../../core/Color';
 import { CubeScene } from '../cube/CubeScene';

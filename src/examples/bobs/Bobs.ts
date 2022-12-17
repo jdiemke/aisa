@@ -11,7 +11,7 @@ export class Bobs extends AbstractScene {
     private texture5: Texture;
     private texture7: Texture;
 
-    public init(framebuffer: Framebuffer): Promise<any> {
+    public init(): Promise<any> {
         return Promise.all([
             TextureUtils.load(require('../../assets/atlantis.png'), false).then(
                 (texture: Texture) => this.texture5 = texture

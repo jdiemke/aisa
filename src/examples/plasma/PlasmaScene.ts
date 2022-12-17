@@ -15,7 +15,7 @@ export class PlasmaScene extends AbstractScene {
     private colorGrad: Array<number>;
     private swingCurve: Array<number>;
 
-    public init(framebuffer: Framebuffer): Promise<any> {
+    public init(): Promise<any> {
         this.makeGradient(this.GRADIENTLEN);
         this.makeSwingCurve(this.SWINGLEN, this.SWINGMAX);
         return Promise.all([]);

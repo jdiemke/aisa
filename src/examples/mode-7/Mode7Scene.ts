@@ -1,4 +1,3 @@
-import { Canvas } from '../../Canvas';
 import { Framebuffer } from '../../Framebuffer';
 import { Vector2f, Vector3f } from '../../math/index';
 import { AbstractScene } from '../../scenes/AbstractScene';
@@ -316,11 +315,11 @@ export class Mode7Scene extends AbstractScene {
 
         this.spriteRenderer.render(framebuffer);
         this.drawHeadUpDisplay(framebuffer);
-        this.drawLapCounter(framebuffer);
+        this.drawLapCounter();
         this.drawMinimap(framebuffer, npcs);
     }
 
-    private drawLapCounter(framebuffer: Framebuffer): void {
+    private drawLapCounter(): void {
         const offset: Vector2f = this.camera.getViewDirection().perp()
             .mul(10.0 * Math.sin((Date.now() - this.startTime) * 0.001) + 25);
         const pos: Vector2f = new Vector2f(this.kartPosition.x * 0.3, this.kartPosition.y * 0.3).sub(offset);
