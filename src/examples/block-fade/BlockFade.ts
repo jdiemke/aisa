@@ -23,6 +23,23 @@ export class BlockFade extends AbstractScene {
     public transitionCircle: Uint32Array;
     public transitionWipe: Uint32Array;
 
+    // dissolve 
+    croud: Float32Array;        // Stores data for mask control
+    prevMask: Array<boolean>;    // mask picture
+    curMask: Array<boolean>;
+    diff: Array<boolean>;       // difference mask
+    noiseMask: Array<boolean>;  // particle mask
+    t: number;                  // threshold
+    croudMask: Int16Array;     // cloud mask
+    img: Int16Array;            // test image
+    N_IMG: number = 1;          // number of images
+    imgIndex: number;
+    width: number;
+    height: number;
+    // LinkedList particleList;  // パーティクルリスト
+    pixelIndexLength: number;
+
+
     public init(framebuffer: Framebuffer): Promise<any> {
         this.transitionFramebufferTo = new Framebuffer(framebuffer.width, framebuffer.height);
 
@@ -45,11 +62,90 @@ export class BlockFade extends AbstractScene {
             this.drawCircle(framebuffer.width / 2, framebuffer.height / 2, d, c3);
         }
 
+        //dissolve effect
+        this.imgIndex = 0;
+        this.width = framebuffer.width;
+        this.height = framebuffer.height;
+
+        this.croud = new Float32Array(this.width * this.height);
+        this.prevMask = new Array<boolean>(this.width * this.height); /// new boolean[width * height];
+        this.curMask = new Array<boolean>(this.width * this.height);
+        this.diff = new Array<boolean>(this.width * this.height);
+        this.noiseMask = new Array<boolean>(this.width * this.height);
+
+        //particleList = new LinkedList();
+
+        this.croudMask = new Int16Array(this.width * this.height); //createImage(width, height, RGB);
+        this.initDissolve();
+
         return Promise.all([
             TextureUtils.load(require('../../assets/atlantis.png'), false).then(
                 (textureBackground: Texture) => this.ledTexture = textureBackground
             ),
         ]);
+    }
+
+    private initDissolve() {
+        //particleList.clear();
+        this.createCroud();
+        this.createCroudMask();
+
+        this.t = 0;
+        for (let y = 0; y < this.height; y++) {
+            for (let x = 0; x < this.width; x++) {
+                const index = y * this.width + x;
+                const isBackground = (this.croudMask[y * this.width + x] & 0xFF) < 0x80;
+                if (isBackground) {
+                    this.croud[index] = 0xFF000000;
+                }
+                this.prevMask[index] = this.curMask[index] = this.croud[index] < this.t;
+                if (Math.random() > 0.90) {
+                    this.noiseMask[index] = !isBackground;
+                }
+            }
+        }
+        this.imgIndex = ++this.imgIndex < this.N_IMG ? this.imgIndex : 0;
+    }
+
+    private createCroudMask() {
+        for (let y = 0; y < this.height; y++) {
+            for (let x = 0; x < this.width; x++) {
+                this.croudMask[y * this.width + x] = 0xFFFFFFFF;
+            }
+        }
+    }
+
+
+    private createCroud() {
+        if (this.croud == null) {
+            this.croud = new Float32Array(this.width * this.height);
+        }
+
+        let bias: number = 150.0;
+        const xbase = Math.random() * 100;
+        const ybase = Math.random() * 100;
+
+        let xnoise = 0.0;
+        let ynoise = 0.0;
+        const inc = 0.02;
+
+        bias = Math.min(bias, 0xFF);
+
+        const pn = Utils.PerlinNoise;
+
+        for (let y = 0; y < this.height; y++) {
+            const curBias = y * bias / this.height;
+            for (let x = 0; x < this.width; x++) {
+
+                const _gray = (pn.noise((xnoise + xbase), (ynoise + ybase), 0) * (0xFF - bias) + curBias);
+                //      float _gray = (int) (Noise.noise((xnoise + xbase), (ynoise + ybase),0) * (0xFF - bias) + curBias);
+                //      float _gray = (int) (noise(xnoise + xbase, ynoise + ybase,1150) * (0xFF - bias) + curBias);
+                this.croud[y * this.width + x] = _gray;
+                xnoise += inc;
+            }
+            xnoise = 0.0;
+            ynoise += inc;
+        }
     }
 
     private putpixel(x: number, y: number, color: number) {
