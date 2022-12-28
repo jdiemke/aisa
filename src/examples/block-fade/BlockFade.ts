@@ -36,7 +36,7 @@ export class BlockFade extends AbstractScene {
     imgIndex: number;
     width: number;
     height: number;
-    // LinkedList particleList;  // パーティクルリスト
+    // LinkedList particleList;  // particle list
     pixelIndexLength: number;
 
 
@@ -96,7 +96,7 @@ export class BlockFade extends AbstractScene {
                 const index = y * this.width + x;
                 const isBackground = (this.croudMask[y * this.width + x] & 0xFF) < 0x80;
                 if (isBackground) {
-                    this.croud[index] = 0xFF000000;
+                    this.croud[index] = 0xFF0000FF;
                 }
                 this.prevMask[index] = this.curMask[index] = this.croud[index] < this.t;
                 if (Math.random() > 0.90) {
@@ -207,7 +207,10 @@ export class BlockFade extends AbstractScene {
         // apply transition to framebuffer (fromEffect) using texture (toEffect) 0-255
         switch (Math.trunc(transitionMethod)) {
             case TransitionMethods.BLOCKFADE: // 0 - 12000
-                this.blockFade(framebuffer, this.transitionFramebufferTo.framebuffer, this.transitionFramebufferTo.width, Utils.map(transitionValue, 0, 255, 0, 12000), 0);
+
+                this.dissolve(framebuffer, this.transitionFramebufferTo.framebuffer, Utils.map(transitionValue, 0, 255, 0, framebuffer.height));
+                console.info('transitionValue', Utils.map(transitionValue, 0, 255, 0, framebuffer.height));
+                // this.blockFade(framebuffer, this.transitionFramebufferTo.framebuffer, this.transitionFramebufferTo.width, Utils.map(transitionValue, 0, 255, 0, 12000), 0);
                 break;
             case TransitionMethods.CROSSFADE: // 0 - 255
                 this.crossFade(framebuffer.framebuffer, transitionValue);
@@ -301,6 +304,32 @@ export class BlockFade extends AbstractScene {
                 );
             }
         }
+    }
+
+    // dissolve
+    dissolve(renderBuffer: Framebuffer, renderBuffer2: Uint32Array, time: number) {
+        for (let y = 0; y < this.height; y++) {
+            for (let x = 0; x < this.width; x++) {
+                const index = y * this.width + x;
+                this.curMask[index] = this.croud[index] < time ;
+                this.diff[index] = this.prevMask[index] != this.curMask[index];
+                this.prevMask[index] = this.curMask[index];
+
+                if (this.curMask[index]) {
+                    renderBuffer.framebuffer[index] = renderBuffer2[index];
+                } else {
+                   //  renderBuffer.framebuffer[index] = renderBuffer2[index];  // background
+                }
+
+                if (this.diff[index]) {
+                    renderBuffer.framebuffer[index] = 0xFFFFFFFF;  // torn drawing
+                    if (this.noiseMask[index]) {
+                        //                      particleList.add(new Particle(x, y, renderBuffer[index]));
+                    }
+                }
+            }
+        }
+        // this.t += 4;
     }
 
     // Alternating scanlines + RGB Distort /w external input
