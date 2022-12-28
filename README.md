@@ -22,7 +22,7 @@ Engine from scratch I used this opportunity. Hence this
 project contains a lot of elementary algorithms from then
 field of computer graphics including clipping, triangle rasterization, geometric transformations and so forth.
 ### Demos
-* [2D Bump Mapping](https://jdiemke.github.io/aisa/bump.html)
+* [2D Bump Mapping](https://jdiemke.github.io/aisa/bump-map.html)
 * [Third Person Camera](https://jdiemke.github.io/aisa/third-person-camera.html)
 * [Abstract Cube](https://jdiemke.github.io/aisa/abstract-cube.html)
 * [Baked Lighting](https://jdiemke.github.io/aisa/baked-lighting.html)
