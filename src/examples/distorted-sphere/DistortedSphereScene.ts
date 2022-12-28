@@ -1,5 +1,5 @@
 import { Framebuffer } from '../../Framebuffer';
-import { Matrix4f, Vector4f, Vector3f } from '../../math';
+import { Matrix4f, Vector4f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
@@ -109,7 +109,7 @@ export class DistortedSphereScene extends AbstractScene {
             }
         });
 
-        points.forEach(p => {
+        points.forEach(() => {
             normals.push(new Vector4f(0, 0, 0));
             normals2.push(new Vector4f(0, 0, 0));
             points2.push(new Vector4f(0, 0, 0));
@@ -182,7 +182,6 @@ export class DistortedSphereScene extends AbstractScene {
             const x = point.x;
             const y = point.y;
             const z = point.z;
-            const radius = 1.0;
             const u = Math.floor((0.5 + Math.atan2(z, x) / (2 * Math.PI)) * 255);
             const v = Math.floor((0.5 - Math.asin(y) / Math.PI) * 255);
             const disp = 1 + 1.4 * ((texture.texture[u + v * 256] & 0xff) / 255);
@@ -200,7 +199,7 @@ export class DistortedSphereScene extends AbstractScene {
             const y = result.points[i].z;
             const x = result.points[i].x;
             const length = Math.sqrt(x * x + y * y);
-            let rot = Math.sin(result.points[i].y * 0.539 + Math.max(20 - length*2,0) * 0.06 + elapsedTime * 0.9) * 4.5;
+            let rot = Math.sin(result.points[i].y * 0.539 + Math.max(20 - length * 2, 0) * 0.06 + elapsedTime * 0.9) * 4.5;
             rot *= Math.sin(elapsedTime * 0.25) * 0.5 + 0.5;
             result.points2[i].y = result.points[i].y;
             result.points2[i].x = result.points[i].x * Math.cos(rot) - result.points[i].z * Math.sin(rot);

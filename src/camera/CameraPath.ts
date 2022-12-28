@@ -1,4 +1,3 @@
-import { Vector3f } from '../math';
 import { CameraFrame } from './CameraFrame';
 
 export class CameraPath {

@@ -7,7 +7,7 @@ export class Scene3 {
     private logo: Texture;
     private background: Texture;
 
-    public init(framebuffer: Framebuffer): Promise<any> {
+    public init(): Promise<any> {
         return Promise.all([
             TextureUtils.load(require('../../../assets/logos/chick-on-phone.png'), true).then(
                 (texture: Texture) => this.background = texture
@@ -18,7 +18,7 @@ export class Scene3 {
         ]);
     }
 
-    public render(framebuffer: Framebuffer, time: number): void {
+    public render(framebuffer: Framebuffer): void {
         framebuffer.drawTexture(0, ((framebuffer.height / 2) - (this.background.height / 2)) | 0, this.background, 1.0);
 
         framebuffer.drawTexture(

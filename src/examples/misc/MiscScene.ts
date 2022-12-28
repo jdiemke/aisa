@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import RandomNumberGenerator from '../../RandomNumberGenerator';

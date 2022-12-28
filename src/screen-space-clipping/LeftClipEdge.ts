@@ -1,5 +1,4 @@
 import { AbstractClipEdge } from './AbstractClipEdge';
-import { Vector3f } from '../math/Vector3f';
 import { TextureCoordinate } from '../TextureCoordinate';
 import { Vertex } from '../Vertex';
 import { Framebuffer } from '../Framebuffer';

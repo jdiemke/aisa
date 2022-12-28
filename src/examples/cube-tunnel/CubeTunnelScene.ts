@@ -6,7 +6,6 @@ import { Matrix4f } from '../../math/Matrix4f';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture/index';
 import { Vector4f } from '../../math';
 import { Material } from '../../shading/material/Material';
 import { PointLight } from '../../shading/light/PointLight';
@@ -51,7 +50,6 @@ export class CubeTunnelScene extends AbstractScene {
         framebuffer.clearDepthBuffer();
 
         const xSteps = 40;
-        const xsteps = 5;
         const rot = 25;
         const rand = new RandomNumberGenerator();
         rand.setSeed(22);

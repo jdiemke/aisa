@@ -1,6 +1,5 @@
 import { CameraAnimator } from '../../animation/CameraAnimator';
 import { CameraKeyFrame } from '../../animation/CameraKeyFrame';
-import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
 import { BoundingVolumeExpander } from '../../clustered-culling/BoundingVolumeExpander';
 import { FrustumCuller } from '../../clustered-culling/FrustumCuller';
 import { CullFace } from '../../CullFace';

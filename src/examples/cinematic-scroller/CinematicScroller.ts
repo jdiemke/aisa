@@ -11,7 +11,7 @@ export class CinematicScroller extends AbstractScene {
     private ledTexture: Texture;
     private texture4: Texture;
 
-    public init(framebuffer: Framebuffer): Promise<any> {
+    public init(): Promise<any> {
         return Promise.all([
             TextureUtils.load(require('../../assets/battleofilona.png'), false).then(
                 (texture: Texture) => this.ledTexture = texture

@@ -10,7 +10,7 @@ export class FloodFillScene extends AbstractScene {
 
     private ledTexture: Texture;
 
-    public init(framebuffer: Framebuffer): Promise<any> {
+    public init(): Promise<any> {
         return Promise.all([
             TextureUtils.load(require('../../assets/atlantis.png'), false).then(
                 (texture: Texture) => this.ledTexture = texture

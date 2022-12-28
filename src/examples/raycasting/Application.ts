@@ -1,5 +1,3 @@
-import { Canvas } from '../../Canvas';
-
 class Application {
 
     public static main(): void {

@@ -196,8 +196,6 @@ export class ThirdPersonCameraScene extends AbstractScene {
         }
         this.fpsCount++;
 
-        const time: number = Date.now() - this.startTime;
-
         this.processInput(delta);
 
         framebuffer.clearColorBuffer(ThirdPersonCameraScene.CLEAR_COLOR);
@@ -212,7 +210,7 @@ export class ThirdPersonCameraScene extends AbstractScene {
         this.texturedRenderingPipeline.draw(framebuffer, this.floor);
         this.modelViewMatrix.trans(0, 0.1, 0);
 
-        this.computeGlowMovement(delta, currentTime);
+        this.computeGlowMovement(delta);
         framebuffer.setTexture(this.glow);
 
         this.texturedRenderingPipeline.enableAlphaBlending();
@@ -276,7 +274,7 @@ export class ThirdPersonCameraScene extends AbstractScene {
         this.modelViewMatrix.scal(0.05, 0.05, 0.05);
     }
 
-    private computeGlowMovement(delta: number, elapsedTime: number): void {
+    private computeGlowMovement(delta: number): void {
         // http://cubeengine.com/wiki/Importing_md2_and_md3_files
         this.modelViewMatrix.setIdentity();
         this.modelViewMatrix.multMatrix(this.getCamMatrix(delta));

@@ -1,4 +1,3 @@
-import { Color } from '../../core/Color';
 import { Vector4f } from '../../math/index';
 
 export abstract class Light {

@@ -214,9 +214,6 @@ export class TexturedTriangleRasterizer {
         let zslope2 = (1 / v2.z - 1 / v1.z) / yDistanceRight;
         const zslope1 = (1 / v3.z - 1 / v1.z) / yDistanceLeft;
 
-        let curx1 = v1.x;
-        let curx2 = v1.x;
-
         let curz1 = 1.0 / v1.z;
         let curz2 = 1.0 / v1.z;
 
@@ -261,9 +258,6 @@ export class TexturedTriangleRasterizer {
             xPosition2 += slope2;
             yPosition++;
 
-            curx1 += slope1;
-            curx2 += slope2;
-
             curz1 += zslope1;
             curz2 += zslope2;
 
@@ -281,7 +275,6 @@ export class TexturedTriangleRasterizer {
         tslope2u = (t3.x / v3.z - t2.x / v2.z) / yDistanceRight;
         tslope2v = (t3.y / v3.z - t2.y / v2.z) / yDistanceRight;
 
-        curx2 = v2.x;
         curz2 = 1.0 / v2.z;
 
         curu2 = t2.x / v2.z;
@@ -322,9 +315,6 @@ export class TexturedTriangleRasterizer {
             xPosition += slope1;
             xPosition2 += slope2;
             yPosition++;
-
-            curx1 += slope1;
-            curx2 += slope2;
 
             curz1 += zslope1;
             curz2 += zslope2;

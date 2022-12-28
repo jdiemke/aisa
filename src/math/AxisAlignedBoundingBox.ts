@@ -22,6 +22,7 @@ export class AxisAlignedBoundingBox implements BoundingVolume {
      * @param plane
      */
     public isInsidePositiveHalfSpace(plane: Plane): boolean {
+        console.info('plane', plane);
         throw new Error('Method not implemented.');
     }
 

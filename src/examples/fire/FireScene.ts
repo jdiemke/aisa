@@ -62,12 +62,12 @@ export class FireScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer, time: number): void {
-        this.drawFire(framebuffer, time);
+    public render(framebuffer: Framebuffer) {
+        this.drawFire(framebuffer);
         framebuffer.drawTextureNoClipAlpha(0, ((framebuffer.height / 2) - (this.logo.height / 2)) | 0, this.logo);
     }
 
-    public drawFire(framebuffer: Framebuffer, time: number): void {
+    public drawFire(framebuffer: Framebuffer): void {
 
         this.pong += this.pongDir;
 

@@ -1,5 +1,5 @@
 import { Framebuffer } from '../../Framebuffer';
-import { Matrix4f, Vector3f, Matrix3f } from '../../math/index';
+import { Matrix4f } from '../../math/index';
 import { Texture } from '../../texture/index';
 import { Particle } from './Particle';
 

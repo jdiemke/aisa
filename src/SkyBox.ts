@@ -79,7 +79,7 @@ export class SkyBox {
             // skybox: starz
             skyBoxSideModel = {
                 points: skyPoints,
-                points2: skyPoints.map(x => new Vector4f(0, 0, 0)),
+                points2: skyPoints.map(() => new Vector4f(0, 0, 0)),
                 uv: [
                     new TextureCoordinate(1, 1),
                     new TextureCoordinate(0, 1),
@@ -120,7 +120,7 @@ export class SkyBox {
         skyBoxSideModel = {
 
             points: skyPoints,
-            points2: skyPoints.map(x => new Vector4f(0, 0, 0)),
+            points2: skyPoints.map(() => new Vector4f(0, 0, 0)),
             uv: [
                 new TextureCoordinate(0, 0),
                 new TextureCoordinate(1, 0),
@@ -160,7 +160,7 @@ export class SkyBox {
         // skybox: starz
         skyBoxSideModel = {
             points: skyPoints,
-            points2: skyPoints.map(x => new Vector4f(0, 0, 0)),
+            points2: skyPoints.map(() => new Vector4f(0, 0, 0)),
             uv: [
                 new TextureCoordinate(1, 1),
                 new TextureCoordinate(0, 1),

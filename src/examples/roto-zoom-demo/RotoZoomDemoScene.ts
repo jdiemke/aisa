@@ -1,6 +1,6 @@
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
+import { Texture } from '../../texture';
 import { RotoZoomerScene } from '../roto-zoomer/RotoZoomerScene';
 import { Color } from '../../core/Color';
 import { CubeScene } from '../cube/CubeScene';
@@ -16,7 +16,7 @@ export class RotoZoomDemoScene extends AbstractScene {
 
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         return Promise.all([
-           this.zoomer.init(framebuffer),
+           this.zoomer.init(),
             this.cube.init(this.fbo2)
         ]);
     }

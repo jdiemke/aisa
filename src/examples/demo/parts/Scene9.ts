@@ -1,8 +1,5 @@
 import { Framebuffer } from '../../../Framebuffer';
-import { GouraudShadingRenderingPipeline } from '../../../rendering-pipelines/GouraudShadingRenderingPipeline';
 import { BlenderCameraScene } from '../../blender-camera-animation/WavefrontScene';
-
-
 export class Scene9 {
     private BlenderCameraScene: BlenderCameraScene;
     public init(framebuffer: Framebuffer): Promise<any> {

@@ -1,6 +1,5 @@
 import { Vector4f } from '../math';
 import { Face } from './Face';
-import { FlatShadedFace } from './FlatShadedFace';
 
 /**
  * Flatshader Mesh

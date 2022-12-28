@@ -133,9 +133,7 @@ export class RoomScene extends AbstractScene {
         const light = camera.multiply(new Vector3f(20, 19, -90));
         const lensflareScreenSpace = framebuffer.project(light);
 
-        framebuffer.drawParticleStreams(framebuffer, elapsedTime, spark, false, light,
-
-        );
+        framebuffer.drawParticleStreams(framebuffer, elapsedTime, spark, light );
 
         framebuffer.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.15, texture, dirt);
     }

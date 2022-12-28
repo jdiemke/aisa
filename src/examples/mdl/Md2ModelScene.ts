@@ -8,9 +8,7 @@ import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { ModelViewMatrix } from './ModelViewMatrix';
 import { WavefrontLoader } from '../../model/wavefront-obj/WavefrontLoader';
-import { ThirdPersonCamera } from '../../camera/ThirdPersonCamera';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
-import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 
 /**

@@ -154,7 +154,7 @@ export class Scene extends AbstractScene {
         }
         this.fpsCount++;
 
-         const time: number = (Date.now() - this.start);
+         // const time: number = (Date.now() - this.start);
 
 
         framebuffer.setCullFace(CullFace.FRONT);

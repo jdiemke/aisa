@@ -1,4 +1,4 @@
-import { Vector3f } from '../math';
+
 import { AbstractClipEdge } from './AbstractClipEdge';
 import { RightClipEdge } from './RightClipEdge';
 import { LeftClipEdge } from './LeftClipEdge';
@@ -25,12 +25,8 @@ export class SutherlandHodgman2DClipper {
     /**
      * FIXME: optimize by minimizing creation of new arrays
      *
-     * @param {Vector3f} v1
-     * @param {Vector3f} v2
-     * @param {Vector3f} v3
-     * @param {number} color
-     * @returns {void}
-     * @memberof Framebuffer
+     * @param {Array<Vertex>} subject
+     * @return {Array<Vertex>}
      */
     public clipConvexPolygon(subject: Array<Vertex>): Array<Vertex> {
 

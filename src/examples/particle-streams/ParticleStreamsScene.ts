@@ -1,13 +1,9 @@
-import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Vector3f, Matrix4f, Matrix3f } from '../../math';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture';
 
-/**
- * TODO: extract lens into effect class
- */
 export class ParticleStreamsScene extends AbstractScene {
 
     private blurred: Texture;
@@ -34,14 +30,14 @@ export class ParticleStreamsScene extends AbstractScene {
     public render(framebuffer: Framebuffer, time: number): void {
         // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
-        this.drawParticleStreams(framebuffer, time, this.particleTexture2, true);
+        this.drawParticleStreams(framebuffer, time, this.particleTexture2);
         const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         framebuffer.drawTexture(0, 0, texture3, 0.55);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
         framebuffer.noise(time, this.noise);
     }
 
-    public drawParticleStreams(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, noClear: boolean = false) {
+    public drawParticleStreams(framebuffer: Framebuffer, elapsedTime: number, texture: Texture) {
 
         const points: Array<Vector3f> = new Array<Vector3f>();
         const num = 50;

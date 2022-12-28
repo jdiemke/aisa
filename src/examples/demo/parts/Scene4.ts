@@ -10,7 +10,7 @@ export class Scene4 {
     private image: Texture;
     private PlasmaScene: PlasmaScene;
 
-    public init(framebuffer: Framebuffer): Promise<any> {
+    public init(): Promise<any> {
         this.PlasmaScene = new PlasmaScene();
 
         return Promise.all([
@@ -21,7 +21,7 @@ export class Scene4 {
             TextureUtils.load(require('../../../assets/lsd.png'), true).then(
                 (texture: Texture) => this.image = texture
             ),
-            this.PlasmaScene.init(framebuffer)
+            this.PlasmaScene.init()
         ]);
     }
 

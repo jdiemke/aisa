@@ -1,7 +1,6 @@
 import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { Matrix4f } from '../../math/Matrix4f';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
