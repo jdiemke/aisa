@@ -11,8 +11,6 @@ import { FlatShadingTriangleRasterizer } from './rasterizer/FlatShadingTriangleR
 import { LineRasterizerDda } from './rasterizer/line/LineRasterizer';
 import { LineRasterizerNoZ } from './rasterizer/line/LineRasterizerNoZ';
 import { TexturedTriangleRasterizer } from './rasterizer/TexturedTriangleRasterizer';
-import { FlatShadingRenderingPipeline } from './rendering-pipelines/FlatShadingRenderingPipeline';
-import { TexturingRenderingPipeline } from './rendering-pipelines/TexturingRenderingPipeline';
 import { AbstractClipEdge } from './screen-space-clipping/AbstractClipEdge';
 import { BottomClipEdge } from './screen-space-clipping/BottomClipEdge';
 import { CohenSutherlandLineClipper } from './screen-space-clipping/CohenSutherlandLineClipper';
@@ -22,9 +20,14 @@ import { TopClipEdge } from './screen-space-clipping/TopClipEdge';
 import { Texture } from './texture/Texture';
 import { TextureCoordinate } from './TextureCoordinate';
 import { Vertex } from './Vertex';
+
+/*
+import { FlatShadingRenderingPipeline } from './rendering-pipelines/FlatShadingRenderingPipeline';
+import { TexturingRenderingPipeline } from './rendering-pipelines/TexturingRenderingPipeline';
 import { BlenderJsonParser } from './blender/BlenderJsonParser';
 import { Material } from './shading/material/Material';
 import { PointLight } from './shading/light/PointLight';
+*/
 
 
 // let labJson2 = <any>require('./assets/lab2.json');
@@ -1623,24 +1626,13 @@ export class Framebuffer {
         );
     }
 
-    public drawParticleStreams(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, noClear: boolean = false, light: Vector3f) {
+    public drawParticleStreams(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, light: Vector3f) {
 
         const points: Array<Vector3f> = new Array<Vector3f>();
-        const num = 50;
-        const num2 = 10;
-        const scale = 2.1;
-
-
-
-
         const points2: Array<Vector3f> = new Array<Vector3f>(points.length);
-
-
         const transformed = framebuffer.project(light);
 
         points2.push(transformed);
-
-
         points2.sort((a, b) => {
             return a.z - b.z;
         });

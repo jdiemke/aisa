@@ -16,7 +16,7 @@ export class RotoZoomDemoScene extends AbstractScene {
 
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         return Promise.all([
-           this.zoomer.init(framebuffer),
+           this.zoomer.init(),
             this.cube.init(this.fbo2)
         ]);
     }
