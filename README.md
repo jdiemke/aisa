@@ -1,5 +1,5 @@
 # AISA
-[![Build Status](https://travis-ci.org/jdiemke/aisa.svg?branch=master)](https://travis-ci.org/jdiemke/aisa)
+![Build Status](https://github.com/jdiemke/aisa/actions/workflows/gh-pages.yml/badge.svg)
 [![GitHub stars](https://img.shields.io/github/stars/jdiemke/aisa.svg)](https://github.com/jdiemke/aisa/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/jdiemke/aisa.svg)](https://github.com/jdiemke/aisa/network)
 [![GitHub issues](https://img.shields.io/github/issues/jdiemke/aisa.svg)](https://github.com/jdiemke/aisa/issues)
