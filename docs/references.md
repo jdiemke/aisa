@@ -1,0 +1,103 @@
+# References
+
+- Portals & PVS
+    - Doom 3 Portal Rendering Code: https://github.com/id-Software/DOOM-3-BFG/blob/1caba1979589971b5ed44e315d9ead30b278d8b4/neo/renderer/RenderWorld_portals.cpp
+    - http://fabiensanglard.net/doom3/renderer.php
+    - https://gist.github.com/aeroson/b4b8b4a4b11ef5549a40
+    - https://www.iddevnet.com/doom3/visportals.php
+    - https://gamebanana.com/articles/72
+    - http://www.gamasutra.com/features/20060417/Anderson_Thesis.pdf
+    - https://www.bc.edu/content/dam/files/schools/cas_sites/cs/pdf/academics/honors/04DerekCarr.pdf
+    - http://www.alsprogrammingresource.com/pvs_tutorial.html
+    - http://www.cs.utah.edu/~jsnider/SeniorProj/BSP/default.htm
+    - http://www.jagregory.com/abrash-black-book/
+    - http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.96.7085&rep=rep1&type=pdf
+    - http://www.luki.webzdarma.cz/eng_06_en.htm
+    - https://www.bluesnews.com/abrash/chap64.shtml
+    - https://bwravencl.de/Bachelorarbeit.pdf
+- https://www.gamedev.net/articles/programming/general-and-gameplay-programming/frustum-culling-r4613/
+- http://archive.gamedev.net/archive/reference/programming/features/bsptree/bsp.pdf
+- http://www.cs.virginia.edu/%7Eluebke/publications/portals.html
+- https://nothings.org/gamedev/thief_rendering.html
+- http://www.robotrenegade.com/articles/id-tech-3-optimization/index.html
+- https://www.asc.ohio-state.edu/lewis.239/Gauge/abrash.pdf
+- https://www.bluesnews.com/abrash/chap64.shtml
+- http://www.cs.utah.edu/~jsnider/SeniorProj/BSP/default.htm
+- https://pdfs.semanticscholar.org/262c/8e3d09822a477b62d7eba8766755dffa35be.pdf
+- http://www.alsprogrammingresource.com/pvs_tutorial.html
+- https://hacks.mozilla.org/2011/12/faster-canvas-pixel-manipulation-with-typed-arrays/
+- http://www.ecere.com/3dbhole/
+- https://www.davrous.com/2013/06/21/tutorial-part-4-learning-how-to-write-a-3d-software-engine-in-c-ts-or-js-rasterization-z-buffering/
+- http://joshbeam.com/articles/triangle_rasterization/
+- http://forum.devmaster.net/t/advanced-rasterization/6145
+- http://www.gamers.org/dEngine/quake/papers/ddjclip.html
+- http://www.jagregory.com/abrash-black-book/#chapter-65-3-d-clipping-and-other-thoughts
+- http://downloads.gamedev.net/pdf/gpbb/gpbb65.pdf
+- http://www.cubic.org/docs/3dclip.htm
+- http://fabiensanglard.net/polygon_codec/
+- http://fabiensanglard.net/quake2/quake2_software_renderer.php
+- http://www.xbdev.net/maths_of_3d/rasterization/clipping/index.php
+- http://www.gamasutra.com/view/news/168577/Indepth_Software_rasterizer_and_triangle_clipping.php
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/projection-matrix-GPU-rendering-pipeline-clipping
+- http://www.songho.ca/opengl/gl_pipeline.html
+- http://www.songho.ca/opengl/gl_transform.html
+- http://www.songho.ca/opengl/gl_camera.html
+- http://www.songho.ca/opengl/gl_matrix.html
+- http://www.songho.ca/math/homogeneous/homogeneous.html
+- http://www.hugi.scene.org/online/coding/hugi%20se%204%20-%20index%20sorted%20by%20topic.htm
+- http://www.flipcode.com/archives/The_Art_of_Demomaking-Issue_01_Prologue.shtml
+- http://insolitdust.sourceforge.net/code.html
+- http://www.wab.com/screen.php?screen=20
+- http://www.helixsoft.nl/articles/circle/sincos.htm
+- https://gamedev.stackexchange.com/questions/24957/doing-an-snes-mode-7-affine-transform-effect-in-pygame
+- https://www.coranac.com/tonc/text/mode7ex.htm
+- http://codeincomplete.com/posts/javascript-racer-v1-straight/
+- http://www.extentofthejam.com/pseudo/
+- http://hugi.scene.org/online/hugi24/coding%20graphics%20bonz%20sines%20and%20cosines%20for%20fun%20and%20profit.htm
+- https://www.phatcode.net/res/224/files/html/ch65/65-03.html#Heading6
+- https://mikro.naprvyraz.sk/docs/
+- http://simonstechblog.blogspot.de/2012/04/software-rasterizer-part-1.html
+- http://www.lysator.liu.se/~mikaelk/doc/perspectivetexture/
+- http://chrishecker.com/Miscellaneous_Technical_Articles
+- http://www.gamasutra.com/blogs/MichaelKissner/20160112/263097/Writing_a_Game_Engine_from_Scratch__Part_4_Graphics_Library.php
+- https://www.codeproject.com/Articles/170296/D-Software-Rendering-Engine-Part-I
+- https://www.davrous.com/2013/06/13/tutorial-series-learning-how-to-write-a-3d-soft-engine-from-scratch-in-c-typescript-or-javascript/
+- https://www.youtube.com/playlist?list=PLEETnX-uPtBXP_B2yupUKlflXBznWIlL5
+- https://www.youtube.com/watch?v=cQY3WTKRI7I
+- https://www.youtube.com/playlist?list=PLEETnX-uPtBUbVOok816vTl1K9vV1GgH5
+- https://www.youtube.com/playlist?list=PLEETnX-uPtBUG4iRqc6bEBv5uxMXswlEL
+- https://www.youtube.com/playlist?list=PLbCDZQXIq7uYaf263gr-zb0wZGoCL-T5G
+- https://www.youtube.com/watch?v=9A5TVh6kPLA
+- http://joshbeam.com/articles/triangle_rasterization/
+- http://developers-club.com/posts/257107/
+- https://www.codeproject.com/Articles/170296/3D-Software-Rendering-Engine-Part-I
+- https://gamedev.stackexchange.com/questions/44263/fast-software-color-interpolating-triangle-rasterization-technique
+- https://fgiesen.wordpress.com/2011/07/05/a-trip-through-the-graphics-pipeline-2011-part-5/
+- http://insolitdust.sourceforge.net/code.html
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/opengl-perspective-projection-matrix
+- http://www.flipcode.com/archives/articles.shtml
+- http://lodev.org/cgtutor/
+- http://lodev.org/cgtutor/lineclipping.html
+- http://www.hugi.scene.org/online/coding/
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/perspective-correct-interpolation-vertex-attributes
+- http://simonstechblog.blogspot.de/2012/04/software-rasterizer-part-2.html
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/rendering-3d-scene-overview
+- http://www.sunshine2k.de/coding/java/TriangleRasterization/TriangleRasterization.html
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/visibility-problem-depth-buffer-depth-interpolation
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/perspective-correct-interpolation-vertex-attributes
+- https://gamedev.stackexchange.com/questions/38213/depth-interpolation-for-z-buffer-with-scanline
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-shading/shading-normals
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/transforming-objects-using-matrices
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-polygon-mesh
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/3d-viewing-pinhole-camera
+- https://www.scratchapixel.com/lessons/3d-basic-rendering/computing-pixel-coordinates-of-3d-point/mathematics-computing-2d-coordinates-of-3d-points
+- https://www.ntu.edu.sg/home/ehchua/programming/opengl/CG_BasicsTheory.html
+- http://www.songho.ca/index.html
+- https://en.wikipedia.org/wiki/Graphics_pipeline
+- https://en.wikipedia.org/wiki/Clipping_(computer_graphics)
+- https://www.ntu.edu.sg/home/ehchua/programming/opengl/CG_BasicsTheory.html
+- http://www.gamasutra.com/blogs/MichaelKissner/20160112/263097/Writing_a_Game_Engine_from_Scratch__Part_4_Graphics_Library.php
+- https://developer.tizen.org/development/guides/native-application/graphics/opengl-es/primitive-assembly-and-rasterization
+- http://www.sunshine2k.de/coding/java/SutherlandHodgman/SutherlandHodgman.html
+- http://www.cubic.org/docs/3dclip.htm
