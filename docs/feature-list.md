@@ -1,0 +1,41 @@
+# Features
+
+- Light & Material
+    - Directional Light
+    - Point Light
+    - Spot Light
+    - Ambient / Diffuse / Specular Color Components
+- Model Loading
+    - Wavefront OBJ (JSON)
+    - MD2 (Quake 2)
+- Post Processing
+    - Noise
+    - Glitch
+    - Motion Blur
+    - Radial Blur
+    - Pixelization
+    - Glow
+- Sprites
+    - Transparency
+    - Linear Filtering
+    - Bilinear Filtering
+- Speed-Up Techniques
+    - Backface Culling
+    - View Frustum Culling
+    - Bounding Volumes
+        - Sphere
+- Flat Shading
+- Gouraud Shading
+- Shadows
+    - Projection Shadows
+- Perspective Correct Texture Mapping
+- Spherical Environment Mapping
+- Near Plane & Viewport Clipping
+- Lens Flare
+- Billboarding
+- Soft Particles
+- Skybox
+- Camera
+    - Controllable First Person Camera
+    - Key Frame Animated Camera
+- Web Audio API
