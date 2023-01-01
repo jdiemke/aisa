@@ -64,3 +64,11 @@
 * [Wavefront OBJ with Texture](https://jdiemke.github.io/aisa/wavefront-texture.html)
 * [Wobble Tunnel](https://jdiemke.github.io/aisa/tunnel.html)
 * [Wobble](https://jdiemke.github.io/aisa/titan-effect.html)
+
+## New
+* [Psychadelic Plane Deformation](https://jdiemke.github.io/aisa/psychadelic-plane-deformation.html)
+* [Glow](https://jdiemke.github.io/aisa/glow.html)
+* [LED Tunnel](https://jdiemke.github.io/aisa/led-tunnel.html)
+* [Environment Mapping Torus](https://jdiemke.github.io/aisa/environment-mapping-torus.html)
+* [Environment Mapping Waves](https://jdiemke.github.io/aisa/environment-mapping-waves.html)
+* [Environment Mapping Cylinder](https://jdiemke.github.io/aisa/environment-mapping-cylinder.html)

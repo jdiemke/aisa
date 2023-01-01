@@ -77,7 +77,6 @@ export class BlenderCameraScene extends AbstractScene {
         this.renderingPipeline.setCullFace(CullFace.BACK);
         this.renderingPipeline.setLights([this.light1, this.light2]);
 
-
         if (currentTime > this.fpsStartTime + 1000) {
             this.fpsStartTime = currentTime;
             this.fps = this.fpsCount;
@@ -105,7 +104,6 @@ export class BlenderCameraScene extends AbstractScene {
             this.renderingPipeline.draw(framebuffer, this.meshes[j], modelViewMartrix);
             faces += this.meshes[j].faces.length;
         }
-
 
         framebuffer.drawText(8, 8, 'FPS: ' + this.fps.toString(), this.texture4);
         framebuffer.drawText(8, 16, 'FACES: ' + faces, this.texture4);

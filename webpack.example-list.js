@@ -68,6 +68,11 @@ const examples = [
     new Example('text-zoomer'),
     new Example('roto-zoom-demo'),
     new Example('psychadelic-plane-deformation'),
+    new Example('led-tunnel'),
+    new Example('environment-mapping-torus'),
+    new Example('environment-mapping-waves'),
+    new Example('environment-mapping-cylinder'),
+    new Example('glow'),
 ];
 
 module.exports = examples;
