@@ -11,6 +11,7 @@ export class LedTunnelScene extends AbstractScene {
     private ledTexture: Texture;
     private noise: Texture; private accumulationBuffer: Uint32Array;
     private scene: CubeScene;
+    
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.scene = new CubeScene();

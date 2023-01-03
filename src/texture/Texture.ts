@@ -32,21 +32,31 @@ export class Texture {
         return col;
     }
 
-    public getBilinearFilteredPixel2(x: number, y: number) {
+    public getBilinearFilteredPixel2(x: number, y: number, clamp: boolean = false) {
 
-        const x0 = Math.min(x | 0, this.width - 1);
-        const x1 = Math.min((x | 0) + 1, this.width - 1);
-        const y0 = Math.min(y | 0, this.height - 1);
-        const y1 = Math.min((y | 0) + 1, this.height - 1);
+        let x0 = x | 0;
+        let x1 = (x | 0) + 1;
+        let y0 = y | 0;
+        let y1 = (y | 0) + 1;
+   
+        if (clamp) {
+             x0 = Math.max(Math.min(x0, this.width - 1), 0);
+             x1 = Math.max(Math.min(x1, this.width - 1), 0);
+             y0 = Math.max(Math.min(y0, this.height - 1), 0);
+             y1 = Math.max(Math.min(y1, this.height - 1), 0);
+        }
 
-        const x0y0 = this.getPixel2(this, x0, y0);
-        const x1y0 = this.getPixel2(this, x1, y0);
-        const x0y1 = this.getPixel2(this, x0, y1);
-        const x1y1 = this.getPixel2(this, x1, y1);
 
-        return this.interpolateComp(x, y, x0y0 & 0xff, x1y0 & 0xff, x0y1 & 0xff, x1y1 & 0xff) |
+        const x0y0 = this.getPixel3(this, x0, y0);
+        const x1y0 = this.getPixel3(this, x1, y0);
+        const x0y1 = this.getPixel3(this, x0, y1);
+        const x1y1 = this.getPixel3(this, x1, y1);
+        
+        //return x0y1;
+        return this.interpolateComp(x, y, x0y0 & 0xff, x1y0 & 0xff, x0y1 & 0xff, x1y1 & 0xff)|
             this.interpolateComp(x, y, x0y0 >> 8 & 0xff, x1y0 >> 8 & 0xff, x0y1 >> 8 & 0xff, x1y1 >> 8 & 0xff) << 8 |
-            this.interpolateComp(x, y, x0y0 >> 16 & 0xff, x1y0 >> 16 & 0xff, x0y1 >> 16 & 0xff, x1y1 >> 16 & 0xff) << 16;
+           this.interpolateComp(x, y, x0y0 >> 16 & 0xff, x1y0 >> 16 & 0xff, x0y1 >> 16 & 0xff, x1y1 >> 16 & 0xff) << 16
+           | 0xff << 24;;
     }
 
     public getPixel2(texture: Texture, x: number, y: number): number {

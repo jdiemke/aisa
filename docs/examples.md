@@ -52,7 +52,6 @@
 * [Stanford Dragon](https://jdiemke.github.io/aisa/wavefront.html)
 * [Starfield](https://jdiemke.github.io/aisa/starfield.html)
 * [Text Zoomer](https://jdiemke.github.io/aisa/text-zoomer.html)
-* [Textured Torus](https://jdiemke.github.io/aisa/textured-torus.html)
 * [Titan Effect](https://jdiemke.github.io/aisa/titan-effect.html)
 * [Torus Knot Tunnel](https://jdiemke.github.io/aisa/torus-knot-tunnel.html)
 * [Torus Knot](https://jdiemke.github.io/aisa/torus-knot.html)
@@ -66,9 +65,13 @@
 * [Wobble](https://jdiemke.github.io/aisa/titan-effect.html)
 
 ## New
+* [Textured Torus](https://jdiemke.github.io/aisa/textured-torus.html)
 * [Psychadelic Plane Deformation](https://jdiemke.github.io/aisa/psychadelic-plane-deformation.html)
 * [Glow](https://jdiemke.github.io/aisa/glow.html)
 * [LED Tunnel](https://jdiemke.github.io/aisa/led-tunnel.html)
 * [Environment Mapping Torus](https://jdiemke.github.io/aisa/environment-mapping-torus.html)
 * [Environment Mapping Waves](https://jdiemke.github.io/aisa/environment-mapping-waves.html)
 * [Environment Mapping Cylinder](https://jdiemke.github.io/aisa/environment-mapping-cylinder.html)
+* [Cube Subpixel](https://jdiemke.github.io/aisa/cube-subpixel.html)
+* [Wavefront with Texture 2](https://jdiemke.github.io/aisa/wavefront-texture2.html)
+

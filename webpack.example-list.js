@@ -73,6 +73,11 @@ const examples = [
     new Example('environment-mapping-waves'),
     new Example('environment-mapping-cylinder'),
     new Example('glow'),
+    new Example('fog'),
+    new Example('wavefront-texture2'),
+    new Example('mirror'),
+    new Example('text-zoom'),
+    new Example('bouncing-text'),
 ];
 
 module.exports = examples;

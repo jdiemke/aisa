@@ -14,10 +14,10 @@ import { PlayerState } from './PlayerState';
  */
 export class PlayerStateMachine {
 
-    public md2: MD2Model;
+    public md2: MD2Model[];
     private activeState: PlayerState = null;
 
-    public constructor(md2: MD2Model, public pl: Player) {
+    public constructor(md2: MD2Model[], public pl: Player) {
         this.md2 = md2;
         this.setState(new PlayerStandingState(this));
     }

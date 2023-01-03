@@ -43,7 +43,17 @@ export class EnvironmentMappingScene extends AbstractScene {
         framebuffer.clearColorBuffer(Color.BLACK.toPackedFormat());
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.flood.texture);
         framebuffer.setTexture(this.env);
-        this.shadingTorusENvironment(framebuffer, time * 0.01);
+        this.shadingTorusENvironment(framebuffer, time * 0.008);
+    }
+
+
+    private torusFunction3(alpha: number): Vector3f {
+        const p = 2
+        const q = 3;
+        const r = 0.5 * (2 + Math.sin(q * alpha));
+        return new Vector3f(r * Math.cos(p * alpha),
+            r * Math.cos(q * alpha),
+            r * Math.sin(p * alpha)).mul(10);
     }
 
 
@@ -55,13 +65,20 @@ export class EnvironmentMappingScene extends AbstractScene {
 
         // compute normals
         let normals: Array<Vector4f> = new Array<Vector4f>();
-        const STEPS = 15 * 2;
+        const STEPS = 35 * 2;
         const STEPS2 = 8 * 2;
         for (let i = 0; i < STEPS + 1; i++) {
-            let frame = framebuffer.torusFunction(i * 2 * Math.PI / STEPS);
-            let frame2 = framebuffer.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
-            let up = new Vector3f(0.0, 4.0, 0);
-            let right = frame2.sub(frame).cross(up);
+        const frame = this.torusFunction3(i * 2 * Math.PI / STEPS);
+            const frame2 = this.torusFunction3(i * 2 * Math.PI / STEPS + 0.01);
+            
+           // const up = new Vector3f(0.0, 16.0, 0);
+          //  const right = frame2.sub(frame).cross(up).normalize().mul(16);
+
+
+            const tangent = frame2.sub(frame);
+            let up = frame.add(frame2).normalize();
+            const right = tangent.cross(up).normalize().mul(4.4);
+            up = right.cross(tangent).normalize().mul(4.4);
 
             for (let r = 0; r < STEPS2 + 1; r++) {
                 let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
@@ -101,8 +118,8 @@ export class EnvironmentMappingScene extends AbstractScene {
             normals2.push(modelViewMartrix.multiplyHom(normals[n]));
         }
 
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.3) * 26, Math.sin(elapsedTime * 0.2) * 10
-            , -55)
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.09) * 10+20, Math.sin(elapsedTime * 0.1) * 10
+            , -65)
             .multiplyMatrix(modelViewMartrix);
 
         for (let p = 0; p < points.length; p++) {
@@ -164,23 +181,23 @@ export class EnvironmentMappingScene extends AbstractScene {
                 vertexArray[2].position = v3;
                 framebuffer.fakeSphere(n3, vertex3);
 
-               /* if (v1.x < Framebuffer.minWindow.x ||
-                    v2.x < Framebuffer.minWindow.x ||
-                    v3.x < Framebuffer.minWindow.x ||
-                    v1.x > Framebuffer.maxWindow.x ||
-                    v2.x > Framebuffer.maxWindow.x ||
-                    v3.x > Framebuffer.maxWindow.x ||
-                    v1.y < Framebuffer.minWindow.y ||
-                    v2.y < Framebuffer.minWindow.y ||
-                    v3.y < Framebuffer.minWindow.y ||
-                    v1.y > Framebuffer.maxWindow.y ||
-                    v2.y > Framebuffer.maxWindow.y ||
-                    v3.y > Framebuffer.maxWindow.y) {
+                if (v1.x < framebuffer.minWindow.x ||
+                    v2.x < framebuffer.minWindow.x ||
+                    v3.x < framebuffer.minWindow.x ||
+                    v1.x > framebuffer.maxWindow.x ||
+                    v2.x > framebuffer.maxWindow.x ||
+                    v3.x > framebuffer.maxWindow.x ||
+                    v1.y < framebuffer.minWindow.y ||
+                    v2.y < framebuffer.minWindow.y ||
+                    v3.y < framebuffer.minWindow.y ||
+                    v1.y > framebuffer.maxWindow.y ||
+                    v2.y > framebuffer.maxWindow.y ||
+                    v3.y > framebuffer.maxWindow.y) {
 
-                   // this.clipConvexPolygon2(vertexArray);
-                } else {*/
+                   framebuffer.texturedRenderingPipeline.clipConvexPolygon2(framebuffer, vertexArray);
+                } else {
                 framebuffer.texturedTriangleRasterizer.drawTriangleDDA(framebuffer,vertexArray[0], vertexArray[1], vertexArray[2]);
-               // }
+               }
             }
         }
     }

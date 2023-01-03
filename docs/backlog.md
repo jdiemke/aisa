@@ -1,5 +1,9 @@
 # Backlog
-
+- Make Texture Filtering configurable
+    - LINEAR
+    - NEAREST
+    - CLAMP_TO_EDGE
+- Multitexturing
 - Generalized Perspective Correct Vertex Attribute Interpolation
     - https://computergraphics.stackexchange.com/questions/4079/perspective-correct-texture-mapping
     - http://www.flipcode.com/archives/The_Art_of_Demomaking-Issue_14_Perspective_Correct_Texture_Mapping.shtml
@@ -28,7 +32,6 @@
 - Fog
 - Particles Collision
 - Planar Reflections
-- Multitexturing
 - Material
 - Shadow Mapping
 - Pixel Shaders (Bump Mapping, Parallax Mapping)
