@@ -120,7 +120,7 @@ export class MiscScene extends AbstractScene {
             this.createTexture(require('../../assets/dirt.png'), true).then(texture => this.dirt = texture),
 
         ]).then(() => {
-            framebuffer.precompute();
+           // framebuffer.precompute(t);
 
             const sm: SoundManager = new SoundManager();
             // sm.playExtendedModule(require('../../assets/sound/dubmood_-_cromenu1_haschkaka.xm').default);

@@ -16,21 +16,47 @@ export class PolarVoxelsScene extends AbstractScene {
         ]);
     }
 
-    public render(framebuffer: Framebuffer): void {
-        const time: number = Date.now() * 3;
+    public render(framebuffer: Framebuffer, time: number): void {
+        
         this.drawVoxelLandscape4(framebuffer, this.heightmap, time);
+        this.drawPolarDistotion2( framebuffer, time, this.getTempTexture(framebuffer, time));
+        framebuffer.noise(time, this.noise);
+    }
+    
+    public getTempTexture(framebuffer: Framebuffer, time: number): Texture {
+
+        const typeSwitch= ((time / 2000) | 0) % 2;
         const tempTexture: Texture = new Texture();
         tempTexture.texture = new Uint32Array(256 * 256);
         for (let y = 0; y < 256; y++) {
             for (let x = 0; x < 256; x++) {
-                const ypos = (framebuffer.height-1) - Math.round(framebuffer.height / 256 * x);
+                const ypos = typeSwitch ? (framebuffer.height-1) - Math.round(framebuffer.height / 256 * x) : Math.round(framebuffer.height / 256 * x);
                 const xpos = Math.round(framebuffer.width / 256 * y);
                 tempTexture.texture[x + y * 256] = framebuffer.framebuffer[xpos + ypos * framebuffer.width];
             }
         }
-        framebuffer.drawPolarDistotion2(time, tempTexture);
-        framebuffer.noise(time, this.noise);
+
+        return tempTexture;
     }
+    
+    public drawPolarDistotion2( framebuffer:Framebuffer,elapsedTime: number, texture: Texture): void {
+        let i = 0;
+        const distScale = 1.355 * (0.4 + 0.6 * 0.5 * (1 + Math.sin(elapsedTime * 0.00017)));
+        for (let y = 0; y < framebuffer.height; y++) {
+            for (let x = 0; x < framebuffer.width; x++) {
+                const xdist = (x - framebuffer.width / 2);
+                const ydist = (y - framebuffer.height / 2);
+                const dist = Math.sqrt(xdist * xdist + ydist * ydist) * distScale;
+                const angle = Math.atan2(xdist, ydist) / (Math.PI * 2) * 256;
+
+                const color1 = texture.texture[(dist & 0xff) + (angle & 0xff) * 256];
+
+                framebuffer.framebuffer[i++] = color1;
+            }
+        }
+    }
+
+
 
     public drawVoxelLandscape4(framebuffer: Framebuffer, texture: Texture, time: number): void {
         framebuffer.clearColorBuffer(255 << 24);

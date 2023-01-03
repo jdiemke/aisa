@@ -5,7 +5,7 @@ import { PlayerState } from './PlayerState';
 export class PlayerStandingState extends PlayerState {
 
     public entry(): void {
-        this.context.md2.setAnim(MD2Animation.STAND, 0, true);
+        this.context.md2.forEach(x => x.setAnim(MD2Animation.STAND, 0, true));
     }
 
     public upButton(): void {

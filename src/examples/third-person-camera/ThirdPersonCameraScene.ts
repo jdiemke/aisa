@@ -33,6 +33,7 @@ export class ThirdPersonCameraScene extends AbstractScene {
     private gamepad: AisaGamepad = new AisaGamepad();
 
     private ogroTexture: Texture;
+    private freakTexture: Texture;
     private weaponTexture: Texture;
     private texture4: Texture;
     private glow: Texture;
@@ -41,10 +42,12 @@ export class ThirdPersonCameraScene extends AbstractScene {
     private md2: MD2Model;
     private weapon: MD2Model;
     private startTime: number;
+    private md2Freak: MD2Model;
 
     private modelViewMatrix: ModelViewMatrix = new ModelViewMatrix();
 
     private floor: TexturedMesh;
+    private shadow: TexturedMesh;
 
     private fpsStartTime: number = Date.now();
     private fpsCount: number = 0;
@@ -83,9 +86,15 @@ export class ThirdPersonCameraScene extends AbstractScene {
                 (texture: Texture) => this.ground = texture),
             TextureUtils.load(require('../../assets/glow.png'), true).then(
                 (texture: Texture) => this.glow = texture),
+                TextureUtils.load(require('../../assets/md2/texture2.jpg'), false).then(
+                    (texture: Texture) => this.freakTexture = texture
+                ),
+                MD2Loader.load(require('../../assets/md2/drfreak.md2')).then(
+                    (mesh: MD2Model) => this.md2Freak = mesh
+                )
         ]).then(
             () => {
-                this.playerStateMachine = new PlayerStateMachine(this.md2, this.player);
+                this.playerStateMachine = new PlayerStateMachine([this.md2, this.weapon], this.player);
                 window.addEventListener('gamepadconnected', (e: GamepadEvent) => {
                     console.log('Gamepad connected at index %d: %s. %d buttons, %d axes.',
                         e.gamepad.index, e.gamepad.id,
@@ -101,9 +110,9 @@ export class ThirdPersonCameraScene extends AbstractScene {
                 ];
                 mesh.uv = [
                     new TextureCoordinate(0, 0),
-                    new TextureCoordinate(1, 0),
-                    new TextureCoordinate(1, 1),
-                    new TextureCoordinate(0, 1)
+                    new TextureCoordinate(2.0, 0),
+                    new TextureCoordinate(2.0, 2.0),
+                    new TextureCoordinate(0, 2.0)
                 ];
                 mesh.points2 = mesh.points.map(() => new Vector4f(0, 0, 0, 0));
                 mesh.faces = [
@@ -117,6 +126,18 @@ export class ThirdPersonCameraScene extends AbstractScene {
                     }
                 ];
                 this.floor = mesh;
+
+                const mesh2: TexturedMesh = new TexturedMesh();
+                mesh2.points = mesh.points;
+                mesh2.points2 = mesh.points2;
+                mesh2.faces = mesh.faces;
+                mesh2.uv =[
+                    new TextureCoordinate(0, 0),
+                    new TextureCoordinate(1, 0),
+                    new TextureCoordinate(1, 1),
+                    new TextureCoordinate(0, 1)
+                ];
+                this.shadow = mesh2;
             });
     }
 
@@ -208,6 +229,10 @@ export class ThirdPersonCameraScene extends AbstractScene {
         this.computeFloorMovement(delta);
         this.texturedRenderingPipeline.setModelViewMatrix(this.modelViewMatrix.getMatrix());
         this.texturedRenderingPipeline.draw(framebuffer, this.floor);
+
+
+
+
         this.modelViewMatrix.trans(0, 0.1, 0);
 
         this.computeGlowMovement(delta);
@@ -215,12 +240,23 @@ export class ThirdPersonCameraScene extends AbstractScene {
 
         this.texturedRenderingPipeline.enableAlphaBlending();
         this.texturedRenderingPipeline.setModelViewMatrix(this.modelViewMatrix.getMatrix());
-        this.texturedRenderingPipeline.draw(framebuffer, this.floor);
+        this.texturedRenderingPipeline.draw(framebuffer, this.shadow);
         this.texturedRenderingPipeline.disableAlphaBlending();
 
         this.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
 
         this.renderPlayer(framebuffer, delta);
+
+        this.modelViewMatrix.setIdentity();
+        this.modelViewMatrix.multMatrix(this.getCamMatrix(delta));
+        this.modelViewMatrix.trans(0, 24 * 0.05, 0);
+        this.modelViewMatrix.yRotate(Math.PI * 2 / 360 * (90 + 0));
+        this.modelViewMatrix.xRotate(Math.PI * 2 / 360 * -90);
+        this.modelViewMatrix.scal(0.05, 0.05, 0.05);
+
+        framebuffer.setTexture(this.freakTexture);
+        this.texturedRenderingPipeline.setModelViewMatrix(this.modelViewMatrix.getMatrix());
+      this.texturedRenderingPipeline.draw(framebuffer, this.md2Freak.getMesh(currentTime));
         framebuffer.drawText(8, 8, 'FPS: ' + this.fps.toString(), this.texture4);
         framebuffer.drawText(8, 16, 'TRIANGELS: ' +
             (this.md2.header.numberOfTriangles + this.weapon.header.numberOfTriangles), this.texture4);

@@ -103,9 +103,15 @@ export class TexturedTriangleRasterizer {
                     framebuffer.wBuffer[framebufferIndex] = wStart;
                     const z = 1 / wStart;
 
-                    const u = Math.max(Math.min((uStart * z * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
-                    const v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
-                    const color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
+                    let u = Math.max(Math.min((uStart * z * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
+                    let v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
+                    let color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
+                    
+                
+                    u = uStart * z * framebuffer.bob.width;
+                    v = vStart * z * framebuffer.bob.height;
+                
+                   color2 = framebuffer.bob.getBilinearFilteredPixel2(u,v);
 
                     framebuffer.framebuffer[framebufferIndex] = color2;
 
@@ -166,9 +172,14 @@ export class TexturedTriangleRasterizer {
                     const z = 1 / wStart;
 
 
-                    const u = Math.max(Math.min((uStart * z * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
-                    const v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
-                    const color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
+                    let u = Math.max(Math.min((uStart * z * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
+                    let v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
+                    let color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
+
+                    u = uStart * z * framebuffer.bob.width;
+                    v = vStart * z * framebuffer.bob.height;
+                
+                   color2 = framebuffer.bob.getBilinearFilteredPixel2(u,v);
 
                     framebuffer.framebuffer[framebufferIndex] = color2;
                 }
@@ -242,9 +253,15 @@ export class TexturedTriangleRasterizer {
                     const z = 1 / wStart;
 
 
-                    const u = Math.max(Math.min((uStart * z * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
-                    const v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
-                    const color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
+                    let u = Math.max(Math.min((uStart * z * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
+                    let v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
+                    let color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
+                   
+                   
+                    u = uStart * z * framebuffer.bob.width;
+                    v = vStart * z * framebuffer.bob.height;
+                
+                   color2 = framebuffer.bob.getBilinearFilteredPixel2(u,v);
 
                     framebuffer.framebuffer[framebufferIndex] = color2;
                 }
@@ -300,9 +317,14 @@ export class TexturedTriangleRasterizer {
                     framebuffer.wBuffer[framebufferIndex] = wStart;
                     const z = 1 / wStart;
 
-                    const u = Math.max(Math.min((uStart * z * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
-                    const v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
-                    const color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
+                    let u = Math.max(Math.min((uStart * z * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
+                    let v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
+                    let color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
+
+                    u = uStart * z * framebuffer.bob.width;
+                    v = vStart * z * framebuffer.bob.height;
+                
+                   color2 = framebuffer.bob.getBilinearFilteredPixel2(u,v);
 
                     framebuffer.framebuffer[framebufferIndex] = color2;
                 }

@@ -26,7 +26,7 @@ export class TexturedTorusScene extends AbstractScene {
 
         return Promise.all([
             TextureUtils.load(require('../../assets/font.png'), true).then(texture => this.texture4 = texture),
-            TextureUtils.load(require('../../assets/abstract.png'), false).then(texture => this.abstract = texture),
+            TextureUtils.load(require('../../assets/cyber.png'), false).then(texture => this.abstract = texture),
             TextureUtils.load(require('../../assets/atlantis.png'), false).then(texture => this.texture5 = texture),
         ]);
     }
@@ -36,7 +36,7 @@ export class TexturedTorusScene extends AbstractScene {
 
         framebuffer.setTexture(this.abstract);
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.texture5.texture);
-        this.shadingTorus4(framebuffer, time * 0.001);
+        this.shadingTorus4(framebuffer, time * 0.002);
         this.cinematicScroller(framebuffer, this.texture4, time);
     }
 
@@ -44,12 +44,12 @@ export class TexturedTorusScene extends AbstractScene {
 
         framebuffer.clearDepthBuffer();
 
-        const scale = 2.1;
+        const scale = 0.3;
 
-        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.25));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3));
+        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.35));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.4));
         modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.3) * 26, Math.sin(elapsedTime * 0.2) * 10
-            , -45)
+            , -55)
             .multiplyMatrix(modelViewMartrix);
 
         this.texturedRenderingPipleine.setModelViewMatrix(modelViewMartrix);
@@ -61,24 +61,42 @@ export class TexturedTorusScene extends AbstractScene {
         return new Vector3f(Math.sin(alpha) * 10, 0, Math.cos(alpha) * 10);
     }
 
+    private torusFunction3(alpha: number): Vector3f {
+        const p = 2
+        const q = 3;
+        const r = 0.5 * (2 + Math.sin(q * alpha));
+        return new Vector3f(r * Math.cos(p * alpha),
+            r * Math.cos(q * alpha),
+            r * Math.sin(p * alpha)).mul(50);
+    }
+
     private computeTexturedTorusMesh(): TexturedMesh {
         const points: Array<Vector4f> = [];
         const textCoords: Array<TextureCoordinate> = [];
 
-        const STEPS = 15;
-        const STEPS2 = 8;
+        const STEPS = 75;
+        const STEPS2 = 30;
         for (let i = 0; i < STEPS + 1; i++) {
-            const frame = this.torusFunction(i * 2 * Math.PI / STEPS);
-            const frame2 = this.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
-            const up = new Vector3f(0.0, 4.0, 0);
-            const right = frame2.sub(frame).cross(up);
+            const frame = this.torusFunction3(i * 2 * Math.PI / STEPS);
+            const frame2 = this.torusFunction3(i * 2 * Math.PI / STEPS + 0.01);
+            
+           // const up = new Vector3f(0.0, 16.0, 0);
+          //  const right = frame2.sub(frame).cross(up).normalize().mul(16);
+
+
+            const tangent = frame2.sub(frame);
+            let up = frame.add(frame2).normalize();
+            const right = tangent.cross(up).normalize().mul(18.4);
+            up = right.cross(tangent).normalize().mul(18.4);
+
+
 
             for (let r = 0; r < STEPS2 + 1; r++) {
                 const pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
                 points.push(new Vector4f(pos.x, pos.y, pos.z));
                 const t = new TextureCoordinate();
                 t.u = 1 / (STEPS2) * r;
-                t.v = 1 / (STEPS) * i;
+                t.v = 7 / (STEPS) * i;
                 textCoords.push(t);
             }
         }
