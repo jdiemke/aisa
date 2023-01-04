@@ -2034,7 +2034,7 @@ export class Framebuffer {
         }
 
         // this.drawTextureRectAdd(0, 0, 0, 0, this.width, this.height, dirt, 0.03 + 0.15 * scale);
-        this.drawScaledTextureClipBi(0, 0, this.width, this.height, dirt, 0.15 + 0.20 * scale);
+        this.drawScaledTextureClipBi(0, 0, this.width, this.height, dirt, 0.15 + 0.20 * scale*0);
     }
 
     public drawLineDDA(start: Vector3f, end: Vector3f, color: number): void {
