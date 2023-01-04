@@ -142,7 +142,6 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
 
         this.drawSpan(framebuffer, yDistanceLeft, this.colorInterpolator1, this.colorInterpolator2);
 
-
         yDistanceLeft = v3.projection.y - v2.projection.y;
         this.colorInterpolator3.setup(v2.color, v3.color, yDistanceLeft);
         this.slope1 = (v3.projection.x - v2.projection.x) / yDistanceLeft;
@@ -152,32 +151,30 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
         this.yPosition = v2.projection.y;
 
         this.drawSpan(framebuffer, yDistanceLeft, this.colorInterpolator3, this.colorInterpolator2);
-
     }
 
 
     fillLongLeftTriangle(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void {
-        let yDistanceRight = v2.projection.y - v1.projection.y;
+        // left slope
         const yDistanceLeft = v3.projection.y - v1.projection.y;
+        this.slope1 = (v3.projection.x - v1.projection.x) / yDistanceLeft;
+        this.zslope1 = (1 / v3.projection.z - 1 / v1.projection.z) / yDistanceLeft;
+        this.curz1 = 1.0 / v1.projection.z;
+        this.xPosition = v1.projection.x;
+
+        // right slope
+        let yDistanceRight = v2.projection.y - v1.projection.y;
+        this.slope2 = (v2.projection.x - v1.projection.x) / yDistanceRight;
+        this.zslope2 = (1 / v2.projection.z - 1 / v1.projection.z) / yDistanceRight;
+        this.curz2 = 1.0 / v1.projection.z;
+        this.xPosition2 = v1.projection.x;
 
         this.colorInterpolator2.setup(v1.color, v2.color, yDistanceRight);
         this.colorInterpolator1.setup(v1.color, v3.color, yDistanceLeft);
-
-        this.slope2 = (v2.projection.x - v1.projection.x) / yDistanceRight;
-        this.slope1 = (v3.projection.x - v1.projection.x) / yDistanceLeft;
-
-        this.zslope2 = (1 / v2.projection.z - 1 / v1.projection.z) / yDistanceRight;
-        this.zslope1 = (1 / v3.projection.z - 1 / v1.projection.z) / yDistanceLeft;
-
-        this.curz1 = 1.0 / v1.projection.z;
-        this.curz2 = 1.0 / v1.projection.z;
-
-        this.xPosition = v1.projection.x;
-        this.xPosition2 = v1.projection.x;
+      
         this.yPosition = v1.projection.y;
 
         this.drawSpan(framebuffer, yDistanceRight, this.colorInterpolator1, this.colorInterpolator2);
-
 
         yDistanceRight = v3.projection.y - v2.projection.y;
         this.colorInterpolator3.setup(v2.color, v3.color, yDistanceRight);
@@ -189,41 +186,31 @@ export class GouraudShadingTriangleRasterizer extends AbstractTriangleRasterizer
         this.yPosition = v2.projection.y;
 
         this.drawSpan(framebuffer, yDistanceRight, this.colorInterpolator1, this.colorInterpolator3);
-
     }
 
     drawSpan(framebuffer: Framebuffer, distance: number, colorInterpolator1: ColorInterpolator, colorInterpolator2: ColorInterpolator) {
         for (let i = 0; i < distance; i++) {
             const length = Math.round(this.xPosition2) - Math.round(this.xPosition);
-            this.rowColorInterpolator.setup(
-                colorInterpolator1.startColor, colorInterpolator2.startColor, length);
+            this.rowColorInterpolator.setup(colorInterpolator1.startColor, colorInterpolator2.startColor, length);
             let framebufferIndex = Math.round(this.yPosition) * framebuffer.width + Math.round(this.xPosition);
             const spanzStep = (this.curz2 - this.curz1) / length;
             let wStart = this.curz1;
             for (let j = 0; j < length; j++) {
                 if (wStart < framebuffer.wBuffer[framebufferIndex]) {
                     framebuffer.wBuffer[framebufferIndex] = wStart;
-                    framebuffer.framebuffer[framebufferIndex] =
-                        this.rowColorInterpolator.startColor.toPackedFormat();
+                    framebuffer.framebuffer[framebufferIndex] = this.rowColorInterpolator.startColor.toPackedFormat();
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
-                this.rowColorInterpolator.startColor.r += this.rowColorInterpolator.colorSlope.r;
-                this.rowColorInterpolator.startColor.g += this.rowColorInterpolator.colorSlope.g;
-                this.rowColorInterpolator.startColor.b += this.rowColorInterpolator.colorSlope.b;
+                this.rowColorInterpolator.advance();
             }
 
             this.xPosition += this.slope1;
             this.xPosition2 += this.slope2;
             this.yPosition++;
 
-            colorInterpolator1.startColor.r += colorInterpolator1.colorSlope.r;
-            colorInterpolator1.startColor.g += colorInterpolator1.colorSlope.g;
-            colorInterpolator1.startColor.b += colorInterpolator1.colorSlope.b;
-
-            colorInterpolator2.startColor.r += colorInterpolator2.colorSlope.r;
-            colorInterpolator2.startColor.g += colorInterpolator2.colorSlope.g;
-            colorInterpolator2.startColor.b += colorInterpolator2.colorSlope.b;
+            colorInterpolator1.advance();
+            colorInterpolator2.advance();
 
             this.curz1 += this.zslope1;
             this.curz2 += this.zslope2;
