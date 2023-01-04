@@ -1,9 +1,14 @@
 export class Texture {
+ 
 
     public texture: Uint32Array;
     public width: number;
     public height: number;
+    private clamp: boolean = false;
 
+    setClamp(clamp: boolean) {
+        this.clamp = clamp;
+    }
     constructor(texture?: Uint32Array, width?: number, height?: number) {
         this.texture = texture;
         this.width = width;
@@ -32,14 +37,14 @@ export class Texture {
         return col;
     }
 
-    public getBilinearFilteredPixel2(x: number, y: number, clamp: boolean = false) {
+    public getBilinearFilteredPixel2(x: number, y: number) {
 
         let x0 = x | 0;
         let x1 = (x | 0) + 1;
         let y0 = y | 0;
         let y1 = (y | 0) + 1;
    
-        if (clamp) {
+        if (this.clamp) {
              x0 = Math.max(Math.min(x0, this.width - 1), 0);
              x1 = Math.max(Math.min(x1, this.width - 1), 0);
              y0 = Math.max(Math.min(y0, this.height - 1), 0);

@@ -21,7 +21,7 @@ export class EnvironmentMappingScene extends AbstractScene {
 
     private flood: Texture;
 
-    private env: Texture;
+    public env: Texture;
     private obj: IndexMesh;
     private texturedRenderingPipeline: TexturingRenderingPipeline;
 
@@ -43,7 +43,16 @@ export class EnvironmentMappingScene extends AbstractScene {
         framebuffer.clearColorBuffer(Color.BLACK.toPackedFormat());
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.flood.texture);
         framebuffer.setTexture(this.env);
-        this.shadingTorusENvironment(framebuffer, time * 0.008);
+
+        let scale = 2.1;
+        const elapsedTime =  time * 0.008;
+        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.25));
+        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3));
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.09) * 10+20, Math.sin(elapsedTime * 0.1) * 10
+            , -65)
+            .multiplyMatrix(modelViewMartrix);
+
+        this.shadingTorusENvironment(framebuffer,modelViewMartrix);
     }
 
 
@@ -57,7 +66,7 @@ export class EnvironmentMappingScene extends AbstractScene {
     }
 
 
-    public shadingTorusENvironment(framebuffer: Framebuffer, elapsedTime: number): void {
+    public shadingTorusENvironment(framebuffer: Framebuffer,modelViewMartrix: Matrix4f): void {
 
         framebuffer.wBuffer.fill(100);
         let points: Array<Vector4f> = [];
@@ -106,10 +115,9 @@ export class EnvironmentMappingScene extends AbstractScene {
             }
         }
 
-        let scale = 2.1;
+       
 
-        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.25));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3));
+   
 
         let points2: Array<Vector4f> = new Array<Vector4f>();
 
@@ -118,9 +126,6 @@ export class EnvironmentMappingScene extends AbstractScene {
             normals2.push(modelViewMartrix.multiplyHom(normals[n]));
         }
 
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.09) * 10+20, Math.sin(elapsedTime * 0.1) * 10
-            , -65)
-            .multiplyMatrix(modelViewMartrix);
 
         for (let p = 0; p < points.length; p++) {
             let transformed = modelViewMartrix.multiplyHom(points[p]);

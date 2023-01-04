@@ -74,4 +74,5 @@
 * [Environment Mapping Cylinder](https://jdiemke.github.io/aisa/environment-mapping-cylinder.html)
 * [Cube Subpixel](https://jdiemke.github.io/aisa/cube-subpixel.html)
 * [Wavefront with Texture 2](https://jdiemke.github.io/aisa/wavefront-texture2.html)
+* [Skybox with Torus](https://jdiemke.github.io/aisa/skybox.html)
 
