@@ -76,13 +76,13 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
                     this.projectedVertices[1],
                     this.projectedVertices[2])) {
 
-                    this.vertexArray[0].position = this.projectedVertices[0]; // p1 is Vector3f
+                    this.vertexArray[0].projection = this.projectedVertices[0]; // p1 is Vector3f
                     this.vertexArray[0].textureCoordinate = mesh.uv[mesh.faces[i].uv[0]];
 
-                    this.vertexArray[1].position = this.projectedVertices[1];
+                    this.vertexArray[1].projection = this.projectedVertices[1];
                     this.vertexArray[1].textureCoordinate = mesh.uv[mesh.faces[i].uv[1]];
 
-                    this.vertexArray[2].position = this.projectedVertices[2];
+                    this.vertexArray[2].projection = this.projectedVertices[2];
                     this.vertexArray[2].textureCoordinate = mesh.uv[mesh.faces[i].uv[2]];
 
                     this.clipConvexPolygon2(framebuffer, this.vertexArray);
@@ -162,21 +162,21 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
 
         // TODO: remove temp object here
         const projected: Array<Vertex> = output.map<Vertex>((v: Vertex) => {
-            v.position = this.project(v.position);
+            v.projection = this.project(v.position);
             return v;
         });
 
         if (output.length === 3 &&
-            !this.isTriangleCCW(projected[0].position, projected[1].position, projected[2].position)) {
+            !this.isTriangleCCW(projected[0].projection, projected[1].projection, projected[2].projection)) {
             return;
         }
 
         if (output.length === 4 &&
             !this.isTriangleCCW2(
-                projected[0].position,
-                projected[1].position,
-                projected[2].position,
-                projected[3].position
+                projected[0].projection,
+                projected[1].projection,
+                projected[2].projection,
+                projected[3].projection
             )) {
             return;
         }

@@ -18,7 +18,6 @@ export class MetalHeadzScene extends AbstractScene {
     private dirt: Texture;
     private skyBox: SkyBox;
 
-    private blenderObjMetal: any;
     private torus: EnvironmentMappingScene;
     private accumulationBuffer: Uint32Array;
     private texturedRenderingPipeline: TexturingRenderingPipeline;
@@ -35,9 +34,7 @@ export class MetalHeadzScene extends AbstractScene {
         return Promise.all([
             this.skyBox.init(),
             this.torus.init(framebuffer),
-            BlenderLoader.loadWithTexture(require('../../assets/jsx/metalheadz.jsx')).then(
-                (mesh: Array<TexturedMesh>) => this.blenderObjMetal = mesh
-            ),
+  
             TextureUtils.load(require('../../assets/metalheadz.png'), false).then(
                 (texture: Texture) => this.metalheadz = texture
             ),
@@ -70,9 +67,6 @@ export class MetalHeadzScene extends AbstractScene {
         framebuffer.setTexture(this.metalheadz);
         framebuffer.setCullFace(CullFace.FRONT);
 
-        const renderingPipeline: TexturingRenderingPipeline = this.texturedRenderingPipeline;
-
-       
         framebuffer.setTexture(this.torus.env);
         this.torus.shadingTorusENvironment(framebuffer, mv);
 

@@ -20,15 +20,18 @@ interface IndexMesh {
 export class EnvironmentMappingScene extends AbstractScene {
 
     private flood: Texture;
-
     public env: Texture;
-    private obj: IndexMesh;
     private texturedRenderingPipeline: TexturingRenderingPipeline;
 
+    points: Array<Vector4f> = [];
+    textCoords: Array<TextureCoordinate> = [];
+    index: Array<number> = [];
+    normals: Array<Vector4f> = new Array<Vector4f>();
     public init(framebuffer: Framebuffer): Promise<any> {
         this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
+        this.buildTorusMesh();
+
         return Promise.all([
-    
             TextureUtils.load(require('../../assets/flood.png'), false).then(
                 texture => this.flood = texture
             ),
@@ -55,6 +58,41 @@ export class EnvironmentMappingScene extends AbstractScene {
         this.shadingTorusENvironment(framebuffer,modelViewMartrix);
     }
 
+    private buildTorusMesh(): void {
+        const STEPS = 35 * 2;
+        const STEPS2 = 8 * 2;
+        for (let i = 0; i < STEPS + 1; i++) {
+        const frame = this.torusFunction3(i * 2 * Math.PI / STEPS);
+            const frame2 = this.torusFunction3(i * 2 * Math.PI / STEPS + 0.01);
+            const tangent = frame2.sub(frame);
+            let up = frame.add(frame2).normalize();
+            const right = tangent.cross(up).normalize().mul(4.4);
+            up = right.cross(tangent).normalize().mul(4.4);
+
+            for (let r = 0; r < STEPS2 + 1; r++) {
+                let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
+                this.points.push(new Vector4f(pos.x, pos.y, pos.z));
+                let normal = frame.sub(pos).normalize();
+                this.normals.push(new Vector4f(normal.x, normal.y, normal.z, 0));
+                let t = new TextureCoordinate();
+                t.u = 1 / (STEPS2) * r;
+                t.v = 1 / (STEPS) * i;
+                this.textCoords.push(t);
+            }
+        }
+
+        for (let j = 0; j < STEPS; j++) {
+            for (let i = 0; i < STEPS2; i++) {
+                this.index.push((((STEPS2 + 1) * j) + (1 + i))); // 2
+                this.index.push((((STEPS2 + 1) * j) + (0 + i))); // 1
+                this.index.push((((STEPS2 + 1) * j) + (STEPS2 + 1) + (1 + i))); //3
+
+                this.index.push((((STEPS2 + 1) * j) + (STEPS2 + 1) + (0 + i))); //4
+                this.index.push((((STEPS2 + 1) * j) + (STEPS2 + 1) + (1 + i))); //3
+                this.index.push((((STEPS2 + 1) * j) + (0 + i))); // 5
+            }
+        }
+    }
 
     private torusFunction3(alpha: number): Vector3f {
         const p = 2
@@ -68,67 +106,19 @@ export class EnvironmentMappingScene extends AbstractScene {
 
     public shadingTorusENvironment(framebuffer: Framebuffer,modelViewMartrix: Matrix4f): void {
 
-        framebuffer.wBuffer.fill(100);
-        let points: Array<Vector4f> = [];
-        let textCoords: Array<TextureCoordinate> = [];
-
-        // compute normals
-        let normals: Array<Vector4f> = new Array<Vector4f>();
-        const STEPS = 35 * 2;
-        const STEPS2 = 8 * 2;
-        for (let i = 0; i < STEPS + 1; i++) {
-        const frame = this.torusFunction3(i * 2 * Math.PI / STEPS);
-            const frame2 = this.torusFunction3(i * 2 * Math.PI / STEPS + 0.01);
-            
-           // const up = new Vector3f(0.0, 16.0, 0);
-          //  const right = frame2.sub(frame).cross(up).normalize().mul(16);
-
-
-            const tangent = frame2.sub(frame);
-            let up = frame.add(frame2).normalize();
-            const right = tangent.cross(up).normalize().mul(4.4);
-            up = right.cross(tangent).normalize().mul(4.4);
-
-            for (let r = 0; r < STEPS2 + 1; r++) {
-                let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
-                points.push(new Vector4f(pos.x, pos.y, pos.z));
-                let normal = frame.sub(pos).normalize();
-                normals.push(new Vector4f(normal.x, normal.y, normal.z, 0));
-                let t = new TextureCoordinate();
-                t.u = 1 / (STEPS2) * r;
-                t.v = 1 / (STEPS) * i;
-                textCoords.push(t);
-            }
-        }
-
-        let index: Array<number> = [];
-
-        for (let j = 0; j < STEPS; j++) {
-            for (let i = 0; i < STEPS2; i++) {
-                index.push((((STEPS2 + 1) * j) + (1 + i))); // 2
-                index.push((((STEPS2 + 1) * j) + (0 + i))); // 1
-                index.push((((STEPS2 + 1) * j) + (STEPS2 + 1) + (1 + i))); //3
-
-                index.push((((STEPS2 + 1) * j) + (STEPS2 + 1) + (0 + i))); //4
-                index.push((((STEPS2 + 1) * j) + (STEPS2 + 1) + (1 + i))); //3
-                index.push((((STEPS2 + 1) * j) + (0 + i))); // 5
-            }
-        }
-
-       
-
-   
 
         let points2: Array<Vector4f> = new Array<Vector4f>();
-
         let normals2: Array<Vector4f> = new Array<Vector4f>();
-        for (let n = 0; n < normals.length; n++) {
-            normals2.push(modelViewMartrix.multiplyHom(normals[n]));
+
+        framebuffer.wBuffer.fill(100);
+
+        for (let n = 0; n < this.normals.length; n++) {
+            normals2.push(modelViewMartrix.multiplyHom(this.normals[n]));
         }
 
 
-        for (let p = 0; p < points.length; p++) {
-            let transformed = modelViewMartrix.multiplyHom(points[p]);
+        for (let p = 0; p < this.points.length; p++) {
+            let transformed = modelViewMartrix.multiplyHom(this.points[p]);
 
             let x = transformed.x;
             let y = transformed.y;
@@ -151,7 +141,7 @@ export class EnvironmentMappingScene extends AbstractScene {
         let vertex3 = new Vertex();
         vertex3.textureCoordinate = new TextureCoordinate();
         let vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
-        for (let i = 0; i < index.length; i += 3) {
+        for (let i = 0; i < this.index.length; i += 3) {
 
             // Only render triangles with CCW-ordered vertices
             //
@@ -160,14 +150,14 @@ export class EnvironmentMappingScene extends AbstractScene {
             // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
             // p. 69. Morgan Kaufmann Publishers, United States.
             //
-            let v1 = points2[index[i]];
-            let n1 = normals2[index[i]].normalize();
+            let v1 = points2[this.index[i]];
+            let n1 = normals2[this.index[i]].normalize();
 
-            let v2 = points2[index[i + 1]];
-            let n2 = normals2[index[i + 1]].normalize();
+            let v2 = points2[this.index[i + 1]];
+            let n2 = normals2[this.index[i + 1]].normalize();
 
-            let v3 = points2[index[i + 2]];
-            let n3 = normals2[index[i + 2]].normalize();
+            let v3 = points2[this.index[i + 2]];
+            let n3 = normals2[this.index[i + 2]].normalize();
 
             if (framebuffer.isTriangleCCW(v1, v2, v3)) {
 
