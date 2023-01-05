@@ -159,13 +159,13 @@ export class EnvironmentMappingScene extends AbstractScene {
 
                 let color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
 
-                vertexArray[0].position = v1;
+                vertexArray[0].projection = v1;
                 framebuffer.fakeSphere(n1, vertex1);
 
-                vertexArray[1].position = v2;
+                vertexArray[1].projection = v2;
                 framebuffer.fakeSphere(n2, vertex2);
 
-                vertexArray[2].position = v3;
+                vertexArray[2].projection = v3;
                 framebuffer.fakeSphere(n3, vertex3);
 
                 if (v1.x < framebuffer.minWindow.x ||
