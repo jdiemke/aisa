@@ -61,7 +61,7 @@ export class TexturedTriangleRasterizer extends AbstractScannlineTriangleRasteri
                     u = uStart * z * framebuffer.bob.width;
                     v = vStart * z * framebuffer.bob.height;
                 
-                   color2 = framebuffer.bob.getBilinearFilteredPixel2(u,v);
+                   color2 = framebuffer.bob.getBilinearFilteredPixelRasterizer(u,v);
 
                     framebuffer.framebuffer[framebufferIndex] = color2;
 
@@ -129,7 +129,7 @@ export class TexturedTriangleRasterizer extends AbstractScannlineTriangleRasteri
                     u = uStart * z * framebuffer.bob.width;
                     v = vStart * z * framebuffer.bob.height;
                 
-                   color2 = framebuffer.bob.getBilinearFilteredPixel2(u,v);
+                   color2 = framebuffer.bob.getBilinearFilteredPixelRasterizer(u,v);
 
                     framebuffer.framebuffer[framebufferIndex] = color2;
                 }
@@ -210,7 +210,7 @@ export class TexturedTriangleRasterizer extends AbstractScannlineTriangleRasteri
                     u = uStart * z * framebuffer.bob.width;
                     v = vStart * z * framebuffer.bob.height;
                 
-                   color2 = framebuffer.bob.getBilinearFilteredPixel2(u,v);
+                   color2 = framebuffer.bob.getBilinearFilteredPixelRasterizer(u,v);
 
                     framebuffer.framebuffer[framebufferIndex] = color2;
                 }
@@ -273,7 +273,7 @@ export class TexturedTriangleRasterizer extends AbstractScannlineTriangleRasteri
                     u = uStart * z * framebuffer.bob.width;
                     v = vStart * z * framebuffer.bob.height;
                 
-                   color2 = framebuffer.bob.getBilinearFilteredPixel2(u,v);
+                   color2 = framebuffer.bob.getBilinearFilteredPixelRasterizer(u,v);
 
                     framebuffer.framebuffer[framebufferIndex] = color2;
                 }
