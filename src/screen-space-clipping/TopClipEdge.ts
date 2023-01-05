@@ -15,7 +15,7 @@ export class TopClipEdge extends AbstractClipEdge {
     }
 
     public isInside2(p: Vertex): boolean {
-        return p.position.y < this.framebuffer.maxWindow.y + 1;
+        return p.projection.y < this.framebuffer.maxWindow.y + 1;
     }
 
     public computeIntersection(p1: Vertex, p2: Vertex): Vertex {
@@ -32,16 +32,16 @@ export class TopClipEdge extends AbstractClipEdge {
 
     public computeIntersection2(p1: Vertex, p2: Vertex): Vertex {
         const vertex = new Vertex();
-        vertex.position =
+        vertex.projection =
             new Vector4f(
-                Math.round(p1.position.x + (p2.position.x - p1.position.x) * (this.framebuffer.maxWindow.y + 1 - p1.position.y) / (p2.position.y - p1.position.y)),
+                Math.round(p1.projection.x + (p2.projection.x - p1.projection.x) * (this.framebuffer.maxWindow.y + 1 - p1.projection.y) / (p2.projection.y - p1.projection.y)),
                 this.framebuffer.maxWindow.y + 1,
-                1 / (1 / p1.position.z + (1 / p2.position.z - 1 / p1.position.z) * (this.framebuffer.maxWindow.y + 1 - p1.position.y) / (p2.position.y - p1.position.y)));
+                1 / (1 / p1.projection.z + (1 / p2.projection.z - 1 / p1.projection.z) * (this.framebuffer.maxWindow.y + 1 - p1.projection.y) / (p2.projection.y - p1.projection.y)));
 
         const textCoord = new TextureCoordinate();
-        const z = vertex.position.z;
-        textCoord.u = (p1.textureCoordinate.u / p1.position.z + (p2.textureCoordinate.u / p2.position.z - p1.textureCoordinate.u / p1.position.z) * (this.framebuffer.maxWindow.y + 1 - p1.position.y) / (p2.position.y - p1.position.y)) * z;
-        textCoord.v = (p1.textureCoordinate.v / p1.position.z + (p2.textureCoordinate.v / p2.position.z - p1.textureCoordinate.v / p1.position.z) * (this.framebuffer.maxWindow.y + 1 - p1.position.y) / (p2.position.y - p1.position.y)) * z;
+        const z = vertex.projection.z;
+        textCoord.u = (p1.textureCoordinate.u / p1.projection.z + (p2.textureCoordinate.u / p2.projection.z - p1.textureCoordinate.u / p1.projection.z) * (this.framebuffer.maxWindow.y + 1 - p1.projection.y) / (p2.projection.y - p1.projection.y)) * z;
+        textCoord.v = (p1.textureCoordinate.v / p1.projection.z + (p2.textureCoordinate.v / p2.projection.z - p1.textureCoordinate.v / p1.projection.z) * (this.framebuffer.maxWindow.y + 1 - p1.projection.y) / (p2.projection.y - p1.projection.y)) * z;
 
         vertex.textureCoordinate = textCoord;
         return vertex;
