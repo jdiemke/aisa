@@ -96,7 +96,7 @@ export class MetalHeadzScene extends AbstractScene {
     }
 
     private computeCameraMovement(elapsedTime: number): Matrix4f {
-        return Matrix4f.constructTranslationMatrix(0, 0, -154 + (Math.sin(elapsedTime * 0.001) * 0.5 + 0.5) * 37)
+        return Matrix4f.constructTranslationMatrix(0, 0, -284 + (Math.sin(elapsedTime * 0.001) * 0.5 + 0.5) * 37)
             .multiplyMatrix(
                 Matrix4f.constructXRotationMatrix(elapsedTime * 0.0008).multiplyMatrix(
                     Matrix4f.constructYRotationMatrix(-elapsedTime * 0.0009).multiplyMatrix(
