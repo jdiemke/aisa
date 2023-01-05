@@ -47,7 +47,7 @@ export class WaveFrontTextureScene extends AbstractScene {
     }
 
     private getModelViewMatrix(elapsedTime: number): Matrix4f {
-        const camera: Matrix4f = Matrix4f.constructTranslationMatrix(18, 2, -74).multiplyMatrix(
+        const camera: Matrix4f = Matrix4f.constructTranslationMatrix(18, 2, -64).multiplyMatrix(
             Matrix4f.constructYRotationMatrix(-elapsedTime * 0.0006)
         );
 
