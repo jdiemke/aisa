@@ -17,7 +17,7 @@ export class MetalHeadzScene extends AbstractScene {
     private noise: Texture;
     private dirt: Texture;
     private skyBox: SkyBox;
-
+   
     private torus: EnvironmentMappingScene;
     private accumulationBuffer: Uint32Array;
     private texturedRenderingPipeline: TexturingRenderingPipeline;
@@ -49,7 +49,7 @@ export class MetalHeadzScene extends AbstractScene {
             ),
             TextureUtils.load(require('../../assets/dirt.png'), true).then(
                 (texture: Texture) => this.dirt = texture
-            ),
+            )
         ]);
     }
 

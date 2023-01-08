@@ -79,6 +79,8 @@ const examples = [
     new Example('text-zoom'),
     new Example('bouncing-text'),
     new Example('skybox'),
+    new Example('wireframe-cube'),
+    new Example('wavefront-texture3'),
 ];
 
 module.exports = examples;
