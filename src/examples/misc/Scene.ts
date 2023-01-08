@@ -177,10 +177,8 @@ export class Scene extends AbstractScene {
 
             framebuffer.noise(currentTime, this.noise);
         }
-        // wire frame cube
-        {
-            framebuffer.scene8(currentTime*0.03);
-        }
+      
+    
         {
             framebuffer.pixelate();
         }

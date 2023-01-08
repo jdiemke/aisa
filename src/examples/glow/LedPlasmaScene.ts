@@ -57,15 +57,8 @@ export class LedTunnelScene extends AbstractScene {
             for (let x = 0; x < 32; x++) {
                 let xx = Math.round(10 * x+5);
                 let yy = Math.round(10 * y+5);
-                let r = framebuffer.framebuffer[xx + yy * 320] & 0xff;
-                let g = framebuffer.framebuffer[xx + yy * 320] >> 8 & 0xff;
-                let b = framebuffer.framebuffer[xx + yy * 320] >> 16 & 0xff;
-                let intensity = (r + g + b) / 3;
-                let scale = framebuffer.cosineInterpolate(200, 130, intensity);
-                let color = r * scale | g * scale << 8 | b * scale << 16 | 255 << 24;
-                //  if (intensity > 138) {
+
                 glowBuffer[x + y * 32] = framebuffer.framebuffer[xx + yy * 320];//color ;
-                // }
             }
         }
 
@@ -93,20 +86,19 @@ export class LedTunnelScene extends AbstractScene {
             }
         }
 
-        let texture2 = new Texture();
-        texture2.texture = glowBuffer;
-        texture2.width = 32;
-        texture2.height = 20;
+        // draw Glow
+        let glowTexture = new Texture();
+        glowTexture.texture = glowBuffer;
+        glowTexture.width = 32;
+        glowTexture.height = 20;
+        glowTexture.setClamp(true);
 
-
-        framebuffer.drawScaledTextureClipBiAdd(
-            0, 0,
-            320, 200, texture2, 0.75
-            );
+        framebuffer.drawScaledTextureClipBiAdd(0, 0, 320, 200, glowTexture, 0.75);
        
-
-            framebuffer.clearDepthBuffer();
-            this.scene.renderCube(framebuffer, time);
+        // Cube
+        framebuffer.clearDepthBuffer();
+        this.scene.renderCube(framebuffer, time);
+        
         // Motion Blur
         let texture3 = new Texture(this.accumulationBuffer, 320, 200);
         framebuffer.drawTexture(0, 0, texture3, 0.7);
