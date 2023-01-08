@@ -1,5 +1,5 @@
 import { Framebuffer } from '../../../Framebuffer';
-import { BlenderCameraScene } from '../../blender-camera-animation/WavefrontScene';
+import { BlenderCameraScene } from '../../blender-camera-animation/BlenderCameraScene';
 export class Scene9 {
     private BlenderCameraScene: BlenderCameraScene;
     public init(framebuffer: Framebuffer): Promise<any> {

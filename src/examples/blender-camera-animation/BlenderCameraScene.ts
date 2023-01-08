@@ -1,6 +1,5 @@
 import { CameraKeyFrame } from '../../animation/CameraKeyFrame';
 import { CameraLoader } from '../../camera/CameraLoader';
-import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
@@ -10,7 +9,6 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { PointLight } from '../../shading/light/PointLight';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
-import { ModelViewMatrix } from '../md2/ModelViewMatrix';
 
 import CameraPathFile from '../../assets/camera-path.jsx';
 import { BlenderCameraAnimator } from '../../animation/BlenderCameraAnimator';
@@ -19,13 +17,7 @@ import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/Goura
 
 export class BlenderCameraScene extends AbstractScene {
 
-    private static readonly CLEAR_COLOR: number = Color.ORANGE.toPackedFormat();
-
     private texture4: Texture;
-    private startTime: number;
-
-    private modelViewMatrix: ModelViewMatrix = new ModelViewMatrix();
-
     private fpsStartTime: number = Date.now();
     private fpsCount: number = 0;
     private fps: number = 0;
@@ -36,6 +28,8 @@ export class BlenderCameraScene extends AbstractScene {
 
     private light1: PointLight;
     private light2: PointLight;
+
+    private cameraAnimator: BlenderCameraAnimator;
 
     private renderingPipeline: GouraudShadingRenderingPipeline;
 
@@ -58,7 +52,6 @@ export class BlenderCameraScene extends AbstractScene {
         this.renderingPipeline.setLights([this.light1, this.light2]);
 
         this.skyBox = new SkyBox();
-        this.startTime = Date.now();
         return Promise.all([
             this.skyBox.init(),
             WavefrontLoader.load(require('../../assets/monkey.obj')).then(
@@ -69,50 +62,33 @@ export class BlenderCameraScene extends AbstractScene {
             ),
             TextureUtils.load(require('../../assets/font.png'), true).then(
                 (texture: Texture) => this.texture4 = texture),
-        ]);
+        ]).then(() => {
+            this.cameraAnimator = new BlenderCameraAnimator();
+            this.cameraAnimator.setKeyFrames(this.path);
+        });
     }
 
-    public render(framebuffer: Framebuffer, timeInput: number): void {
-        const currentTime: number = Date.now();
-        this.renderingPipeline.setCullFace(CullFace.BACK);
-        this.renderingPipeline.setLights([this.light1, this.light2]);
-
+    private computeFps(currentTime: number): void {
         if (currentTime > this.fpsStartTime + 1000) {
             this.fpsStartTime = currentTime;
             this.fps = this.fpsCount;
             this.fpsCount = 0;
         }
         this.fpsCount++;
-
-        const cameraAnimator = new BlenderCameraAnimator();
-        cameraAnimator.setKeyFrames(this.path);
-
-        const modelViewMartrix: Matrix4f = cameraAnimator.getViewMatrix(timeInput);
-
-        // framebuffer.clearColorBuffer(WavefrontScene.CLEAR_COLOR);
-        this.skyBox.draw(framebuffer, modelViewMartrix);
-        framebuffer.clearDepthBuffer();
-
-        this.computeCameraMovement();
-
-
-
-        // TODO: move loop into render pipeline
-        // TODO: use frame position for interpolation speed
-        let faces: number = 0;
-        for (let j = 0; j < this.meshes.length; j++) {
-            this.renderingPipeline.draw(framebuffer, this.meshes[j], modelViewMartrix);
-            faces += this.meshes[j].faces.length;
-        }
-
-        framebuffer.drawText(8, 8, 'FPS: ' + this.fps.toString(), this.texture4);
-        framebuffer.drawText(8, 16, 'FACES: ' + faces, this.texture4);
     }
 
-    private computeCameraMovement(): void {
-        this.modelViewMatrix.setIdentity();
-        this.modelViewMatrix.trans(0, 0, -15);
+    public render(framebuffer: Framebuffer, timeInput: number): void {
+        const currentTime: number = Date.now();
+        this.computeFps(currentTime);
 
+        const modelViewMartrix: Matrix4f = this.cameraAnimator.getViewMatrix(timeInput);
+
+        this.skyBox.draw(framebuffer, modelViewMartrix);
+
+        framebuffer.clearDepthBuffer();
+        this.renderingPipeline.drawMeshArray(framebuffer, this.meshes, modelViewMartrix);
+
+        framebuffer.drawText(8, 8, 'FPS: ' + this.fps.toString(), this.texture4);
     }
 
 }
