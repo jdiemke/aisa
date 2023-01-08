@@ -36,9 +36,9 @@ export class BlenderCameraAnimator {
             Utils.CubicInterpolate(this.keyFrames[zero].position.y, this.keyFrames[first].position.y, this.keyFrames[second].position.y, this.keyFrames[third].position.y, fraction),
             Utils.CubicInterpolate(this.keyFrames[zero].position.z, this.keyFrames[first].position.z, this.keyFrames[second].position.z, this.keyFrames[third].position.z, fraction)
         );
-        let look = this.keyFrames[first].rotation.mul(1 - mu2).add(this.keyFrames[second].rotation.mul(mu2));
+        //let look = this.keyFrames[first].rotation.mul(1 - mu2).add(this.keyFrames[second].rotation.mul(mu2));
 
-        look = new Vector3f(
+        const look = new Vector3f(
             Utils.CubicInterpolate(this.keyFrames[zero].rotation.x, this.keyFrames[first].rotation.x, this.keyFrames[second].rotation.x, this.keyFrames[third].rotation.x, fraction),
             Utils.CubicInterpolate(this.keyFrames[zero].rotation.y, this.keyFrames[first].rotation.y, this.keyFrames[second].rotation.y, this.keyFrames[third].rotation.y, fraction),
             Utils.CubicInterpolate(this.keyFrames[zero].rotation.z, this.keyFrames[first].rotation.z, this.keyFrames[second].rotation.z, this.keyFrames[third].rotation.z, fraction)

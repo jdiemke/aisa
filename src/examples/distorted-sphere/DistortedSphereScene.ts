@@ -17,9 +17,6 @@ interface IndexMesh {
     index: Array<number>
 }
 
-/**
- * TODO: extract lens into effect class
- */
 export class DistortedSphereScene extends AbstractScene {
 
     private heightmapSphere: Texture;
@@ -273,13 +270,13 @@ export class DistortedSphereScene extends AbstractScene {
 
             if (framebuffer.isTriangleCCW(v1, v2, v3)) {
 
-                vertexArray[0].position = v1;
+                vertexArray[0].projection = v1;
                 framebuffer.fakeSphere(n1, vertex1);
 
-                vertexArray[1].position = v2;
+                vertexArray[1].projection = v2;
                 framebuffer.fakeSphere(n2, vertex2);
 
-                vertexArray[2].position = v3;
+                vertexArray[2].projection = v3;
                 framebuffer.fakeSphere(n3, vertex3);
 
                 if (v1.x < framebuffer.minWindow.x ||

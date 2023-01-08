@@ -1,5 +1,5 @@
 import { Canvas } from '../../Canvas';
-import { BlenderCameraScene } from './WavefrontScene';
+import { BlenderCameraScene } from './BlenderCameraScene';
 
 class Application {
 
