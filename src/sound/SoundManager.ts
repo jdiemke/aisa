@@ -114,12 +114,16 @@ export class SoundManager {
             });
     }
 
-    public loadOgg(filename: string) {
-        this.audio.src = filename;
-        this.audio.load();
-        this.audio.preload = 'auto';
-        this.audio.loop = true;
-        this.audio.autoplay = false;
+    public loadOgg(filename: string): Promise<void>  {
+        const audio = this.audio;
+        return new Promise((resolve) => {
+            audio.src = filename;
+            audio.load();
+            audio.preload = 'auto';
+            audio.loop = true;
+            audio.autoplay = false;
+            audio.oncanplay = () => resolve();
+        });
     }
 
     prepareSync(filename: string, demoMode: boolean): Promise<void> {

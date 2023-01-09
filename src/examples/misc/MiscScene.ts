@@ -124,7 +124,7 @@ export class MiscScene extends AbstractScene {
 
             const sm: SoundManager = new SoundManager();
             // sm.playExtendedModule(require('../../assets/sound/dubmood_-_cromenu1_haschkaka.xm').default);
-            sm.playOgg(require('../../assets/sound/xmix_q2_final.ogg').default);
+            sm.playOgg(require('../../assets/sound/xmix_q2_final.ogg'));
         });
     }
 
@@ -1232,7 +1232,7 @@ export class MiscScene extends AbstractScene {
         });
     }
 
-    public createTexture(path: any, hasAlpha: boolean): Promise<Texture> {
+    public createTexture(path: string, hasAlpha: boolean): Promise<Texture> {
         return new Promise<Texture>((resolve: (texture?: Texture) => void): void => {
             const img = new Image();
             img.onload = () => {
@@ -1243,7 +1243,7 @@ export class MiscScene extends AbstractScene {
                 resolve(texture);
             };
             img.onerror = (): void => resolve();
-            img.src = path.default;
+            img.src = path;
         });
     }
 

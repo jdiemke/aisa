@@ -57,7 +57,7 @@ export class BlenderCameraScene extends AbstractScene {
             WavefrontLoader.load(require('../../assets/monkey.obj')).then(
                 (value: Array<FlatshadedMesh>) => this.meshes = value
             ),
-            CameraLoader.load(CameraPathFile).then(
+            CameraLoader.load(require('../../assets/camera-path.jsx')).then(
                 (value: Array<CameraKeyFrame>) => this.path = value
             ),
             TextureUtils.load(require('../../assets/font.png'), true).then(
