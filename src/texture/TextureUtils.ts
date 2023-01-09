@@ -90,7 +90,7 @@ export class TextureUtils {
                 resolve(texture);
             };
             image.onerror = (): void => resolve();
-            image.src = filename.default;
+            image.src = filename;
         });
     }
 

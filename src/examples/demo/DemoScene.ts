@@ -54,16 +54,15 @@ export class DemoScene {
         // initialize effects with progress
         return this.allProgress([
             // load music
-            import('../../assets/sound/NotMixedorMastered.ogg').then(musicData => {
-                this.soundManager.loadOgg(musicData.default)
-            }),
+         
+                this.soundManager.loadOgg(require('../../assets/sound/NotMixedorMastered.ogg')),
+          
 
             // load *.rocket file
-            import('../../assets/sound/demo.rocket').then(rocketData => {
-                // Set to true when using *.rocket from file system
-                // set to false when using rocket editor using websocket
-                this.soundManager.prepareSync(rocketData.default, true);
-            }),
+            // Set to true when using *.rocket from file system
+            // set to false when using rocket editor using websocket
+            this.soundManager.prepareSync(require('../../assets/sound/demo.rocket'), true),
+       
 
             // we use this for transitions
             this.BlockFade.init(framebuffer),
@@ -360,7 +359,7 @@ export class DemoScene {
         }
 
         // TODO: send musicProperties instead of timeMilliseconds so all scenes can act on any channel
-        this.BlockFade.renderScanlines(framebuffer, this.soundManager.musicProperties.sceneData.bass * 2);
+        //this.BlockFade.renderScanlines(framebuffer, this.soundManager.musicProperties.sceneData.bass * 2);
 
         // comment out for release
         this.drawStats();
