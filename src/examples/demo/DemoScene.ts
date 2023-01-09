@@ -63,13 +63,15 @@ export class DemoScene {
             import('../../assets/sound/dubmood_-_cromenu1_haschkaka.xm').then(musicData => {
                 this.soundManager.playExtendedModule(musicData.default);
             }),
+         
+            // this.soundManager.loadOgg(require('../../assets/sound/NotMixedorMastered.ogg')),
+          
 
             // load *.rocket file
-            import('../../assets/sound/demo.rocket').then(rocketData => {
-                // Set to true when using *.rocket from file system
-                // set to false when using rocket editor using websocket
-                this.soundManager.prepareSync(rocketData.default, true);
-            }),
+            // Set to true when using *.rocket from file system
+            // set to false when using rocket editor using websocket
+            this.soundManager.prepareSync(require('../../assets/sound/demo.rocket'), true),
+       
 
 
 
@@ -367,7 +369,7 @@ export class DemoScene {
         }
 
         // TODO: send musicProperties instead of timeMilliseconds so all scenes can act on any channel
-        this.BlockFade.renderScanlines(framebuffer, this.soundManager.musicProperties.sceneData.bass * 2);
+        //this.BlockFade.renderScanlines(framebuffer, this.soundManager.musicProperties.sceneData.bass * 2);
 
         // comment out for release
         this.drawStats();

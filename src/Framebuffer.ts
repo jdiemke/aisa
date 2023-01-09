@@ -1208,53 +1208,8 @@ export class Framebuffer {
         }
     }
 
-    // TODO:
-    // - implement scale and translate using homogenous 4x4 matrices
-    //   instead of fucking around with the projection formular
-    public scene8(elapsedTime: number): void {
-
-        const index: Array<number> = [
-            0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6,
-            6, 7, 7, 4, 0, 7, 1, 6, 2, 5, 3, 4,
-        ];
-
-        const points: Array<Vector3f> = [
-            new Vector3f(1.0, 1.0, -1.0), new Vector3f(-1.0, 1.0, -1.0),
-            new Vector3f(-1.0, 1.0, 1.0), new Vector3f(1.0, 1.0, 1.0),
-            new Vector3f(1.0, -1.0, 1.0), new Vector3f(-1.0, -1.0, 1.0),
-            new Vector3f(-1.0, -1.0, -1.0), new Vector3f(1.0, -1.0, -1.0)
-        ];
-
-        const scale = 0.8;
-
-        let modelViewMartrix = Matrix3f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix3f.constructYRotationMatrix(elapsedTime * 0.05));
-        modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix3f.constructXRotationMatrix(elapsedTime * 0.05));
-
-        const points2: Array<Vector3f> = new Array<Vector3f>();
-        points.forEach((element) => {
-            const transformed = modelViewMartrix.multiply(element);
-
-            const x = transformed.x;
-            const y = transformed.y;
-            const z = transformed.z - 4 + Math.sin(elapsedTime * 0.09) * 2; // TODO: use translation matrix!
-
-            points2.push(new Vector3f(x, y, z));
-        });
-
-        for (let i = 0; i < index.length; i += 2) {
-            const color = 255 | 0 << 16 | 255 << 24;
-            this.nearPlaneClipping(points2[index[i]], points2[index[i + 1]], color);
-        }
-    }
-
-    public project(t1: { x: number, y: number, z: number }): Vector3f {
-        return new Vector3f(Math.round((this.width / 2) + (292 * t1.x / (-t1.z))),
-            Math.round((this.height / 2) - (t1.y * 292 / (-t1.z))),
-            t1.z);
-    }
-
-    // https://math.stackexchange.com/questions/859454/maximum-number-of-vertices-in-intersection-of-triangle-with-box/
-    public nearPlaneClipping(t1: Vector3f, t2: Vector3f, color: number): void {
+     // https://math.stackexchange.com/questions/859454/maximum-number-of-vertices-in-intersection-of-triangle-with-box/
+     public nearPlaneClipping(t1: Vector3f, t2: Vector3f, color: number): void {
         const NEAR_PLANE_Z = -1.7;
 
         if (t1.z < NEAR_PLANE_Z && t2.z < NEAR_PLANE_Z) {
@@ -1271,6 +1226,14 @@ export class Framebuffer {
             this.linerClipper.cohenSutherlandLineClipper(this.project(t2), this.project(t3), color);
         }
     }
+
+    public project(t1: { x: number, y: number, z: number }): Vector3f {
+        return new Vector3f(Math.round((this.width / 2) + (292 * t1.x / (-t1.z))),
+            Math.round((this.height / 2) - (t1.y * 292 / (-t1.z))),
+            t1.z);
+    }
+
+   
 
     public clearDepthBuffer(): void {
         this.wBuffer.fill(-1 / 900);
@@ -2034,7 +1997,7 @@ export class Framebuffer {
         }
 
         // this.drawTextureRectAdd(0, 0, 0, 0, this.width, this.height, dirt, 0.03 + 0.15 * scale);
-        this.drawScaledTextureClipBi(0, 0, this.width, this.height, dirt, 0.15 + 0.20 * scale);
+        this.drawScaledTextureClipBi(0, 0, this.width, this.height, dirt, 0.15 + 0.20 * scale*0);
     }
 
     public drawLineDDA(start: Vector3f, end: Vector3f, color: number): void {

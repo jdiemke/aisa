@@ -10,16 +10,16 @@ import { BlenderScene } from '../../blender/BlenderScene';
  */
 export class BlenderLoader {
 
-    public static load(filename: any): Promise<Array<FlatshadedMesh>> {
-        return fetch(filename.default).then((response: Response) => {
+    public static load(filename: string): Promise<Array<FlatshadedMesh>> {
+        return fetch(filename).then((response: Response) => {
             return response.json();
         }).then((meshes: BlenderScene) => {
             return BlenderJsonParser.parse(meshes);
         });
     }
 
-    public static loadWithTexture(filename: any): Promise<Array<TexturedMesh>> {
-        return fetch(filename.default).then((response: Response) => {
+    public static loadWithTexture(filename: string): Promise<Array<TexturedMesh>> {
+        return fetch(filename).then((response: Response) => {
             return response.json();
         }).then((meshes: BlenderScene) => {
             return BlenderJsonParser.getBlenderScene(meshes, false);

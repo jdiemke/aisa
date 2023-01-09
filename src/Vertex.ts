@@ -7,5 +7,5 @@ export class Vertex {
     public projection: Vector4f;
     public normal: Vector4f;
     public color: Color;
-    public textureCoordinate: TextureCoordinate;
+    public textureCoordinate: TextureCoordinate = new TextureCoordinate();
 }

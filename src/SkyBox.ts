@@ -35,11 +35,19 @@ export class SkyBox {
             ),
             TextureUtils.load(require('./assets/skybox/skybox_up.png'), false).then(
                 (texture: Texture) => this.up = texture
-            )]);
+            )]).then(() => {
+                this.back.setClamp(true);
+                this.down.setClamp(true);
+                this.front.setClamp(true);
+                this.left.setClamp(true);
+                this.right.setClamp(true);
+                this.up.setClamp(true);
+            });
     }
 
     // move code from framebuffer into draw method!
     public draw(framebuffer: Framebuffer, mv: Matrix4f): void {
+    
         this.texturedRenderingPipeline.setFramebuffer(framebuffer);
         this.drawSkyBox(framebuffer, mv.getRotation());
     }

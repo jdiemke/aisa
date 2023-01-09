@@ -37,7 +37,7 @@ module.exports = {
             },
             {
                 test: /\.(png|jpg|mp3|ogg|md2|mdl|tga|xm|obj|rocket|jsx)$/,
-                use: 'file-loader'
+                type: 'asset/resource'
             }
         ]
     },

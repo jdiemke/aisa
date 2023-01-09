@@ -137,7 +137,7 @@ export class Scene extends AbstractScene {
 
             const audioContext = new AudioContext();
             const request = new XMLHttpRequest();
-            request.open('GET', require('../../assets/sound/xmix_q2_final.ogg').default, true);
+            request.open('GET', require('../../assets/sound/xmix_q2_final.ogg'), true);
             request.responseType = 'arraybuffer';
             request.onload = () => {
                 const undecodedAudio = request.response;
@@ -177,10 +177,8 @@ export class Scene extends AbstractScene {
 
             framebuffer.noise(currentTime, this.noise);
         }
-        // wire frame cube
-        {
-            framebuffer.scene8(currentTime*0.03);
-        }
+      
+    
         {
             framebuffer.pixelate();
         }
@@ -512,7 +510,7 @@ export class Scene extends AbstractScene {
         });
     }
 
-    public createTexture(path: any, hasAlpha: boolean): Promise<Texture> {
+    public createTexture(path: string, hasAlpha: boolean): Promise<Texture> {
         return new Promise<Texture>(((resolve: (texture?: Texture) => void): void => {
             const img = new Image();
             img.onload = () => {
@@ -523,7 +521,7 @@ export class Scene extends AbstractScene {
                 resolve(texture);
             };
             img.onerror = () => resolve();
-            img.src = path.default;
+            img.src = path;
         }));
     }
 
