@@ -33,6 +33,7 @@
         "@types/stats.js": "^0.17.0",
         "@typescript-eslint/eslint-plugin": "^5.38.0",
         "@typescript-eslint/parser": "^5.38.0",
+        "copy-webpack-plugin": "^11.0.0",
         "eslint": "^8.24.0",
         "file-loader": "6.2.0",
         "html-webpack-plugin": "5.5.0",

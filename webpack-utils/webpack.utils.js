@@ -1,3 +1,4 @@
+const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const examples = require('../webpack.example-list');
 
@@ -9,8 +10,20 @@ module.exports.getEntryPoints = () => {
     return entryPoints;
 };
 
-module.exports.getHtmlWebpackPlugins = () => examples.map(example => new HtmlWebpackPlugin({
-    template: example.template != undefined ? example.template : './src/index.html',
-    chunks: [example.name],
-    filename: `${example.name}.html`
-}));
+module.exports.getWebpackPlugins = () => {
+    // copy openmpt wasm
+    let plug = [new CopyPlugin({
+        patterns: [
+            { from: "./src/sound/cowbell/openmpt", to: "openmpt" }
+        ],
+    })]
+    // generate examples
+    examples.forEach(example => {
+        plug.push(new HtmlWebpackPlugin({
+            template: example.template != undefined ? example.template : './src/index.html',
+            chunks: [example.name],
+            filename: `${example.name}.html`
+        }))
+    })
+    return plug;
+}

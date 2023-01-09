@@ -41,5 +41,5 @@ module.exports = {
             }
         ]
     },
-    plugins: webpackUtils.getHtmlWebpackPlugins()
+    plugins: webpackUtils.getWebpackPlugins()
 }

@@ -54,8 +54,14 @@ export class DemoScene {
         // initialize effects with progress
         return this.allProgress([
             // load music
+            /*
             import('../../assets/sound/NotMixedorMastered.ogg').then(musicData => {
                 this.soundManager.loadOgg(musicData.default)
+            }),
+            */
+
+            import('../../assets/sound/dubmood_-_cromenu1_haschkaka.xm').then(musicData => {
+                this.soundManager.playExtendedModule(musicData.default);
             }),
 
             // load *.rocket file
@@ -64,6 +70,8 @@ export class DemoScene {
                 // set to false when using rocket editor using websocket
                 this.soundManager.prepareSync(rocketData.default, true);
             }),
+
+
 
             // we use this for transitions
             this.BlockFade.init(framebuffer),
@@ -185,7 +193,7 @@ export class DemoScene {
                 // start audio and video recording
                 tickerRecordRef.style.color = 'red';
                 this.soundManager.onPlay();
-                this.canvasRecorder.recordVideo(this.soundManager.audio);
+                this.canvasRecorder.recordVideo(this.soundManager.audioElement);
                 tickerPlayRef.classList.remove('fa-play');
                 tickerPlayRef.classList.add('fa-pause');
             } else {
@@ -200,7 +208,7 @@ export class DemoScene {
 
         // play / pause
         tickerPlayRef.addEventListener('click', () => {
-            if (this.soundManager.audio.paused && !this.soundManager.isPlaying) {
+            if (!this.soundManager.isPlaying) {
                 this.soundManager.onPlay();
                 tickerPlayRef.setAttribute('title', 'pause');
                 tickerPlayRef.classList.remove('fa-play');
@@ -215,8 +223,8 @@ export class DemoScene {
 
         // toggle audio and save preference for subsequent reloads
         tickerVolumeRef.addEventListener('click', () => {
-            this.soundManager.toggleSound(tickerVolumeRef, !this.soundManager.audio.muted);
-            localStorage.setItem('soundToggle', String(this.soundManager.audio.muted));
+            this.soundManager.toggleSound(tickerVolumeRef, !this.soundManager.audioElement.muted);
+            localStorage.setItem('soundToggle', String(this.soundManager.audioElement.muted));
         });
 
         // save screenshot in PNG format
@@ -236,25 +244,24 @@ export class DemoScene {
 
         // next
         tickerNextRef.addEventListener('click', () => {
-            this.soundManager.jump(this.soundManager.audio.currentTime, 1, this.sceneList.length);
+            this.soundManager.jump(this.soundManager.musicProperties.timeSeconds, 1, this.sceneList.length);
         })
 
         // back
         tickerBackRef.addEventListener('click', () => {
-            this.soundManager.jump(this.soundManager.audio.currentTime, -1, this.sceneList.length);
+            this.soundManager.jump(this.soundManager.musicProperties.timeSeconds, -1, this.sceneList.length);
         })
 
         // seek
         this.timelineRef.addEventListener('input', (e) => {
             const time = Number((e.target as HTMLInputElement).value);
-            const newSeek = time * this.soundManager.audio.duration / 1000;
-            this.soundManager.seek(newSeek);
+            this.soundManager.seek(time / 1000);
         });
 
         // seek with scrollwheel
         document.addEventListener("wheel", (e) => {
             const directionToScroll = (e.deltaY < 0) ? -0.06 : 0.06;
-            this.soundManager.audio.currentTime = this.soundManager.audio.currentTime + directionToScroll;
+            this.soundManager.audioElement.currentTime = this.soundManager.audioElement.currentTime + directionToScroll;
             // prevent page scroll
             e.preventDefault();
             e.stopPropagation();
@@ -273,21 +280,21 @@ export class DemoScene {
                     break;
                 // navigate timeline backward
                 case 'ArrowLeft':
-                    this.soundManager.audio.currentTime = this.soundManager.audio.currentTime - 0.06;
+                    this.soundManager.audioElement.currentTime = this.soundManager.audioElement.currentTime - 0.06;
                     break;
                 // navigate timeline forward
                 case 'ArrowRight':
-                    this.soundManager.audio.currentTime = this.soundManager.audio.currentTime + 0.06;
+                    this.soundManager.audioElement.currentTime = this.soundManager.audioElement.currentTime + 0.06;
                     break;
                 // jump to next effect
                 case 'MediaTrackNext':
                 case 'ArrowUp':
-                    this.soundManager.jump(this.soundManager.audio.currentTime, 1, this.sceneList.length);
+                    this.soundManager.jump(this.soundManager.audioElement.currentTime, 1, this.sceneList.length);
                     break;
                 // jump to previous effect
                 case 'MediaTrackPrevious':
                 case 'ArrowDown':
-                    this.soundManager.jump(this.soundManager.audio.currentTime, -1, this.sceneList.length);
+                    this.soundManager.jump(this.soundManager.audioElement.currentTime, -1, this.sceneList.length);
                     break;
                 // toggle full screen
                 case 'f':
@@ -370,9 +377,8 @@ export class DemoScene {
      * Show FPS, Memory Usage and js rocket time and effect number
      */
     private drawStats() {
-
         // update timeline marker
-        this.timelineRef.value = String((this.soundManager.musicProperties.timeSeconds * 1000 / this.soundManager.audio.duration));
+        this.timelineRef.value = String(this.soundManager.musicProperties.timeMilliseconds);
 
         // keep current time in local storage to stay in place during reloads
         localStorage.setItem('lastTime', String(this.soundManager.musicProperties.timeSeconds));

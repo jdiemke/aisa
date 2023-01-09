@@ -1,6 +1,17 @@
-import 'jsxm/xm';
-import 'jsxm/xmeffects';
+// import 'jsxm/xm';
+// import 'jsxm/xmeffects';
 import './JSRocket';
+
+/*
+import './cowbell/cowbell.min'
+import './cowbell/openmpt.min'
+*/
+
+import './cowbell/cowbell'
+import './cowbell/web_audio_player'
+import './cowbell/openmpt/openmpt_player'
+import './cowbell/ui/basic'
+
 
 type musicProperties = {
     // Beats per minute of your demo tune
@@ -28,7 +39,7 @@ export class SoundManager {
     public audioContext: AudioContext;
     public songLengthSeconds: number;
     public syncDevice;
-    public audio = new Audio();
+    // public audio = new Audio();
     public isPlaying = false;
     public demoMode = true;    // use true for release mode
     public row = 0;    // the current row we're on
@@ -37,7 +48,19 @@ export class SoundManager {
     public musicProperties: musicProperties;
     public sceneData: sceneData;
 
+    public modPlayer;
+    public player;
+    public audioElement: HTMLAudioElement;
+    public track;
+
     public constructor() {
+
+        const container = document.getElementById('player');
+        this.player = new Cowbell.UI.Basic(container);
+
+        this.modPlayer = new Cowbell.Player.OpenMPT({
+            'pathToLibOpenMPT': './openmpt/libopenmpt.js'
+        })
 
         // Initialize JS Rocket
         this.syncDevice = new JSRocket.SyncDevice();
@@ -77,9 +100,15 @@ export class SoundManager {
             .then((response: Response) => response.arrayBuffer())
             .then((arrayBuffer: ArrayBuffer) => {
                 if (arrayBuffer) {
-                    XMPlayer.init();
-                    XMPlayer.load(arrayBuffer);
-                    XMPlayer.play();
+                    // console.clear();
+                    this.track = new this.modPlayer.Track(filename);
+                    this.player.open(this.track)
+                    // this.audioElement.autoplay = false;
+                    this.audioElement.autoplay = false;
+                    // this.audioElement = this.track.open();
+
+
+
                 } else {
                     console.log('unable to load', filename);
                 }
@@ -88,8 +117,8 @@ export class SoundManager {
 
     // Initialize XM Player
     public initXM() {
-        XMPlayer.init();
-        this.audioContext = XMPlayer.audioctx;
+        //  XMPlayer.init();
+        // this.audioContext = XMPlayer.audioctx; 
     }
 
     public playOgg(filename: string): Promise<void> {
@@ -115,11 +144,14 @@ export class SoundManager {
     }
 
     public loadOgg(filename: string) {
+
+        /*
         this.audio.src = filename;
         this.audio.load();
         this.audio.preload = 'auto';
         this.audio.loop = true;
         this.audio.autoplay = false;
+        */
     }
 
     prepareSync(filename: string, demoMode: boolean): Promise<void> {
@@ -149,8 +181,9 @@ export class SoundManager {
     }
 
     onSyncReady() {
-        this.musicProperties.BPM = 120;
-        this.musicProperties.ROWS_PER_BEAT = 8;
+        console.info('ready')
+        this.musicProperties.BPM = 125;
+        this.musicProperties.ROWS_PER_BEAT = 6;
         this.musicProperties.ROW_RATE = this.musicProperties.BPM / 60 * this.musicProperties.ROWS_PER_BEAT;
         this.syncDevice.connected = true;
         this.sceneData.effect = this.syncDevice.getTrack('effect');
@@ -159,11 +192,11 @@ export class SoundManager {
         this.sceneData.transitionType = this.syncDevice.getTrack('transitionType');
         this.sceneData.transitionValue = this.syncDevice.getTrack('transitionValue');
 
-        this.audio.onpause = () => {
+        this.audioElement.onpause = () => {
             this.isPlaying = false;
         };
 
-        this.audio.onplay = () => {
+        this.audioElement.onplay = () => {
             this.isPlaying = true;
         }
 
@@ -175,7 +208,7 @@ export class SoundManager {
         if (!isNaN(newRow)) {
             this.row = newRow;
         }
-        this.audio.currentTime = newRow / this.musicProperties.ROW_RATE;
+        this.audioElement.currentTime = newRow / this.musicProperties.ROW_RATE;
     }
 
     updateMusic() {
@@ -185,7 +218,7 @@ export class SoundManager {
         }
 
         // update music properties
-        this.musicProperties.timeSeconds = this.audio.currentTime;
+        this.musicProperties.timeSeconds = (this.audioElement?.currentTime) || 0;
         this.musicProperties.timeMilliseconds = this.musicProperties.timeSeconds * 1000;
         this.row = this.musicProperties.timeSeconds * this.musicProperties.ROW_RATE;
 
@@ -198,7 +231,7 @@ export class SoundManager {
         }
 
         // update JS rocket
-        if (this.audio.paused === false) {
+        if (this.audioElement && this.audioElement.paused === false) {
             // otherwise we may jump into a point in the audio where there's
             // no timeframe, resulting in Rocket setting row 2 and we report
             // row 1 back - thus Rocket spasming out
@@ -209,10 +242,25 @@ export class SoundManager {
     }
 
     onPlay() {
-        console.log('[onPlay]');
-        this.audio.currentTime = this.row / this.musicProperties.ROW_RATE;
-        if (!this.isPlaying) {
-            const playPromise = this.audio.play();
+
+        if (!this.audioElement) {
+             this.audioElement = this.track.open();
+             // this.audioElement.play();
+            
+            // this.track.self.play();
+        }
+
+        if (!this.isPlaying && this.audioElement) {
+            if (this.audioElement.currentTime) {
+                this.audioElement.currentTime = this.row / this.musicProperties.ROW_RATE;
+            }
+
+            this.isPlaying = true;
+            this.audioElement.play();
+
+
+            /*
+            const playPromise = this.audioElement.play();
             if (playPromise !== undefined) {
                 playPromise.then(() => {
                     this.isPlaying = true;
@@ -221,15 +269,21 @@ export class SoundManager {
                         console.log(error);
                     });
             }
+            */
+
+
+
         }
+        console.log('[onPlay]', this.audioElement);
+
     }
 
     onPause() {
-        console.info('[onPause]');
-        this.row = this.audio.currentTime * this.musicProperties.ROW_RATE;
-
-        if (!this.audio.paused && this.isPlaying) {
-            this.audio.pause();
+        console.info('[onPause]', this.audioElement);
+        if (!this.audioElement.paused && this.isPlaying) {
+            this.row = this.audioElement.currentTime * this.musicProperties.ROW_RATE;
+            this.audioElement.pause();
+            this.isPlaying = false;
         }
     }
 
@@ -265,10 +319,10 @@ export class SoundManager {
      * @param  {number} time            time in milliseconds
      */
     public seek(time: number) {
-        this.audio.currentTime = time;
+        this.audioElement.currentTime = time;
         // update rocket editor position to new timeline location
         if (!this.demoMode) {
-            this.syncDevice.update(this.audio.currentTime * this.musicProperties.ROW_RATE);
+            this.syncDevice.update(this.audioElement.currentTime * this.musicProperties.ROW_RATE);
         }
     }
 
@@ -288,7 +342,7 @@ export class SoundManager {
             ref.classList.remove('fa-volume-off');
             ref.classList.add('fa-volume-up');
         }
-        this.audio.muted = isMuted;
+        // this.audioElement.muted = isMuted;
     }
 
     /**
@@ -298,13 +352,17 @@ export class SoundManager {
         // jump to last position on timeline for local development reloading
         const jumpTo = localStorage.getItem('lastTime');
         if (jumpTo) {
-            this.seek(Number(jumpTo));
+            // this.seek(Number(jumpTo));
         }
 
         // remember last sound preferences
         const isMuted = localStorage.getItem('soundToggle') === 'true';
         this.toggleSound(document.getElementById('ticker_volume'), isMuted);
     }
+
+
+
+
 
     /*
     // todo: add effect # markers to timeline
