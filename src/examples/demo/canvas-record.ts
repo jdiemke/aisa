@@ -1,5 +1,3 @@
-import fileExtension from 'file-loader';
-
 export class CanvasRecorder {
 
     public recording: boolean;
@@ -12,8 +10,12 @@ export class CanvasRecorder {
     }
 
     public getType(filename: string) {
-        const ext = fileExtension(filename);
+        const ext = this.fileExtension(filename);
         return ['mkv'].includes(ext) ? 'video/x-matroska;codecs=avc1' : 'video/webm';
+    }
+
+    private fileExtension(filename: string): string {
+        return filename.split('.').pop();
     }
 
     public createCanvasRecorder(canvas: HTMLCanvasElement, options = {}, audio: HTMLMediaElement) {
