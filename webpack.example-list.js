@@ -81,6 +81,7 @@ const examples = [
     new Example('skybox'),
     new Example('wireframe-cube'),
     new Example('wavefront-texture3'),
+    new Example('xenusion'),
 ];
 
 module.exports = examples;
