@@ -91,7 +91,7 @@ export class ParallaxScrollingScene extends AbstractScene {
     }
 
     private createParallaxLayers(): Array<ParallaxLayer> {
-        const mySpeed = 0.24;
+        const mySpeed = 0.24*0.7;
 
         return [
             {
