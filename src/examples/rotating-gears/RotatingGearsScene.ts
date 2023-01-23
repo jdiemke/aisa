@@ -12,6 +12,7 @@ export class RotatingGearsScene extends AbstractScene {
     private blurred: Texture;
     private noise: Texture;
     private hoodlumLogo: Texture;
+    private robot: Texture;
 
     private gearsMesh: Array<FlatshadedMesh>;
 
@@ -35,6 +36,9 @@ export class RotatingGearsScene extends AbstractScene {
             ),
             TextureUtils.load(require('../../assets/hoodlumLogo.png'), true).then(
                 (texture: Texture) => this.hoodlumLogo = texture
+            ),
+            TextureUtils.load(require('../../assets/robot.png'), true).then(
+                (texture: Texture) => this.robot = texture
             )
         ]);
     }
@@ -55,13 +59,14 @@ export class RotatingGearsScene extends AbstractScene {
             ], this.dirt);
             */
         // place logo in center
-        framebuffer.drawTexture(Math.floor((framebuffer.width - this.hoodlumLogo.width) / 2), 75, this.hoodlumLogo, 0.6);
+
 
         const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
-        framebuffer.drawTexture(0, 0, texture3, 0.75);
+        framebuffer.drawTexture(0, 0, texture3, 0.55);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
 
         framebuffer.noise(time, this.noise);
+        framebuffer.drawTexture(320 - this.robot.width +30, 0, this.robot, 1);
     }
 
     public drawBlenderScene3(framebuffer: Framebuffer, elapsedTime: number): void {
@@ -76,11 +81,11 @@ export class RotatingGearsScene extends AbstractScene {
         );
 
         for (let i: number = 0; i < 10; i++) {
-            const scale = Math.sin(Math.PI * 2 / 10 * i + elapsedTime * 0.002) * 0.2 + 0.2 + 0.3;
+            const scale = (Math.sin(Math.PI * 2 / 10 * i + elapsedTime * 0.002) * 0.2 + 0.2 + 0.3) *2;
             const mv: Matrix4f = camera.multiplyMatrix(
                 Matrix4f.constructTranslationMatrix(0, ((i + elapsedTime * 0.0008) % 10) - 5, 0).multiplyMatrix(
                     Matrix4f.constructYRotationMatrix((i * 0.36 + elapsedTime * 0.0016)).multiplyMatrix(
-                        Matrix4f.constructScaleMatrix(scale, 1, scale)
+                        Matrix4f.constructScaleMatrix(scale, 2, scale)
                     )
                 )
             );
