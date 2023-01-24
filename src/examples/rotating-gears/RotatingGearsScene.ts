@@ -6,6 +6,7 @@ import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/Goura
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { BlenderLoader } from '../../model/blender/BlenderLoader';
+import { FontRenderer } from '../sine-scroller/FontRenderer';
 
 export class RotatingGearsScene extends AbstractScene {
 
@@ -18,13 +19,22 @@ export class RotatingGearsScene extends AbstractScene {
 
     private accumulationBuffer: Uint32Array;
     private renderingPipeline: GouraudShadingRenderingPipeline;
+    fontRenderer: FontRenderer;
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.FRONT);
 
+        const fonts: string =
+        ' !\'><C+\'()@+,-./0123456789:; = ? ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    this.fontRenderer = new FontRenderer(
+        framebuffer,
+        8, 8, fonts,
+        require('../../assets/font.png')
+    );
         return Promise.all([
+            this.fontRenderer.init(),
             BlenderLoader.load(require('../../assets/jsx/gear.jsx')).then(
                 (mesh: Array<FlatshadedMesh>) => this.gearsMesh = mesh
             ),
@@ -46,27 +56,12 @@ export class RotatingGearsScene extends AbstractScene {
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
 
-        // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
         this.drawBlenderScene3(framebuffer, time);
-        /*
-            [
-                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                { tex: this.texture13, scale: 1.6, alpha: 0.25 },
-                { tex: this.texture13, scale: 0.7, alpha: 0.22 },
-                { tex: this.texture13, scale: -0.4, alpha: 0.22 },
-            ], this.dirt);
-            */
-        // place logo in center
-
-
-        const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
-        framebuffer.drawTexture(0, 0, texture3, 0.55);
-        framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
 
         framebuffer.noise(time, this.noise);
-        framebuffer.drawTexture(320 - this.robot.width +30, 0, this.robot, 1);
+        framebuffer.drawTexture(320 - this.robot.width +30, -8, this.robot, 1);
+        this.fontRenderer.drawText(framebuffer,0,200-16-4,"YOUR ADVERTISEMENT COULD BE HERE +++ ", time, false);
     }
 
     public drawBlenderScene3(framebuffer: Framebuffer, elapsedTime: number): void {
