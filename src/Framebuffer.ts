@@ -123,9 +123,9 @@ export class Framebuffer {
 
     public precompute(texture: Texture): void {
         // this.blengetBlenderScene(hoodlumJson, false);
-     
+
          //this.cylinder = this.createCylinder();
-       
+
         // this.sphereDisp = this.createSphereDistplaced(texture);
     }
 
@@ -483,8 +483,8 @@ export class Framebuffer {
     }
 
     // 6 times faster than the slow method that clips and does alpha blending
-    public fastFramebufferCopy(src: Uint32Array, dest: Uint32Array) {
-        src.set(dest);
+    public fastFramebufferCopy(dest: Uint32Array, src: Uint32Array) {
+        dest.set(src);
     }
 
     public noise(elapsedTime: number, texture: Texture, scale: number = 0.07): void {
@@ -1233,7 +1233,7 @@ export class Framebuffer {
             t1.z);
     }
 
-   
+
 
     public clearDepthBuffer(): void {
         this.wBuffer.fill(-1 / 900);
@@ -1622,7 +1622,7 @@ export class Framebuffer {
         return (1 - Math.cos(mu2 * Math.PI)) / 2;
     }
 
-    
+
     /*
     public createCylinder() {
         const k = {
@@ -1689,8 +1689,8 @@ export class Framebuffer {
    /*
 
 */
-    
-   
+
+
     /*
     public shadingCylinderEnv(elapsedTime: number): void {
         this.wBuffer.fill(100);
