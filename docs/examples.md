@@ -78,4 +78,5 @@
 * [Skybox with Torus](https://jdiemke.github.io/aisa/skybox.html)
 * [Wireframe Cube](https://jdiemke.github.io/aisa/wireframe-cube.html)
 * [Paralax](https://jdiemke.github.io/aisa/xenusion.html)
+* [Textured Cube](https://jdiemke.github.io/aisa/textured-cube.html)
 
