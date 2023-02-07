@@ -10,5 +10,5 @@ in TypeScript and compiled down to vanilla JavaScript.
 - [Examples](./docs/examples.md)
 - [Feature List](./docs/feature-list.md)
 - [Backlog](./docs/backlog.md)
-- [Tooles and Libraries](./docs/tools-and-libraries.md)
+- [Tools and Libraries](./docs/tools-and-libraries.md)
 - [References](./docs/references.md)
