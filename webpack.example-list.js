@@ -83,6 +83,7 @@ const examples = [
     new Example('wavefront-texture3'),
     new Example('xenusion'),
     new Example('textured-cube'),
+    new Example('textured-cube-plasma'),
 ];
 
 module.exports = examples;
