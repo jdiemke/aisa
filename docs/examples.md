@@ -79,4 +79,5 @@
 * [Wireframe Cube](https://jdiemke.github.io/aisa/wireframe-cube.html)
 * [Paralax](https://jdiemke.github.io/aisa/xenusion.html)
 * [Textured Cube](https://jdiemke.github.io/aisa/textured-cube.html)
+* [Textured Cube Plasma](https://jdiemke.github.io/aisa/textured-cube-plasma.html)
 
