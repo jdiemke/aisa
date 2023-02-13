@@ -8,12 +8,12 @@ export class TexturedTriangleRasterizer extends AbstractScannlineTriangleRasteri
 
     // requires
     // bob und wbuffer
-    constructor(private framebuffer: Framebuffer) { 
+    constructor(private framebuffer: Framebuffer) {
         super();
     }
 
     protected fillLongRightTriangle(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void {
-       
+
         // left slope
         let yDistanceLeft = v2.projection.y - v1.projection.y;
         let slope1 = (v2.projection.x - v1.projection.x) / yDistanceLeft;
@@ -56,11 +56,11 @@ export class TexturedTriangleRasterizer extends AbstractScannlineTriangleRasteri
                     let u = Math.max(Math.min((uStart * z * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
                     let v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
                     let color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
-                    
-                
-                    u = uStart * z * framebuffer.bob.width;
-                    v = vStart * z * framebuffer.bob.height;
-                
+
+
+                    u = uStart * z * (framebuffer.bob.width-1);
+                    v = vStart * z * (framebuffer.bob.height-1);
+
                    color2 = framebuffer.bob.getBilinearFilteredPixelRasterizer(u,v);
 
                     framebuffer.framebuffer[framebufferIndex] = color2;
@@ -126,9 +126,9 @@ export class TexturedTriangleRasterizer extends AbstractScannlineTriangleRasteri
                     let v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
                     let color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
 
-                    u = uStart * z * framebuffer.bob.width;
-                    v = vStart * z * framebuffer.bob.height;
-                
+                    u = uStart * z * (framebuffer.bob.width-1);
+                    v = vStart * z * (framebuffer.bob.height-1);
+
                    color2 = framebuffer.bob.getBilinearFilteredPixelRasterizer(u,v);
 
                     framebuffer.framebuffer[framebufferIndex] = color2;
@@ -205,11 +205,12 @@ export class TexturedTriangleRasterizer extends AbstractScannlineTriangleRasteri
                     let u = Math.max(Math.min((uStart * z * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
                     let v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
                     let color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
-                   
-                   
-                    u = uStart * z * framebuffer.bob.width;
-                    v = vStart * z * framebuffer.bob.height;
-                
+
+
+
+                    u = uStart * z * (framebuffer.bob.width-1);
+                    v = vStart * z * (framebuffer.bob.height-1);
+
                    color2 = framebuffer.bob.getBilinearFilteredPixelRasterizer(u,v);
 
                     framebuffer.framebuffer[framebufferIndex] = color2;
@@ -270,9 +271,9 @@ export class TexturedTriangleRasterizer extends AbstractScannlineTriangleRasteri
                     let v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
                     let color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
 
-                    u = uStart * z * framebuffer.bob.width;
-                    v = vStart * z * framebuffer.bob.height;
-                
+                    u = uStart * z * (framebuffer.bob.width-1);
+                    v = vStart * z * (framebuffer.bob.height-1);
+
                    color2 = framebuffer.bob.getBilinearFilteredPixelRasterizer(u,v);
 
                     framebuffer.framebuffer[framebufferIndex] = color2;

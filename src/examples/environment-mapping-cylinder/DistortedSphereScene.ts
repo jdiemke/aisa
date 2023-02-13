@@ -55,7 +55,7 @@ export class EnvironmentMappingScene extends AbstractScene {
         framebuffer.setTexture(this.env);
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         this.shadingCylinderEnvDisp(framebuffer, time*0.002, this.plane);
-       
+
 
         const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         framebuffer.drawTexture(0, 0, texture3, 0.75);
@@ -64,7 +64,7 @@ export class EnvironmentMappingScene extends AbstractScene {
     }
 
 
-   
+
     public shadingCylinderEnvDisp(framebuffer: Framebuffer, elapsedTime: number, cylinder: IndexMesh): void {
 
         framebuffer.wBuffer.fill(100);
@@ -180,7 +180,7 @@ export class EnvironmentMappingScene extends AbstractScene {
                     v1.y > framebuffer.maxWindow.y ||
                     v2.y > framebuffer.maxWindow.y ||
                     v3.y > framebuffer.maxWindow.y) {
-                        this.texturedRenderingPipeline.clipConvexPolygon2(framebuffer, vertexArray);
+                        this.texturedRenderingPipeline.clipConvexPolygon(framebuffer, vertexArray);
                    // this.clipConvexPolygon2(vertexArray, color);
                 } else {
                     framebuffer.texturedTriangleRasterizer.drawTriangleDDA(framebuffer, vertexArray[0], vertexArray[1], vertexArray[2]);

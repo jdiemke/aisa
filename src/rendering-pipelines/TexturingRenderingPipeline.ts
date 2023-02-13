@@ -103,9 +103,9 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
                         this.vertexArray[1].textureCoordinate = mesh.uv[mesh.faces[i].uv[1]];
                         this.vertexArray[2].textureCoordinate = mesh.uv[mesh.faces[i].uv[2]];
                     }
-                  
 
-                    this.clipConvexPolygon2(framebuffer, this.vertexArray);
+
+                    this.clipConvexPolygon(framebuffer, this.vertexArray);
                 }
             } else if (!this.isInFrontOfNearPlane(v1) &&
                 !this.isInFrontOfNearPlane(v2) &&
@@ -121,7 +121,7 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
                 this.vertexArray[2].position = v3;
                 this.vertexArray[2].textureCoordinate = mesh.uv[mesh.faces[i].uv[2]];
 
-                this.zClipTriangle2(framebuffer, this.vertexArray);
+                this.zClipTriangle(framebuffer, this.vertexArray);
             }
         }
     }
@@ -158,7 +158,7 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
         return vertex;
     }
 
-    public zClipTriangle2(framebuffer: Framebuffer, subject: Array<Vertex>): void {
+    public zClipTriangle(framebuffer: Framebuffer, subject: Array<Vertex>): void {
         const input: Array<Vertex> = subject;
         const output: Array<Vertex> = new Array<Vertex>();
         let S: Vertex = input[input.length - 1];
@@ -180,32 +180,30 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
             return;
         }
 
-        // TODO: remove temp object here
-        const projected: Array<Vertex> = output.map<Vertex>((v: Vertex) => {
-            v.projection = this.project(v.position);
-            return v;
-        });
+        for (let j: number = 0; j < output.length; j++) {
+            output[j].projection = this.project(output[j].position);
+        }
 
         if (output.length === 3 &&
-            !this.isTriangleCCW(projected[0].projection, projected[1].projection, projected[2].projection)) {
+            !this.isTriangleCCW(output[0].projection, output[1].projection, output[2].projection)) {
             return;
         }
 
         if (output.length === 4 &&
             !this.isTriangleCCW2(
-                projected[0].projection,
-                projected[1].projection,
-                projected[2].projection,
-                projected[3].projection
+                output[0].projection,
+                output[1].projection,
+                output[2].projection,
+                output[3].projection
             )) {
             return;
         }
 
-        this.clipConvexPolygon2(framebuffer, projected);
+        this.clipConvexPolygon(framebuffer, output);
     }
 
 
-    public clipConvexPolygon2(framebuffer: Framebuffer, subject: Array<Vertex>): void {
+    public clipConvexPolygon(framebuffer: Framebuffer, subject: Array<Vertex>): void {
 
         let output = subject;
 
