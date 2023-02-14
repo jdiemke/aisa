@@ -80,4 +80,5 @@
 * [Paralax](https://jdiemke.github.io/aisa/xenusion.html)
 * [Textured Cube](https://jdiemke.github.io/aisa/textured-cube.html)
 * [Textured Cube Plasma](https://jdiemke.github.io/aisa/textured-cube-plasma.html)
+* [Wavefront with Texture 4](https://jdiemke.github.io/aisa/wavefront-texture4.html)
 
