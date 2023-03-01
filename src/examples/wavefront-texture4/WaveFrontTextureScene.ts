@@ -20,26 +20,20 @@ export class WaveFrontTextureScene extends AbstractScene {
         this.texturedRenderingPipeline.setCullFace(CullFace.BACK);
 
         return Promise.all([
-           /* TextureUtils.load(require('../../assets/UVMap.png'), false).then(
+            TextureUtils.load(require('../../assets/wavefront/abstract/abstract.png'), false).then(
                 (texture: Texture) => this.spikeBallTexture = texture
             ),
-            WavefrontLoader.loadWithTexture(require('../../assets/Geometry Stuff.obj')).then(
-                (x: Array<TexturedMesh>) => this.spikeBallMesh = x
-            ),*/
-            TextureUtils.load(require('../../assets/wavefront/baked/baked.png'), false).then(
-                (texture: Texture) => this.spikeBallTexture = texture
-            ),
-            WavefrontLoader.loadWithTexture(require('../../assets/wavefront/baked/baked-extrude.obj')).then(
+            WavefrontLoader.loadWithTexture(require('../../assets/wavefront/abstract/abstract.obj')).then(
                 (x: Array<TexturedMesh>) => this.spikeBallMesh = x
             ),
-            TextureUtils.load(require('../../assets/flood2.png'), false).then(
+            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
                 texture => this.backgroundTexture = texture
             ),
         ]);
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        const elapsedTime: number = time*0.4;
+        const elapsedTime: number = time*0.2;
 
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.backgroundTexture.texture);
         framebuffer.clearDepthBuffer();
@@ -65,7 +59,7 @@ export class WaveFrontTextureScene extends AbstractScene {
         );
 
         let scale = (Math.sin(elapsedTime*0.003)*0.5+0.5)*0.24+1;
-        return camera.multiplyMatrix(Matrix4f.constructScaleMatrix(4*scale, 4*scale, 4*scale));
+        return camera.multiplyMatrix(Matrix4f.constructScaleMatrix(2*scale, 2*scale, 2*scale));
     }
 
 }

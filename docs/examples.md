@@ -77,4 +77,8 @@
 * [Wavefront with Texture 3](https://jdiemke.github.io/aisa/wavefront-texture3.html)
 * [Skybox with Torus](https://jdiemke.github.io/aisa/skybox.html)
 * [Wireframe Cube](https://jdiemke.github.io/aisa/wireframe-cube.html)
+* [Paralax](https://jdiemke.github.io/aisa/xenusion.html)
+* [Textured Cube](https://jdiemke.github.io/aisa/textured-cube.html)
+* [Textured Cube Plasma](https://jdiemke.github.io/aisa/textured-cube-plasma.html)
+* [Wavefront with Texture 4](https://jdiemke.github.io/aisa/wavefront-texture4.html)
 

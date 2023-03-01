@@ -293,7 +293,7 @@ export class DistortedSphereScene extends AbstractScene {
                     v3.y > framebuffer.maxWindow.y) {
 
 
-                    this.texturedRenderingPipeline.clipConvexPolygon2(framebuffer, vertexArray);
+                    this.texturedRenderingPipeline.clipConvexPolygon(framebuffer, vertexArray);
                 } else {
                     this.texturedRenderingPipeline.triangleRasterizer.drawTriangleDDA(framebuffer, vertexArray[0], vertexArray[1], vertexArray[2]);
                 }
