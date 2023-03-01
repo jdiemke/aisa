@@ -53,17 +53,10 @@ export class DemoScene {
 
         // initialize effects with progress
         return this.allProgress([
-            // load music
-            /*
-            import('../../assets/sound/NotMixedorMastered.ogg').then(musicData => {
-                this.soundManager.loadOgg(musicData.default)
-            }),
-            */
 
-            import('../../assets/sound/dubmood_-_cromenu1_haschkaka.xm').then(musicData => {
-                this.soundManager.playExtendedModule(musicData.default);
-            }),
-         
+            // load music
+            // this.soundManager.loadMusicModule(require(`../../assets/sound/dubmood_-_cromenu1_haschkaka.xm`)),
+            this.soundManager.loadMusicModule(require(`../../assets/sound/showeroflove.mod`)),
             // this.soundManager.loadOgg(require('../../assets/sound/NotMixedorMastered.ogg')),
           
 
@@ -71,9 +64,6 @@ export class DemoScene {
             // Set to true when using *.rocket from file system
             // set to false when using rocket editor using websocket
             this.soundManager.prepareSync(require('../../assets/sound/demo.rocket'), true),
-       
-
-
 
             // we use this for transitions
             this.BlockFade.init(framebuffer),

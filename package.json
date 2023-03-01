@@ -46,7 +46,6 @@
         "webpack-dev-server": "^4.11.1"
     },
     "dependencies": {
-        "@types/stats": "^0.16.30",
-        "jsxm": "1.0.1"
+        "@types/stats": "^0.16.30"
     }
 }

@@ -1,17 +1,8 @@
-// import 'jsxm/xm';
-// import 'jsxm/xmeffects';
 import './JSRocket';
-
-/*
-import './cowbell/cowbell.min'
-import './cowbell/openmpt.min'
-*/
-
 import './cowbell/cowbell'
+import './cowbell/audio_player'
 import './cowbell/web_audio_player'
 import './cowbell/openmpt/openmpt_player'
-import './cowbell/ui/basic'
-
 
 type musicProperties = {
     // Beats per minute of your demo tune
@@ -34,6 +25,11 @@ type sceneData = {
     bass: any;
 }
 
+declare global {
+    interface Window { Module: any; }
+}
+window.Module = window.Module || {};
+
 export class SoundManager {
 
     public audioContext: AudioContext;
@@ -48,19 +44,12 @@ export class SoundManager {
     public musicProperties: musicProperties;
     public sceneData: sceneData;
 
-    public modPlayer;
+    public audioPlayer;
     public player;
     public audioElement: HTMLAudioElement;
     public track;
 
     public constructor() {
-
-        const container = document.getElementById('player');
-        this.player = new Cowbell.UI.Basic(container);
-
-        this.modPlayer = new Cowbell.Player.OpenMPT({
-            'pathToLibOpenMPT': './openmpt/libopenmpt.js'
-        })
 
         // Initialize JS Rocket
         this.syncDevice = new JSRocket.SyncDevice();
@@ -90,37 +79,29 @@ export class SoundManager {
         }
     }
     /**
-     * Load and play module music tracker files
+     * Load tracker files supported by libopenmpt into audiocontext
      *
      * @param {string} filename      module file to load
      * @returns {Promise<Response>}  fetch response
      */
-    public playExtendedModule(filename: string): Promise<void> {
-        return fetch(filename)
-            .then((response: Response) => response.arrayBuffer())
-            .then((arrayBuffer: ArrayBuffer) => {
-                if (arrayBuffer) {
-                    // console.clear();
-                    this.track = new this.modPlayer.Track(filename);
-                    this.player.open(this.track)
-                    // this.audioElement.autoplay = false;
-                    this.audioElement.autoplay = false;
-                    // this.audioElement = this.track.open();
-
-
-
-                } else {
-                    console.log('unable to load', filename);
-                }
+    public loadMusicModule(filename: any): Promise<void> {
+        return new Promise((resolve) => {
+            this.audioPlayer = new Cowbell.Player.OpenMPT({
+                'pathToLibOpenMPT': './openmpt/libopenmpt.js'
             });
+            this.track = new this.audioPlayer.Track(filename);
+            this.audioElement = this.track.open();
+            resolve();
+        });
     }
 
-    // Initialize XM Player
-    public initXM() {
-        //  XMPlayer.init();
-        // this.audioContext = XMPlayer.audioctx; 
-    }
-
+    /**
+     * Load OGG audio into audiocontext using Javascript
+     * keep for backward compatibility in MiscScene.ts
+     *
+     * @param {string} filename      module file to load
+     * @returns {Promise<Response>}  fetch response
+     */
     public playOgg(filename: string): Promise<void> {
         return fetch(filename)
             .then((response: Response) => response.arrayBuffer())
@@ -143,15 +124,18 @@ export class SoundManager {
             });
     }
 
-    public loadOgg(filename: string): Promise<void>  {
-        const audio = this.audio;
+    /**
+     * Load OGG audio into audiocontext using Cowbell
+     *
+     * @param {string} filename      module file to load
+     * @returns {Promise<Response>}  fetch response
+     */
+    public loadOgg(filename: string): Promise<void> {
         return new Promise((resolve) => {
-            audio.src = filename;
-            audio.load();
-            audio.preload = 'auto';
-            audio.loop = true;
-            audio.autoplay = false;
-            audio.oncanplay = () => resolve();
+            this.audioPlayer = new Cowbell.Player.Audio();
+            this.track = new this.audioPlayer.Track(filename);
+            this.audioElement = this.track.open();
+            resolve();
         });
     }
 
@@ -182,7 +166,6 @@ export class SoundManager {
     }
 
     onSyncReady() {
-        console.info('ready')
         this.musicProperties.BPM = 125;
         this.musicProperties.ROWS_PER_BEAT = 6;
         this.musicProperties.ROW_RATE = this.musicProperties.BPM / 60 * this.musicProperties.ROWS_PER_BEAT;
@@ -192,15 +175,6 @@ export class SoundManager {
         this.sceneData.bass = this.syncDevice.getTrack('bass');
         this.sceneData.transitionType = this.syncDevice.getTrack('transitionType');
         this.sceneData.transitionValue = this.syncDevice.getTrack('transitionValue');
-
-        this.audioElement.onpause = () => {
-            this.isPlaying = false;
-        };
-
-        this.audioElement.onplay = () => {
-            this.isPlaying = true;
-        }
-
     }
 
     // row is only given if you navigate, or change a value on the row in Rocket
@@ -239,53 +213,31 @@ export class SoundManager {
 
             // this informs Rocket where we are
             this.syncDevice.update(this.row);
+
+            if (window.Module && window.Module._openmpt_module_get_current_channel_vu_mono) {
+                // console.info(this.audioElement.paused, window.Module._openmpt_module_get_current_channel_vu_mono(5930904));
+            }
         }
     }
 
     onPlay() {
-
-        if (!this.audioElement) {
-             this.audioElement = this.track.open();
-             // this.audioElement.play();
-            
-            // this.track.self.play();
-        }
-
         if (!this.isPlaying && this.audioElement) {
             if (this.audioElement.currentTime) {
                 this.audioElement.currentTime = this.row / this.musicProperties.ROW_RATE;
             }
-
             this.isPlaying = true;
             this.audioElement.play();
-
-
-            /*
-            const playPromise = this.audioElement.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    this.isPlaying = true;
-                })
-                    .catch(error => {
-                        console.log(error);
-                    });
-            }
-            */
-
-
-
         }
-        console.log('[onPlay]', this.audioElement);
-
+        console.log('[onPlay]');
     }
 
     onPause() {
-        console.info('[onPause]', this.audioElement);
         if (!this.audioElement.paused && this.isPlaying) {
             this.row = this.audioElement.currentTime * this.musicProperties.ROW_RATE;
             this.audioElement.pause();
             this.isPlaying = false;
         }
+        console.info('[onPause]');
     }
 
     /**
@@ -360,10 +312,6 @@ export class SoundManager {
         const isMuted = localStorage.getItem('soundToggle') === 'true';
         this.toggleSound(document.getElementById('ticker_volume'), isMuted);
     }
-
-
-
-
 
     /*
     // todo: add effect # markers to timeline
