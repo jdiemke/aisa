@@ -1,41 +1,26 @@
-import 'jsxm/xm';
-import 'jsxm/xmeffects';
 import './JSRocket';
-
-type musicProperties = {
-    // Beats per minute of your demo tune
-    BPM: number;
-    // The resolution between two beats, four is usually fine,- eight adds a bit more finer control
-    ROWS_PER_BEAT: number;
-    // we calculate this now, so we can translate between rows and seconds later on
-    ROW_RATE: number;
-    timeSeconds: number;
-    timeMilliseconds: number;
-    sceneData: sceneData;
-}
-
-// scene variables | things you set through jsRocket
-type sceneData = {
-    effect: any;
-    transitionType: any;
-    transitionValue: any;
-    snare: any;
-    bass: any;
-}
-
+import './cowbell/cowbell'
+import './cowbell/audio_player'
+import './cowbell/web_audio_player'
+import './cowbell/openmpt/openmpt_player'
+import { musicProperties, sceneData } from './MusicProperties';
 export class SoundManager {
 
     public audioContext: AudioContext;
     public songLengthSeconds: number;
     public syncDevice;
-    public audio = new Audio();
     public isPlaying = false;
-    public demoMode = true;    // use true for release mode
+    public demoMode: boolean;
     public row = 0;    // the current row we're on
 
     //  container for audio values to be used by effects (time, bass, effect, transitions)
     public musicProperties: musicProperties;
     public sceneData: sceneData;
+
+    public audioPlayer;
+    public player;
+    public audioElement: HTMLAudioElement;
+    public track;
 
     public constructor() {
 
@@ -43,89 +28,47 @@ export class SoundManager {
         this.syncDevice = new JSRocket.SyncDevice();
         this.syncDevice.connected = false;
 
-        this.musicProperties = {
-            BPM: 0,
-            ROWS_PER_BEAT: 0,
-            ROW_RATE: 0,
-            timeSeconds: 0,
-            timeMilliseconds: 0,
-            sceneData: {
-                effect: 0,
-                transitionType: 0,
-                transitionValue: 0,
-                snare: 0,
-                bass: 0
-            }
-        }
-
-        this.sceneData = {
-            effect: null,
-            transitionType: null,
-            transitionValue: null,
-            snare: null,
-            bass: null,
-        }
     }
+
     /**
-     * Load and play module music tracker files
+     * Load audio files supported by cowbell
      *
-     * @param {string} filename      module file to load
-     * @returns {Promise<Response>}  fetch response
+     * @param {string} filename     audio file to load
+     * @returns {Promise<void>}     promise
      */
-    public playExtendedModule(filename: string): Promise<void> {
-        return fetch(filename)
-            .then((response: Response) => response.arrayBuffer())
-            .then((arrayBuffer: ArrayBuffer) => {
-                if (arrayBuffer) {
-                    XMPlayer.init();
-                    XMPlayer.load(arrayBuffer);
-                    XMPlayer.play();
-                } else {
-                    console.log('unable to load', filename);
-                }
-            });
-    }
-
-    // Initialize XM Player
-    public initXM() {
-        XMPlayer.init();
-        this.audioContext = XMPlayer.audioctx;
-    }
-
-    public playOgg(filename: string): Promise<void> {
-        return fetch(filename)
-            .then((response: Response) => response.arrayBuffer())
-            .then((arrayBuffer: ArrayBuffer) => {
-                if (arrayBuffer) {
-                    this.audioContext.decodeAudioData(arrayBuffer,
-                        (buffer: AudioBuffer) => {
-                            const sourceBuffer = this.audioContext.createBufferSource();
-                            console.info('ogg create buffer');
-                            sourceBuffer.buffer = buffer;
-                            sourceBuffer.connect(this.audioContext.destination);
-                            console.info('ogg connect');
-                            sourceBuffer.loop = true;
-                            sourceBuffer.start(this.audioContext.currentTime);
-                            console.info('ogg ready');
-                        })
-                } else {
-                    console.log('unable to load', filename);
-                }
-            });
-    }
-
-    public loadOgg(filename: string): Promise<void>  {
-        const audio = this.audio;
+    public loadMusic(filename: string): Promise<void> {
         return new Promise((resolve) => {
-            audio.src = filename;
-            audio.load();
-            audio.preload = 'auto';
-            audio.loop = true;
-            audio.autoplay = false;
-            audio.oncanplay = () => resolve();
+
+            const fileExtension = filename.split('.').pop().toLowerCase();
+
+            switch (fileExtension) {
+                case 'it':
+                case 'xm':
+                case 's3m':
+                case 'mod':
+                    this.audioPlayer = new Cowbell.Player.OpenMPT({
+                        'pathToLibOpenMPT': './openmpt/libopenmpt.js'
+                    });
+                    break;
+                case 'ogg':
+                case 'mp3':
+                default:
+                    this.audioPlayer = new Cowbell.Player.Audio();
+                    break;
+            }
+            this.track = new this.audioPlayer.Track(filename);
+            this.audioElement = this.track.open();
+            resolve();
         });
     }
 
+    /**
+     * Load XML file for music syncronization for use with JS Rocket
+     *
+     * @param {string} filename      XML file to load
+     * @param {string} demoMode      use true for release mode (uses file) | false when using rocket editor
+     * @returns {Promise<void>}      promise
+     */
     prepareSync(filename: string, demoMode: boolean): Promise<void> {
         this.demoMode = demoMode;
         return new Promise((resolve) => {
@@ -153,24 +96,15 @@ export class SoundManager {
     }
 
     onSyncReady() {
-        this.musicProperties.BPM = 120;
-        this.musicProperties.ROWS_PER_BEAT = 8;
-        this.musicProperties.ROW_RATE = this.musicProperties.BPM / 60 * this.musicProperties.ROWS_PER_BEAT;
         this.syncDevice.connected = true;
-        this.sceneData.effect = this.syncDevice.getTrack('effect');
-        this.sceneData.snare = this.syncDevice.getTrack('snare');
-        this.sceneData.bass = this.syncDevice.getTrack('bass');
-        this.sceneData.transitionType = this.syncDevice.getTrack('transitionType');
-        this.sceneData.transitionValue = this.syncDevice.getTrack('transitionValue');
 
-        this.audio.onpause = () => {
-            this.isPlaying = false;
-        };
-
-        this.audio.onplay = () => {
-            this.isPlaying = true;
+        this.sceneData = {
+            effect: this.syncDevice.getTrack('effect'),
+            snare: this.syncDevice.getTrack('snare'),
+            bass: this.syncDevice.getTrack('bass'),
+            transitionType: this.syncDevice.getTrack('transitionType'),
+            transitionValue: this.syncDevice.getTrack('transitionValue')
         }
-
     }
 
     // row is only given if you navigate, or change a value on the row in Rocket
@@ -179,7 +113,7 @@ export class SoundManager {
         if (!isNaN(newRow)) {
             this.row = newRow;
         }
-        this.audio.currentTime = newRow / this.musicProperties.ROW_RATE;
+        this.audioElement.currentTime = newRow / this.musicProperties.ROW_RATE;
     }
 
     updateMusic() {
@@ -189,52 +123,53 @@ export class SoundManager {
         }
 
         // update music properties
-        this.musicProperties.timeSeconds = this.audio.currentTime;
-        this.musicProperties.timeMilliseconds = this.musicProperties.timeSeconds * 1000;
-        this.row = this.musicProperties.timeSeconds * this.musicProperties.ROW_RATE;
-
-        this.musicProperties.sceneData = {
-            effect: this.sceneData.effect.getValue(this.row),
-            transitionType: this.sceneData.transitionType.getValue(this.row),
-            transitionValue: this.sceneData.transitionValue.getValue(this.row),
-            snare: this.sceneData.snare.getValue(this.row),
-            bass: this.sceneData.bass.getValue(this.row),
+        this.musicProperties = {
+            BPM: 125,
+            ROWS_PER_BEAT: 6,
+            ROW_RATE: 125 / 60 * 6,
+            timeSeconds: (this.audioElement?.currentTime) || 0,
+            timeMilliseconds: (this.audioElement?.currentTime) * 1000,
+            sceneData: {
+                effect: this.sceneData.effect.getValue(this.row),
+                transitionType: this.sceneData.transitionType.getValue(this.row),
+                transitionValue: this.sceneData.transitionValue.getValue(this.row),
+                snare: this.sceneData.snare.getValue(this.row),
+                bass: this.sceneData.bass.getValue(this.row),
+            }
         }
 
+        this.row = this.musicProperties.timeSeconds * this.musicProperties.ROW_RATE;
+
         // update JS rocket
-        if (this.audio.paused === false) {
+        if (this.audioElement && this.audioElement.paused === false) {
             // otherwise we may jump into a point in the audio where there's
             // no timeframe, resulting in Rocket setting row 2 and we report
             // row 1 back - thus Rocket spasming out
 
             // this informs Rocket where we are
             this.syncDevice.update(this.row);
+
         }
     }
 
     onPlay() {
-        console.log('[onPlay]');
-        this.audio.currentTime = this.row / this.musicProperties.ROW_RATE;
-        if (!this.isPlaying) {
-            const playPromise = this.audio.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    this.isPlaying = true;
-                })
-                    .catch(error => {
-                        console.log(error);
-                    });
+        if (!this.isPlaying && this.audioElement) {
+            if (this.audioElement.currentTime) {
+                this.audioElement.currentTime = this.row / this.musicProperties.ROW_RATE;
             }
+            this.isPlaying = true;
+            this.audioElement.play();
         }
+        console.log('[onPlay]');
     }
 
     onPause() {
-        console.info('[onPause]');
-        this.row = this.audio.currentTime * this.musicProperties.ROW_RATE;
-
-        if (!this.audio.paused && this.isPlaying) {
-            this.audio.pause();
+        if (!this.audioElement.paused && this.isPlaying) {
+            this.row = this.audioElement.currentTime * this.musicProperties.ROW_RATE;
+            this.audioElement.pause();
+            this.isPlaying = false;
         }
+        console.info('[onPause]');
     }
 
     /**
@@ -269,10 +204,10 @@ export class SoundManager {
      * @param  {number} time            time in milliseconds
      */
     public seek(time: number) {
-        this.audio.currentTime = time;
+        this.audioElement.currentTime = time;
         // update rocket editor position to new timeline location
         if (!this.demoMode) {
-            this.syncDevice.update(this.audio.currentTime * this.musicProperties.ROW_RATE);
+            this.syncDevice.update(this.audioElement.currentTime * this.musicProperties.ROW_RATE);
         }
     }
 
@@ -292,17 +227,36 @@ export class SoundManager {
             ref.classList.remove('fa-volume-off');
             ref.classList.add('fa-volume-up');
         }
-        this.audio.muted = isMuted;
+        this.audioElement.muted = isMuted;
     }
 
     /**
-     * Restore position of timeline & mute preference on reload
+     * Restore position of timeline & mute preferences on reloads
      */
     public initTimeline() {
         // jump to last position on timeline for local development reloading
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const newLocal = this;
         const jumpTo = localStorage.getItem('lastTime');
-        if (jumpTo) {
-            this.seek(Number(jumpTo));
+
+        // poll for mod player since library does not use promises
+        if ((window as any).libopenmpt) {
+            (function poll() {
+                // check if mod was loaded then seek
+                if ((window as any).modulePtr) {
+
+                    // openmpt does not support volume control or muting
+                    document.getElementById('ticker_volume').style.display = 'none';
+
+                    if (jumpTo) {
+                        newLocal.seek(Number(jumpTo));
+                    }
+                    return;
+                }
+                setTimeout(poll, 150);
+            })();
+        } else {
+            newLocal.seek(Number(jumpTo));
         }
 
         // remember last sound preferences

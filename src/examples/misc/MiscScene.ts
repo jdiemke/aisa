@@ -123,8 +123,8 @@ export class MiscScene extends AbstractScene {
            // framebuffer.precompute(t);
 
             const sm: SoundManager = new SoundManager();
-            // sm.playExtendedModule(require('../../assets/sound/dubmood_-_cromenu1_haschkaka.xm').default);
-            sm.playOgg(require('../../assets/sound/xmix_q2_final.ogg'));
+            // sm.loadMusic(require('../../assets/sound/dubmood_-_cromenu1_haschkaka.xm').default);
+            sm.loadMusic(require('../../assets/sound/xmix_q2_final.ogg'));
         });
     }
 

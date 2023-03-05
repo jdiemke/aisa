@@ -36,10 +36,10 @@ module.exports = {
                 use: 'ts-loader'
             },
             {
-                test: /\.(png|jpg|mp3|ogg|md2|mdl|tga|xm|obj|rocket|jsx)$/,
+                test: /\.(png|jpg|mp3|ogg|md2|mdl|tga|xm|obj|rocket|jsx|mod|s3m|it|mptm)$/,
                 type: 'asset/resource'
             }
         ]
     },
-    plugins: webpackUtils.getHtmlWebpackPlugins()
+    plugins: webpackUtils.getWebpackPlugins()
 }

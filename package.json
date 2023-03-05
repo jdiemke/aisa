@@ -33,6 +33,7 @@
         "@types/stats.js": "0.17.0",
         "@typescript-eslint/eslint-plugin": "5.48.2",
         "@typescript-eslint/parser": "5.48.2",
+        "copy-webpack-plugin": "^11.0.0",
         "eslint": "8.32.0",
         "html-webpack-plugin": "5.5.0",
         "stats.js": "0.17.0",
@@ -44,7 +45,6 @@
         "webpack-dev-server": "4.11.1"
     },
     "dependencies": {
-        "@types/stats": "^0.16.30",
-        "jsxm": "1.0.1"
+        "@types/stats": "^0.16.30"
     }
 }
