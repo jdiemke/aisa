@@ -18,7 +18,11 @@ with audio data, and seeking to a specified time.
 
                 if (!audioCtx) {
                     var AudioContext = window.AudioContext || window.webkitAudioContext;
-                    audioCtx = new AudioContext();
+                    audioCtx = new AudioContext({
+                        latencyHint: "playback",
+                        sampleRate: 44100
+                      });
+                      console.info(audioCtx);
                 }
 
                 var BUFFER_SIZE = 4096;
