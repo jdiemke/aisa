@@ -49,6 +49,7 @@ export class CanvasRecorder {
 
         let stream = canvas.captureStream(frameRate);
 
+        /*
         if (!this.canvasRecorder) {
             // get the audio track:
             const ctx = new AudioContext();
@@ -60,6 +61,7 @@ export class CanvasRecorder {
         }
 
         stream.addTrack(this.audioTrack);
+        */
 
         let recorder = new MediaRecorder(stream, { mimeType, ...recorderOptions });
 

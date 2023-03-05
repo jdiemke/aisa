@@ -55,14 +55,11 @@ export class DemoScene {
         return this.allProgress([
 
             // load music
-            // this.soundManager.loadMusicModule(require(`../../assets/sound/dubmood_-_cromenu1_haschkaka.xm`)),
-            this.soundManager.loadMusicModule(require(`../../assets/sound/showeroflove.mod`)),
-            // this.soundManager.loadOgg(require('../../assets/sound/NotMixedorMastered.ogg')),
-          
+            // this.soundManager.loadMusic(require(`../../assets/sound/dubmood_-_cromenu1_haschkaka.xm`)),
+            this.soundManager.loadMusic(require(`../../assets/sound/showeroflove.mod`)),
+            // this.soundManager.loadMusic(require('../../assets/sound/NotMixedorMastered.ogg')),
 
-            // load *.rocket file
-            // Set to true when using *.rocket from file system
-            // set to false when using rocket editor using websocket
+            // load *.rocket file for scene/music synchronization
             this.soundManager.prepareSync(require('../../assets/sound/demo.rocket'), true),
 
             // we use this for transitions
@@ -253,7 +250,7 @@ export class DemoScene {
         // seek with scrollwheel
         document.addEventListener("wheel", (e) => {
             const directionToScroll = (e.deltaY < 0) ? -0.06 : 0.06;
-            this.soundManager.audioElement.currentTime = this.soundManager.audioElement.currentTime + directionToScroll;
+            this.soundManager.seek(this.soundManager.audioElement.currentTime + directionToScroll);
             // prevent page scroll
             e.preventDefault();
             e.stopPropagation();
@@ -272,11 +269,11 @@ export class DemoScene {
                     break;
                 // navigate timeline backward
                 case 'ArrowLeft':
-                    this.soundManager.audioElement.currentTime = this.soundManager.audioElement.currentTime - 0.06;
+                    this.soundManager.seek(this.soundManager.audioElement.currentTime - 0.06);
                     break;
                 // navigate timeline forward
                 case 'ArrowRight':
-                    this.soundManager.audioElement.currentTime = this.soundManager.audioElement.currentTime + 0.06;
+                    this.soundManager.seek(this.soundManager.audioElement.currentTime + 0.06);
                     break;
                 // jump to next effect
                 case 'MediaTrackNext':
@@ -357,9 +354,6 @@ export class DemoScene {
                 this.soundManager.musicProperties.sceneData.transitionValue,
                 this.soundManager.musicProperties.timeMilliseconds);
         }
-
-        // TODO: send musicProperties instead of timeMilliseconds so all scenes can act on any channel
-        //this.BlockFade.renderScanlines(framebuffer, this.soundManager.musicProperties.sceneData.bass * 2);
 
         // comment out for release
         this.drawStats();

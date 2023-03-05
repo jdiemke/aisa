@@ -3,41 +3,14 @@ import './cowbell/cowbell'
 import './cowbell/audio_player'
 import './cowbell/web_audio_player'
 import './cowbell/openmpt/openmpt_player'
-
-type musicProperties = {
-    // Beats per minute of your demo tune
-    BPM: number;
-    // The resolution between two beats, four is usually fine,- eight adds a bit more finer control
-    ROWS_PER_BEAT: number;
-    // we calculate this now, so we can translate between rows and seconds later on
-    ROW_RATE: number;
-    timeSeconds: number;
-    timeMilliseconds: number;
-    sceneData: sceneData;
-}
-
-// scene variables | things you set through jsRocket
-type sceneData = {
-    effect: any;
-    transitionType: any;
-    transitionValue: any;
-    snare: any;
-    bass: any;
-}
-
-declare global {
-    interface Window { Module: any; }
-}
-window.Module = window.Module || {};
-
+import { musicProperties, sceneData } from './MusicProperties';
 export class SoundManager {
 
     public audioContext: AudioContext;
     public songLengthSeconds: number;
     public syncDevice;
-    public audio = new Audio();
     public isPlaying = false;
-    public demoMode = true;    // use true for release mode
+    public demoMode: boolean;
     public row = 0;    // the current row we're on
 
     //  container for audio values to be used by effects (time, bass, effect, transitions)
@@ -55,40 +28,34 @@ export class SoundManager {
         this.syncDevice = new JSRocket.SyncDevice();
         this.syncDevice.connected = false;
 
-        this.musicProperties = {
-            BPM: 0,
-            ROWS_PER_BEAT: 0,
-            ROW_RATE: 0,
-            timeSeconds: 0,
-            timeMilliseconds: 0,
-            sceneData: {
-                effect: 0,
-                transitionType: 0,
-                transitionValue: 0,
-                snare: 0,
-                bass: 0
+    }
+
+    /**
+     * Load audio files supported by cowbell
+     *
+     * @param {string} filename     audio file to load
+     * @returns {Promise<void>}     promise
+     */
+    public loadMusic(filename: string): Promise<void> {
+        return new Promise((resolve) => {
+
+            const fileExtension = filename.split('.').pop().toLowerCase();
+
+            switch (fileExtension) {
+                case 'it':
+                case 'xm':
+                case 's3m':
+                case 'mod':
+                    this.audioPlayer = new Cowbell.Player.OpenMPT({
+                        'pathToLibOpenMPT': './openmpt/libopenmpt.js'
+                    });
+                    break;
+                case 'ogg':
+                case 'mp3':
+                default:
+                    this.audioPlayer = new Cowbell.Player.Audio();
+                    break;
             }
-        }
-
-        this.sceneData = {
-            effect: null,
-            transitionType: null,
-            transitionValue: null,
-            snare: null,
-            bass: null,
-        }
-    }
-    /**
-     * Load tracker files supported by libopenmpt into audiocontext
-     *
-     * @param {string} filename      module file to load
-     * @returns {Promise<Response>}  fetch response
-     */
-    public loadMusicModule(filename: any): Promise<void> {
-        return new Promise((resolve) => {
-            this.audioPlayer = new Cowbell.Player.OpenMPT({
-                'pathToLibOpenMPT': './openmpt/libopenmpt.js'
-            });
             this.track = new this.audioPlayer.Track(filename);
             this.audioElement = this.track.open();
             resolve();
@@ -96,49 +63,12 @@ export class SoundManager {
     }
 
     /**
-     * Load OGG audio into audiocontext using Javascript
-     * keep for backward compatibility in MiscScene.ts
+     * Load XML file for music syncronization for use with JS Rocket
      *
-     * @param {string} filename      module file to load
-     * @returns {Promise<Response>}  fetch response
+     * @param {string} filename      XML file to load
+     * @param {string} demoMode      use true for release mode (uses file) | false when using rocket editor
+     * @returns {Promise<void>}      promise
      */
-    public playOgg(filename: string): Promise<void> {
-        return fetch(filename)
-            .then((response: Response) => response.arrayBuffer())
-            .then((arrayBuffer: ArrayBuffer) => {
-                if (arrayBuffer) {
-                    this.audioContext.decodeAudioData(arrayBuffer,
-                        (buffer: AudioBuffer) => {
-                            const sourceBuffer = this.audioContext.createBufferSource();
-                            console.info('ogg create buffer');
-                            sourceBuffer.buffer = buffer;
-                            sourceBuffer.connect(this.audioContext.destination);
-                            console.info('ogg connect');
-                            sourceBuffer.loop = true;
-                            sourceBuffer.start(this.audioContext.currentTime);
-                            console.info('ogg ready');
-                        })
-                } else {
-                    console.log('unable to load', filename);
-                }
-            });
-    }
-
-    /**
-     * Load OGG audio into audiocontext using Cowbell
-     *
-     * @param {string} filename      module file to load
-     * @returns {Promise<Response>}  fetch response
-     */
-    public loadOgg(filename: string): Promise<void> {
-        return new Promise((resolve) => {
-            this.audioPlayer = new Cowbell.Player.Audio();
-            this.track = new this.audioPlayer.Track(filename);
-            this.audioElement = this.track.open();
-            resolve();
-        });
-    }
-
     prepareSync(filename: string, demoMode: boolean): Promise<void> {
         this.demoMode = demoMode;
         return new Promise((resolve) => {
@@ -166,15 +96,15 @@ export class SoundManager {
     }
 
     onSyncReady() {
-        this.musicProperties.BPM = 125;
-        this.musicProperties.ROWS_PER_BEAT = 6;
-        this.musicProperties.ROW_RATE = this.musicProperties.BPM / 60 * this.musicProperties.ROWS_PER_BEAT;
         this.syncDevice.connected = true;
-        this.sceneData.effect = this.syncDevice.getTrack('effect');
-        this.sceneData.snare = this.syncDevice.getTrack('snare');
-        this.sceneData.bass = this.syncDevice.getTrack('bass');
-        this.sceneData.transitionType = this.syncDevice.getTrack('transitionType');
-        this.sceneData.transitionValue = this.syncDevice.getTrack('transitionValue');
+
+        this.sceneData = {
+            effect: this.syncDevice.getTrack('effect'),
+            snare: this.syncDevice.getTrack('snare'),
+            bass: this.syncDevice.getTrack('bass'),
+            transitionType: this.syncDevice.getTrack('transitionType'),
+            transitionValue: this.syncDevice.getTrack('transitionValue')
+        }
     }
 
     // row is only given if you navigate, or change a value on the row in Rocket
@@ -193,17 +123,22 @@ export class SoundManager {
         }
 
         // update music properties
-        this.musicProperties.timeSeconds = (this.audioElement?.currentTime) || 0;
-        this.musicProperties.timeMilliseconds = this.musicProperties.timeSeconds * 1000;
-        this.row = this.musicProperties.timeSeconds * this.musicProperties.ROW_RATE;
-
-        this.musicProperties.sceneData = {
-            effect: this.sceneData.effect.getValue(this.row),
-            transitionType: this.sceneData.transitionType.getValue(this.row),
-            transitionValue: this.sceneData.transitionValue.getValue(this.row),
-            snare: this.sceneData.snare.getValue(this.row),
-            bass: this.sceneData.bass.getValue(this.row),
+        this.musicProperties = {
+            BPM: 125,
+            ROWS_PER_BEAT: 6,
+            ROW_RATE: 125 / 60 * 6,
+            timeSeconds: (this.audioElement?.currentTime) || 0,
+            timeMilliseconds: (this.audioElement?.currentTime) * 1000,
+            sceneData: {
+                effect: this.sceneData.effect.getValue(this.row),
+                transitionType: this.sceneData.transitionType.getValue(this.row),
+                transitionValue: this.sceneData.transitionValue.getValue(this.row),
+                snare: this.sceneData.snare.getValue(this.row),
+                bass: this.sceneData.bass.getValue(this.row),
+            }
         }
+
+        this.row = this.musicProperties.timeSeconds * this.musicProperties.ROW_RATE;
 
         // update JS rocket
         if (this.audioElement && this.audioElement.paused === false) {
@@ -214,9 +149,6 @@ export class SoundManager {
             // this informs Rocket where we are
             this.syncDevice.update(this.row);
 
-            if (window.Module && window.Module._openmpt_module_get_current_channel_vu_mono) {
-                // console.info(this.audioElement.paused, window.Module._openmpt_module_get_current_channel_vu_mono(5930904));
-            }
         }
     }
 
@@ -295,17 +227,36 @@ export class SoundManager {
             ref.classList.remove('fa-volume-off');
             ref.classList.add('fa-volume-up');
         }
-        // this.audioElement.muted = isMuted;
+        this.audioElement.muted = isMuted;
     }
 
     /**
-     * Restore position of timeline & mute preference on reload
+     * Restore position of timeline & mute preferences on reloads
      */
     public initTimeline() {
         // jump to last position on timeline for local development reloading
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const newLocal = this;
         const jumpTo = localStorage.getItem('lastTime');
-        if (jumpTo) {
-            // this.seek(Number(jumpTo));
+
+        // poll for mod player since library does not use promises
+        if ((window as any).libopenmpt) {
+            (function poll() {
+                // check if mod was loaded then seek
+                if ((window as any).modulePtr) {
+
+                    // openmpt does not support volume control or muting
+                    document.getElementById('ticker_volume').style.display = 'none';
+
+                    if (jumpTo) {
+                        newLocal.seek(Number(jumpTo));
+                    }
+                    return;
+                }
+                setTimeout(poll, 150);
+            })();
+        } else {
+            newLocal.seek(Number(jumpTo));
         }
 
         // remember last sound preferences

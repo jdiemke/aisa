@@ -24,6 +24,12 @@ module.exports.getWebpackPlugins = () => {
             chunks: [example.name],
             filename: `${example.name}.html`
         }))
-    })
+    });
+
+    // copy favicon
+    plug.push( new HtmlWebpackPlugin({
+        favicon: "./src/favicon.ico"
+    }));
+
     return plug;
 }
