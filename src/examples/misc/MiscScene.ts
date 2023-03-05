@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
@@ -119,11 +120,11 @@ export class MiscScene extends AbstractScene {
             this.createTexture(require('../../assets/dirt.png'), true).then(texture => this.dirt = texture),
 
         ]).then(() => {
-            framebuffer.precompute();
+           // framebuffer.precompute(t);
 
             const sm: SoundManager = new SoundManager();
-            // sm.playExtendedModule(require('../../assets/sound/dubmood_-_cromenu1_haschkaka.xm').default);
-            sm.playOgg(require('../../assets/sound/xmix_q2_final.ogg').default);
+            // sm.loadMusic(require('../../assets/sound/dubmood_-_cromenu1_haschkaka.xm').default);
+            sm.loadMusic(require('../../assets/sound/xmix_q2_final.ogg'));
         });
     }
 
@@ -1231,7 +1232,7 @@ export class MiscScene extends AbstractScene {
         });
     }
 
-    public createTexture(path: any, hasAlpha: boolean): Promise<Texture> {
+    public createTexture(path: string, hasAlpha: boolean): Promise<Texture> {
         return new Promise<Texture>((resolve: (texture?: Texture) => void): void => {
             const img = new Image();
             img.onload = () => {
@@ -1242,7 +1243,7 @@ export class MiscScene extends AbstractScene {
                 resolve(texture);
             };
             img.onerror = (): void => resolve();
-            img.src = path.default;
+            img.src = path;
         });
     }
 

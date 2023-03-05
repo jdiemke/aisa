@@ -99,6 +99,14 @@ export class GouraudShadingRenderingPipeline extends AbstractRenderingPipeline {
         this.color = color;
     }
 
+    public drawMeshArray(framebuffer: Framebuffer, meshes: Array<FlatshadedMesh>, modelViewMartrix: Matrix4f): void {
+        for (let j: number = 0; j < meshes.length; j++) {
+            const model: FlatshadedMesh = meshes[j];
+            this.draw(framebuffer, model,modelViewMartrix);
+        }
+    }
+
+
     public draw(framebuffer: Framebuffer, mesh: FlatshadedMesh, modelViewMartrix: Matrix4f): void {
 
         const normalMatrix: Matrix4f = modelViewMartrix.computeNormalMatrix();
@@ -165,11 +173,6 @@ export class GouraudShadingRenderingPipeline extends AbstractRenderingPipeline {
                 if (output.length < 3) {
                     return;
                 }
-                /*
-                                const projected: Array<Vertex> = output.map<Vertex>((v: Vertex) => {
-                                    v.projection = this.project(v.position);
-                                    return v;
-                                });*/
 
                 for (let j: number = 0; j < output.length; j++) {
                     output[j].projection = this.project(output[j].position);

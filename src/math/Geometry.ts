@@ -1,4 +1,4 @@
-import { Vector3f, Vector4f } from './index';
+import { Vector4f } from './index';
 import { Sphere } from './Sphere';
 
 export class ComputationalGeometryUtils {

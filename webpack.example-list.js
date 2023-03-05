@@ -68,6 +68,23 @@ const examples = [
     new Example('text-zoomer'),
     new Example('roto-zoom-demo'),
     new Example('psychadelic-plane-deformation'),
+    new Example('led-tunnel'),
+    new Example('environment-mapping-torus'),
+    new Example('environment-mapping-waves'),
+    new Example('environment-mapping-cylinder'),
+    new Example('glow'),
+    new Example('fog'),
+    new Example('wavefront-texture2'),
+    new Example('mirror'),
+    new Example('text-zoom'),
+    new Example('bouncing-text'),
+    new Example('skybox'),
+    new Example('wireframe-cube'),
+    new Example('wavefront-texture3'),
+    new Example('wavefront-texture4'),
+    new Example('xenusion'),
+    new Example('textured-cube'),
+    new Example('textured-cube-plasma'),
 ];
 
 module.exports = examples;

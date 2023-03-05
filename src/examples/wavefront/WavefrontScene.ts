@@ -82,7 +82,7 @@ export class WavefrontScene extends AbstractScene {
 
     private computeCameraMovement(elapsedTime: number): void {
         this.modelViewMatrix.setIdentity();
-        this.modelViewMatrix.trans(0, 0, -5);
+        this.modelViewMatrix.trans(0, 0, -3);
         this.modelViewMatrix.yRotate(-elapsedTime * 0.002);
         this.modelViewMatrix.xRotate(-elapsedTime * 0.002);
     }

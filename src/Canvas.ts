@@ -55,12 +55,12 @@ export class Canvas {
             () => {
                 this.scene.onInit();
                 this.startTime = Date.now();
-                this.renderLoop(0);
+                this.renderLoop();
             }
         );
     }
 
-    public renderLoop(time: number): void {
+    public renderLoop(): void {
         this.scene.render(this.framebuffer, Date.now() - this.startTime);
         this.flipBackbuffer();
         requestAnimationFrame(this.boundRenderLoop);

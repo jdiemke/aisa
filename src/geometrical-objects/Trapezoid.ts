@@ -1,6 +1,5 @@
 import { Vector4f } from '../math/Vector4f';
 import { AbstractGeometricObject } from './AbstractGeometricObject';
-import { Mesh } from './Mesh';
 
 export class Trapezoid extends AbstractGeometricObject {
 

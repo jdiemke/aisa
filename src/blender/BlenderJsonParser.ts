@@ -56,7 +56,7 @@ export class BlenderJsonParser {
     }
 
     public static getBlenderScene(
-        file: BlenderScene, disp: boolean = true, flat: boolean = false): Array<TexturedMesh> {
+        file: BlenderScene, disp: boolean = true): Array<TexturedMesh> {
         const scene: Array<TexturedMesh> = [];
 
         file.forEach((object: Mesh) => {

@@ -6,24 +6,35 @@ import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/Goura
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { BlenderLoader } from '../../model/blender/BlenderLoader';
+import { FontRenderer } from '../sine-scroller/FontRenderer';
 
 export class RotatingGearsScene extends AbstractScene {
 
     private blurred: Texture;
     private noise: Texture;
     private hoodlumLogo: Texture;
+    private robot: Texture;
 
     private gearsMesh: Array<FlatshadedMesh>;
 
     private accumulationBuffer: Uint32Array;
     private renderingPipeline: GouraudShadingRenderingPipeline;
+    fontRenderer: FontRenderer;
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.FRONT);
 
+        const fonts: string =
+        ' !\'><C+\'()@+,-./0123456789:; = ? ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    this.fontRenderer = new FontRenderer(
+        framebuffer,
+        8, 8, fonts,
+        require('../../assets/font.png')
+    );
         return Promise.all([
+            this.fontRenderer.init(),
             BlenderLoader.load(require('../../assets/jsx/gear.jsx')).then(
                 (mesh: Array<FlatshadedMesh>) => this.gearsMesh = mesh
             ),
@@ -35,6 +46,9 @@ export class RotatingGearsScene extends AbstractScene {
             ),
             TextureUtils.load(require('../../assets/hoodlumLogo.png'), true).then(
                 (texture: Texture) => this.hoodlumLogo = texture
+            ),
+            TextureUtils.load(require('../../assets/robot.png'), true).then(
+                (texture: Texture) => this.robot = texture
             )
         ]);
     }
@@ -42,26 +56,12 @@ export class RotatingGearsScene extends AbstractScene {
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
 
-        // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
         this.drawBlenderScene3(framebuffer, time);
-        /*
-            [
-                { tex: this.texture10, scale: 0.0, alpha: 1.0 },
-                { tex: this.texture11, scale: 2.3, alpha: 0.5 },
-                { tex: this.texture13, scale: 1.6, alpha: 0.25 },
-                { tex: this.texture13, scale: 0.7, alpha: 0.22 },
-                { tex: this.texture13, scale: -0.4, alpha: 0.22 },
-            ], this.dirt);
-            */
-        // place logo in center
-        framebuffer.drawTexture(Math.floor((framebuffer.width - this.hoodlumLogo.width) / 2), 75, this.hoodlumLogo, 0.6);
-
-        const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
-        framebuffer.drawTexture(0, 0, texture3, 0.75);
-        framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
 
         framebuffer.noise(time, this.noise);
+        framebuffer.drawTexture(320 - this.robot.width +30, -8, this.robot, 1);
+        this.fontRenderer.drawText(framebuffer,0,200-16-4,"YOUR ADVERTISEMENT COULD BE HERE +++ ", time, false);
     }
 
     public drawBlenderScene3(framebuffer: Framebuffer, elapsedTime: number): void {
@@ -76,11 +76,11 @@ export class RotatingGearsScene extends AbstractScene {
         );
 
         for (let i: number = 0; i < 10; i++) {
-            const scale = Math.sin(Math.PI * 2 / 10 * i + elapsedTime * 0.002) * 0.2 + 0.2 + 0.3;
+            const scale = (Math.sin(Math.PI * 2 / 10 * i + elapsedTime * 0.002) * 0.2 + 0.2 + 0.3) *2;
             const mv: Matrix4f = camera.multiplyMatrix(
                 Matrix4f.constructTranslationMatrix(0, ((i + elapsedTime * 0.0008) % 10) - 5, 0).multiplyMatrix(
                     Matrix4f.constructYRotationMatrix((i * 0.36 + elapsedTime * 0.0016)).multiplyMatrix(
-                        Matrix4f.constructScaleMatrix(scale, 1, scale)
+                        Matrix4f.constructScaleMatrix(scale, 2, scale)
                     )
                 )
             );

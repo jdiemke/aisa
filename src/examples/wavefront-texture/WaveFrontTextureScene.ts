@@ -14,6 +14,7 @@ import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingR
 export class WaveFrontTextureScene extends AbstractScene {
 
     private platonian: Texture;
+    private flood: Texture;
     private platonianMesh: Array<TexturedMesh>;
     private texturedRenderingPipeline: TexturingRenderingPipeline;
 
@@ -27,7 +28,8 @@ export class WaveFrontTextureScene extends AbstractScene {
             ),
             WavefrontLoader.loadWithTexture(require('../../assets/susanna.obj')).then(
                 (x: Array<TexturedMesh>) => this.platonianMesh = x
-            )
+            ),
+   
         ]);
     }
 
@@ -36,6 +38,7 @@ export class WaveFrontTextureScene extends AbstractScene {
 
         framebuffer.clearColorBuffer(Color.BLACK.toPackedFormat());
         framebuffer.clearDepthBuffer();
+        
 
         framebuffer.setTexture(this.platonian);
         this.texturedRenderingPipeline.setFramebuffer(framebuffer);
@@ -44,11 +47,14 @@ export class WaveFrontTextureScene extends AbstractScene {
     }
 
     private getModelViewMatrix(elapsedTime: number): Matrix4f {
-        const camera: Matrix4f = Matrix4f.constructTranslationMatrix(18, 2, -74).multiplyMatrix(
+        const camera: Matrix4f = Matrix4f.constructTranslationMatrix(18, 2, -64).multiplyMatrix(
             Matrix4f.constructYRotationMatrix(-elapsedTime * 0.0006)
         );
 
+   
+
         return camera.multiplyMatrix(Matrix4f.constructScaleMatrix(8, 8, 8));
+        
     }
 
 }

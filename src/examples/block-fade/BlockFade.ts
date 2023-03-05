@@ -58,7 +58,6 @@ export class BlockFade extends AbstractScene {
         this.transitionCircle.fill(Color.WHITE.toPackedFormat(), 0, this.transitionCircle.length);
         for (let d = 0; d < framebuffer.width / 2; d += 1) {
             const c3 = Utils.map(d, 0, framebuffer.width / 2, 0, 255);
-            const color = new Color(c3, c3, c3, 255).toPackedFormat();
             this.drawCircle(framebuffer.width / 2, framebuffer.height / 2, d, c3);
         }
 

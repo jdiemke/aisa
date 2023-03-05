@@ -9,7 +9,7 @@ export class VoxelLandscapeScene extends AbstractScene {
     private abstract: Texture;
     private texture2: Texture;
 
-    public init(framebuffer: Framebuffer): Promise<any> {
+    public init(): Promise<any> {
         return Promise.all([
             TextureUtils.load(require('../../assets/razor1911.png'), true).then(
                 (texture: Texture) => this.texture2 = texture

@@ -11,7 +11,7 @@ export class TwisterScene extends AbstractScene {
     private backgroundTexture: Texture;
     private logoTexture: Texture;
 
-    public init(framebuffer: Framebuffer): Promise<any> {
+    public init(): Promise<any> {
         return Promise.all([
             TextureUtils.load(require('../../assets/atlantis.png'), false).then(
                 (texture: Texture) => this.backgroundTexture = texture

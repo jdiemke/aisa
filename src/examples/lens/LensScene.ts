@@ -1,4 +1,3 @@
-import { Canvas } from '../../Canvas';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
@@ -140,7 +139,7 @@ export class LensScene extends AbstractScene {
     }
 
     // bouncing ball movement
-    public moveBounce(time: number): void {
+    public moveBounce(): void {
         this.ballX += this.ballXV;
         if ((this.ballX < 1) || (this.ballX > this.rightBorder)) { this.ballXV = -this.ballXV; }
 

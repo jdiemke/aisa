@@ -1,10 +1,10 @@
 import { Framebuffer } from '../Framebuffer';
 import { Vertex } from '../Vertex';
+import { AbstractScannlineTriangleRasterizer } from './AbstractScanlineTriangleRasterizer';
 import { AbstractTriangleRasterizer } from './AbstractTriangleRasterizer';
 
-export class FlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
+export class FlatShadingTriangleRasterizer extends AbstractScannlineTriangleRasterizer {
 
-    private temp: Vertex = null;
     private slope1: number;
     private slope2: number;
     private zslope1: number;
@@ -19,99 +19,7 @@ export class FlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
         super();
     }
 
-    /**
-     * Triangle rasterization using edge-walking strategy for scan-conversion.
-     * Internally DDA is used for edge-walking.
-     */
-    public drawTriangleDDA(framebuffer: Framebuffer, p1: Vertex, p2: Vertex, p3: Vertex): void {
-        if (p1.projection.y > p3.projection.y) {
-            this.temp = p1;
-            p1 = p3;
-            p3 = this.temp;
-        }
-
-        if (p1.projection.y > p2.projection.y) {
-            this.temp = p1;
-            p1 = p2;
-            p2 = this.temp;
-        }
-
-        if (p2.projection.y > p3.projection.y) {
-            this.temp = p2;
-            p2 = p3;
-            p3 = this.temp;
-        }
-
-        if (p1.projection.y === p3.projection.y) {
-            return;
-        } else if (p2.projection.y === p3.projection.y) {
-            if (p2.projection.x > p3.projection.x) {
-                this.temp = p2;
-                p2 = p3;
-                p3 = this.temp;
-            }
-            this.fillBottomFlatTriangle(framebuffer, p1, p2, p3);
-        } else if (p1.projection.y === p2.projection.y) {
-            if (p1.projection.x > p2.projection.x) {
-                this.temp = p1;
-                p1 = p2;
-                p2 = this.temp;
-            }
-            this.fillTopFlatTriangle(framebuffer, p1, p2, p3);
-        } else {
-            const x: number = (p3.projection.x - p1.projection.x) *
-                (p2.projection.y - p1.projection.y) / (p3.projection.y - p1.projection.y) + p1.projection.x;
-            if (x > p2.projection.x) {
-                this.fillLongRightTriangle(framebuffer, p1, p2, p3);
-            } else {
-                this.fillLongLeftTriangle(framebuffer, p1, p2, p3);
-            }
-        }
-    }
-
-    private fillBottomFlatTriangle(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void {
-        const color: number = v1.color.toPackedFormat();
-
-        const yDistance: number = v3.projection.y - v1.projection.y;
-
-        this.slope1 = (v2.projection.x - v1.projection.x) / yDistance;
-        this.slope2 = (v3.projection.x - v1.projection.x) / yDistance;
-
-        this.zslope1 = (1 / v2.projection.z - 1 / v1.projection.z) / yDistance;
-        this.zslope2 = (1 / v3.projection.z - 1 / v1.projection.z) / yDistance;
-
-        this.curz1 = 1.0 / v1.projection.z;
-        this.curz2 = 1.0 / v1.projection.z;
-
-        this.xPosition = v1.projection.x;
-        this.xPosition2 = v1.projection.x;
-        this.yPosition = v1.projection.y;
-
-        this.drawSpan(framebuffer, yDistance, color);
-    }
-
-    fillTopFlatTriangle(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void {
-        const color: number = v1.color.toPackedFormat();
-        const yDistance = v3.projection.y - v1.projection.y;
-
-        this.slope1 = (v3.projection.x - v1.projection.x) / yDistance;
-        this.slope2 = (v3.projection.x - v2.projection.x) / yDistance;
-
-        this.zslope1 = (1 / v3.projection.z - 1 / v1.projection.z) / yDistance;
-        this.zslope2 = (1 / v3.projection.z - 1 / v2.projection.z) / yDistance;
-
-        this.curz1 = 1.0 / v1.projection.z;
-        this.curz2 = 1.0 / v2.projection.z;
-
-        this.xPosition = v1.projection.x;
-        this.xPosition2 = v2.projection.x;
-        this.yPosition = v1.projection.y;
-
-        this.drawSpan(framebuffer, yDistance, color);
-    }
-
-
-    fillLongRightTriangle(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void {
+    protected fillLongRightTriangle(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void {
         const color: number = v1.color.toPackedFormat();
 
         let yDistanceLeft = v2.projection.y - v1.projection.y;
@@ -142,7 +50,7 @@ export class FlatShadingTriangleRasterizer extends AbstractTriangleRasterizer {
         this.drawSpan(framebuffer, yDistanceLeft, color);
     }
 
-    fillLongLeftTriangle(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void {
+    protected fillLongLeftTriangle(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void {
         const color: number = v1.color.toPackedFormat();
 
         let yDistanceRight = v2.projection.y - v1.projection.y;

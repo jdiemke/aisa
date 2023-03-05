@@ -11,11 +11,15 @@ import { TexturedMesh } from './TexturedMesh';
 
 export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
 
+    private sphereMapping: boolean = false;
     public triangleRasterizer: AbstractTriangleRasterizer = null;
 
     private vertexArray: Array<Vertex> = new Array<Vertex>(
         new Vertex(), new Vertex(), new Vertex()
     );
+    setSphereMapping(arg0: boolean) {
+        this.sphereMapping = arg0;
+    }
 
     private modelViewMatrix: Matrix4f;
 
@@ -53,6 +57,13 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
     }
 
     public draw(framebuffer: Framebuffer, mesh: TexturedMesh): void {
+        if (mesh.normals) {
+            const normalMatrix: Matrix4f = this.modelViewMatrix.computeNormalMatrix();
+
+            for (let i: number = 0; i < mesh.normals.length; i++) {
+                normalMatrix.multiplyHomArr(mesh.normals[i], mesh.normals2[i]);
+            }
+        }
 
         for (let i: number = 0; i < mesh.points.length; i++) {
             this.modelViewMatrix.multiplyHomArr(mesh.points[i], mesh.points2[i]);
@@ -76,16 +87,25 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
                     this.projectedVertices[1],
                     this.projectedVertices[2])) {
 
-                    this.vertexArray[0].position = this.projectedVertices[0]; // p1 is Vector3f
-                    this.vertexArray[0].textureCoordinate = mesh.uv[mesh.faces[i].uv[0]];
+                    this.vertexArray[0].projection = this.projectedVertices[0]; // p1 is Vector3f
+                    this.vertexArray[1].projection = this.projectedVertices[1];
+                    this.vertexArray[2].projection = this.projectedVertices[2];
 
-                    this.vertexArray[1].position = this.projectedVertices[1];
-                    this.vertexArray[1].textureCoordinate = mesh.uv[mesh.faces[i].uv[1]];
+                    if (this.sphereMapping) {
+                        const n1: Vector4f = mesh.normals2[mesh.faces[i].normals[0]];
+                        const n2: Vector4f = mesh.normals2[mesh.faces[i].normals[1]];
+                        const n3: Vector4f = mesh.normals2[mesh.faces[i].normals[2]];
+                        framebuffer.fakeSphere(n1, this.vertexArray[0]);
+                        framebuffer.fakeSphere(n2, this.vertexArray[1]);
+                        framebuffer.fakeSphere(n3, this.vertexArray[2]);
+                    } else {
+                        this.vertexArray[0].textureCoordinate = mesh.uv[mesh.faces[i].uv[0]];
+                        this.vertexArray[1].textureCoordinate = mesh.uv[mesh.faces[i].uv[1]];
+                        this.vertexArray[2].textureCoordinate = mesh.uv[mesh.faces[i].uv[2]];
+                    }
 
-                    this.vertexArray[2].position = this.projectedVertices[2];
-                    this.vertexArray[2].textureCoordinate = mesh.uv[mesh.faces[i].uv[2]];
 
-                    this.clipConvexPolygon2(framebuffer, this.vertexArray);
+                    this.clipConvexPolygon(framebuffer, this.vertexArray);
                 }
             } else if (!this.isInFrontOfNearPlane(v1) &&
                 !this.isInFrontOfNearPlane(v2) &&
@@ -101,7 +121,7 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
                 this.vertexArray[2].position = v3;
                 this.vertexArray[2].textureCoordinate = mesh.uv[mesh.faces[i].uv[2]];
 
-                this.zClipTriangle2(framebuffer, this.vertexArray);
+                this.zClipTriangle(framebuffer, this.vertexArray);
             }
         }
     }
@@ -138,7 +158,7 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
         return vertex;
     }
 
-    public zClipTriangle2(framebuffer: Framebuffer, subject: Array<Vertex>): void {
+    public zClipTriangle(framebuffer: Framebuffer, subject: Array<Vertex>): void {
         const input: Array<Vertex> = subject;
         const output: Array<Vertex> = new Array<Vertex>();
         let S: Vertex = input[input.length - 1];
@@ -160,32 +180,30 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
             return;
         }
 
-        // TODO: remove temp object here
-        const projected: Array<Vertex> = output.map<Vertex>((v: Vertex) => {
-            v.position = this.project(v.position);
-            return v;
-        });
+        for (let j: number = 0; j < output.length; j++) {
+            output[j].projection = this.project(output[j].position);
+        }
 
         if (output.length === 3 &&
-            !this.isTriangleCCW(projected[0].position, projected[1].position, projected[2].position)) {
+            !this.isTriangleCCW(output[0].projection, output[1].projection, output[2].projection)) {
             return;
         }
 
         if (output.length === 4 &&
             !this.isTriangleCCW2(
-                projected[0].position,
-                projected[1].position,
-                projected[2].position,
-                projected[3].position
+                output[0].projection,
+                output[1].projection,
+                output[2].projection,
+                output[3].projection
             )) {
             return;
         }
 
-        this.clipConvexPolygon2(framebuffer, projected);
+        this.clipConvexPolygon(framebuffer, output);
     }
 
 
-    public clipConvexPolygon2(framebuffer: Framebuffer, subject: Array<Vertex>): void {
+    public clipConvexPolygon(framebuffer: Framebuffer, subject: Array<Vertex>): void {
 
         let output = subject;
 

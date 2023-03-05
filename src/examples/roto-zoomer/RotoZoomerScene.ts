@@ -6,7 +6,7 @@ export class RotoZoomerScene extends AbstractScene {
 
     private logoTexture: Texture;
 
-    public init(framebuffer: Framebuffer): Promise<any> {
+    public init(): Promise<any> {
         return Promise.all([
             /*TextureUtils.load(require('../../assets/logo.png'), false).then(
                 (texture: Texture) => this.logoTexture = texture

@@ -1,7 +1,6 @@
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
-import { TorusKnotScene } from '../torus-knot/TorusKnotScene';
 
 export class RadialBlur extends AbstractScene {
 
@@ -9,7 +8,7 @@ export class RadialBlur extends AbstractScene {
     abstract: Texture;
 
 
-    public init(framebuffer: Framebuffer): Promise<any> {
+    public init(): Promise<any> {
 
         return Promise.all([
             TextureUtils.load(require('../../assets/hoodlumLogo.png'), true).then(texture => this.hoodlumLogo = texture),
