@@ -14,6 +14,7 @@
 			libopenmpt.HEAPU8.set(byteArray, ptrToFile);
 
 			modulePtr = libopenmpt._openmpt_module_create_from_memory(ptrToFile, byteArray.byteLength, 0, 0, 0);
+            global.window.modulePtr = modulePtr;
 			leftBufferPtr  = libopenmpt._malloc(4 * maxFramesPerChunk);
 			rightBufferPtr = libopenmpt._malloc(4 * maxFramesPerChunk);
 

@@ -22,7 +22,6 @@ with audio data, and seeking to a specified time.
                         latencyHint: "playback",
                         sampleRate: 44100
                       });
-                      console.info(audioCtx);
                 }
 
                 var BUFFER_SIZE = 4096;

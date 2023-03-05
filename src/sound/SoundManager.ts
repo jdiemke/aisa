@@ -164,8 +164,8 @@ export class SoundManager {
     }
 
     onPause() {
+        this.row = this.audioElement.currentTime * this.musicProperties.ROW_RATE;
         if (!this.audioElement.paused && this.isPlaying) {
-            this.row = this.audioElement.currentTime * this.musicProperties.ROW_RATE;
             this.audioElement.pause();
             this.isPlaying = false;
         }
@@ -247,6 +247,7 @@ export class SoundManager {
 
                     // openmpt does not support volume control or muting
                     document.getElementById('ticker_volume').style.display = 'none';
+                    newLocal.updateRange(newLocal.audioElement.duration);
 
                     if (jumpTo) {
                         newLocal.seek(Number(jumpTo));
@@ -256,12 +257,20 @@ export class SoundManager {
                 setTimeout(poll, 150);
             })();
         } else {
+            newLocal.updateRange(newLocal.audioElement.duration);
             newLocal.seek(Number(jumpTo));
         }
 
         // remember last sound preferences
         const isMuted = localStorage.getItem('soundToggle') === 'true';
         this.toggleSound(document.getElementById('ticker_volume'), isMuted);
+    }
+
+    /**
+     * set timeline slider max range
+     */
+    private updateRange(value: number) {
+        (document.getElementById("timeline") as HTMLInputElement).max = String(Math.floor(value) * 1000 );
     }
 
     /*
