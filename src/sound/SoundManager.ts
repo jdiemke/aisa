@@ -3,11 +3,14 @@ import './cowbell/cowbell'
 import './cowbell/audio_player'
 import './cowbell/web_audio_player'
 import './cowbell/openmpt/openmpt_player'
-import { musicProperties, sceneData } from './MusicProperties';
+import {
+    musicProperties,
+    ROW_RATE,
+    sceneData
+} from './MusicProperties';
 export class SoundManager {
 
     public audioContext: AudioContext;
-    public songLengthSeconds: number;
     public syncDevice;
     public isPlaying = false;
     public demoMode: boolean;
@@ -113,7 +116,7 @@ export class SoundManager {
         if (!isNaN(newRow)) {
             this.row = newRow;
         }
-        this.audioElement.currentTime = newRow / this.musicProperties.ROW_RATE;
+        this.audioElement.currentTime = newRow / ROW_RATE;
     }
 
     updateMusic() {
@@ -124,9 +127,6 @@ export class SoundManager {
 
         // update music properties
         this.musicProperties = {
-            BPM: 125,
-            ROWS_PER_BEAT: 6,
-            ROW_RATE: 125 / 60 * 6,
             timeSeconds: (this.audioElement?.currentTime) || 0,
             timeMilliseconds: (this.audioElement?.currentTime) * 1000,
             sceneData: {
@@ -138,7 +138,7 @@ export class SoundManager {
             }
         }
 
-        this.row = this.musicProperties.timeSeconds * this.musicProperties.ROW_RATE;
+        this.row = this.musicProperties.timeSeconds * ROW_RATE;
 
         // update JS rocket
         if (this.audioElement && this.audioElement.paused === false) {
@@ -155,7 +155,7 @@ export class SoundManager {
     onPlay() {
         if (!this.isPlaying && this.audioElement) {
             if (this.audioElement.currentTime) {
-                this.audioElement.currentTime = this.row / this.musicProperties.ROW_RATE;
+                this.audioElement.currentTime = this.row / ROW_RATE;
             }
             this.isPlaying = true;
             this.audioElement.play();
@@ -164,7 +164,7 @@ export class SoundManager {
     }
 
     onPause() {
-        this.row = this.audioElement.currentTime * this.musicProperties.ROW_RATE;
+        this.row = this.audioElement.currentTime * ROW_RATE;
         if (!this.audioElement.paused && this.isPlaying) {
             this.audioElement.pause();
             this.isPlaying = false;
@@ -179,7 +179,7 @@ export class SoundManager {
      * @param   {number} direction  direction to skip -1 goes backwards.  1 goes forward
      */
     public jump(time: number, direction: number, sceneLength: number) {
-        this.row = time * this.musicProperties.ROW_RATE;
+        this.row = time * ROW_RATE;
         const effectJump = Number(this.sceneData.effect.getValue(this.row).toFixed(1));
         if (Math.trunc(Number(this.musicProperties.sceneData.effect)) !== Math.trunc(effectJump) && effectJump >= 1) {
             // if running into transition effect 2.5..then keep searching and only land on whole numbers
@@ -207,7 +207,7 @@ export class SoundManager {
         this.audioElement.currentTime = time;
         // update rocket editor position to new timeline location
         if (!this.demoMode) {
-            this.syncDevice.update(this.audioElement.currentTime * this.musicProperties.ROW_RATE);
+            this.syncDevice.update(this.audioElement.currentTime * ROW_RATE);
         }
     }
 
@@ -257,7 +257,9 @@ export class SoundManager {
                 setTimeout(poll, 150);
             })();
         } else {
-            newLocal.updateRange(newLocal.audioElement.duration);
+            newLocal.audioElement.onloadedmetadata = function () {
+                newLocal.updateRange(newLocal.audioElement.duration);
+            };
             newLocal.seek(Number(jumpTo));
         }
 
@@ -267,10 +269,12 @@ export class SoundManager {
     }
 
     /**
-     * set timeline slider max range
+     * Set timeline slider max range
+     *
+     * @param  {number} value         length time in seconds
      */
     private updateRange(value: number) {
-        (document.getElementById("timeline") as HTMLInputElement).max = String(Math.floor(value) * 1000 );
+        (document.getElementById("timeline") as HTMLInputElement).max = String(Math.floor(value) * 1000);
     }
 
     /*

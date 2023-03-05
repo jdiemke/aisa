@@ -1,10 +1,4 @@
 export interface musicProperties {
-    // Beats per minute of your demo tune
-    BPM: number;
-    // The resolution between two beats, four is usually fine,- eight adds a bit more finer control
-    ROWS_PER_BEAT: number;
-    // we calculate this now, so we can translate between rows and seconds later on
-    ROW_RATE: number;
     timeSeconds: number;
     timeMilliseconds: number;
     sceneData: sceneData;
@@ -18,3 +12,12 @@ export interface sceneData {
     snare: any;
     bass: any;
 }
+
+// Beats per minute of your demo tune
+export const BPM = 125;
+
+// The resolution between two beats, four is usually fine,- eight adds a bit more finer control
+export const ROWS_PER_BEAT = 6;
+
+// we calculate this now, so we can translate between rows and seconds later on
+export const ROW_RATE = BPM / 60 * ROWS_PER_BEAT;
