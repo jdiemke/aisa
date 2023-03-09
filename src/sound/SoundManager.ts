@@ -10,7 +10,6 @@ import {
 } from './MusicProperties';
 export class SoundManager {
 
-    public audioContext: AudioContext;
     public syncDevice;
     public isPlaying = false;
     public demoMode: boolean;
@@ -19,7 +18,6 @@ export class SoundManager {
     //  container for audio values to be used by effects (time, bass, effect, transitions)
     public musicProperties: musicProperties;
     public sceneData: sceneData;
-
     public audioPlayer;
     public player;
     public audioElement: HTMLAudioElement;
@@ -148,7 +146,11 @@ export class SoundManager {
 
             // this informs Rocket where we are
             this.syncDevice.update(this.row);
+        }
 
+        // stop once timeline reaches end
+        if (Math.floor(this.audioElement.duration) === Math.floor(this.musicProperties.timeSeconds)) {
+            document.getElementById('ticker_stop').click();
         }
     }
 
