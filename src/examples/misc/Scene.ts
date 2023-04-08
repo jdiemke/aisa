@@ -80,7 +80,7 @@ export class Scene extends AbstractScene {
         return Promise.all([
             this.scene.init(framebuffer),
             this.createTexture(require('../../assets/flood.png'), false).then(texture => this.flood = texture),
-           
+
             this.createTexture(require('../../assets/kiss.png'), true).then(texture => this.kiss = texture),
             this.createTexture(require('../../assets/spheremap.png'), false).then(texture => this.spheremap = texture),
             this.createTexture(require('../../assets/textures/metall.png'), false).then(texture => this.metal = texture),
@@ -166,19 +166,9 @@ export class Scene extends AbstractScene {
         }
         this.fpsCount++;
 
-        // waves
-        {
-            framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
-            framebuffer.drawParticleWaves(currentTime, this.particleTexture2, true);
 
-            const texture3 = new Texture(this.accumulationBuffer, 320, 200);
-            framebuffer.drawTexture(0, 0, texture3, 0.85);
-            framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
 
-            framebuffer.noise(currentTime, this.noise);
-        }
-      
-    
+
         {
             framebuffer.pixelate();
         }
@@ -188,22 +178,22 @@ export class Scene extends AbstractScene {
                         texture.texture = this.accumulationBuffer;
                         texture.width = 320;
                         texture.height = 200;
-          
+
                         let scale2 = (1+Math.sin(currentTime*0.001))*0.5*10+1;
                         let width2 = 320 *  scale2;
                         let height2 = 200 * scale2;
-          
+
                         // looks crappy with linear interpolation!
                         // probably  bilinear is required here
-          
-          
+
+
                             framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
                             framebuffer.drawScaledTextureClipBi(
                                 Math.round(320/2-width2/2),
                                 Math.round(200/2-height2/2),
                                 width2|0, height2|0, texture, 1.0);
         }
-   
+
         // TODO:
         // * build level in code (portals and areas)
         // * use controllable camera to move
@@ -272,8 +262,8 @@ export class Scene extends AbstractScene {
         // - https://www.youtube.com/watch?v=Oo-jlpvhTcY
 
 
-  
-                 
+
+
 
         // NEW EFFECTS:
         // * https://www.youtube.com/watch?v=bg-MTl_nRiU

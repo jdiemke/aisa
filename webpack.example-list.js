@@ -85,6 +85,7 @@ const examples = [
     new Example('xenusion'),
     new Example('textured-cube'),
     new Example('textured-cube-plasma'),
+    new Example('particle-waves'),
 ];
 
 module.exports = examples;
