@@ -1,4 +1,5 @@
 import { Framebuffer } from '../../Framebuffer';
+import { Interpolator } from '../../math/Interpolator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
@@ -23,7 +24,7 @@ export class ScrollingBackgroundScene extends AbstractScene {
 
     public scrollingBackground(framebuffer: Framebuffer, texture: Texture, time: number): void {
         const offset: number = Math.round(
-            -(1 - framebuffer.interpolate(250, 10250, time * 0.25)) * (texture.height - 200)
+            -(1 - Interpolator.interpolate(250, 10250, time * 0.25)) * (texture.height - 200)
         );
 
         framebuffer.fastFramebufferCopyOffset(framebuffer.framebuffer, texture.texture, offset);

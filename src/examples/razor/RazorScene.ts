@@ -9,6 +9,7 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { Color } from '../../core/Color';
 import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
+import { LensFlare } from '../../special-effects/LensFlare';
 
 /**
  * TODO: extract lens into effect class
@@ -173,7 +174,7 @@ export class RazorScene extends AbstractScene {
 
         const lensflareScreenSpace = framebuffer.project(camera.multiply(new Vector3f(12.0, 4.0, 0)));
 
-        framebuffer.drawLensFlare(lensflareScreenSpace, elapsedTime * 100, texture, dirt);
+        LensFlare.drawLensFlare(framebuffer, lensflareScreenSpace, elapsedTime * 100, texture, dirt);
     }
 
 }

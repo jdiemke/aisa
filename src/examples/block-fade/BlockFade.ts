@@ -1,6 +1,7 @@
 import { Color } from '../../core/Color';
 import { Utils } from '../../core/Utils';
 import { Framebuffer } from '../../Framebuffer';
+import { Interpolator } from '../../math/Interpolator';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
@@ -149,7 +150,7 @@ export class BlockFade extends AbstractScene {
         for (let y = 0; y < verticalUnits; y++) {
             for (let x = 0; x < horizontalUnits; x++) {
                 framebuffer.drawTextureRect(x * blockWidth, y * blockWidth, x * blockWidth, y * blockWidth, blockWidth, blockWidth, pixelArray, pixelArrayWidth,
-                    framebuffer.interpolate(startTime + fadeArray[x + y * horizontalUnits], startTime + fadeArray[x + y * horizontalUnits] + 700, time)
+                    Interpolator.interpolate(startTime + fadeArray[x + y * horizontalUnits], startTime + fadeArray[x + y * horizontalUnits] + 700, time)
                 );
             }
         }

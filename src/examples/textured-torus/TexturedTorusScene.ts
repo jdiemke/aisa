@@ -6,6 +6,7 @@ import { Texture, TextureUtils } from '../../texture';
 import { TextureCoordinate } from '../../TextureCoordinate';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
+import { Interpolator } from '../../math/Interpolator';
 
 export class TexturedTorusScene extends AbstractScene {
 
@@ -79,7 +80,7 @@ export class TexturedTorusScene extends AbstractScene {
         for (let i = 0; i < STEPS + 1; i++) {
             const frame = this.torusFunction3(i * 2 * Math.PI / STEPS);
             const frame2 = this.torusFunction3(i * 2 * Math.PI / STEPS + 0.01);
-            
+
            // const up = new Vector3f(0.0, 16.0, 0);
           //  const right = frame2.sub(frame).cross(up).normalize().mul(16);
 
@@ -172,7 +173,7 @@ export class TexturedTorusScene extends AbstractScene {
         ];
         time = time * 0.6;
 
-        const scrollerOffset = Math.round(framebuffer.interpolate(0, 250, time & 0xff) * 8);
+        const scrollerOffset = Math.round(Interpolator.interpolate(0, 250, time & 0xff) * 8);
 
         for (let i = 1; i < framebuffer.height / 8; i++) {
             const text = scrollText[Math.floor((i + (time / 256))) % scrollText.length];

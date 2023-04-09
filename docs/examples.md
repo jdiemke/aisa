@@ -82,4 +82,4 @@
 * [Textured Cube Plasma](https://jdiemke.github.io/aisa/textured-cube-plasma.html)
 * [Wavefront with Texture 4](https://jdiemke.github.io/aisa/wavefront-texture4.html)
 * [Particle Waves](https://jdiemke.github.io/aisa/particle-waves.html)
-
+* [Bilinear Zoom](https://jdiemke.github.io/aisa/bilinear-zoom.html)

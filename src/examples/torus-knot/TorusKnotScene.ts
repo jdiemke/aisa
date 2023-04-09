@@ -9,6 +9,7 @@ import { LinearFog } from '../../shading/fog/LinearFog';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
+import { Interpolator } from '../../math/Interpolator';
 
 export class TorusKnotScene extends AbstractScene {
 
@@ -140,8 +141,8 @@ export class TorusKnotScene extends AbstractScene {
         const ukBasslineBpm = 130 / 2;
         const ukBasslineClapMs = 60000 / ukBasslineBpm;
         const smashTime = (time * 10) % ukBasslineClapMs;
-        const smash = (framebuffer.cosineInterpolate(0, 15, smashTime) - framebuffer.cosineInterpolate(15, 200, smashTime) +
-            0.4 * framebuffer.cosineInterpolate(200, 300, smashTime) - 0.4 * framebuffer.cosineInterpolate(300, 400, smashTime)
+        const smash = (Interpolator.cosineInterpolate(0, 15, smashTime) - Interpolator.cosineInterpolate(15, 200, smashTime) +
+            0.4 * Interpolator.cosineInterpolate(200, 300, smashTime) - 0.4 * Interpolator.cosineInterpolate(300, 400, smashTime)
         )
             * 12;
         modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(time * 0.04) * 20,

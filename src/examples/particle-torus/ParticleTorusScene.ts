@@ -1,4 +1,5 @@
 import { Framebuffer } from '../../Framebuffer';
+import { Interpolator } from '../../math/Interpolator';
 import { Matrix4f } from '../../math/Matrix4f';
 import { Vector3f } from '../../math/Vector3f';
 import { AbstractScene } from '../../scenes/AbstractScene';
@@ -44,8 +45,8 @@ export class ParticleTorusScene extends AbstractScene {
         const ukBasslineBpm: number = 140;
         const ukBasslineClapMs: number = 60000 / ukBasslineBpm * 2;
         const smashTime: number = (Date.now() - this.start) % ukBasslineClapMs;
-        const smash: number = (framebuffer.cosineInterpolate(0, 20, smashTime) -
-            framebuffer.cosineInterpolate(20, 300, smashTime)) * 35;
+        const smash: number = (Interpolator.cosineInterpolate(0, 20, smashTime) -
+        Interpolator.cosineInterpolate(20, 300, smashTime)) * 35;
         const width: number = Math.round(framebuffer.width + smash * framebuffer.width / 100);
         const height: number = Math.round(framebuffer.height + smash * framebuffer.height / 100);
 

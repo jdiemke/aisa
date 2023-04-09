@@ -3,6 +3,7 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { Vector3f, Matrix4f, Matrix3f } from '../../math';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture';
+import { Interpolator } from '../../math/Interpolator';
 
 export class ParticleStreamsScene extends AbstractScene {
 
@@ -86,7 +87,7 @@ export class ParticleStreamsScene extends AbstractScene {
                     framebuffer.drawParticleNoDepth(
                         Math.round(element.x - size / 2),
                         Math.round(element.y - size / 2),
-                        Math.round(size), Math.round(size), texture, framebuffer.interpolate(-90, -55, element.z));
+                        Math.round(size), Math.round(size), texture, Interpolator.interpolate(-90, -55, element.z));
             });
         }
     }

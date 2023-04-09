@@ -1,6 +1,7 @@
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
+import { Interpolator } from '../../math/Interpolator';
 import { Matrix4f } from '../../math/Matrix4f';
 import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
@@ -67,9 +68,9 @@ export class AbstractCube extends AbstractScene {
         this.renderingPipeline.draw(framebuffer, model, mv);
 
         mv = camera.multiplyMatrix(Matrix4f.constructZRotationMatrix(
-            Math.PI * 0.5 * framebuffer.cosineInterpolate(0, 600, Math.floor(elapsedTime * 0.7) % 4000))
+            Math.PI * 0.5 * Interpolator.cosineInterpolate(0, 600, Math.floor(elapsedTime * 0.7) % 4000))
             .multiplyMatrix(Matrix4f.constructXRotationMatrix(
-                Math.PI * 0.5 * framebuffer.cosineInterpolate(2000, 2600, Math.floor(elapsedTime * 0.7) % 4000)))
+                Math.PI * 0.5 * Interpolator.cosineInterpolate(2000, 2600, Math.floor(elapsedTime * 0.7) % 4000)))
         );
         model = this.scene[1];
         this.renderingPipeline.draw(framebuffer, model, mv);

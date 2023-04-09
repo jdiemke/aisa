@@ -1,5 +1,6 @@
 import { Color } from '../../core/Color';
 import { Framebuffer } from '../../Framebuffer';
+import { Interpolator } from '../../math/Interpolator';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
@@ -25,7 +26,7 @@ export class TextZoomerScene extends AbstractScene {
         const count = (time * 0.0018);
         const index = (count | 0) % 100;
         let scale = (count - (count | 0));
-        const alpha = (framebuffer.cosineInterpolate(0, 0.2, scale) * (1 - framebuffer.cosineInterpolate(0.8, 1.0, scale))) * 0.75;
+        const alpha = (Interpolator.cosineInterpolate(0, 0.2, scale) * (1 - Interpolator.cosineInterpolate(0.8, 1.0, scale))) * 0.75;
         scale = 1 * 3 / (scale * 50);
         const width = (this.micro.width * scale * 6) | 0;
         const height = (this.micro.height * scale * 6) | 0;

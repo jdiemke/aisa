@@ -86,6 +86,7 @@ const examples = [
     new Example('textured-cube'),
     new Example('textured-cube-plasma'),
     new Example('particle-waves'),
+    new Example('bilinear-zoom'),
 ];
 
 module.exports = examples;

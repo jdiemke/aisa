@@ -7,6 +7,7 @@ import { Texture, TextureUtils } from '../../texture';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 import { BlenderLoader } from '../../model/blender/BlenderLoader';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
+import { LensFlare } from '../../special-effects/LensFlare';
 
 export class MetalHeadzScene extends AbstractScene {
 
@@ -77,7 +78,7 @@ export class MetalHeadzScene extends AbstractScene {
         const lensflareScreenSpace: Vector3f =
             framebuffer.project(camera.getRotation().multiply(new Vector3f(1.1 * scale, 2 * scale, -0.9 * scale)));
 
-        framebuffer.drawLensFlare(lensflareScreenSpace, elapsedTime * 1.2, [
+        LensFlare.drawLensFlare(framebuffer, lensflareScreenSpace, elapsedTime * 1.2, [
             { tex: this.texture11, scale: 2.3, alpha: 0.5 },
             { tex: this.texture13, scale: 1.6, alpha: 0.25 },
             { tex: this.texture13, scale: 0.7, alpha: 0.22 },

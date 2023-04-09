@@ -9,6 +9,7 @@ import { BlenderLoader } from './../../model/blender/BlenderLoader';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
+import { Interpolator } from '../../math/Interpolator';
 
 export class HoodlumScene extends AbstractScene {
 
@@ -94,7 +95,7 @@ export class HoodlumScene extends AbstractScene {
 
             for (let j = 0; j < num2; j++) {
                 const y = ((i + elapsedTime * 0.001) % 10) * 2.5 - 12;
-                const scale2 = (1 + 4 * framebuffer.interpolate(-10, 10, y)) *
+                const scale2 = (1 + 4 * Interpolator.interpolate(-10, 10, y)) *
 
                     ((Math.sin(elapsedTime * 0.0012 + Math.PI * 2 / num * i * 2) * 0.5 + 0.5) * 0.5 + 0.5);
                 const x = scale2 * Math.sin(Math.PI * 2 / num2 * j + elapsedTime * 0.0008);

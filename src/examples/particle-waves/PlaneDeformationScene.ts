@@ -1,5 +1,7 @@
 import { Framebuffer } from '../../Framebuffer';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
+import { Matrix4f, Vector3f } from '../../math';
+import { Interpolator } from '../../math/Interpolator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { TextureUtils } from '../../texture';
 import { Texture } from '../../texture/Texture';
@@ -24,13 +26,60 @@ export class PlaneDeformationScene extends AbstractScene {
         const currentTime: number = Date.now();
 
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
-        framebuffer.drawParticleWaves(currentTime, this.particleTexture2, true);
+        this.drawParticleWaves(framebuffer, currentTime, this.particleTexture2, true);
 
         const texture3 = new Texture(this.accumulationBuffer, 320, 200);
         framebuffer.drawTexture(0, 0, texture3, 0.85);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
 
         framebuffer.noise(currentTime, this.noise);
+    }
+
+
+
+    public drawParticleWaves(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, noClear: boolean = false) {
+        if (!noClear) { framebuffer.clearColorBuffer(72 | 56 << 8 | 48 << 16 | 255 << 24); }
+        framebuffer.clearDepthBuffer();
+
+        const points: Array<Vector3f> = new Array<Vector3f>();
+        const num = 50;
+        const scale = 2;
+        for (let i = 0; i < num; i++) {
+            for (let j = 0; j < num; j++) {
+
+                const x = (j - num / 2) * scale;
+                const y = 4 * (Math.sin(j * 0.09 * 2 + elapsedTime * 0.0008) + Math.cos(i * 0.08 * 2 + elapsedTime * 0.0009));
+                const z = (i - num / 2) * scale;
+
+                points.push(new Vector3f(x, y, z));
+            }
+        }
+
+        const modelViewMartrix = Matrix4f.constructTranslationMatrix(0, -0.0, -49).multiplyMatrix(
+
+            Matrix4f.constructXRotationMatrix(Math.PI * 0.1).multiplyMatrix(
+                Matrix4f.constructYRotationMatrix(elapsedTime * 0.00006))
+        );
+
+        const points2: Array<Vector3f> = new Array<Vector3f>(points.length);
+        points.forEach((element) => {
+
+            const transformed = framebuffer.project(modelViewMartrix.multiply(element));
+
+            points2.push(transformed);
+        });
+
+        points2.sort((a, b) => {
+            return a.z - b.z;
+        });
+
+        points2.forEach((element) => {
+            const size = -(1.3 * 192 / (element.z));
+            framebuffer.drawParticle(
+                Math.round(element.x - size / 2),
+                Math.round(element.y - size / 2),
+                Math.round(size), Math.round(size), texture, 1 / element.z, Interpolator.interpolate(-60, -25, element.z));
+        });
     }
 
     public createProceduralTexture3(): Promise<Texture> {

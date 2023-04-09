@@ -8,6 +8,7 @@ import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingR
 import { BlenderLoader } from '../../model/blender/BlenderLoader';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 import { EnvironmentMappingScene } from '../environment-mapping-torus/EnvironmentMappingTorusScene';
+import { LensFlare } from '../../special-effects/LensFlare';
 
 export class MetalHeadzScene extends AbstractScene {
 
@@ -17,7 +18,7 @@ export class MetalHeadzScene extends AbstractScene {
     private noise: Texture;
     private dirt: Texture;
     private skyBox: SkyBox;
-   
+
     private torus: EnvironmentMappingScene;
     private accumulationBuffer: Uint32Array;
     private texturedRenderingPipeline: TexturingRenderingPipeline;
@@ -34,7 +35,7 @@ export class MetalHeadzScene extends AbstractScene {
         return Promise.all([
             this.skyBox.init(),
             this.torus.init(framebuffer),
-  
+
             TextureUtils.load(require('../../assets/metalheadz.png'), false).then(
                 (texture: Texture) => this.metalheadz = texture
             ),
@@ -80,13 +81,13 @@ export class MetalHeadzScene extends AbstractScene {
         const lensflareScreenSpace: Vector3f =
             framebuffer.project(camera.getRotation().multiply(new Vector3f(1.1 * scale, 2 * scale, -0.9 * scale)));
 
-        framebuffer.drawLensFlare(lensflareScreenSpace, elapsedTime * 1.2, [
+        LensFlare.drawLensFlare(framebuffer, lensflareScreenSpace, elapsedTime * 1.2, [
             { tex: this.texture11, scale: 2.3, alpha: 0.5 },
             { tex: this.texture13, scale: 1.6, alpha: 0.35 },
             { tex: this.texture13, scale: 0.7, alpha: 0.32 },
             { tex: this.texture13, scale: -0.4, alpha: 0.32 },
         ], this.dirt);
-        
+
     }
 
     private drawMotionBlur(framebuffer: Framebuffer, time: number): void {

@@ -172,27 +172,10 @@ export class Scene extends AbstractScene {
         {
             framebuffer.pixelate();
         }
-        {
-                        // SCALE
-                        let texture = new Texture();
-                        texture.texture = this.accumulationBuffer;
-                        texture.width = 320;
-                        texture.height = 200;
 
-                        let scale2 = (1+Math.sin(currentTime*0.001))*0.5*10+1;
-                        let width2 = 320 *  scale2;
-                        let height2 = 200 * scale2;
-
-                        // looks crappy with linear interpolation!
-                        // probably  bilinear is required here
+            framebuffer.drawPlaneDeformation(currentTime, this.texture5);
 
 
-                            framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
-                            framebuffer.drawScaledTextureClipBi(
-                                Math.round(320/2-width2/2),
-                                Math.round(200/2-height2/2),
-                                width2|0, height2|0, texture, 1.0);
-        }
 
         // TODO:
         // * build level in code (portals and areas)

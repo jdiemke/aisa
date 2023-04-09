@@ -1,4 +1,5 @@
 import { Framebuffer } from '../../Framebuffer';
+import { Interpolator } from '../../math/Interpolator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
@@ -80,7 +81,7 @@ export class CinematicScroller extends AbstractScene {
         ];
         time = time * 0.6;
 
-        const scrollerOffset = Math.round(framebuffer.interpolate(0, 250, time & 0xff) * 8);
+        const scrollerOffset = Math.round(Interpolator.interpolate(0, 250, time & 0xff) * 8);
 
         for (let i = 1; i < framebuffer.height / 8; i++) {
             const text = scrollText[Math.floor((i + (time / 256))) % scrollText.length];

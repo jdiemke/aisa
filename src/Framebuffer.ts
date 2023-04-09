@@ -5,6 +5,7 @@ import { Color } from './core/Color';
 import { CullFace } from './CullFace';
 import { Torus } from './geometrical-objects/Torus';
 import { Matrix3f, Matrix4f, Vector2f, Vector3f, Vector4f } from './math';
+import { Interpolator } from './math/Interpolator';
 import { Sphere } from './math/Sphere';
 import RandomNumberGenerator from './RandomNumberGenerator';
 import { FlatShadingTriangleRasterizer } from './rasterizer/FlatShadingTriangleRasterizer';
@@ -266,7 +267,7 @@ export class Framebuffer {
         for (let i = 0; i < 50; i++) {
             for (let x = 0; x < this.width; x++) {
                 this.framebuffer[(start + i) * this.width + x] = this.framebuffer[(start - i * 3 - 1) * this.width + x +
-                    this.interpolate(0, 50, i) * (Math.sin(Date.now() * 0.002 + i * 0.2) * 14) | 0];
+                    Interpolator.interpolate(0, 50, i) * (Math.sin(Date.now() * 0.002 + i * 0.2) * 14) | 0];
             }
         }
     }
@@ -443,16 +444,6 @@ export class Framebuffer {
         this.drawLineDDA(new Vector3f(xoff, yoff + 20 * 5, -0.3), new Vector3f(xoff + 20 * 5, yoff + 20 * 5, -0.3), 0xffffffff);
         this.drawLineDDA(new Vector3f(xoff, yoff, -0.3), new Vector3f(xoff, yoff + 20 * 5, -0.3), 0xffffffff);
         this.drawLineDDA(new Vector3f(xoff + 20 * 5, yoff, -0.3), new Vector3f(xoff + 20 * 5, yoff + 20 * 5, -0.3), 0xffffffff);
-    }
-
-    public interpolate(start: number, end: number, current: number): number {
-        if (current <= start) {
-            return 0;
-        }
-        if (current >= end) {
-            return 1;
-        }
-        return (current - start) / (end - start);
     }
 
     public fastFramebufferCopyOffset(src: Uint32Array, dest: Uint32Array, offset = 0) {
@@ -1467,7 +1458,7 @@ export class Framebuffer {
 
                 const color1 = texture.texture[(dist2 & 0x1f) + (angle & 0x1f) * 32];
                 // darkening can be done with alpha blended texture
-                const scale = 1 - this.cosineInterpolate(1.0, 6.0, dist);
+                const scale = 1 - Interpolator.cosineInterpolate(1.0, 6.0, dist);
                 const r = ((color1 >> 0) & 0xff) * scale;
                 const g = ((color1 >> 8) & 0xff) * scale;
                 const b = ((color1 >> 16) & 0xff) * scale;
@@ -1478,52 +1469,6 @@ export class Framebuffer {
         }
     }
 
-
-
-    public drawParticleWaves(elapsedTime: number, texture: Texture, noClear: boolean = false) {
-        if (!noClear) { this.clearColorBuffer(72 | 56 << 8 | 48 << 16 | 255 << 24); }
-        this.clearDepthBuffer();
-
-        const points: Array<Vector3f> = new Array<Vector3f>();
-        const num = 50;
-        const scale = 2;
-        for (let i = 0; i < num; i++) {
-            for (let j = 0; j < num; j++) {
-
-                const x = (j - num / 2) * scale;
-                const y = 4 * (Math.sin(j * 0.09 * 2 + elapsedTime * 0.0008) + Math.cos(i * 0.08 * 2 + elapsedTime * 0.0009));
-                const z = (i - num / 2) * scale;
-
-                points.push(new Vector3f(x, y, z));
-            }
-        }
-
-        const modelViewMartrix = Matrix4f.constructTranslationMatrix(0, -0.0, -49).multiplyMatrix(
-
-            Matrix4f.constructXRotationMatrix(Math.PI * 0.1).multiplyMatrix(
-                Matrix4f.constructYRotationMatrix(elapsedTime * 0.00006))
-        );
-
-        const points2: Array<Vector3f> = new Array<Vector3f>(points.length);
-        points.forEach((element) => {
-
-            const transformed = this.project(modelViewMartrix.multiply(element));
-
-            points2.push(transformed);
-        });
-
-        points2.sort((a, b) => {
-            return a.z - b.z;
-        });
-
-        points2.forEach((element) => {
-            const size = -(1.3 * 192 / (element.z));
-            this.drawParticle(
-                Math.round(element.x - size / 2),
-                Math.round(element.y - size / 2),
-                Math.round(size), Math.round(size), texture, 1 / element.z, this.interpolate(-60, -25, element.z));
-        });
-    }
 
     public drawScreenBounds(framebuffer: Framebuffer): void {
         const color: number = Color.WHITE.toPackedFormat();
@@ -1615,343 +1560,6 @@ export class Framebuffer {
         return new Vector3f(Math.sin(alpha) * 10, 0, Math.cos(alpha) * 10);
     }
 
-    public cosineInterpolate(y1: number, y2: number, mu: number): number {
-        if (mu <= y1) { return 0; }
-        if (mu >= y2) { return 1; }
-        const mu2 = (mu - y1) / (y2 - y1);
-        return (1 - Math.cos(mu2 * Math.PI)) / 2;
-    }
-
-
-    /*
-    public createCylinder() {
-        const k = {
-            points: []
-        };
-
-        const LOOPX = 50;
-        const LOOPY = 110;
-        for (let y = 0; y < LOOPY; y++) {
-            for (let x = 0; x < LOOPX; x++) {
-                const xx = Math.sin(2 * Math.PI / LOOPX * x) * 30;
-                const xx2 = Math.sin(2 * Math.PI / LOOPX * (x + 1)) * 30;
-                const yy = Math.cos(2 * Math.PI / LOOPX * x) * 30;
-                const yy2 = Math.cos(2 * Math.PI / LOOPX * (x + 1)) * 30;
-
-                k.points.push(new Vector3f(xx, 0 + y, yy));
-                k.points.push(new Vector3f(xx, 1 + y, yy));
-                k.points.push(new Vector3f(xx2, 0 + y, yy2));
-
-                k.points.push(new Vector3f(xx2, 0 + y, yy2));
-                k.points.push(new Vector3f(xx, 1 + y, yy));
-                k.points.push(new Vector3f(xx2, 1 + y, yy2));
-            }
-        }
-        // optimize
-        const points: Array<Vector3f> = [];
-        const points2: Array<Vector3f> = [];
-        const normals: Array<Vector3f> = [];
-        const normals2: Array<Vector3f> = [];
-        const texture: Array<TextureCoordinate> = [];
-
-        const index: Array<number> = [];
-
-        k.points.forEach((i) => {
-            const p = i;
-
-            const point = points.find((pointVar) => pointVar.sub(p).length() < 0.001);
-
-            if (point) {
-                const idx = points.indexOf(point);
-                index.push(idx);
-            } else {
-                index.push(points.push(p) - 1);
-            }
-        });
-
-        points.forEach(() => {
-            normals.push(new Vector3f(0, 0, 0));
-            normals2.push(new Vector3f(0, 0, 0));
-            points2.push(new Vector3f(0, 0, 0));
-            texture.push(new TextureCoordinate());
-        });
-
-        return {
-            points,
-            points2,
-            normals,
-            normals2,
-            index,
-            texture
-        };
-    }
-*/
-   /*
-
-*/
-
-
-    /*
-    public shadingCylinderEnv(elapsedTime: number): void {
-        this.wBuffer.fill(100);
-        let result = this.cylinder;
-
-        for (let i = 0; i < result.points.length; i++) {
-            let y = result.points[i].y - 30;
-            let x = result.points[i].x - 50;
-            let length = Math.sqrt(x * x + y * y);
-            let myScale = (1 + 0.2 * Math.sin(result.points[i].y * 0.01 + elapsedTime * 1.83));
-            result.points2[i].y = result.points[i].y;
-            result.points2[i].x = result.points[i].x * myScale + Math.sin(result.points[i].y * 0.1 + elapsedTime * 3.83) * 8.3
-                + Math.sin(result.points[i].y * 0.55 + elapsedTime * 2.83) * 2;
-            result.points2[i].z = result.points[i].z * myScale + Math.cos(result.points[i].y * 0.1 + elapsedTime * 3.83) * 8.3
-                + Math.cos(result.points[i].y + result.points[i].x * 0.55 + elapsedTime * 2.83) * 2;
-
-            result.normals[i].x = 0;
-            result.normals[i].y = 0;
-            result.normals[i].z = 0;
-        }
-
-        let points = result.points2;
-        let index = result.index;
-        let normals = result.normals;
-
-        let norm: Vector3f = new Vector3f(0, 0, 0);
-        let norm2: Vector3f = new Vector3f(0, 0, 0);
-        let cross: Vector3f = new Vector3f(0, 0, 0);
-        for (let i = 0; i < index.length; i += 3) {
-            let v1: Vector3f = points[index[i]];
-            let v2: Vector3f = points[index[i + 1]];
-            let v3: Vector3f = points[index[i + 2]];
-            norm.sub2(v2, v1);
-            norm2.sub2(v3, v1);
-            cross.cross2(norm, norm2);
-            let normal = cross;
-            normals[index[i]].add2(normals[index[i]], normal);
-            normals[index[i + 1]].add2(normals[index[i + 1]], normal);
-            normals[index[i + 2]].add2(normals[index[i + 2]], normal);
-        }
-
-        let textureCoords: Array<TextureCoordinate> = result.texture;
-
-        for (let i = 0; i < normals.length; i++) {
-            normals[i].normalize2();
-        }
-
-        let scale = 3.7;
-
-        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(0)
-            .multiplyMatrix(Matrix4f.constructXRotationMatrix(0).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0
-                , 0))));
-
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(-80, -210,
-            -290)
-            .multiplyMatrix(modelViewMartrix);
-
-        let points2: Array<Vector3f> = result.points2;
-        let normals2: Array<Vector3f> = result.normals2;
-
-        let normalMatrix = modelViewMartrix.computeNormalMatrix();
-
-        for (let n = 0; n < normals.length; n++) {
-            normalMatrix.multiplyArr(normals[n], normals2[n]);
-            this.fakeSphere2(normals2[n], textureCoords[n]);
-        }
-
-        for (let p = 0; p < points.length; p++) {
-            let transformed = modelViewMartrix.multiply(points[p]);
-
-            points2[p].x = Math.round((this.width * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
-            points2[p].y = Math.round((this.height * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
-            points2[p].z = transformed.z;
-        }
-
-        let vertex1 = new Vertex();
-        vertex1.textureCoordinate = new TextureCoordinate();
-        let vertex2 = new Vertex();
-        vertex2.textureCoordinate = new TextureCoordinate();
-        let vertex3 = new Vertex();
-        vertex3.textureCoordinate = new TextureCoordinate();
-        let vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
-        for (let i = 0; i < index.length; i += 3) {
-
-            // Only render triangles with CCW-ordered vertices
-            //
-            // Reference:
-            // David H. Eberly (this.height6).
-            // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
-            // p. 69. Morgan Kaufmann Publishers, United States.
-            //
-            let v1 = points2[index[i]];
-            let t1 = textureCoords[index[i]];
-
-            let v2 = points2[index[i + 1]];
-            let t2 = textureCoords[index[i + 1]];
-
-            let v3 = points2[index[i + 2]];
-            let t3 = textureCoords[index[i + 2]];
-
-            if (this.isTriangleCCW(v1, v2, v3)) {
-
-                let color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
-
-                vertexArray[0].position = v1;
-                vertexArray[0].textureCoordinate = t1;
-
-                vertexArray[1].position = v2;
-                vertexArray[1].textureCoordinate = t2;
-
-                vertexArray[2].position = v3;
-                vertexArray[2].textureCoordinate = t3;
-
-                if (v1.x < Framebuffer.minWindow.x ||
-                    v2.x < Framebuffer.minWindow.x ||
-                    v3.x < Framebuffer.minWindow.x ||
-                    v1.x > Framebuffer.maxWindow.x ||
-                    v2.x > Framebuffer.maxWindow.x ||
-                    v3.x > Framebuffer.maxWindow.x ||
-                    v1.y < Framebuffer.minWindow.y ||
-                    v2.y < Framebuffer.minWindow.y ||
-                    v3.y < Framebuffer.minWindow.y ||
-                    v1.y > Framebuffer.maxWindow.y ||
-                    v2.y > Framebuffer.maxWindow.y ||
-                    v3.y > Framebuffer.maxWindow.y) {
-
-                    this.clipConvexPolygon2(vertexArray, color);
-                } else {
-                    this.texturedTriangleRasterizer.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], color);
-                }
-            }
-        }
-    }
-    */
-     /*
-
-    /*
-    public shadingSphereEnvDisp(elapsedTime: number): void {
-        this.wBuffer.fill(100);
-
-        let result = this.sphereDisp;
-
-        let scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
-        for (let i = 0; i < result.points.length; i++) {
-            let y = result.points[i].z;
-            let x = result.points[i].x;
-            let length = Math.sqrt(x * x + y * y);
-            let rot = Math.sin(result.points[i].y * 0.539 + (10 - length) * 0.05 + elapsedTime * 0.9) * 4.5;
-            result.points2[i].y = result.points[i].y;
-            result.points2[i].x = result.points[i].x * Math.cos(rot) - result.points[i].z * Math.sin(rot);
-            result.points2[i].z = result.points[i].x * Math.sin(rot) + result.points[i].z * Math.cos(rot);
-
-            result.normals[i].x = 0;
-            result.normals[i].y = 0;
-            result.normals[i].z = 0;
-        }
-
-        let points = result.points2;
-        let index = result.index;
-        let normals = result.normals;
-
-        let norm: Vector3f = new Vector3f(0, 0, 0);
-        let norm2: Vector3f = new Vector3f(0, 0, 0);
-        let cross: Vector3f = new Vector3f(0, 0, 0);
-        for (let i = 0; i < index.length; i += 3) {
-            let v1: Vector3f = points[index[i]];
-            let v2: Vector3f = points[index[i + 1]];
-            let v3: Vector3f = points[index[i + 2]];
-            norm.sub2(v2, v1);
-            norm2.sub2(v3, v1);
-            cross.cross2(norm, norm2);
-            let normal = cross;
-            normals[index[i]].add2(normals[index[i]], normal);
-            normals[index[i + 1]].add2(normals[index[i + 1]], normal);
-            normals[index[i + 2]].add2(normals[index[i + 2]], normal);
-        }
-
-        for (let i = 0; i < normals.length; i++) {
-            normals[i].normalize2();
-        }
-
-        let scale = 3.7;
-
-        let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.35)
-            .multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0
-                , 0))));
-
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(-0, -0,
-            -10)
-            .multiplyMatrix(modelViewMartrix);
-
-            let points2: Array<Vector3f> = result.points2;
-        let normals2: Array<Vector3f> = result.normals2;
-
-        let normalMatrix = modelViewMartrix.computeNormalMatrix();
-
-        for (let n = 0; n < normals.length; n++) {
-            normalMatrix.multiplyArr(normals[n], normals2[n]);
-        }
-
-        for (let p = 0; p < points.length; p++) {
-            let transformed = modelViewMartrix.multiply(points[p]);
-
-            points2[p].x = Math.round((this.width * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
-            points2[p].y = Math.round((this.height * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
-            points2[p].z = transformed.z;
-        }
-
-        let vertex1 = new Vertex();
-        vertex1.textureCoordinate = new TextureCoordinate();
-        let vertex2 = new Vertex();
-        vertex2.textureCoordinate = new TextureCoordinate();
-        let vertex3 = new Vertex();
-        vertex3.textureCoordinate = new TextureCoordinate();
-        let vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
-        for (let i = 0; i < index.length; i += 3) {
-
-            let v1 = points2[index[i]];
-            let n1 = normals2[index[i]];
-
-            let v2 = points2[index[i + 1]];
-            let n2 = normals2[index[i + 1]];
-
-            let v3 = points2[index[i + 2]];
-            let n3 = normals2[index[i + 2]];
-
-            if (this.isTriangleCCW(v1, v2, v3)) {
-
-                let color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
-
-                vertexArray[0].position = v1;
-                this.fakeSphere(n1, vertex1);
-
-                vertexArray[1].position = v2;
-                this.fakeSphere(n2, vertex2);
-
-                vertexArray[2].position = v3;
-                this.fakeSphere(n3, vertex3);
-
-                if (v1.x < Framebuffer.minWindow.x ||
-                    v2.x < Framebuffer.minWindow.x ||
-                    v3.x < Framebuffer.minWindow.x ||
-                    v1.x > Framebuffer.maxWindow.x ||
-                    v2.x > Framebuffer.maxWindow.x ||
-                    v3.x > Framebuffer.maxWindow.x ||
-                    v1.y < Framebuffer.minWindow.y ||
-                    v2.y < Framebuffer.minWindow.y ||
-                    v3.y < Framebuffer.minWindow.y ||
-                    v1.y > Framebuffer.maxWindow.y ||
-                    v2.y > Framebuffer.maxWindow.y ||
-                    v3.y > Framebuffer.maxWindow.y) {
-
-                    this.clipConvexPolygon2(vertexArray, color);
-                } else {
-                    this.texturedTriangleRasterizer.drawTriangleDDA2(vertexArray[0], vertexArray[1], vertexArray[2], color);
-                }
-            }
-        }
-    }
-*/
-
     public fakeSphere(normal: Vector4f, vertex: Vertex): void {
         // https://www.mvps.org/directx/articles/spheremap.htm
         // vertex.textureCoordinate.u = 0.5 + normal.x * 0.5;
@@ -1965,41 +1573,6 @@ export class Framebuffer {
         tex.v = 0.5 - Math.asin(normal.y) / Math.PI;
     }
 
-    public drawLensFlare(screenPos: Vector3f, elapsedTime: number, texture: Array<{ tex: Texture, scale: number, alpha: number }>, dirt: Texture): void {
-        const pos = screenPos;
-
-        if (pos.z < 0 &&
-            pos.x > 0 && pos.x < this.width &&
-            pos.y > 0 && pos.y < this.height &&
-            this.wBuffer[pos.x + (pos.y * this.width)] > (1 / pos.z)) {
-            if (!this.lensFlareVisible) {
-                this.lensFlareVisible = true;
-                this.lensFlareStart = elapsedTime;
-            }
-        } else {
-            if (this.lensFlareVisible) {
-                this.lensFlareVisible = false;
-                this.lensFlareEnd = elapsedTime;
-            }
-        }
-
-        let scale = this.interpolate(this.lensFlareStart, this.lensFlareStart + 100, elapsedTime);
-        if (this.lensFlareVisible !== true) {
-            scale *= (1 - this.interpolate(this.lensFlareEnd, this.lensFlareEnd + 100, elapsedTime));
-        }
-        const dir = new Vector3f(this.width / 2, this.height / 2, 0).sub(pos);
-
-        if (scale > 0) {
-            for (let i = 0; i < texture.length; i++) {
-                const temp = pos.add(dir.mul(texture[i].scale));
-                this.drawTexture(Math.round(temp.x) - texture[i].tex.width / 2, Math.round(temp.y) - texture[i].tex.height / 2, texture[i].tex, texture[i].alpha * scale);
-            }
-        }
-
-        // this.drawTextureRectAdd(0, 0, 0, 0, this.width, this.height, dirt, 0.03 + 0.15 * scale);
-        this.drawScaledTextureClipBi(0, 0, this.width, this.height, dirt, 0.15 + 0.20 * scale*0);
-    }
-
     public drawLineDDA(start: Vector3f, end: Vector3f, color: number): void {
         this.lineRasterizer.drawLineDDA(start, end, color);
     }
@@ -2009,7 +1582,6 @@ export class Framebuffer {
     }
 
     private sphereFunction2(theta: number, phi: number): Vector4f {
-
         const pos = new Vector4f(Math.cos(theta) * Math.cos(phi),
             Math.cos(theta) * Math.sin(phi),
             Math.sin(theta), 1.0);

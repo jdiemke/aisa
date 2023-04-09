@@ -1,5 +1,6 @@
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
+import { Interpolator } from '../../math/Interpolator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
@@ -42,15 +43,15 @@ export class TitanEffectScene extends AbstractScene {
         const elapsedTime: number = 0.004 * time;
 
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
-       
-       
+
+
         const ukBasslineBpm = 140;
         const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
         const smashTime = (Date.now() - this.startTime) % ukBasslineClapMs;
-        const smash = (framebuffer.cosineInterpolate(0, 15, smashTime) -
-            framebuffer.cosineInterpolate(15, 200, smashTime) +
-            0.4 * framebuffer.cosineInterpolate(200, 300, smashTime) -
-            0.4 * framebuffer.cosineInterpolate(300, 400, smashTime)) * 35;
+        const smash = (Interpolator.cosineInterpolate(0, 15, smashTime) -
+        Interpolator.cosineInterpolate(15, 200, smashTime) +
+            0.4 * Interpolator.cosineInterpolate(200, 300, smashTime) -
+            0.4 * Interpolator.cosineInterpolate(300, 400, smashTime)) * 35;
 
 
         let size = Math.round(1 * smash);

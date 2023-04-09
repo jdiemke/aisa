@@ -6,6 +6,8 @@ import { Material } from '../../shading/material/Material';
 import { BlenderLoader } from './../../model/blender/BlenderLoader';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
+import { LensFlare } from '../../special-effects/LensFlare';
+import { Interpolator } from '../../math/Interpolator';
 
 export class RoomScene extends AbstractScene {
 
@@ -112,7 +114,7 @@ export class RoomScene extends AbstractScene {
         mv = camera.multiplyMatrix(
             Matrix4f.constructTranslationMatrix(0, 14.2, -4).multiplyMatrix(Matrix4f.constructScaleMatrix(10, 10, 10).multiplyMatrix(
                 Matrix4f.constructXRotationMatrix(
-                    Math.PI * 2 * framebuffer.cosineInterpolate(0, 1300, Math.floor(elapsedTime * 0.7) % 4000)))
+                    Math.PI * 2 * Interpolator.cosineInterpolate(0, 1300, Math.floor(elapsedTime * 0.7) % 4000)))
             ));
 
 
@@ -135,7 +137,7 @@ export class RoomScene extends AbstractScene {
 
         framebuffer.drawParticleStreams(framebuffer, elapsedTime, spark, light );
 
-        framebuffer.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.15, texture, dirt);
+        LensFlare.drawLensFlare(framebuffer, lensflareScreenSpace, elapsedTime * 0.15, texture, dirt);
     }
 
 }

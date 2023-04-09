@@ -4,6 +4,7 @@ import { Texture } from '../../texture';
 import { RotoZoomerScene } from '../roto-zoomer/RotoZoomerScene';
 import { Color } from '../../core/Color';
 import { CubeScene } from '../cube/CubeScene';
+import { Interpolator } from '../../math/Interpolator';
 
 export class RotoZoomDemoScene extends AbstractScene {
 
@@ -33,11 +34,11 @@ export class RotoZoomDemoScene extends AbstractScene {
 
         framebuffer.clearColorBuffer(Color.BLACK.toPackedFormat());
 
-        framebuffer.drawTextureColorized(6,6, texture, new Color(255,160,160,255).mul(framebuffer.interpolate(0, 2000, time)));
-        framebuffer.drawTextureColorized(6,6 + 60 +4, texture, new Color(160,255,160,255).mul(framebuffer.interpolate(2000, 4000, time)));
-        framebuffer.drawTextureColorized(6,6 + (60 +4)*2, texture, new Color(160,160,255,255).mul(framebuffer.interpolate(4000, 6000, time)));
+        framebuffer.drawTextureColorized(6,6, texture, new Color(255,160,160,255).mul(Interpolator.interpolate(0, 2000, time)));
+        framebuffer.drawTextureColorized(6,6 + 60 +4, texture, new Color(160,255,160,255).mul(Interpolator.interpolate(2000, 4000, time)));
+        framebuffer.drawTextureColorized(6,6 + (60 +4)*2, texture, new Color(160,160,255,255).mul(Interpolator.interpolate(4000, 6000, time)));
 
-        framebuffer.drawTextureColorized(320-214-6,6, texture2, new Color(255,250,255,255).mul(framebuffer.interpolate(6000, 8000, time)));
+        framebuffer.drawTextureColorized(320-214-6,6, texture2, new Color(255,250,255,255).mul(Interpolator.interpolate(6000, 8000, time)));
 
 
 
