@@ -18,10 +18,7 @@ export class SoundManager {
     //  container for audio values to be used by effects (time, bass, effect, transitions)
     public musicProperties: musicProperties;
     public sceneData: sceneData;
-    public audioPlayer;
-    public player;
     public audioElement: HTMLAudioElement;
-    public track;
 
     public constructor() {
 
@@ -41,24 +38,25 @@ export class SoundManager {
         return new Promise((resolve) => {
 
             const fileExtension = filename.split('.').pop().toLowerCase();
+            let audioPlayer;
 
             switch (fileExtension) {
                 case 'it':
                 case 'xm':
                 case 's3m':
                 case 'mod':
-                    this.audioPlayer = new Cowbell.Player.OpenMPT({
+                    audioPlayer = new Cowbell.Player.OpenMPT({
                         'pathToLibOpenMPT': './openmpt/libopenmpt.js'
                     });
                     break;
                 case 'ogg':
                 case 'mp3':
                 default:
-                    this.audioPlayer = new Cowbell.Player.Audio();
+                    audioPlayer = new Cowbell.Player.Audio();
                     break;
             }
-            this.track = new this.audioPlayer.Track(filename);
-            this.audioElement = this.track.open();
+            const track = new audioPlayer.Track(filename);
+            this.audioElement = track.open();
             resolve();
         });
     }
@@ -239,7 +237,7 @@ export class SoundManager {
         // jump to last position on timeline for local development reloading
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const newLocal = this;
-        const jumpTo = localStorage.getItem('lastTime');
+        const jumpTo = Number(localStorage.getItem('lastTime'));
 
         // poll for mod player since library does not use promises
         if ((window as any).libopenmpt) {
@@ -250,10 +248,7 @@ export class SoundManager {
                     // openmpt does not support volume control or muting
                     document.getElementById('ticker_volume').style.display = 'none';
                     newLocal.updateRange(newLocal.audioElement.duration);
-
-                    if (jumpTo) {
-                        newLocal.seek(Number(jumpTo));
-                    }
+                    newLocal.seek(jumpTo);
                     return;
                 }
                 setTimeout(poll, 150);
@@ -262,7 +257,7 @@ export class SoundManager {
             newLocal.audioElement.onloadedmetadata = function () {
                 newLocal.updateRange(newLocal.audioElement.duration);
             };
-            newLocal.seek(Number(jumpTo));
+            newLocal.seek(jumpTo);
         }
 
         // remember last sound preferences

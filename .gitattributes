@@ -5,3 +5,6 @@
 *.mp3 binary
 *.ogg binary
 *.xm binary
+*.mod binary
+*.s3m binary
+*.it binary
