@@ -65,6 +65,7 @@ export class Scene extends AbstractScene {
     private overlay: Texture;
 
     private flood: Texture;
+    private fairlight: Texture;
 
     // move
     private fpsStartTime: number = Date.now();
@@ -80,7 +81,7 @@ export class Scene extends AbstractScene {
         return Promise.all([
             this.scene.init(framebuffer),
             this.createTexture(require('../../assets/flood.png'), false).then(texture => this.flood = texture),
-
+            this.createTexture(require('../../assets/logo-fairlight-10.png'), false).then(texture => this.fairlight = texture),
             this.createTexture(require('../../assets/kiss.png'), true).then(texture => this.kiss = texture),
             this.createTexture(require('../../assets/spheremap.png'), false).then(texture => this.spheremap = texture),
             this.createTexture(require('../../assets/textures/metall.png'), false).then(texture => this.metal = texture),
@@ -166,214 +167,15 @@ export class Scene extends AbstractScene {
         }
         this.fpsCount++;
 
+        framebuffer.pixelate();
+        framebuffer.drawPlaneDeformation(currentTime, this.texture5);
 
-
-
-        {
-            framebuffer.pixelate();
-        }
-
-            framebuffer.drawPlaneDeformation(currentTime, this.texture5);
-
-
-
-        // TODO:
-        // * build level in code (portals and areas)
-        // * use controllable camera to move
-        // TODO: Front Mission Modell in Blender
-        /**
-         * TODO:
-         * - Draw Vector ART in SVG Inkscape
-         * - Vectorize with Blender and Display
-         */
-        /**
-         * TODO:
-         * - transition effects with alpha layer
-         * - wormhole particle tunnel
-         * - rubiks cube animation :-)
-         * - cube with animated texture
-         * - Oldskool amiga screen with disk loading and decrunching
-         * - screen exploding intro cubes
-         * - Split red green and blue channels and displace them in x direction
-         */
-        /**
-         * TODO:
-         * - Stripe landscape: http://farm3.static.flickr.com/2653/5710494901_2ca6ddbfb2_b.jpg
-         *   maybe with sync to bass and fft
-         * - Blender modells (Flat, textured, GI baked)
-         * - particle tunnel
-         * - ribbons on curves
-         * - dof
-         */
-        // TS SoftSynth Project
-        // http://natureofcode.com/book/
-        // https://noisehack.com/generate-noise-web-audio-api/
-        // https://noisehack.com/custom-audio-effects-javascript-web-audio-api/
-        // https://noisehack.com/how-to-build-supersaw-synth-web-audio-api/
-        // https://noisehack.com/build-music-visualizer-web-audio-api/
-        // https://noisehack.com/how-to-build-monotron-synth-web-audio-api/
-        // https://davidwalsh.name/web-audio-api
-        // https://codepen.io/gregh/post/recreating-legendary-8-bit-games-music-with-web-audio-api
-        // https://developer.mozilla.org/en-US/docs/Games/Techniques/Audio_for_Web_Games
-        // https://www.html5rocks.com/en/tutorials/webaudio/intro/
-
-        // TODO:
-        // - Progress Bar for Loading
-        // - Web Audio API
-        // - blasphemy line sphere with particles and blur
-        // - fractal landscape fade in / out
-        // - particle emitter
-        // - plane deformation on rendererd scenes
-        // - alpha blend between different or same scene
-        // - fade to white
-        // - spike ball / particle and 3d mesh with normals
-        // - glow
-        // - kewlers cube torus
-        // - kewlsers recht billboard spikeball
-        // - kewslers rect billboard cylinder
-        // seminars:
-        // - https://www.youtube.com/playlist?list=PLwbFJIXXSsXvbpDxOaaBrxSBdLUW1hdax
-        // - https://www.youtube.com/watch?v=XZLqwXdXjqY
-        // - https://www.youtube.com/watch?v=nt-BpAYMeJs&list=PLNqQO7lFY6dmH5kMSWtuRP6ZhBiQdQIU1&index=5
-        // - https://www.youtube.com/watch?v=WgUkCRvti3Y&list=PLNqQO7lFY6dlPOg7cA1SczEU0Y7UW6iMW
-        // - https://www.youtube.com/watch?v=7wYq6O-g2U8&list=PLNqQO7lFY6dm_GROVFIZ6C6mUINMnlpyC
-        // - https://www.youtube.com/watch?v=hszyYAT5R1Q&list=PLNqQO7lFY6dm_GROVFIZ6C6mUINMnlpyC&index=5
-        // - https://www.youtube.com/watch?v=4Q5sgNCN2Jw&list=PL2EEF025A89BAA0FC
-        // - https://www.youtube.com/watch?v=TbcZyAO6K7c
-        // - https://www.youtube.com/watch?v=2p2JcHzRlJU
-        // - https://www.youtube.com/watch?v=QT2ftidLTn4
-        // - https://www.youtube.com/watch?v=Oo-jlpvhTcY
-
-
-
-
-
-        // NEW EFFECTS:
-        // * https://www.youtube.com/watch?v=bg-MTl_nRiU
-        // * SPIKEBALL KYLE
-        // plane deformation with texture to LED
-        // 16 / 9 --> 320 x 180
-
-
-        /*
-        this.framebuffer.setCullFace(CullFace.BACK);
-        //this.framebuffer.drawBlenderScene(time, this.texture4, this.particleTexture2);
-        this.framebuffer.setBob(this.spheremap);
-        this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
-        this.framebuffer.shadingSphereEnv(time*0.0002);
-         this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
-        */
-
-        /**
-         * Inspiration:
-         * - https://www.youtube.com/watch?v=7kLNXg4BmM8
-         * - https://www.youtube.com/watch?v=PLrio-uwvwk
-         * - https://www.youtube.com/watch?v=XJKDb4ByZ7Y
-         */
-        /**
-         * TODO:
-         * - http://sol.gfxile.net/gp/ch18.html
-         * - http://insolitdust.sourceforge.net/code.html
-         * - http://sol.gfxile.net/sphere/index.html
-         * - http://4matprojects.blogspot.de/
-         * - http://sol.gfxile.net/particle/index.html
-         * - http://sol.gfxile.net/gp/ch19.html
-         * - http://www.flipcode.com/archives/The_Art_of_Demomaking-Issue_07_Bump_Mapping.shtml
-         * - http://sol.gfxile.net/interpolation/index.html
-         * - http://adrianboeing.blogspot.de/2011/06/deform-textured-interference-effect-in.html
-         * - particle ball pulsating (https://www.youtube.com/watch?v=NPZEkhtXhgE)
-         * - metaballs
-         * - particle stream
-         * - scene with baked lighting & wobbling ball & camera animation
-         * - DOF flares
-         * - demo tool http://peisik.untergrund.net/engines/
-         * - https://www.youtube.com/watch?v=ghX1-EUx-fQ&index=7&list=PLPnuj18PSHazbti_tw1zoQ23fqx8-ZZP7 (min 15)
-         */
-
-        //  this.framebuffer.cinematicScroller(this.texture4, time);
-        //  this.framebuffer.drawTextureScaledLame(0,0, 16,16, this.texture7);
-        // http://doc.babylonjs.com/tutorials/discover_basic_elements
-
-        // implement modells with baked shaods and lighting :)
-        // http://iquilezles.org/www/index.htm
-        // http://iquilezles.org/www/articles/normals/normals.htm
-        // http://iquilezles.org/www/articles/areas/areas.htm
-        // http://iquilezles.org/www/articles/frustum/frustum.htm
-        // http://iquilezles.org/www/articles/frustumcorrect/frustumcorrect.htm
-        // http://iquilezles.org/www/articles/deform/deform.htm
-        // http://www.gamers.org/dEngine/quake/papers/ddjzsort.html
-        // http://fabiensanglard.net/quakeSource/quakeSourceRendition.php
-
-        //  this.framebuffer.shadingSphereClip((time ) * 0.003);
-        // this.framebuffer.cinematicScroller(this.texture4, time );
-        //   this.framebuffer.drawText(8, 192 - 18, 'TRIANGLE NEAR PLANE CLIPPING', this.texture4);
-
-        // TODO:
-        // - textured cube / dynamic textures
-        // - skybox
-        // - specular highlights
-        // - 3d bobs (with shadows)
-        // - plane deformation effect
-        // - sine scroller (color bar texture)
-        // - dot tunnel
-        // - 2d / 3d start field
-        // - 2d vector start
-        // - wobble logo
-        // - text writer
-        // - scroller / sine scroller
-        // - fractalplasma fade in
-        // - water effect
-        // - cross fade
-        // - 2d bump mapping ( maybe on 3d object)
-        // - smooth shading (gouraud)
-        // - voxel landscape with color
-        // - metaballs
-        // - rasterbars
-        // - 3d particles / 3d particle collision
-        // - vector morphing
-        // - voxel tunnel / sphere / torus
-        // - stencil vectors
-        // - chess zoomer / chess waver
-        // - raycaster
-
-        // this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
-        // this.framebuffer.shadingTorus2(time * 0.02);
-        // this.framebuffer.drawTexture(32, 60, this.texture2, 1.0);
-
-        // this.framebuffer.clear();
-
-        // this.framebuffer.wireFrameTerrain(time*0.01, this.texture3);
-        // this.framebuffer.pixelate();
-
-
-
-        //     this.framebuffer.wireFrameTerrain(time*0.008,this.texture3);
-        //    this.framebuffer.cinematicScroller(this.texture4, time );
-        // todo: radial blur -> pouet.net
-
-        // http://www.cubic.org/docs/camera.htm
-        // http://www.cubic.org/docs/3dclip.htm
-        // http://www.cubic.org/docs/backcull.htm
-
-        // this.framebuffer.addReflections();
-
-        // this.framebuffer.drawRaster();
-        // this.framebuffer.enableBackfaceCulling();
-        // this.framebuffer.setCullFace(FRONT);
-
-        // TODO: text
-        // 3d line clipping for fly by :)
-        // different transitions:
-        // - stripes etc
-        // - chessboard
-        // wobble logo
-        // ball 3d with precalculated sizes lookup
-        // starfield 2d /3d
-        // wormhole
-        // glitch logo
+        framebuffer.clear();
+      //  framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.fairlight.texture);
+        framebuffer.wireFrameTerrain(currentTime*0.008,this.particleTexture2);
+     framebuffer.addReflections();
     }
 
-    // Move
     public createProceduralTexture(): Promise<Texture> {
         return new Promise((resolve) => {
             const texture = new Texture();
@@ -394,7 +196,6 @@ export class Scene extends AbstractScene {
         });
     }
 
-    // Move
     public createProceduralTexture2(): Promise<Texture> {
         return new Promise((resolve) => {
             const texture = new Texture();
@@ -421,7 +222,6 @@ export class Scene extends AbstractScene {
             resolve(texture);
         });
     }
-
 
     public createProceduralTexture3(): Promise<Texture> {
         return new Promise((resolve) => {
@@ -451,8 +251,6 @@ export class Scene extends AbstractScene {
         });
     }
 
-
-    // Move
     public createProceduralDisplacementMap(): Promise<Texture> {
         return new Promise((resolve) => {
             const texture = new Texture();

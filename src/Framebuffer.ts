@@ -1338,7 +1338,7 @@ export class Framebuffer {
             return det > 0.0;
         }
     }
-    /*
+
         public wireFrameTerrain(elapsedTime: number, heightmap: Texture): void {
 
             this.clearDepthBuffer();
@@ -1392,7 +1392,7 @@ export class Framebuffer {
                 this.nearPlaneClipping(points2[index[i]], points2[index[i + 1]], color);
             }
         }
-    */
+
     public drawBoundingSphere(sphere: Sphere, matrix: Matrix4f, color: number): void {
         const points: Array<Vector4f> = [];
 

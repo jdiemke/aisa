@@ -9,7 +9,6 @@
 * [Bobs](https://jdiemke.github.io/aisa/bobs.html)
 * [Cinematic Scroller](https://jdiemke.github.io/aisa/cinematic-scroller.html)
 * [Cube Tunnel](https://jdiemke.github.io/aisa/cube-tunnel.html)
-* [Cube](https://jdiemke.github.io/aisa/cube.html)
 * [Cubes](https://jdiemke.github.io/aisa/voxel-balls.html)
 * [Distorted Sphere](https://jdiemke.github.io/aisa/distorted-sphere.html)
 * [DOF Balls](https://jdiemke.github.io/aisa/dof-balls.html)
@@ -65,6 +64,7 @@
 * [Wobble](https://jdiemke.github.io/aisa/titan-effect.html)
 
 ## New
+* [Cube](https://jdiemke.github.io/aisa/cube.html)
 * [Textured Torus](https://jdiemke.github.io/aisa/textured-torus.html)
 * [Psychadelic Plane Deformation](https://jdiemke.github.io/aisa/psychadelic-plane-deformation.html)
 * [Glow](https://jdiemke.github.io/aisa/glow.html)
