@@ -20,7 +20,7 @@ with audio data, and seeking to a specified time.
                     var AudioContext = window.AudioContext || window.webkitAudioContext;
                     audioCtx = new AudioContext({
                         latencyHint: "playback",
-                        sampleRate: 44100
+                        sampleRate: 22050
                       });
                 }
 

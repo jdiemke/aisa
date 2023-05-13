@@ -382,6 +382,24 @@ export class Framebuffer {
         return 0xff000000 | r << 16 | g << 8 | b;
     }
 
+
+    public static addColor(c1: number, c2: number) {
+        //int a1 = (c1 >> 24) & 0xff;
+        const r1 = (c1 >> 16) & 0xFF;
+        const g1 = (c1 >>  8) & 0xFF;
+        const b1 =  c1        & 0xFF;
+        
+        const r2 = (c2 >> 16) & 0xFF;
+        const g2 = (c2 >>  8) & 0xFF;
+        const b2 =  c2        & 0xFF;
+        
+        const r = r1 + r2 < 0xFF ? r1 + r2 : 0xFF;
+        const g = g1 + g2 < 0xFF ? g1 + g2 : 0xFF;
+        const b = b1 + b2 < 0xFF ? b1 + b2 : 0xFF;
+        
+        return (0xFF << 24 | r << 16 | g << 8 | b);
+      }
+
     public drawTextureRect(xs: number, ys: number, xt: number, yt: number, width: number, height: number, texture: Uint32Array, pixelWidth: number, alpha2: number): void {
         let texIndex = xt + yt * pixelWidth;
         let frIndex = xs + ys * this.width;

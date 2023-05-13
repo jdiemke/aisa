@@ -5,16 +5,8 @@ import { Interpolator } from '../../math/Interpolator';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
-
-// Transitions
-export enum TransitionMethods {
-    FADEIN = 1,
-    FADEOUT = 2,
-    BLOCKFADE = 3,
-    CROSSFADE = 4,
-    CIRCLE = 5,
-    WIPE_LEFT = 6
-}
+import { TransitionMethods } from './TransitionMethods';
+import { Particle } from './Particle';
 
 export class BlockFade extends AbstractScene {
     private ledTexture: Texture;
@@ -23,6 +15,15 @@ export class BlockFade extends AbstractScene {
 
     public transitionCircle: Uint32Array;
     public transitionWipe: Uint32Array;
+
+    // dissolve 
+    private croud: Float32Array;        // Stores data for mask control
+    private prevMask: Array<boolean>;    // mask picture
+    private curMask: Array<boolean>;
+    private diff: Array<boolean>;       // difference mask
+    private noiseMask: Array<boolean>;  // particle mask
+    private croudMask: Uint32Array;     // cloud mask
+    private particleArray: Array<Particle>;
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.transitionFramebufferTo = new Framebuffer(framebuffer.width, framebuffer.height);
@@ -45,11 +46,131 @@ export class BlockFade extends AbstractScene {
             this.drawCircle(framebuffer.width / 2, framebuffer.height / 2, d, c3);
         }
 
+        //dissolve effect
+        this.initDissolve(framebuffer.width, framebuffer.height);
+
         return Promise.all([
             TextureUtils.load(require('../../assets/atlantis.png'), false).then(
                 (textureBackground: Texture) => this.ledTexture = textureBackground
             ),
         ]);
+    }
+
+    private initDissolve(width: number, height: number) {
+        this.croud = new Float32Array(width * height);
+        this.prevMask = new Array<boolean>(width * height);
+        this.curMask = new Array<boolean>(width * height);
+        this.diff = new Array<boolean>(width * height);
+        this.noiseMask = new Array<boolean>(width * height);
+        this.particleArray = new Array<Particle>();
+
+        this.croudMask = new Uint32Array(width * height);
+        this.particleArray.splice(0, this.particleArray.length);
+
+        this.createCroud(width, height);
+        const threshold = 0;
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                const index = y * width + x;
+                const isBackground = (this.croudMask[y * width + x] & 0xFF) < 0x80;
+                if (isBackground) {
+                    this.croud[index] = 0xFF000000;
+                }
+                this.prevMask[index] = this.curMask[index] = this.croud[index] < threshold;
+                if (Math.random() > 0.90) {
+                    this.noiseMask[index] = !isBackground;
+                }
+            }
+        }
+    }
+
+    private createCroud(width: number, height: number) {
+        if (this.croud == null) {
+            this.croud = new Float32Array(width * height);
+        }
+
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                this.croudMask[y * width + x] = 0xFFFFFFFF;
+            }
+        }
+
+        const bias: number = Math.min(150.0, 0xFF);
+        const xbase = Math.random() * 100;
+        const ybase = Math.random() * 100;
+
+        let xnoise = 0.0;
+        let ynoise = 0.0;
+        const inc = 0.02;
+
+        const pn = Utils.PerlinNoise;
+
+        for (let y = 0; y < height; y++) {
+            const curBias = y * bias / height;
+            for (let x = 0; x < width; x++) {
+                const _gray = (pn.noise((xnoise + xbase), (ynoise + ybase), 0) * (0xFF - bias) + curBias);
+                this.croud[y * width + x] = _gray;
+                xnoise += inc;
+            }
+            xnoise = 0.0;
+            ynoise += inc;
+        }
+    }
+
+    // dissolve
+    public dissolve(renderBuffer: Framebuffer, renderBuffer2: Uint32Array, time: number) {
+
+        if (time <= 5) {
+
+            // update mask for current scene
+            for (let y = 0; y < renderBuffer.height; y++) {
+                for (let x = 0; x < renderBuffer.width; x++) {
+                    const index = y * renderBuffer.width + x;
+                    const isBackground = (this.croudMask[y * renderBuffer.width + x] & 0xFF) < 0x80;
+                    if (isBackground) {
+                        this.croud[index] = renderBuffer2[index];
+                    }
+                    this.prevMask[index] = this.curMask[index] = this.croud[index] < 0;
+                    if (Math.random() > 0.90) {
+                        this.noiseMask[index] = !isBackground;
+                    }
+                }
+            }
+
+            // delete loose particles
+            this.particleArray.splice(0, this.particleArray.length);
+        }
+
+        for (let y = 0; y < renderBuffer.height; y++) {
+            for (let x = 0; x < renderBuffer.width; x++) {
+                const index = y * renderBuffer.width + x;
+                this.curMask[index] = this.croud[index] < time;
+                this.diff[index] = this.prevMask[index] != this.curMask[index];
+                this.prevMask[index] = this.curMask[index];
+
+                if (this.curMask[index]) {
+                    renderBuffer.framebuffer[index] = renderBuffer2[index];
+                }
+
+                if (this.diff[index]) {
+                    if (this.noiseMask[index]) {
+                        const particle = new Particle(x, y, renderBuffer[index], renderBuffer.width, renderBuffer.height);
+                        particle._color = renderBuffer.framebuffer[index];
+                        this.particleArray.push(particle);
+                    }
+                    renderBuffer.framebuffer[index] = 0xFFFFFFFF;
+                }
+            }
+        }
+
+        for (let it = 0; it < this.particleArray.length; it++) {
+            const p = this.particleArray[it];
+
+            if (!p.update()) {
+                this.particleArray.splice(it, 1); continue;
+            }
+            renderBuffer.framebuffer[p.y * renderBuffer.width + p.x] = Framebuffer.addColor(renderBuffer.framebuffer[p.y * renderBuffer.width + p.x], p._color);
+        }
     }
 
     private putpixel(x: number, y: number, color: number) {
@@ -115,6 +236,9 @@ export class BlockFade extends AbstractScene {
                 break;
             case TransitionMethods.CROSSFADE: // 0 - 255
                 this.crossFade(framebuffer.framebuffer, transitionValue);
+                break;
+            case TransitionMethods.DISSOLVE: // 0 - 255
+                this.dissolve(framebuffer, this.transitionFramebufferTo.framebuffer, transitionValue);
                 break;
             case TransitionMethods.FADEIN: // 0-255
                 this.fadeIn(framebuffer, transitionValue, 0);

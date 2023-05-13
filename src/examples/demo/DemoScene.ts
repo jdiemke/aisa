@@ -33,14 +33,23 @@ export class DemoScene {
     private sceneList: DoublyLinkedList<AbstractScene>;
     private nodeInstance: DLNode<AbstractScene>;
 
-    // moving line marking current place in the timeline
-    private timelineRef: HTMLInputElement;
-
     // transitions
     private BlockFade: BlockFade;
 
     // stats
     private stats: Array<Stats>;
+
+    // our main canvas
+    private canvasRef: HTMLCanvasElement;
+
+    // moving line marking current place in the timeline
+    private timelineRef: HTMLInputElement;
+
+    // displays which scene we're on
+    private sceneRef: HTMLSpanElement;
+
+    // displays time in seconds
+    private timeRef: HTMLSpanElement;
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.soundManager = new SoundManager();
@@ -50,6 +59,8 @@ export class DemoScene {
         this.initControls(framebuffer.width);
 
         this.BlockFade = new BlockFade();
+
+        this.canvasRef = document.getElementById('aisa-canvas') as HTMLCanvasElement;
 
         // initialize effects with progress
         return this.allProgress([
@@ -94,8 +105,7 @@ export class DemoScene {
             framebuffer.drawRect2(0, (framebuffer.height / 2) - 5, outputX, 10, Color.WHITE.toPackedFormat());
 
             // update the canvas
-            const canvas = document.getElementById('aisa-canvas') as HTMLCanvasElement;
-            canvas.getContext('2d').putImageData(framebuffer.getImageData(), 0, 0);
+            this.canvasRef.getContext('2d').putImageData(framebuffer.getImageData(), 0, 0);
 
             // update memory usage
             for (const p of this.stats) {
@@ -157,13 +167,14 @@ export class DemoScene {
         const tickerScreenshotRef = document.getElementById('ticker_screenshot');
         const tickerVolumeRef = document.getElementById('ticker_volume');
 
-        // timeline
+        // timeline slider, scene and time display
         this.timelineRef = document.getElementById('timeline') as HTMLInputElement;
+        this.sceneRef = document.getElementById('scene') as HTMLSpanElement;
+        this.timeRef = document.getElementById('time') as HTMLSpanElement;
 
         // stop
         tickerStopRef.addEventListener('click', () => {
             this.soundManager.onPause();
-            this.nodeInstance = this.sceneList.start;
             this.soundManager.seek(0);
 
             tickerPlayRef.classList.add('fa-play');
@@ -223,8 +234,7 @@ export class DemoScene {
                 .toTimeString()
                 .slice(0, 8)
                 .replace(/:/g, '.')}.png`;
-            const canvas = document.getElementById('aisa-canvas');
-            const image = (canvas as HTMLCanvasElement).toDataURL('image/png').replace('image/png', 'image/octet-stream');
+            const image = this.canvasRef.toDataURL('image/png').replace('image/png', 'image/octet-stream');
             const anchor = document.createElement('a');
             anchor.setAttribute('download', fileName);
             anchor.setAttribute('href', image);
@@ -287,7 +297,7 @@ export class DemoScene {
                     break;
                 // toggle full screen
                 case 'f':
-                    document.getElementById('aisa-canvas').click();
+                    this.canvasRef.click();
                     break;
                 // save a screenshot
                 case 's':
@@ -374,8 +384,8 @@ export class DemoScene {
             return;
         } else {
             // get values from JS rocket
-            document.getElementById('scene').innerText = this.soundManager.musicProperties.sceneData.effect.toString();
-            document.getElementById('time').innerText = this.soundManager.musicProperties.timeSeconds.toFixed(2);
+            this.sceneRef.innerText = this.soundManager.musicProperties.sceneData.effect.toString();
+            this.timeRef.innerText = this.soundManager.musicProperties.timeSeconds.toFixed(2);
         }
         // update FPS and Memory usage
         for (const p of this.stats) {
