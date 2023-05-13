@@ -119,7 +119,24 @@ export class BlockFade extends AbstractScene {
     // dissolve
     public dissolve(renderBuffer: Framebuffer, renderBuffer2: Uint32Array, time: number) {
 
-        if (time < 20) {
+        if (time <= 5) {
+
+            // update mask for current scene
+            for (let y = 0; y < renderBuffer.height; y++) {
+                for (let x = 0; x < renderBuffer.width; x++) {
+                    const index = y * renderBuffer.width + x;
+                    const isBackground = (this.croudMask[y * renderBuffer.width + x] & 0xFF) < 0x80;
+                    if (isBackground) {
+                        this.croud[index] = renderBuffer2[index];
+                    }
+                    this.prevMask[index] = this.curMask[index] = this.croud[index] < 0;
+                    if (Math.random() > 0.90) {
+                        this.noiseMask[index] = !isBackground;
+                    }
+                }
+            }
+
+            // delete loose particles
             this.particleArray.splice(0, this.particleArray.length);
         }
 
@@ -220,7 +237,7 @@ export class BlockFade extends AbstractScene {
                 this.crossFade(framebuffer.framebuffer, transitionValue);
                 break;
             case TransitionMethods.DISSOLVE: // 0 - 255
-                this.dissolve(framebuffer, this.transitionFramebufferTo.framebuffer, Utils.map(transitionValue, 0, 255, 0, framebuffer.height*2));
+                this.dissolve(framebuffer, this.transitionFramebufferTo.framebuffer, transitionValue);
                 break;
             case TransitionMethods.FADEIN: // 0-255
                 this.fadeIn(framebuffer, transitionValue, 0);
