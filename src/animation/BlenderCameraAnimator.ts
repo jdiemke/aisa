@@ -30,7 +30,6 @@ export class BlenderCameraAnimator {
         const third = (first + 2) % this.keyFrames.length;
         const fraction = ((elapsedTime / keyFrameDuration) % this.keyFrames.length) - first;
 
-        const mu2 = (1 - Math.cos(fraction * Math.PI)) / 2;
         const position = new Vector3f(
             Utils.CubicInterpolate(this.keyFrames[zero].position.x, this.keyFrames[first].position.x, this.keyFrames[second].position.x, this.keyFrames[third].position.x, fraction),
             Utils.CubicInterpolate(this.keyFrames[zero].position.y, this.keyFrames[first].position.y, this.keyFrames[second].position.y, this.keyFrames[third].position.y, fraction),

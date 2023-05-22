@@ -6,7 +6,7 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { TextureUtils } from '../../texture';
 import { Texture } from '../../texture/Texture';
 
-export class PlaneDeformationScene extends AbstractScene {
+export class ParticleWavesScene extends AbstractScene {
 
     private blurred: Texture;
     private particleTexture2: Texture;
@@ -23,16 +23,14 @@ export class PlaneDeformationScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        const currentTime: number = Date.now();
-
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
-        this.drawParticleWaves(framebuffer, currentTime, this.particleTexture2, true);
+        this.drawParticleWaves(framebuffer, time, this.particleTexture2, true);
 
         const texture3 = new Texture(this.accumulationBuffer, 320, 200);
         framebuffer.drawTexture(0, 0, texture3, 0.85);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
 
-        framebuffer.noise(currentTime, this.noise);
+        framebuffer.noise(time, this.noise);
     }
 
 

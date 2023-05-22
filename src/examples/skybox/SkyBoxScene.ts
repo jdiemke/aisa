@@ -5,12 +5,10 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { SkyBox } from '../../SkyBox';
 import { Texture, TextureUtils } from '../../texture';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
-import { BlenderLoader } from '../../model/blender/BlenderLoader';
-import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 import { EnvironmentMappingScene } from '../environment-mapping-torus/EnvironmentMappingTorusScene';
 import { LensFlare } from '../../special-effects/LensFlare';
 
-export class MetalHeadzScene extends AbstractScene {
+export class SkyBoxScene extends AbstractScene {
 
     private metalheadz: Texture;
     private texture11: Texture;
@@ -72,7 +70,7 @@ export class MetalHeadzScene extends AbstractScene {
         this.torus.shadingTorusENvironment(framebuffer, mv);
 
         this.drawLensFlare(framebuffer, camera, elapsedTime);
-        this.drawMotionBlur(framebuffer, time);
+        this.drawMotionBlur(framebuffer);
        // framebuffer.noise(time, this.noise);
     }
 
@@ -90,7 +88,7 @@ export class MetalHeadzScene extends AbstractScene {
 
     }
 
-    private drawMotionBlur(framebuffer: Framebuffer, time: number): void {
+    private drawMotionBlur(framebuffer: Framebuffer): void {
         const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         framebuffer.drawTexture(0, 0, texture3, 0.75);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);

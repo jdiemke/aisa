@@ -1,10 +1,10 @@
 import { Canvas } from '../../Canvas';
-import { PlaneDeformationScene } from './PlaneDeformationScene';
+import { ParticleWavesScene } from './ParticleWavesScene';
 
 class Application {
 
     public static main(): void {
-        const canvas: Canvas = new Canvas(320, 200, new PlaneDeformationScene());
+        const canvas: Canvas = new Canvas(320, 200, new ParticleWavesScene());
         canvas.init();
     }
 

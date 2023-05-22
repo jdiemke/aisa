@@ -1,7 +1,6 @@
 import { Framebuffer } from '../Framebuffer';
 import { Vertex } from '../Vertex';
 import { AbstractScannlineTriangleRasterizer } from './AbstractScanlineTriangleRasterizer';
-import { AbstractTriangleRasterizer } from './AbstractTriangleRasterizer';
 
 export class FlatShadingTriangleRasterizer extends AbstractScannlineTriangleRasterizer {
 

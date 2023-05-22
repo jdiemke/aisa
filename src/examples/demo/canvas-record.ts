@@ -18,7 +18,7 @@ export class CanvasRecorder {
         return filename.split('.').pop();
     }
 
-    public createCanvasRecorder(canvas: HTMLCanvasElement, options = {}, audio: HTMLMediaElement) {
+    public createCanvasRecorder(canvas: HTMLCanvasElement, options = {}) {
         const date = new Date();
         let link = null;
 
@@ -106,7 +106,7 @@ export class CanvasRecorder {
     /**
      * Records a video and sound using CanvasRecorder
      */
-    public recordVideo(sound: HTMLMediaElement) {
+    public recordVideo() {
         console.info('recording video...');
         this.recording = true;
         const date = new Date();
@@ -128,7 +128,7 @@ export class CanvasRecorder {
 
         // Create canvas video recorder
         const canvasObj = document.getElementById('aisa-canvas');
-        this.canvasRecorder = this.createCanvasRecorder(canvasObj as HTMLCanvasElement, this.canvasRecordingOptions, sound);
+        this.canvasRecorder = this.createCanvasRecorder(canvasObj as HTMLCanvasElement, this.canvasRecordingOptions);
         this.canvasRecorder.start();
     }
 

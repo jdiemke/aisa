@@ -122,6 +122,7 @@ export class Framebuffer {
         this.bob = texture;
     }
 
+    /*
     public precompute(texture: Texture): void {
         // this.blengetBlenderScene(hoodlumJson, false);
 
@@ -129,6 +130,7 @@ export class Framebuffer {
 
         // this.sphereDisp = this.createSphereDistplaced(texture);
     }
+    */
 
     public getImageData(): ImageData {
         this.imageData.data.set(this.unsignedIntArray);
@@ -1361,10 +1363,10 @@ export class Framebuffer {
 
             this.clearDepthBuffer();
 
-            let index: Array<number> = [
+            const index: Array<number> = [
             ];
 
-            let points: Array<Vector3f> = [];
+            const points: Array<Vector3f> = [];
             for (let y = 0; y < 256; y++) {
                 for (let x = 0; x < 256; x++) {
                     points.push(new Vector3f((x - 128) * 20.0, (heightmap.texture[x + y * 256] & 0x000000ff) * 128 / 256 - 70, (y - 128) * 20.0));
@@ -1386,27 +1388,25 @@ export class Framebuffer {
                 }
             }
 
-            let scale = 0.8;
+            const modelViewMartrix = Matrix3f.constructYRotationMatrix(elapsedTime * 0.003);
 
-            let modelViewMartrix = Matrix3f.constructYRotationMatrix(elapsedTime * 0.003);
+            const points2: Array<Vector3f> = new Array<Vector3f>();
 
-            let points2: Array<Vector3f> = new Array<Vector3f>();
-
-            let xOff = + Math.cos(elapsedTime * 0.000001) * 128 * 20;
-            let zOff = Math.sin(elapsedTime * 0.000001) * 128 * 20;
+            const xOff = + Math.cos(elapsedTime * 0.000001) * 128 * 20;
+            const zOff = Math.sin(elapsedTime * 0.000001) * 128 * 20;
             points.forEach(element => {
-                let transformed = modelViewMartrix.multiply(element);
+                const transformed = modelViewMartrix.multiply(element);
 
-                let x = transformed.x + xOff;
-                let y = transformed.y;
-                let z = transformed.z + zOff; // TODO: use translation matrix!
+                const x = transformed.x + xOff;
+                const y = transformed.y;
+                const z = transformed.z + zOff; // TODO: use translation matrix!
 
                 points2.push(new Vector3f(x, y, z));
             });
 
             for (let i = 0; i < index.length; i += 2) {
-                let scale = (1 - Math.min(255, -points2[index[i]].z * 0.9) / 255);
-                let color = (255 * scale) << 8 | 100 * scale | (this.height * scale) << 16 | 255 << 24;
+                const scale = (1 - Math.min(255, -points2[index[i]].z * 0.9) / 255);
+                const color = (255 * scale) << 8 | 100 * scale | (this.height * scale) << 16 | 255 << 24;
                 this.nearPlaneClipping(points2[index[i]], points2[index[i + 1]], color);
             }
         }

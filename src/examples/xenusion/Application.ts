@@ -1,5 +1,5 @@
 import { Canvas } from '../../Canvas';
-import { ParallaxScrollingScene } from './ParallaxScrolliongScene';
+import { ParallaxScrollingScene } from './ParallaxScrollingScene';
 
 class Application {
 

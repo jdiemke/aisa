@@ -1,5 +1,5 @@
 import { Canvas } from '../../Canvas';
-import { LedTunnelScene } from './LedPlasmaScene';
+import { LedTunnelScene } from './LedTunnelScene';
 
 class Application {
 

@@ -1,10 +1,10 @@
 import { Canvas } from '../../Canvas';
-import { TexturedTorusScene } from './TexturedTorusScene';
+import { TexturedCubeScene } from './TexturedCubeScene';
 
 class Application {
 
     public static main(): void {
-        const canvas: Canvas = new Canvas(320, 200, new TexturedTorusScene());
+        const canvas: Canvas = new Canvas(320, 200, new TexturedCubeScene());
         canvas.init();
     }
 

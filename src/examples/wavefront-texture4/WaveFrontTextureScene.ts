@@ -58,7 +58,7 @@ export class WaveFrontTextureScene extends AbstractScene {
             Matrix4f.constructTranslationMatrix(0, 20, 0)
         );
 
-        let scale = (Math.sin(elapsedTime*0.003)*0.5+0.5)*0.24+1;
+        const scale = (Math.sin(elapsedTime*0.003)*0.5+0.5)*0.24+1;
         return camera.multiplyMatrix(Matrix4f.constructScaleMatrix(2*scale, 2*scale, 2*scale));
     }
 

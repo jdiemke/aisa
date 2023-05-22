@@ -3,20 +3,12 @@ import { Matrix4f, Vector3f, Vector4f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
-import { Vertex } from '../../Vertex';
 import { TextureCoordinate } from '../../TextureCoordinate';
 import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 
-interface IndexMesh {
-    points: Array<Vector4f>,
-    points2: Array<Vector4f>,
-    normals: Array<Vector4f>,
-    normals2: Array<Vector4f>,
-    index: Array<number>
-}
 
 export class EnvironmentMappingScene extends AbstractScene {
 
@@ -48,7 +40,7 @@ export class EnvironmentMappingScene extends AbstractScene {
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.flood.texture);
         framebuffer.setTexture(this.env);
 
-        let scale = 2.1;
+        const scale = 2.1;
         const elapsedTime =  time * 0.008;
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.25));
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3));
@@ -74,11 +66,11 @@ export class EnvironmentMappingScene extends AbstractScene {
             up = right.cross(tangent).normalize().mul(4.4);
 
             for (let r = 0; r < STEPS2 + 1; r++) {
-                let pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
+                const pos = up.mul(Math.sin(r * 2 * Math.PI / STEPS2)).add(right.mul(Math.cos(r * 2 * Math.PI / STEPS2))).add(frame);
                 this.points.push(new Vector4f(pos.x, pos.y, pos.z));
-                let normal = frame.sub(pos).normalize();
+                const normal = frame.sub(pos).normalize();
                 this.normals.push(new Vector4f(normal.x, normal.y, normal.z, 0));
-                let t = new TextureCoordinate();
+                const t = new TextureCoordinate();
                 t.u = 1 / (STEPS2) * r;
                 t.v = 1 / (STEPS) * i;
                 this.textCoords.push(t);
@@ -103,13 +95,13 @@ export class EnvironmentMappingScene extends AbstractScene {
       this.mesh.normals2 = this.normals.map(() => new Vector4f(0,0,0));
       this.mesh.points2 = this.points.map(() => new Vector4f(0,0,0));
       this.mesh.uv = this.points.map(() => new TextureCoordinate());
-     let faces = [];
+     const faces = [];
       for (let i = 0; i < this.index.length; i += 3) {
 
 
 
 
-        let face = {
+        const face = {
             vertices: [this.index[i], this.index[i+1], this.index[i+2]],
             uv: null,
             normals: [this.index[i], this.index[i+1], this.index[i+2]]

@@ -1,5 +1,5 @@
 import { Canvas } from '../../Canvas';
-import { EnvironmentMappingScene } from './DistortedSphereScene';
+import { EnvironmentMappingScene } from './EnvironmentMappingWavesScene';
 
 class Application {
 
