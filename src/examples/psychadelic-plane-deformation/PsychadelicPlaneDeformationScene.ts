@@ -2,7 +2,7 @@ import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 
-export class RadialBlur extends AbstractScene {
+export class PsychadelicPlaneDeformationScene extends AbstractScene {
 
     hoodlumLogo: Texture;
     abstract: Texture;

@@ -193,7 +193,7 @@ export class DemoScene {
                 // start audio and video recording
                 tickerRecordRef.style.color = 'red';
                 this.soundManager.onPlay();
-                this.canvasRecorder.recordVideo(this.soundManager.audioElement);
+                this.canvasRecorder.recordVideo();
                 tickerPlayRef.classList.remove('fa-play');
                 tickerPlayRef.classList.add('fa-pause');
             } else {

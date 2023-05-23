@@ -1,4 +1,3 @@
-import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Cube } from '../../geometrical-objects/Cube';

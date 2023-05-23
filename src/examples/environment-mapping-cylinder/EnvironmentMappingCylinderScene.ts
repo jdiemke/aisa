@@ -1,11 +1,10 @@
 import { Framebuffer } from '../../Framebuffer';
-import { Matrix4f, Vector3f, Vector4f } from '../../math';
+import { Matrix4f, Vector4f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { Vertex } from '../../Vertex';
 import { TextureCoordinate } from '../../TextureCoordinate';
-import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 
@@ -16,8 +15,7 @@ interface IndexMesh {
     normals2: Array<Vector4f>,
     index: Array<number>
 }
-
-export class EnvironmentMappingScene extends AbstractScene {
+export class EnvironmentMappingCylinderScene extends AbstractScene {
 
     private blurred: Texture;
     private noise: Texture;
@@ -31,9 +29,8 @@ export class EnvironmentMappingScene extends AbstractScene {
         points2: Vector4f[];
         normals: Vector4f[];
         normals2: Vector4f[];
-        index:Array<number>;
+        index: Array<number>;
     };
-
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
@@ -45,7 +42,7 @@ export class EnvironmentMappingScene extends AbstractScene {
             TextureUtils.load(require('../../assets/envmap.png'), false).then(
                 texture => this.env = texture
             ),
-            TextureUtils.load(require('../../assets/heightmap.png'), false).then(texture => this.heightmap = texture),,
+            TextureUtils.load(require('../../assets/heightmap.png'), false).then(texture => this.heightmap = texture),
             TextureUtils.generateProceduralNoise().then(texture => this.noise = texture),
         ]).then(() => this.plane = this.createCylinder2(this.heightmap));
     }
@@ -54,7 +51,7 @@ export class EnvironmentMappingScene extends AbstractScene {
         framebuffer.setCullFace(CullFace.FRONT);
         framebuffer.setTexture(this.env);
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
-        this.shadingCylinderEnvDisp(framebuffer, time*0.002, this.plane);
+        this.shadingCylinderEnvDisp(framebuffer, time * 0.002, this.plane);
 
 
         const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
@@ -69,14 +66,13 @@ export class EnvironmentMappingScene extends AbstractScene {
 
         framebuffer.wBuffer.fill(100);
 
-        let result = cylinder;
+        const result = cylinder;
 
-        let scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
         for (let i = 0; i < result.points.length; i++) {
-            let y = result.points[i].z;
-            let x = result.points[i].x;
-            let length = Math.sqrt(x * x + y * y);
-            let rot = Math.sin(result.points[i].y * 0.039 + (10 - length) * 0.02 + elapsedTime * 0.6) * 4;
+            const y = result.points[i].z;
+            const x = result.points[i].x;
+            const length = Math.sqrt(x * x + y * y);
+            const rot = Math.sin(result.points[i].y * 0.039 + (10 - length) * 0.02 + elapsedTime * 0.6) * 4;
             result.points2[i].y = result.points[i].y;
             result.points2[i].x = result.points[i].x * Math.cos(rot) - result.points[i].z * Math.sin(rot);
             result.points2[i].z = result.points[i].x * Math.sin(rot) + result.points[i].z * Math.cos(rot);
@@ -86,21 +82,21 @@ export class EnvironmentMappingScene extends AbstractScene {
             result.normals[i].z = 0;
         }
 
-        let points = result.points2;
-        let index = result.index;
-        let normals = result.normals;
+        const points = result.points2;
+        const index = result.index;
+        const normals = result.normals;
 
-        let norm: Vector4f = new Vector4f(0, 0, 0);
-        let norm2: Vector4f = new Vector4f(0, 0, 0);
-        let cross: Vector4f = new Vector4f(0, 0, 0);
+        const norm: Vector4f = new Vector4f(0, 0, 0);
+        const norm2: Vector4f = new Vector4f(0, 0, 0);
+        const cross: Vector4f = new Vector4f(0, 0, 0);
         for (let i = 0; i < index.length; i += 3) {
-            let v1: Vector4f = points[index[i]];
-            let v2: Vector4f = points[index[i + 1]];
-            let v3: Vector4f = points[index[i + 2]];
+            const v1: Vector4f = points[index[i]];
+            const v2: Vector4f = points[index[i + 1]];
+            const v3: Vector4f = points[index[i + 2]];
             norm.sub2(v2, v1);
             norm2.sub2(v3, v1);
             cross.cross2(norm, norm2);
-            let normal = cross;
+            const normal = cross;
             normals[index[i]].add2(normals[index[i]], normal);
             normals[index[i + 1]].add2(normals[index[i + 1]], normal);
             normals[index[i + 2]].add2(normals[index[i + 2]], normal);
@@ -110,7 +106,7 @@ export class EnvironmentMappingScene extends AbstractScene {
             normals[i].normalize2();
         }
 
-        let scale = 3.7;
+        const scale = 3.7;
 
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(0)
             .multiplyMatrix(Matrix4f.constructXRotationMatrix(0.2 * Math.sin(elapsedTime * 1.2)).multiplyMatrix(Matrix4f.constructTranslationMatrix(0, 0
@@ -120,44 +116,44 @@ export class EnvironmentMappingScene extends AbstractScene {
             -290)
             .multiplyMatrix(modelViewMartrix);
 
-        let points2: Array<Vector4f> = result.points2;
-        let normals2: Array<Vector4f> = result.normals2;
+        const points2: Array<Vector4f> = result.points2;
+        const normals2: Array<Vector4f> = result.normals2;
 
-        let normalMatrix = modelViewMartrix.computeNormalMatrix();
+        const normalMatrix = modelViewMartrix.computeNormalMatrix();
 
         for (let n = 0; n < normals.length; n++) {
             normalMatrix.multiplyHomArr(normals[n], normals2[n]);
         }
 
         for (let p = 0; p < points.length; p++) {
-            let transformed = modelViewMartrix.multiplyHom(points[p]);
+            const transformed = modelViewMartrix.multiplyHom(points[p]);
 
             points2[p].x = Math.round((framebuffer.width * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
             points2[p].y = Math.round((framebuffer.height * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
             points2[p].z = transformed.z;
         }
 
-        let vertex1 = new Vertex();
+        const vertex1 = new Vertex();
         vertex1.textureCoordinate = new TextureCoordinate();
-        let vertex2 = new Vertex();
+        const vertex2 = new Vertex();
         vertex2.textureCoordinate = new TextureCoordinate();
-        let vertex3 = new Vertex();
+        const vertex3 = new Vertex();
         vertex3.textureCoordinate = new TextureCoordinate();
-        let vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
+        const vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
         for (let i = 0; i < index.length; i += 3) {
 
-            let v1 = points2[index[i]];
-            let n1 = normals2[index[i]];
+            const v1 = points2[index[i]];
+            const n1 = normals2[index[i]];
 
-            let v2 = points2[index[i + 1]];
-            let n2 = normals2[index[i + 1]];
+            const v2 = points2[index[i + 1]];
+            const n2 = normals2[index[i + 1]];
 
-            let v3 = points2[index[i + 2]];
-            let n3 = normals2[index[i + 2]];
+            const v3 = points2[index[i + 2]];
+            const n3 = normals2[index[i + 2]];
 
             if (framebuffer.isTriangleCCW(v1, v2, v3)) {
 
-                let color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
+                // const color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
 
                 vertexArray[0].projection = v1;
                 framebuffer.fakeSphere(n1, vertex1);
@@ -180,11 +176,11 @@ export class EnvironmentMappingScene extends AbstractScene {
                     v1.y > framebuffer.maxWindow.y ||
                     v2.y > framebuffer.maxWindow.y ||
                     v3.y > framebuffer.maxWindow.y) {
-                        this.texturedRenderingPipeline.clipConvexPolygon(framebuffer, vertexArray);
-                   // this.clipConvexPolygon2(vertexArray, color);
+                    this.texturedRenderingPipeline.clipConvexPolygon(framebuffer, vertexArray);
+                    // this.clipConvexPolygon2(vertexArray, color);
                 } else {
                     framebuffer.texturedTriangleRasterizer.drawTriangleDDA(framebuffer, vertexArray[0], vertexArray[1], vertexArray[2]);
-            }
+                }
             }
         }
     }
@@ -258,6 +254,5 @@ export class EnvironmentMappingScene extends AbstractScene {
             index
         };
     }
-
 
 }

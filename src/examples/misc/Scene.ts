@@ -1,12 +1,12 @@
-import { CullFace } from '../../CullFace';
+// import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
-import { Color } from '../../core/Color';
-import { BunnyScene } from '../bunny/BunnyScene';
+// import { Color } from '../../core/Color';
+// import { BunnyScene } from '../bunny/BunnyScene';
 import { CubeScene } from '../cube/CubeScene';
-import { time } from 'console';
+// import { time } from 'console';
 
 export class Scene extends AbstractScene {
 
@@ -132,9 +132,8 @@ export class Scene extends AbstractScene {
             this.createTexture(require('../../assets/haujobb-overlay.png'), true).then(texture => this.overlay = texture),
 
         ]).then(() => {
-            // Web Audio API
-            // FIXME: put this into a Player Class
-            framebuffer.precompute(this.heightmap );
+
+            // framebuffer.precompute(this.heightmap );
 
             const audioContext = new AudioContext();
             const request = new XMLHttpRequest();

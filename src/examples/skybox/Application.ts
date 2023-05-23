@@ -1,10 +1,10 @@
 import { Canvas } from '../../Canvas';
-import { MetalHeadzScene } from './MetalHeadzScene';
+import { SkyBoxScene } from './SkyBoxScene';
 
 class Application {
 
     public main(): void {
-        const canvas: Canvas = new Canvas(320, 200, new MetalHeadzScene());
+        const canvas: Canvas = new Canvas(320, 200, new SkyBoxScene());
         canvas.init();
     }
 

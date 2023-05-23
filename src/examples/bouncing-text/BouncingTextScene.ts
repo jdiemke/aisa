@@ -1,4 +1,3 @@
-import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Interpolator } from '../../math/Interpolator';
 import { AbstractScene } from '../../scenes/AbstractScene';
@@ -6,7 +5,7 @@ import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { CubeScene } from '../cube/CubeScene';
 
-export class TitanEffectScene extends AbstractScene {
+export class BouncingTextScene extends AbstractScene {
 
     private hoodlumLogo: Texture;
     private blurred: Texture;
@@ -40,10 +39,8 @@ export class TitanEffectScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer, time: number): void {
         // const time: number = Date.now() - this.startTime;
-        const elapsedTime: number = 0.004 * time;
 
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
-
 
         const ukBasslineBpm = 140;
         const ukBasslineClapMs = 60000 / ukBasslineBpm * 2;
@@ -54,8 +51,8 @@ export class TitanEffectScene extends AbstractScene {
             0.4 * Interpolator.cosineInterpolate(300, 400, smashTime)) * 35;
 
 
-        let size = Math.round(1 * smash);
-        let size2 = Math.round(1* smash);
+        const size = Math.round(1 * smash);
+        const size2 = Math.round(1* smash);
         framebuffer.drawScaledTextureClipBiAdd(
             320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)),
             200 / 2 - 20 + size,

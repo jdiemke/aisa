@@ -10,7 +10,7 @@ interface ParallaxLayer {
     positionY: number;
     positionX: number;
     speed: number;
-};
+}
 
 export class ParallaxScrollingScene extends AbstractScene {
 
@@ -35,7 +35,7 @@ export class ParallaxScrollingScene extends AbstractScene {
     // Layer Definition
     private parallaxLayers: Array<ParallaxLayer>;
 
-    public init(framebuffer: Framebuffer): Promise<any> {
+    public init(): Promise<any> {
         return Promise.all([
             TextureUtils.load(require('../../assets/xenusion/BG_sky.png'), true).then(
                 (texture: Texture) => this.BG_sky = texture

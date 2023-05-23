@@ -1,11 +1,10 @@
 import { Framebuffer } from '../../Framebuffer';
-import { Matrix4f, Vector3f, Vector4f } from '../../math';
+import { Matrix4f, Vector4f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { Vertex } from '../../Vertex';
 import { TextureCoordinate } from '../../TextureCoordinate';
-import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 
@@ -59,14 +58,14 @@ export class EnvironmentMappingScene extends AbstractScene {
         framebuffer.wBuffer.fill(100);
       
 
-        let result = plane;
+        const result = plane;
 
         elapsedTime *= 0.2;
-        let scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
+        const scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
         for (let i = 0; i < result.points.length; i++) {
-            let y = result.points[i].y - 30;
-            let x = result.points[i].x - 50;
-            let length = Math.sqrt(x * x + y * y);
+            const y = result.points[i].y - 30;
+            const x = result.points[i].x - 50;
+            const length = Math.sqrt(x * x + y * y);
             result.points2[i].y = result.points[i].y;
             result.points2[i].x = result.points[i].x;
             result.points2[i].z = result.points[i].z + (
@@ -80,21 +79,21 @@ export class EnvironmentMappingScene extends AbstractScene {
         }
         elapsedTime *= 5;
 
-        let points = result.points2;
-        let index = result.index;
-        let normals = result.normals;
+        const points = result.points2;
+        const index = result.index;
+        const normals = result.normals;
 
-        let norm: Vector4f = new Vector4f(0, 0, 0);
-        let norm2: Vector4f = new Vector4f(0, 0, 0);
-        let cross: Vector4f = new Vector4f(0, 0, 0);
+        const norm: Vector4f = new Vector4f(0, 0, 0);
+        const norm2: Vector4f = new Vector4f(0, 0, 0);
+        const cross: Vector4f = new Vector4f(0, 0, 0);
         for (let i = 0; i < index.length; i += 3) {
-            let v1: Vector4f = points[index[i]];
-            let v2: Vector4f = points[index[i + 1]];
-            let v3: Vector4f = points[index[i + 2]];
+            const v1: Vector4f = points[index[i]];
+            const v2: Vector4f = points[index[i + 1]];
+            const v3: Vector4f = points[index[i + 2]];
             norm.sub2(v2, v1);
             norm2.sub2(v3, v1);
             cross.cross2(norm, norm2);
-            let normal = cross;
+            const normal = cross;
             normals[index[i]].add2(normals[index[i]], normal);
             normals[index[i + 1]].add2(normals[index[i + 1]], normal);
             normals[index[i + 2]].add2(normals[index[i + 2]], normal);
@@ -109,7 +108,7 @@ export class EnvironmentMappingScene extends AbstractScene {
             normals[i].normalize2();
         }
 
-        let scale = 3.7;
+        const scale = 3.7;
 
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(Math.PI + Math.sin(elapsedTime * 3.75) * 0.25)
             .multiplyMatrix(Matrix4f.constructXRotationMatrix(Math.PI / 5 + Math.sin(elapsedTime * 3.25) * 0.35).multiplyMatrix(Matrix4f.constructTranslationMatrix(-50, -25
@@ -119,30 +118,30 @@ export class EnvironmentMappingScene extends AbstractScene {
             -200 + Math.sin(elapsedTime * 1.9) * 0)
             .multiplyMatrix(modelViewMartrix);
 
-        let points2: Array<Vector4f> = result.points2;
-        let normals2: Array<Vector4f> = result.normals2;
+        const points2: Array<Vector4f> = result.points2;
+        const normals2: Array<Vector4f> = result.normals2;
 
-        let normalMatrix = modelViewMartrix.computeNormalMatrix();
+        const normalMatrix = modelViewMartrix.computeNormalMatrix();
 
         for (let n = 0; n < normals.length; n++) {
             normalMatrix.multiplyHomArr(normals[n], normals2[n]);
         }
 
         for (let p = 0; p < points.length; p++) {
-            let transformed = modelViewMartrix.multiplyHom(points[p]);
+            const transformed = modelViewMartrix.multiplyHom(points[p]);
 
             points2[p].x = Math.round((framebuffer.width * 0.5) + (transformed.x / (-transformed.z * 0.0078)));
             points2[p].y = Math.round((framebuffer.height * 0.5) - (transformed.y / (-transformed.z * 0.0078)));
             points2[p].z = transformed.z;
         }
 
-        let vertex1 = new Vertex();
+        const vertex1 = new Vertex();
         vertex1.textureCoordinate = new TextureCoordinate();
-        let vertex2 = new Vertex();
+        const vertex2 = new Vertex();
         vertex2.textureCoordinate = new TextureCoordinate();
-        let vertex3 = new Vertex();
+        const vertex3 = new Vertex();
         vertex3.textureCoordinate = new TextureCoordinate();
-        let vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
+        const vertexArray = new Array<Vertex>(vertex1, vertex2, vertex3);
         for (let i = 0; i < index.length; i += 3) {
 
             // Only render triangles with CCW-ordered vertices
@@ -152,18 +151,18 @@ export class EnvironmentMappingScene extends AbstractScene {
             // 3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics,
             // p. 69. Morgan Kaufmann Publishers, United States.
             //
-            let v1 = points2[index[i]];
-            let n1 = normals2[index[i]];
+            const v1 = points2[index[i]];
+            const n1 = normals2[index[i]];
 
-            let v2 = points2[index[i + 1]];
-            let n2 = normals2[index[i + 1]];
+            const v2 = points2[index[i + 1]];
+            const n2 = normals2[index[i + 1]];
 
-            let v3 = points2[index[i + 2]];
-            let n3 = normals2[index[i + 2]];
+            const v3 = points2[index[i + 2]];
+            const n3 = normals2[index[i + 2]];
 
             if (framebuffer.isTriangleCCW(v1, v2, v3)) {
 
-                let color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
+                // const color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
 
                 vertexArray[0].projection = v1;
                 framebuffer.fakeSphere(n1, vertex1);

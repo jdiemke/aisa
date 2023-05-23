@@ -1,5 +1,4 @@
 import { Framebuffer } from '../../Framebuffer';
-import { Vector3f } from '../../math/Vector3f';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
@@ -50,9 +49,9 @@ export class LedTunnelScene extends AbstractScene {
      * @returns A value between 0 and 1
      */
     public getIntensity(x: number, y: number, elapsedTime: number): number {
-        let power = 2.0;
-        let distance = Math.pow(Math.pow((x - 40 / 2.0) * (x - 40 / 2.0),power) + Math.pow((y - 25 / 2.0) * (y - 25 / 2.0),power),1/(2*power));
-        let waveSum: number =  (Math.sin(distance+elapsedTime*0.005)+1)*0.5*(1-Math.min(distance*0.03, 1.0));
+        const power = 2.0;
+        const distance = Math.pow(Math.pow((x - 40 / 2.0) * (x - 40 / 2.0),power) + Math.pow((y - 25 / 2.0) * (y - 25 / 2.0),power),1/(2*power));
+        const waveSum: number =  (Math.sin(distance+elapsedTime*0.005)+1)*0.5*(1-Math.min(distance*0.03, 1.0));
        
         return waveSum;
     }

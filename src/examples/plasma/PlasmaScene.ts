@@ -1,6 +1,5 @@
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Vector3f } from '../../math';
 import { Color } from '../../core/Color';
 
 export class PlasmaScene extends AbstractScene {

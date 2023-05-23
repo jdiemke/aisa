@@ -5,7 +5,7 @@ import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { CubeScene } from '../cube/CubeScene';
 
-export class TitanEffectScene extends AbstractScene {
+export class MirrorScene extends AbstractScene {
 
     private hoodlumLogo: Texture;
     private blurred: Texture;
@@ -38,8 +38,6 @@ export class TitanEffectScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        // const time: number = Date.now() - this.startTime;
-        const elapsedTime: number = 0.004 * time;
 
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.atlantisBackground.texture);
 
@@ -61,7 +59,7 @@ export class TitanEffectScene extends AbstractScene {
                 dest += 320 + 160;
             }
     
-            let type = ((time / 1000)| 0) % 2;
+            const type = ((time / 1000)| 0) % 2;
             if (type == 0) {
 
             source = 0;
@@ -109,8 +107,8 @@ export class TitanEffectScene extends AbstractScene {
                 */
             for (let y = 0; y < 3; y++) {
                 for (let x = 0; x < 4; x++) {
-                    let xx = Math.round(320 / 4 * x + 320 / 4 * 0.5 - this.cross.width / 2);
-                    let yy = Math.round(200 / 3 * y + 200 / 3 * 0.5 - this.cross.height / 2);
+                    const xx = Math.round(320 / 4 * x + 320 / 4 * 0.5 - this.cross.width / 2);
+                    const yy = Math.round(200 / 3 * y + 200 / 3 * 0.5 - this.cross.height / 2);
     
                     framebuffer.drawTexture(xx, yy, this.cross, 0.45);
                 }

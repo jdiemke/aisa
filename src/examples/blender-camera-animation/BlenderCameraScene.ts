@@ -10,7 +10,6 @@ import { PointLight } from '../../shading/light/PointLight';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 
-import CameraPathFile from '../../assets/camera-path.jsx';
 import { BlenderCameraAnimator } from '../../animation/BlenderCameraAnimator';
 import { SkyBox } from '../../SkyBox';
 import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';

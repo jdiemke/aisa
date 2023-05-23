@@ -4,7 +4,7 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 
-export class TitanEffectScene extends AbstractScene {
+export class TextZoomScene extends AbstractScene {
 
     private hoodlumLogo: Texture;
     private blurred: Texture;
@@ -54,10 +54,10 @@ export class TitanEffectScene extends AbstractScene {
                 200 / 2 - 60,
                 this.micro.width, this.micro.height, this.micro);
 
-            let tmpGlitch = new Uint32Array(320 * 200);
+            const tmpGlitch = new Uint32Array(320 * 200);
             framebuffer.fastFramebufferCopy(tmpGlitch, framebuffer.framebuffer);
 
-            let texture = new Texture();
+            const texture = new Texture();
             texture.texture = tmpGlitch;
             texture.width = 320;
             texture.height = 200;
@@ -67,8 +67,8 @@ export class TitanEffectScene extends AbstractScene {
             const smashTime = (Date.now() - this.start) % ukBasslineClapMs;
             const smash = (Interpolator.cosineInterpolate(0, 20, smashTime) -
             Interpolator.cosineInterpolate(20, 300, smashTime)) * 35;
-            let width = Math.round(320 + smash * 320 / 50);
-            let height = Math.round(200 + smash * 200 / 50);
+            const width = Math.round(320 + smash * 320 / 50);
+            const height = Math.round(200 + smash * 200 / 50);
 
             // slow
             framebuffer.drawScaledTextureClipBi(

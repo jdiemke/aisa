@@ -1,14 +1,13 @@
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { Matrix4f, Vector3f, Vector4f } from '../../math';
+import { Matrix4f, Vector4f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { TextureCoordinate } from '../../TextureCoordinate';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
-import { Color } from '../../core/Color';
 
-export class TexturedTorusScene extends AbstractScene {
+export class TexturedCubeScene extends AbstractScene {
 
     private texture: Texture;
     private blurred: Texture;
@@ -33,12 +32,7 @@ export class TexturedTorusScene extends AbstractScene {
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
 
-        const framebuffer2 = new Framebuffer(128,128);
-        this.drawOldSchoolPlasma(framebuffer2, Date.now() * 0.8);
         framebuffer.setTexture(this.texture);
-        const tex2 = new Texture(framebuffer2.framebuffer, 128,128);
-        tex2.setClamp(true);
-        framebuffer.setTexture(tex2);
         this.shadingTorus4(framebuffer, time * 0.004);
     }
 
@@ -59,31 +53,6 @@ export class TexturedTorusScene extends AbstractScene {
 
         this.texturedRenderingPipleine.setModelViewMatrix(modelViewMartrix);
         this.texturedRenderingPipleine.draw(framebuffer, this.cubeMesh);
-    }
-
-    public drawOldSchoolPlasma(framebuffer: Framebuffer, elapsedTime: number) {
-        const time = elapsedTime * 0.0007 * 1.0;
-        const lineDirection = new Vector3f(Math.sin(time), Math.cos(time), 0);
-        const radialWaveCenter = new Vector3f(470.0 / 2.0, 230.0 / 2.0, 0).add(new Vector3f(470.0 / 2.0 *
-            Math.sin(-time), 230.0 / 2.0 * Math.cos(-time), 0));
-
-        const difference = new Vector3f(0, 0, 0);
-        let index = 0;
-        for (let y = 0; y < framebuffer.height; y++) {
-            for (let x = 0; x < framebuffer.width; x++) {
-                const directionalWave = Math.sin(((x * lineDirection.x + y * lineDirection.y) * 0.04 + time) + 1.0) * 0.5;
-                difference.x = x - radialWaveCenter.x;
-                difference.y = y - radialWaveCenter.y;
-                const radialWave = (Math.cos(difference.length() * 0.06) + 1.0) * 0.5;
-                const waveSum: number = (radialWave + directionalWave) * 0.5;
-
-                const red = (Math.cos(Math.PI * waveSum / 0.5 + time) + 1.0) * 0.5 * 255;
-                const green = (Math.sin(Math.PI * waveSum / 0.5 + time) + 1.0) * 0.5 * 255;
-                const blue = (Math.sin(time) + 1.0) * 0.5 * 255;
-
-                framebuffer.framebuffer[index++] = 255 << 24 | blue << 16 | green << 8 | red;
-            }
-        }
     }
 
     private computeTexturedCubeMesh(): TexturedMesh {

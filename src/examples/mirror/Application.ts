@@ -1,10 +1,10 @@
 import { Canvas } from '../../Canvas';
-import { TitanEffectScene } from './TitanEffectScene';
+import { MirrorScene } from './MirrorScene';
 
 class Application {
 
     public static main(): void {
-        const canvas: Canvas = new Canvas(320, 200, new TitanEffectScene());
+        const canvas: Canvas = new Canvas(320, 200, new MirrorScene());
         canvas.init();
     }
 
