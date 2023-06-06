@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { BumpMap } from './BumpMap';
 
+import './../../default-style.css';
+
 class Application {
 
     public static main(): void {

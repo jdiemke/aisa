@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { MetalHeadzScene } from './MetalHeadzScene';
 
+import './../../default-style.css';
+
 class Application {
 
     public main(): void {

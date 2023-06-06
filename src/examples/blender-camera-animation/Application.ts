@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { BlenderCameraScene } from './BlenderCameraScene';
 
+import './../../default-style.css';
+
 class Application {
 
     public main(): void {

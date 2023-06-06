@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { Md2ModelScene } from './Md2ModelScene';
 
+import './../../default-style.css';
+
 class Application {
 
     public main(): void {

@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { FrustumCullingScene } from './FrustumCullingScene';
 
+import './../../default-style.css';
+
 class Application {
 
     public static main(): void {

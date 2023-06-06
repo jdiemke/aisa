@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { EnvironmentMappingScene } from './EnvironmentMappingTorusScene';
 
+import './../../default-style.css';
+
 class Application {
 
     public static main(): void {

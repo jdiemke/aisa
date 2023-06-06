@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { DistortedSphereScene } from './DistortedSphereScene';
 
+import './../../default-style.css';
+
 class Application {
 
     public static main(): void {

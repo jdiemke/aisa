@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { MovingTorusScene } from './MovingTorusScene';
 
+import './../../default-style.css';
+
 class Application {
 
     public static main(): void {

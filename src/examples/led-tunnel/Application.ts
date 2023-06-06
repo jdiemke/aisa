@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { LedTunnelScene } from './LedTunnelScene';
 
+import './../../default-style.css';
+
 class Application {
 
     public static main(): void {

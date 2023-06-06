@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { BilinearZoom } from './BilinearZoom';
 
+import './../../default-style.css';
+
 class Application {
 
     public static main(): void {

@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { PortalScene } from './PortalScene';
 
+import './../../default-style.css';
+
 class Application {
 
     public main(): void {

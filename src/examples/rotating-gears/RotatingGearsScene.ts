@@ -7,6 +7,9 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { BlenderLoader } from '../../model/blender/BlenderLoader';
 import { FontRenderer } from '../sine-scroller/FontRenderer';
+import { SoundManager } from '../../sound/SoundManager';
+
+import './style.css';
 
 export class RotatingGearsScene extends AbstractScene {
 
@@ -19,6 +22,7 @@ export class RotatingGearsScene extends AbstractScene {
 
     private accumulationBuffer: Uint32Array;
     private renderingPipeline: GouraudShadingRenderingPipeline;
+    private soundManager: SoundManager = new SoundManager();
     fontRenderer: FontRenderer;
 
     public init(framebuffer: Framebuffer): Promise<any> {
@@ -35,6 +39,7 @@ export class RotatingGearsScene extends AbstractScene {
     );
         return Promise.all([
             this.fontRenderer.init(),
+            this.soundManager.loadMusic(require("../../assets/music/ctrix_-_rok_at_party.mod")),
             BlenderLoader.load(require('../../assets/jsx/gear.jsx')).then(
                 (mesh: Array<FlatshadedMesh>) => this.gearsMesh = mesh
             ),
@@ -51,6 +56,17 @@ export class RotatingGearsScene extends AbstractScene {
                 (texture: Texture) => this.robot = texture
             )
         ]);
+    }
+
+    public onInit(): void {
+        const button: HTMLButtonElement = document.createElement("button");
+        button.textContent = "Start Music";
+        document.getElementsByTagName("body")[0].appendChild(button);
+        button.addEventListener ("click", ()=> {
+
+            this.soundManager.onPause();
+            this.soundManager.onPlay()
+        });
     }
 
     public render(framebuffer: Framebuffer): void {

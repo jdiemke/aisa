@@ -1,6 +1,7 @@
 import { Canvas } from '../../Canvas';
 import { FeedbackRadialBlur } from './FeedbackRadialBlur';
 
+import './../../default-style.css';
 
 class Application {
 

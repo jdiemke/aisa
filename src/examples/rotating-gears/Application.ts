@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { RotatingGearsScene } from './RotatingGearsScene';
 
+import './../../default-style.css';
+
 class Application {
 
     public static main(): void {

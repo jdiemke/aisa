@@ -17,8 +17,8 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
     private vertexArray: Array<Vertex> = new Array<Vertex>(
         new Vertex(), new Vertex(), new Vertex()
     );
-    setSphereMapping(arg0: boolean) {
-        this.sphereMapping = arg0;
+    setSphereMapping(sphereMapping: boolean) {
+        this.sphereMapping = sphereMapping;
     }
 
     private modelViewMatrix: Matrix4f;
@@ -104,7 +104,6 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
                         this.vertexArray[2].textureCoordinate = mesh.uv[mesh.faces[i].uv[2]];
                     }
 
-
                     this.clipConvexPolygon(framebuffer, this.vertexArray);
                 }
             } else if (!this.isInFrontOfNearPlane(v1) &&
@@ -126,21 +125,13 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
         }
     }
 
-    public project(t1: { x: number, y: number, z: number }): Vector4f {
-        return new Vector4f(
-            Math.round((this.framebuffer.width / 2) + (292 * t1.x / (-t1.z))),
-            Math.round((this.framebuffer.height / 2) - (t1.y * 292 / (-t1.z))),
-            t1.z
-        );
-    }
-
     public project2(t1: { x: number, y: number, z: number }, result: Vector4f): void {
         result.x = Math.round((this.framebuffer.width / 2) + (292 * t1.x / (-t1.z)));
         result.y = Math.round((this.framebuffer.height / 2) - (t1.y * 292 / (-t1.z)));
         result.z = t1.z;
     }
 
-    public computeNearPlaneIntersection2(p1: Vertex, p2: Vertex): Vertex {
+    public computeNearPlaneIntersection(p1: Vertex, p2: Vertex): Vertex {
         const ratio: number = (this.NEAR_PLANE_Z - p1.position.z) / (p2.position.z - p1.position.z);
         const vertex: Vertex = new Vertex();
 
@@ -167,11 +158,11 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
             const point: Vertex = input[i];
             if (this.isInFrontOfNearPlane(point.position)) {
                 if (!this.isInFrontOfNearPlane(S.position)) {
-                    output.push(this.computeNearPlaneIntersection2(S, point));
+                    output.push(this.computeNearPlaneIntersection(S, point));
                 }
                 output.push(point);
             } else if (this.isInFrontOfNearPlane(S.position)) {
-                output.push(this.computeNearPlaneIntersection2(S, point));
+                output.push(this.computeNearPlaneIntersection(S, point));
             }
             S = point;
         }
@@ -181,7 +172,7 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
         }
 
         for (let j: number = 0; j < output.length; j++) {
-            output[j].projection = this.project(output[j].position);
+            this.project2(output[j].position, output[j].projection);
         }
 
         if (output.length === 3 &&
