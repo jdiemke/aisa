@@ -390,15 +390,15 @@ export class Framebuffer {
         const r1 = (c1 >> 16) & 0xFF;
         const g1 = (c1 >>  8) & 0xFF;
         const b1 =  c1        & 0xFF;
-        
+
         const r2 = (c2 >> 16) & 0xFF;
         const g2 = (c2 >>  8) & 0xFF;
         const b2 =  c2        & 0xFF;
-        
+
         const r = r1 + r2 < 0xFF ? r1 + r2 : 0xFF;
         const g = g1 + g2 < 0xFF ? g1 + g2 : 0xFF;
         const b = b1 + b2 < 0xFF ? b1 + b2 : 0xFF;
-        
+
         return (0xFF << 24 | r << 16 | g << 8 | b);
       }
 
@@ -700,7 +700,7 @@ export class Framebuffer {
 
     public drawParticle2Sub(
         xp: number, yp: number, width: number, height: number, texture: Texture, z: number, alphaBlend: number,
-        imgNum: number = 0, spritH: number): void {
+        imgNum: number = 0, spritH: number, rr:number=1,gg:number=1,bb:number=1) : void {
         const xStep = texture.width / width;
         const yStep = spritH / height;
         let xx = 0;
@@ -720,7 +720,7 @@ export class Framebuffer {
 
         if (yp < 0) {
             yy = yStep * -yp;
-            newHeight = (height + yp) - Math.max(yp + height - (this.height - 1), 0);
+            newHeight = (height + yp) - Math.max(yp + height - (this.height), 0);
             yStart = 0;
         } else {
             yStart = yp;
@@ -731,7 +731,7 @@ export class Framebuffer {
 
         if (xp < 0) {
             xTextureStart = xx = xStep * -xp;
-            newWidth = Math.ceil((width + xp) - Math.max(xp + width - (this.width - 1), 0));
+            newWidth = Math.ceil((width + xp) - Math.max(xp + width - (this.width), 0));
             xStart = 0;
         } else {
             xTextureStart = 0;
@@ -757,9 +757,9 @@ export class Framebuffer {
                     const inverseAlpha = 1 - alpha;
                     const framebufferPixel = this.framebuffer[index2];
                     const texturePixel = texture.texture[textureIndex];
-                    const r = (framebufferPixel >> 0 & 0xff) * inverseAlpha + (texturePixel >> 0 & 0xff) * alpha;
-                    const g = (framebufferPixel >> 8 & 0xff) * inverseAlpha + (texturePixel >> 8 & 0xff) * alpha;
-                    const b = (framebufferPixel >> 16 & 0xff) * inverseAlpha + (texturePixel >> 16 & 0xff) * alpha;
+                    const r = (framebufferPixel >> 0 & 0xff) * inverseAlpha + (texturePixel >> 0 & 0xff) * alpha*rr;
+                    const g = (framebufferPixel >> 8 & 0xff) * inverseAlpha + (texturePixel >> 8 & 0xff) * alpha*gg;
+                    const b = (framebufferPixel >> 16 & 0xff) * inverseAlpha + (texturePixel >> 16 & 0xff) * alpha*bb;
                     this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
                 }
                 xx += xStep;
@@ -1243,8 +1243,6 @@ export class Framebuffer {
             Math.round((this.height / 2) - (t1.y * 292 / (-t1.z))),
             t1.z);
     }
-
-
 
     public clearDepthBuffer(): void {
         this.wBuffer.fill(-1 / 900);

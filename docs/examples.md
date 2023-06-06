@@ -83,3 +83,4 @@
 * [Wavefront with Texture 4](https://jdiemke.github.io/aisa/wavefront-texture4.html)
 * [Particle Waves](https://jdiemke.github.io/aisa/particle-waves.html)
 * [Bilinear Zoom](https://jdiemke.github.io/aisa/bilinear-zoom.html)
+* [Particle Scroller](https://jdiemke.github.io/aisa/particle-scroller.html)

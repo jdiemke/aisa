@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { PixelEffectScene } from './PixelEffectScene';
 
+import './../../default-style.css';
+
 class Application {
 
     public static main(): void {

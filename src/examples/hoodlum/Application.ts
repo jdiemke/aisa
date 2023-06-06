@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { HoodlumScene } from './HoodlumScene';
 
+import './../../default-style.css';
+
 class Application {
 
     public static main(): void {

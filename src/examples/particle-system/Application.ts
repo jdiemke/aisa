@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { ParticleSystemScene } from './ParticleSystemScene';
 
+import './../../default-style.css';
+
 class Application {
 
     public static main(): void {

@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { Gears2Scene } from './Gears2Scene';
 
+import './../../default-style.css';
+
 class Application {
 
     public static main(): void {

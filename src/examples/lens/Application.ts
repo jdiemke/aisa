@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { LensScene } from './LensScene';
 
+import './../../default-style.css';
+
 class Application {
 
     public static main(): void {

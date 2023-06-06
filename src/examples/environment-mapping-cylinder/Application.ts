@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { EnvironmentMappingCylinderScene } from './EnvironmentMappingCylinderScene';
 
+import './../../default-style.css';
+
 class Application {
 
     public static main(): void {

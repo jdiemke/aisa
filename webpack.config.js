@@ -10,7 +10,7 @@ module.exports = {
             directory: path.join(__dirname, './dist'),
         },
         compress: true,
-        port: 8080,
+        port: 9000,
         client: {
             progress: true,
         },
@@ -34,6 +34,10 @@ module.exports = {
             {
                 test: /\.ts$/,
                 use: 'ts-loader'
+            },
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader'],
             },
             {
                 test: /\.(png|jpg|mp3|ogg|md2|mdl|tga|xm|obj|rocket|jsx|mod|s3m|it|mptm)$/,

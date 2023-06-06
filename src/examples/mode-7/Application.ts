@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { Mode7Scene } from './Mode7Scene';
 
+import './../../default-style.css';
+
 class Application {
 
     public static main(): void {

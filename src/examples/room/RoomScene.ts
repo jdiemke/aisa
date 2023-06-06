@@ -8,6 +8,9 @@ import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 import { LensFlare } from '../../special-effects/LensFlare';
 import { Interpolator } from '../../math/Interpolator';
+import { SoundManager } from '../../sound/SoundManager';
+
+import './style.css';
 
 export class RoomScene extends AbstractScene {
 
@@ -20,6 +23,7 @@ export class RoomScene extends AbstractScene {
     private blenderObj4: Array<FlatshadedMesh>;
     private blenderObj5: Array<FlatshadedMesh>;
     private renderingPipeline: GouraudShadingRenderingPipeline;
+    private soundManager: SoundManager = new SoundManager();
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
@@ -27,6 +31,8 @@ export class RoomScene extends AbstractScene {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
 
         return Promise.all([
+            this.soundManager.loadMusic(require("../../assets/music/K303XPRS.xm")),
+            //"../../assets/music/keith303_-_into_the_unknown.xm")),
             BlenderLoader.load(require('../../assets/jsx/room.jsx')).then(
                 (mesh: Array<FlatshadedMesh>) => this.blenderObj4 = mesh
             ),
@@ -39,6 +45,13 @@ export class RoomScene extends AbstractScene {
             TextureUtils.load(require('../../assets/bokeh.png'), true).then(texture => this.texture13 = texture),
             TextureUtils.load(require('../../assets/dirt.png'), true).then(texture => this.dirt = texture)
         ]);
+    }
+
+    public onInit(): void {
+        const button: HTMLButtonElement = document.createElement("button");
+        button.textContent = "Start Music";
+        document.getElementsByTagName("body")[0].appendChild(button);
+        button.addEventListener ("click", ()=> this.soundManager.onPlay());
     }
 
     public render(framebuffer: Framebuffer): void {
@@ -108,7 +121,6 @@ export class RoomScene extends AbstractScene {
                 this.renderingPipeline.setMaterial(mat3);
                 this.renderingPipeline.draw(framebuffer, model, mv);
             }
-
         }
 
         mv = camera.multiplyMatrix(
@@ -116,7 +128,6 @@ export class RoomScene extends AbstractScene {
                 Matrix4f.constructXRotationMatrix(
                     Math.PI * 2 * Interpolator.cosineInterpolate(0, 1300, Math.floor(elapsedTime * 0.7) % 4000)))
             ));
-
 
         const mat4: Material = new Material();
         mat4.ambientColor = new Vector4f(0.0, 0.0, 0.0, 0);

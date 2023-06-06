@@ -21,7 +21,7 @@ import Stats = require('stats.js');
 // Video Recording Tool
 import { CanvasRecorder } from './canvas-record';
 
-export class DemoScene {
+export class DemoScene extends AbstractScene {
 
     // Sound Manager
     private soundManager: SoundManager;

@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { FloodFillScene } from './FloodFillScene';
 
+import './../../default-style.css';
+
 class Application {
 
     public static main(): void {

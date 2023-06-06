@@ -1,6 +1,7 @@
 import { Canvas } from '../../Canvas';
 import { RadialBlur } from './RadialBlur';
 
+import './../../default-style.css';
 
 class Application {
 

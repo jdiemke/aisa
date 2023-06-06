@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { FireScene } from './FireScene';
 
+import './../../default-style.css';
+
 class Application {
 
     public static main(): void {

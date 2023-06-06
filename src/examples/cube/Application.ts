@@ -1,6 +1,8 @@
 import { Canvas } from '../../Canvas';
 import { CubeScene } from './CubeScene';
 
+import './../../default-style.css';
+
 class Application {
 
     public static main(): void {
