@@ -88,6 +88,7 @@ const examples = [
     new Example('particle-waves'),
     new Example('bilinear-zoom'),
     new Example('particle-scroller'),
+    new Example('texture-trick'),
 ];
 
 module.exports = examples;
