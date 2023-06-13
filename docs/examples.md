@@ -84,3 +84,6 @@
 * [Particle Waves](https://jdiemke.github.io/aisa/particle-waves.html)
 * [Bilinear Zoom](https://jdiemke.github.io/aisa/bilinear-zoom.html)
 * [Particle Scroller](https://jdiemke.github.io/aisa/particle-scroller.html)
+* [Texture Trick](https://jdiemke.github.io/aisa/texture-trick.html)
+* [Texture Effect](https://jdiemke.github.io/aisa/texture-effect.html)
+

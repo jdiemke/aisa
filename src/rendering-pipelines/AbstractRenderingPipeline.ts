@@ -39,11 +39,14 @@ export class AbstractRenderingPipeline {
     public isTriangleCCW(v1: { x: number, y: number, z: number },
         v2: { x: number, y: number, z: number },
         v3: { x: number, y: number, z: number }): boolean {
+        if (this.cullMode == CullFace.DISABLED) {
+            return true;
+        }
         const det: number =
             v1.x * v2.y - v2.x * v1.y +
             v2.x * v3.y - v3.x * v2.y +
             v3.x * v1.y - v1.x * v3.y;
-        if (this.cullMode === CullFace.BACK) {
+        if (this.cullMode == CullFace.BACK) {
             return det < 0.0;
         } else {
             return det > 0.0;
@@ -54,6 +57,9 @@ export class AbstractRenderingPipeline {
         v2: { x: number, y: number, z: number },
         v3: { x: number, y: number, z: number },
         v4: { x: number, y: number, z: number }): boolean {
+            if (this.cullMode == CullFace.DISABLED) {
+                return true;
+            }
         const det: number =
             v1.x * v2.y - v2.x * v1.y +
             v2.x * v3.y - v3.x * v2.y +

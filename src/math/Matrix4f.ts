@@ -386,6 +386,34 @@ export class Matrix4f {
         this.m44 = 1.0;
     }
 
+
+    public setRotationMatrix(x: number,y: number,z: number, alpha: number): void {
+        const c = Math.cos(Math.PI * 2 *alpha / 360 );
+        const s = Math.sin(Math.PI * 2 *alpha / 360 );
+        const vector = new Vector3f(x,y,z);
+        vector.normalize2();
+
+        this.m11 = (1.0 - c) * vector.x * vector.x + c;
+        this.m12 = (1.0 - c) * vector.x * vector.y - s * vector.z;
+        this.m13 = (1.0 - c) * vector.x * vector.z + s * vector.y;
+        this.m14 = 0.0;
+
+        this.m21 = (1.0 - c) * vector.x * vector.y + s * vector.z;
+        this.m22 = (1.0 - c) * vector.y * vector.y + c;
+        this.m23 = (1.0 - c) * vector.y * vector.z - s * vector.x;
+        this.m24 = 0.0;
+
+        this.m31 = (1.0 - c) * vector.x * vector.z - s * vector.y;
+        this.m32 = (1.0 - c) * vector.y * vector.z + s * vector.x;
+        this.m33 = (1.0 - c) * vector.z * vector.z + c;
+        this.m34 = 0.0;
+
+        this.m41 = 0.0;
+        this.m42 = 0.0;
+        this.m43 = 0.0;
+        this.m44 = 1.0;
+    }
+
     static constructYRotationMatrix(alpha: number): Matrix4f {
         const matrix: Matrix4f = new Matrix4f();
 

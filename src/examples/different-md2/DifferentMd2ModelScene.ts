@@ -66,7 +66,7 @@ export class DifferentMd2ModelScene extends AbstractScene {
 
     private computeCameraMovement(elapsedTime: number): void {
         this.modelViewMatrix.setIdentity();
-        this.modelViewMatrix.trans(0, 0, -120 + (Math.sin(elapsedTime * 0.0007) * 0.5 + 0.5) * 87);
+        this.modelViewMatrix.translate(0, 0, -120 + (Math.sin(elapsedTime * 0.0007) * 0.5 + 0.5) * 87);
         this.modelViewMatrix.yRotate(-elapsedTime * 0.006);
         this.modelViewMatrix.xRotate(Math.PI * 2 / 360 * -90);
     }

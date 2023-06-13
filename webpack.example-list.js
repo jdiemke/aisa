@@ -89,6 +89,7 @@ const examples = [
     new Example('bilinear-zoom'),
     new Example('particle-scroller'),
     new Example('texture-trick'),
+    new Example('texture-effect'),
 ];
 
 module.exports = examples;

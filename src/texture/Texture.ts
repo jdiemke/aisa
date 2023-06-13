@@ -1,5 +1,5 @@
 export class Texture {
- 
+
 
     public texture: Uint32Array;
     public width: number;
@@ -47,7 +47,7 @@ export class Texture {
         let x1 = (x | 0) + 1;
         let y0 = y | 0;
         let y1 = (y | 0) + 1;
-   
+
         if (this.clamp) {
              x0 = Math.max(Math.min(x0, this.width - 1), 0);
              x1 = Math.max(Math.min(x1, this.width - 1), 0);
@@ -60,7 +60,7 @@ export class Texture {
         const x1y0 = this.getPixel2(this, x1, y0);
         const x0y1 = this.getPixel2(this, x0, y1);
         const x1y1 = this.getPixel2(this, x1, y1);
-        
+
         return this.interpolateComp(x, y, x0y0 & 0xff, x1y0 & 0xff, x0y1 & 0xff, x1y1 & 0xff)|
             this.interpolateComp(x, y, x0y0 >> 8 & 0xff, x1y0 >> 8 & 0xff, x0y1 >> 8 & 0xff, x1y1 >> 8 & 0xff) << 8 |
            this.interpolateComp(x, y, x0y0 >> 16 & 0xff, x1y0 >> 16 & 0xff, x0y1 >> 16 & 0xff, x1y1 >> 16 & 0xff) << 16
@@ -79,9 +79,9 @@ export class Texture {
         let x1 = (x | 0) + 1;
         let y0 = y | 0;
         let y1 = (y | 0) + 1;
-   
+
         let x0y0: number;
-        let x1y0: number; 
+        let x1y0: number;
         let x0y1: number;
         let x1y1: number;
 
@@ -125,7 +125,7 @@ export class Texture {
         const x1y0_r = x1y0 & 0xff;
         const x0y1_r = x0y1 & 0xff;
         const x1y1_r = x1y1 & 0xff;
-        
+
         const col1_r = x0y0_r * oneMinusXfrac + x1y0_r * xFrac;
         const col2_r = x0y1_r * oneMinusXfrac + x1y1_r * xFrac;
         const col_r = col1_r * oneMinusYfrac + (col2_r * yFrac);
@@ -134,7 +134,7 @@ export class Texture {
         const x1y0_g = x1y0 >> 8 & 0xff;
         const x0y1_g = x0y1 >> 8 & 0xff;
         const x1y1_g = x1y1 >> 8 & 0xff;
-        
+
         const col1_g = x0y0_g * oneMinusXfrac + x1y0_g * xFrac;
         const col2_g = x0y1_g * oneMinusXfrac + x1y1_g * xFrac;
         const col_g = col1_g * oneMinusYfrac + (col2_g * yFrac);
@@ -143,12 +143,21 @@ export class Texture {
         const x1y0_b = x1y0 >> 16 & 0xff;
         const x0y1_b = x0y1 >> 16 & 0xff;
         const x1y1_b = x1y1 >> 16 & 0xff;
-        
+
         const col1_b = x0y0_b * oneMinusXfrac + x1y0_b * xFrac;
         const col2_b = x0y1_b * oneMinusXfrac + x1y1_b * xFrac;
         const col_b = col1_b * oneMinusYfrac + (col2_b * yFrac);
 
-        return col_r | col_g << 8 | col_b << 16 | 255 << 24;
+        const x0y0_a = x0y0 >> 24 & 0xff;
+        const x1y0_a = x1y0 >> 24 & 0xff;
+        const x0y1_a = x0y1 >> 24 & 0xff;
+        const x1y1_a = x1y1 >> 24 & 0xff;
+
+        const col1_a = x0y0_a * oneMinusXfrac + x1y0_a * xFrac;
+        const col2_a = x0y1_a * oneMinusXfrac + x1y1_a * xFrac;
+        const col_a = col1_a * oneMinusYfrac + (col2_a * yFrac);
+
+        return col_r | col_g << 8 | col_b << 16 | col_a << 24;
     }
 
 }
