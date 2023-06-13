@@ -30,7 +30,7 @@ export class ModelViewMatrix {
         this.currtentMatrix = this.currtentMatrix.multiplyMatrix(mat);
     }
 
-    public trans(x: number, y: number, z: number): void {
+    public translate(x: number, y: number, z: number): void {
         this.transformation.setTranslationMatrix(x, y, z);
         this.applyMat();
     }
@@ -52,6 +52,11 @@ export class ModelViewMatrix {
 
     public yRotate(x: number): void {
         this.transformation.setYRotationMatrix(x);
+        this.applyMat();
+    }
+
+    public rotate(x,y,z, angle: number): void {
+        this.transformation.setRotationMatrix(x,y,z,angle);
         this.applyMat();
     }
 

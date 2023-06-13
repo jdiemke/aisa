@@ -233,7 +233,7 @@ export class ThirdPersonCameraScene extends AbstractScene {
 
 
 
-        this.modelViewMatrix.trans(0, 0.1, 0);
+        this.modelViewMatrix.translate(0, 0.1, 0);
 
         this.computeGlowMovement(delta);
         framebuffer.setTexture(this.glow);
@@ -249,7 +249,7 @@ export class ThirdPersonCameraScene extends AbstractScene {
 
         this.modelViewMatrix.setIdentity();
         this.modelViewMatrix.multMatrix(this.getCamMatrix(delta));
-        this.modelViewMatrix.trans(0, 24 * 0.05, 0);
+        this.modelViewMatrix.translate(0, 24 * 0.05, 0);
         this.modelViewMatrix.yRotate(Math.PI * 2 / 360 * (90 + 0));
         this.modelViewMatrix.xRotate(Math.PI * 2 / 360 * -90);
         this.modelViewMatrix.scal(0.05, 0.05, 0.05);
@@ -281,7 +281,7 @@ export class ThirdPersonCameraScene extends AbstractScene {
     private computeFloorMovement(elapsedTime: number): void {
         this.modelViewMatrix.setIdentity();
         this.modelViewMatrix.multMatrix(this.getCamMatrix(elapsedTime));
-        this.modelViewMatrix.trans(0, 0, 0);
+        this.modelViewMatrix.translate(0, 0, 0);
         this.modelViewMatrix.yRotate(Math.PI * 2 / 360 * 90);
         //  this.modelViewMatrix.xRotate(Math.PI * 2 / 360 * -90);
     }
@@ -304,7 +304,7 @@ export class ThirdPersonCameraScene extends AbstractScene {
         // http://cubeengine.com/wiki/Importing_md2_and_md3_files
         this.modelViewMatrix.setIdentity();
         this.modelViewMatrix.multMatrix(this.getCamMatrix(elapsedTime));
-        this.modelViewMatrix.trans(this.player.position.x, 24 * 0.05, this.player.position.y);
+        this.modelViewMatrix.translate(this.player.position.x, 24 * 0.05, this.player.position.y);
         this.modelViewMatrix.yRotate(Math.PI * 2 / 360 * (90 + this.player.angle));
         this.modelViewMatrix.xRotate(Math.PI * 2 / 360 * -90);
         this.modelViewMatrix.scal(0.05, 0.05, 0.05);
@@ -314,7 +314,7 @@ export class ThirdPersonCameraScene extends AbstractScene {
         // http://cubeengine.com/wiki/Importing_md2_and_md3_files
         this.modelViewMatrix.setIdentity();
         this.modelViewMatrix.multMatrix(this.getCamMatrix(delta));
-        this.modelViewMatrix.trans(this.player.position.x, 0.03, this.player.position.y);
+        this.modelViewMatrix.translate(this.player.position.x, 0.03, this.player.position.y);
         const scale: number = 0.85;
         this.modelViewMatrix.scal(0.06 * scale, 0.06 * scale, 0.06 * scale);
         this.texturedRenderingPipeline.setAlpha(0.70);
