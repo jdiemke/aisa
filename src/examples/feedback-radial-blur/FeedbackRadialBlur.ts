@@ -21,7 +21,7 @@ export class FeedbackRadialBlur extends AbstractScene {
         this.applyRadialBlur(framebuffer, time);
     }
 
-    private applyRadialBlur(framebuffer: Framebuffer, time: number): void {
+    public applyRadialBlur(framebuffer: Framebuffer, time: number): void {
         const texture: Texture = new Texture();
 
         texture.texture = this.accumulationBuffer;

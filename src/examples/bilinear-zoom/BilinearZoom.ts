@@ -9,6 +9,7 @@ export class BilinearZoom extends AbstractScene {
     public init(framebuffer: Framebuffer): Promise<any> {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         return Promise.all([
+
             TextureUtils.load(require('../../assets/atlantis.png'), false).then(texture => this.texture5 = texture),
         ]);
     }
