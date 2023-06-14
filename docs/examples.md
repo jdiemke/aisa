@@ -86,4 +86,6 @@
 * [Particle Scroller](https://jdiemke.github.io/aisa/particle-scroller.html)
 * [Texture Trick](https://jdiemke.github.io/aisa/texture-trick.html)
 * [Texture Effect](https://jdiemke.github.io/aisa/texture-effect.html)
+* [Endless Zoom](https://jdiemke.github.io/aisa/endless-zoom.html)
+
 

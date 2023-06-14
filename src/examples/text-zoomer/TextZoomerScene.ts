@@ -21,7 +21,10 @@ export class TextZoomerScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer, time: number): void {
         framebuffer.clearColorBuffer(Color.BLACK.toPackedFormat());
-        framebuffer.noise(time, this.noise, 0.3);
+        this.effect(framebuffer, time, 0.3);
+    }
+    public effect(framebuffer: Framebuffer, time: number, noise: number) {
+        framebuffer.noise(time, this.noise, noise);
         time *= .3;
         const count = (time * 0.0018);
         const index = (count | 0) % 100;
@@ -44,5 +47,4 @@ export class TextZoomerScene extends AbstractScene {
             Math.round(ypos - height / 2),
             width, height, this.micro, alpha);
     }
-
 }
