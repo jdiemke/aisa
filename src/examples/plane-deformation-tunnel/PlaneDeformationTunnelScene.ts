@@ -9,7 +9,7 @@ export class PlaneDeformationTunnelScene extends AbstractScene {
 
     private hoodlumLogo: Texture;
     private scaleClipBlitter: ScaleClipBlitter;
-    private PlaneDeformationScene: PlaneDeformationScene;
+    public PlaneDeformationScene: PlaneDeformationScene;
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.scaleClipBlitter = new ScaleClipBlitter(framebuffer);
