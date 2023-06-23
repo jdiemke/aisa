@@ -79,7 +79,7 @@ export class TextureUtils {
         });
     }
 
-    public static load(filename: any, transparency: boolean): Promise<Texture> {
+    public static load(filename: string, transparency: boolean): Promise<Texture> {
         return new Promise<Texture>((resolve: (texture?: Texture) => void): void => {
             const image: HTMLImageElement = new Image();
             image.onload = (): void => {

@@ -91,6 +91,8 @@ const examples = [
     new Example('texture-trick'),
     new Example('texture-effect'),
     new Example('endless-zoom'),
+    new Example('domain-warping'),
+    new Example('shrooms'),
 ];
 
 module.exports = examples;

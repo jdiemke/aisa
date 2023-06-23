@@ -16,7 +16,7 @@ import { DoublyLinkedList } from '../../core/LinkedList';
 import { DLNode } from '../../core/Node';
 
 // Stats
-import Stats = require('stats.js');
+import * as Stats from 'stats.js';
 
 // Video Recording Tool
 import { CanvasRecorder } from './canvas-record';

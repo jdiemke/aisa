@@ -87,5 +87,5 @@
 * [Texture Trick](https://jdiemke.github.io/aisa/texture-trick.html)
 * [Texture Effect](https://jdiemke.github.io/aisa/texture-effect.html)
 * [Endless Zoom](https://jdiemke.github.io/aisa/endless-zoom.html)
-
-
+* [Shrooms](https://jdiemke.github.io/aisa/shrooms.html)
+* [Domain Warping](https://jdiemke.github.io/aisa/domain-warping.html)
