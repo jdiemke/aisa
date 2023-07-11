@@ -42,18 +42,36 @@ export class Texture {
     }
 
     public getBilinearFilteredPixel2(x: number, y: number) {
+
+        let x0;
+        let  x1 ;
+        let  y0;
+        let y1 ;
+
         if (this.clamp) {
             x = Math.max(Math.min(x, this.width - 1), 0);
             y = Math.max(Math.min(y, this.height - 1), 0);
+
+            //x= ((x%this.width)+ this.width) % this.width;
+            //y= ((y%this.height)+ this.height) % this.height;
+
+
+            x0 = Math.floor(x);
+            x1 =  Math.max(Math.min(x0+1, this.width - 1), 0);
+              y0 = Math.floor(y);
+             y1 =Math.max(Math.min(y0+1, this.height - 1), 0);
         } else {
             x= ((x%this.width)+ this.width) % this.width;
             y= ((y%this.height)+ this.height) % this.height;
+
+
+        x0 = x | 0;
+        x1 = (x+ 1 | 0)%this.width ;
+          y0 = y | 0;
+         y1 = (y+ 1 | 0)%this.height ;
         }
 
-        let x0 = x | 0;
-        let  x1 = (x+ 1 | 0)%this.width ;
-        let  y0 = y | 0;
-        let y1 = (y+ 1 | 0)%this.height ;
+
 
         const x0y0 = this.getPixel2(this, x0, y0);
         const x1y0 = this.getPixel2(this, x1, y0);

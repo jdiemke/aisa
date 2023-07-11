@@ -126,7 +126,15 @@ export class DemoScene extends AbstractScene {
         const newNode: DLNode<AbstractScene> = new DLNode();
         newNode.data = new plug[constructorName](...args);
         this.sceneList.insert(newNode, this.sceneList.length - 1);
-        return newNode.data.init(framebuffer);
+
+
+        return Promise.all([
+            newNode.data.init(framebuffer),
+            new Promise<void>(resolve => {
+                if(newNode.data.onInit) newNode.data.onInit();
+                resolve();
+        })
+        ]);
     }
 
     // this runs after init() has finished
