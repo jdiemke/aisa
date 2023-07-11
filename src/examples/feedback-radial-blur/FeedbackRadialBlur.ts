@@ -25,19 +25,19 @@ export class FeedbackRadialBlur extends AbstractScene {
         const texture: Texture = new Texture();
 
         texture.texture = this.accumulationBuffer;
-        texture.width = 320;
-        texture.height = 200;
+        texture.width = framebuffer.width;
+        texture.height = framebuffer.height;
 
         const scaleX = 1.018;
         const scaleY = 1.018;
-        const width = 320 * scaleX;
-        const height = 200 * scaleY;
+        const width = framebuffer.width * scaleX;
+        const height = framebuffer.height* scaleY;
 
         const alphaScale = (Math.sin(time * 0.00005) * 0.5) + 0.5;
 
         framebuffer.drawScaledTextureClipBi(
-            Math.round(320 / 2 - width / 2),
-            Math.round(200 / 2 - height / 2),
+            Math.round(framebuffer.width / 2 - width / 2),
+            Math.round(framebuffer.height / 2 - height / 2),
             width, height, texture, 1.0 * alphaScale
         );
 

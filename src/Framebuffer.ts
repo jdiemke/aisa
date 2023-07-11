@@ -962,8 +962,10 @@ export class Framebuffer {
 
         const alphaScale = 1 / 255 * alphaBlend;
         let index2 = (xStart) + (yStart) * this.width;
+
         for (let y = 0; y < newHeight; y++) {
             for (let x = 0; x < newWidth; x++) {
+               // console.log(xx, yy);
                 // let textureIndex = //Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
                 const color = texture.getBilinearFilteredPixel2(xx, yy);
 

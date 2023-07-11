@@ -19,7 +19,7 @@ export class ParticleTorusScene extends AbstractScene {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         this.start = Date.now();
         return Promise.all([
-            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
+            TextureUtils.load(require('../../assets/eye-background.png'), false).then(
                 (texture: Texture) => this.blurred = texture
             ),
             TextureUtils.generateProceduralParticleTexture().then((texture) => this.particleTexture2 = texture),
@@ -27,12 +27,16 @@ export class ParticleTorusScene extends AbstractScene {
         ]);
     }
 
+    private slowDateNow(): number {
+        return Date.now() *0.5;
+    }
+
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
 
         // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
-        this.drawParticleTorus(framebuffer, time, this.particleTexture2, true);
+        this.drawParticleTorus(framebuffer, time*4, this.particleTexture2, true);
 
         const tmpGlitch: Uint32Array = new Uint32Array(framebuffer.width * framebuffer.height);
         framebuffer.fastFramebufferCopy(tmpGlitch, framebuffer.framebuffer);
@@ -44,7 +48,7 @@ export class ParticleTorusScene extends AbstractScene {
 
         const ukBasslineBpm: number = 140;
         const ukBasslineClapMs: number = 60000 / ukBasslineBpm * 2;
-        const smashTime: number = (Date.now() - this.start) % ukBasslineClapMs;
+        const smashTime: number = (this.slowDateNow() - this.start*0.5) % ukBasslineClapMs;
         const smash: number = (Interpolator.cosineInterpolate(0, 20, smashTime) -
         Interpolator.cosineInterpolate(20, 300, smashTime)) * 35;
         const width: number = Math.round(framebuffer.width + smash * framebuffer.width / 100);
@@ -69,8 +73,8 @@ export class ParticleTorusScene extends AbstractScene {
         const points: Array<Vector3f> = new Array<Vector3f>();
         const num = 300;
         for (let i = 0; i < num; i++) {
-            const radi = 3.4 * (2 + Math.sin((i * Math.PI / (num / 2)) * 2 + elapsedTime * 0.0004)); // *sinf(Time*0.0008f)));
-            const move = elapsedTime * 0.0015;
+            const radi = 3.4 * (2 + Math.sin((i * Math.PI / (num / 2)) * 2 + elapsedTime * 0.0008)); // *sinf(Time*0.0008f)));
+            const move = elapsedTime * 0.03;
             const x = radi * Math.cos(((move + i) * Math.PI / (num / 2)) * 7);
             const y = radi * Math.cos(((move + i) * Math.PI / (num / 2)) * 4);
             const z = radi * Math.sin(((move + i) * Math.PI / (num / 2)) * 7);
@@ -78,7 +82,7 @@ export class ParticleTorusScene extends AbstractScene {
             points.push(new Vector3f(x, y, z));
         }
 
-        const modelViewMartrix = Matrix4f.constructTranslationMatrix(0, 0, -20)
+        const modelViewMartrix = Matrix4f.constructTranslationMatrix(1, 0, -63)
             .multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.0003)
                 .multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.0003)));
 
@@ -95,11 +99,14 @@ export class ParticleTorusScene extends AbstractScene {
         });
 
         points2.forEach((element) => {
-            const size = -(2.2 * 192 / (element.z));
-            framebuffer.drawParticle(
-                Math.round(element.x) - Math.round(size / 2),
-                Math.round(element.y) - Math.round(size / 2),
-                Math.round(size), Math.round(size), texture, 1 / element.z, 1.0);
+            const size = -(4.9 * 192 / (element.z));
+            framebuffer.drawParticle2Sub(
+                element.x - size / 2,
+                element.y - size / 2,
+                size, size, texture, 1 / element.z, 0.7, 0, 256,
+                0.5,1.0,0.3
+            );
+
         });
     }
 
