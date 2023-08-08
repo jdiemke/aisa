@@ -10,10 +10,10 @@ Notes         : Software rendered effects written in Typescript
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { SoundManager } from '../../sound/SoundManager';
-import { Color } from '../../core/Color';
 import { BlockFade } from '../block-fade/BlockFade';
 import { DoublyLinkedList } from '../../core/LinkedList';
 import { DLNode } from '../../core/Node';
+import { LoadingScene } from './parts/LoadingScene';
 
 // Stats
 import * as Stats from 'stats.js';
@@ -62,57 +62,72 @@ export class DemoScene extends AbstractScene {
 
         this.canvasRef = document.getElementById('aisa-canvas') as HTMLCanvasElement;
 
+        // establish loading scene
+        // this.appendScene(framebuffer, new LoadingScene());
+
+        const newNode: DLNode<AbstractScene> = new DLNode();
+        newNode.data = new LoadingScene();
+        this.sceneList.insert(newNode, 0);
+
+        // update screen
+        const animate = () => {
+            this.canvasRef.getContext('2d').putImageData(framebuffer.getImageData(), 0, 0);
+            requestAnimationFrame(animate);
+        };
+
+
+
         // initialize effects with progress
         return this.allProgress([
-
-            // load music
-            // this.soundManager.loadMusic(require(`../../assets/sound/dubmood_-_cromenu1_haschkaka.xm`)),
-            this.soundManager.loadMusic(require(`../../assets/sound/showeroflove.mod`)),
-            // this.soundManager.loadMusic(require('../../assets/sound/NotMixedorMastered.ogg')),
-
-            // load *.rocket file for scene/music synchronization
-            this.soundManager.prepareSync(require('../../assets/sound/demo.rocket'), true),
 
             // we use this for transitions
             this.BlockFade.init(framebuffer),
 
+            // load music
+            this.soundManager.loadMusic(require(`../../assets/sound/showeroflove.mod`)),
+
+            // load *.rocket file for scene/music synchronization
+            this.soundManager.prepareSync(require('../../assets/sound/demo.rocket'), true),
+
             // load and initialze effects
-            import('./parts/Scene1').then(plug => this.initScene(framebuffer, plug)), // cubicles
-            import('./parts/Scene1').then(plug => this.initScene(framebuffer, plug)), // cubicles
-            import('./parts/Scene2').then(plug => this.initScene(framebuffer, plug)), // telephone
-            import('./parts/Scene3').then(plug => this.initScene(framebuffer, plug)), // title screen here
-            import('./parts/Scene4').then(plug => this.initScene(framebuffer, plug)), // pizza delivery guy
-            import('./parts/Scene5').then(plug => this.initScene(framebuffer, plug)), // replace with something else
-            import('./parts/Scene6').then(plug => this.initScene(framebuffer, plug)), // spikeball + plane deformation
-            import('./parts/Scene7').then(plug => this.initScene(framebuffer, plug)), // cube + rotozoomer
-            import('./parts/Scene8').then(plug => this.initScene(framebuffer, plug)), // ledplasma + voxelcubes
-            import('./parts/Scene9').then(plug => this.initScene(framebuffer, plug)), // blender camera
-            import('./parts/Scene10').then(plug => this.initScene(framebuffer, plug)), // MetalHeadzScene
-            import('./parts/Scene11').then(plug => this.initScene(framebuffer, plug)), // AbstractCube
-            import('./parts/Scene12').then(plug => this.initScene(framebuffer, plug)), // DofBallsScene
-            import('./parts/Scene13').then(plug => this.initScene(framebuffer, plug)), // TorusKnotTunnelScene
-            import('./parts/Scene14').then(plug => this.initScene(framebuffer, plug)), // GearsScene
-            import('./parts/Scene15').then(plug => this.initScene(framebuffer, plug)), // BakedLighting
-            import('./parts/Scene16').then(plug => this.initScene(framebuffer, plug)), // ParticleStreamsScene
-            import('./parts/Scene17').then(plug => this.initScene(framebuffer, plug)), // HoodlumScene
-            import('./parts/Scene18').then(plug => this.initScene(framebuffer, plug)), // TwisterScene
-            import('./parts/Scene19').then(plug => this.initScene(framebuffer, plug)), // RazorScene
-            import('./parts/Scene20').then(plug => this.initScene(framebuffer, plug)), // sinescroller
+            import('./parts/Scene1').then(plug => this.initScene(framebuffer, plug, 1)), // cubicles
+            import('./parts/Scene2').then(plug => this.initScene(framebuffer, plug, 2)), // telephone
+            import('./parts/Scene3').then(plug => this.initScene(framebuffer, plug, 3)), // title screen here
+            import('./parts/Scene4').then(plug => this.initScene(framebuffer, plug, 4)), // pizza delivery guy
+            import('./parts/Scene5').then(plug => this.initScene(framebuffer, plug, 5)), // replace with something else
+            import('./parts/Scene6').then(plug => this.initScene(framebuffer, plug, 6)), // spikeball + plane deformation
+            import('./parts/Scene7').then(plug => this.initScene(framebuffer, plug, 7)), // cube + rotozoomer
+            import('./parts/Scene8').then(plug => this.initScene(framebuffer, plug, 8)), // ledplasma + voxelcubes
+            import('./parts/Scene9').then(plug => this.initScene(framebuffer, plug, 9)), // blender camera
+            import('./parts/Scene10').then(plug => this.initScene(framebuffer, plug, 10)), // MetalHeadzScene
+            import('./parts/Scene11').then(plug => this.initScene(framebuffer, plug, 11)), // AbstractCube
+            import('./parts/Scene12').then(plug => this.initScene(framebuffer, plug, 12)), // DofBallsScene
+            import('./parts/Scene13').then(plug => this.initScene(framebuffer, plug, 13)), // TorusKnotTunnelScene
+            import('./parts/Scene14').then(plug => this.initScene(framebuffer, plug, 14 )), // GearsScene
+            import('./parts/Scene15').then(plug => this.initScene(framebuffer, plug, 15)), // BakedLighting
+            import('./parts/Scene16').then(plug => this.initScene(framebuffer, plug, 16)), // ParticleStreamsScene
+            import('./parts/Scene17').then(plug => this.initScene(framebuffer, plug, 17)), // HoodlumScene
+            import('./parts/Scene18').then(plug => this.initScene(framebuffer, plug, 18)), // TwisterScene
+            import('./parts/Scene19').then(plug => this.initScene(framebuffer, plug , 19)), // RazorScene
+            import('./parts/Scene20').then(plug => this.initScene(framebuffer, plug, 20)), // sinescroller
 
         ], (percent: number) => {
-            // update the progress bar via canvas
-            const outputX = Math.ceil(framebuffer.width * percent);
-            framebuffer.drawRect2(0, (framebuffer.height / 2) - 5, outputX, 10, Color.WHITE.toPackedFormat());
 
-            // update the canvas
-            this.canvasRef.getContext('2d').putImageData(framebuffer.getImageData(), 0, 0);
+            // update the loading screen with percent
+            this.sceneList.getNode(0).data.render(framebuffer, percent)
 
             // update memory usage
             for (const p of this.stats) {
                 p.update();
             }
+
+            console.info('percent', percent)
+
+            requestAnimationFrame(animate);
         });
     }
+
+
 
     /**
      * Adds AbstractScenes to sceneList array and initializes it
@@ -121,6 +136,7 @@ export class DemoScene extends AbstractScene {
      * @param   {Object} plug                        imported class
      * @returns {Promise<any>}                       resolves promise after completion
      */
+    /*
     private initScene(framebuffer: Framebuffer, plug: unknown, ...args: Array<any>): Promise<any> {
         const constructorName = Object.keys(plug)[0];
         const newNode: DLNode<AbstractScene> = new DLNode();
@@ -136,6 +152,25 @@ export class DemoScene extends AbstractScene {
         })
         ]);
     }
+    */
+
+
+
+    private initScene(framebuffer: Framebuffer, plug: unknown, ...args: Array<any>): Promise<any> {
+        const constructorName = Object.keys(plug)[0];
+        return this.appendScene(framebuffer, new plug[constructorName](args),  this.sceneList.length - 1);
+
+        // return newNode.data.init(framebuffer);
+    }
+
+    private appendScene(framebuffer: Framebuffer, scene: any, indexOrder: number): Promise<any> {
+        const newNode: DLNode<AbstractScene> = new DLNode();
+        newNode.data = scene;
+        newNode.next
+        this.sceneList.insert(newNode, this.sceneList.length - 1);
+        console.info('added', indexOrder)
+        return newNode.data.init(framebuffer);
+    }
 
     // this runs after init() has finished
     public onInit(): void {
@@ -143,7 +178,12 @@ export class DemoScene extends AbstractScene {
         this.canvasRecorder = new CanvasRecorder();
 
         // jump to last effect in timeline and set mute vs unmuted
-        this.soundManager.initTimeline();
+         this.soundManager.initTimeline();
+
+        console.info('this.sceneList', this.sceneList)
+
+
+        // this.nodeInstance = this.sceneList.getNode(0);
 
         // show debug / timeline navigator
         document.getElementById('debug').style.display = 'block';
@@ -353,16 +393,24 @@ export class DemoScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer) {
+
         // get time and values from music
         this.soundManager.updateMusic();
 
         // get which effect to run
-        this.nodeInstance = this.sceneList.getNode(this.soundManager.musicProperties.sceneData.effect);
+        this.nodeInstance = this.sceneList.getNode(this.soundManager.musicProperties.sceneData.effect || 0);
+
+        if (this.soundManager.musicProperties === undefined ) return;
+
+        // console.info('this.nodeInstance', this.nodeInstance);
 
         // if "transitionType" in JSRocket is zero then run the effect by itself
         if (this.soundManager.musicProperties.sceneData.transitionType === 0) {
+            // console.info('got here', this.nodeInstance);
             this.nodeInstance.data.render(framebuffer, this.soundManager.musicProperties.timeMilliseconds)
         } else {
+            // console.info('this.nodeInstance', this.nodeInstance)
+            // console.info('this.soundManager.musicProperties', this.soundManager.musicProperties)
             // otherwise blend two effects together
             this.BlockFade.transition(
                 framebuffer,
