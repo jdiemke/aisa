@@ -93,16 +93,14 @@ export class FontRenderer {
         const xOff: number =(time * speed) % 1;
         for (let w: number = startW; w < endW; w++) {
 
-            const yDisp: number = sine ? Math.round(Math.sin(time * 0.004 + (xs + w) * 0.013) * 30) : 0;
             let texIndex: number = xt + w + yt * texture.width;
-            let frIndex: number = xs + w + (ys + yDisp) * framebuffer.width;
 
             for (let h: number = 0; h < height; h++) {
                 const color: number = texture.texture[texIndex];
                 if (((color & 0x00000ff)>>0) > 100) {
 
-                    let y = 0-h*1.2+4;
-                    let xpos=  (xs+w)*1.2-160-xOff*1.2;
+                    const y = 0-h*1.2+4;
+                    const xpos=  (xs+w)*1.2-160-xOff*1.2;
                     points.push(new Vector3f(
                         xpos,
                         Math.sin(xpos*0.06)*y+Math.sin(xpos*0.2)*1,
@@ -110,7 +108,6 @@ export class FontRenderer {
                 }
 
                 texIndex += texture.width;
-                frIndex += this.framebuffer.width;
             }
 
         }

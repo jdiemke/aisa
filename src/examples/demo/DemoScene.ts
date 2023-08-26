@@ -67,7 +67,7 @@ export class DemoScene extends AbstractScene {
 
         const newNode: DLNode<AbstractScene> = new DLNode();
         newNode.data = new LoadingScene();
-        this.sceneList.insert(newNode, 0);
+        this.sceneList.insertStart(newNode);
 
         // update screen
         const animate = () => {
@@ -75,7 +75,28 @@ export class DemoScene extends AbstractScene {
             requestAnimationFrame(animate);
         };
 
-
+        const demoOrder = [
+            './parts/Scene1',
+            './parts/Scene2',
+            './parts/Scene3',
+            './parts/Scene4',
+            './parts/Scene5',
+            './parts/Scene6',
+            './parts/Scene7',
+            './parts/Scene8',
+            './parts/Scene9',
+            './parts/Scene10',
+            './parts/Scene11',
+            './parts/Scene12',
+            './parts/Scene13',
+            './parts/Scene14',
+            './parts/Scene15',
+            './parts/Scene16',
+            './parts/Scene17',
+            './parts/Scene18',
+            './parts/Scene19',
+            './parts/Scene20',
+        ]
 
         // initialize effects with progress
         return this.allProgress([
@@ -90,26 +111,10 @@ export class DemoScene extends AbstractScene {
             this.soundManager.prepareSync(require('../../assets/sound/demo.rocket'), true),
 
             // load and initialze effects
-            import('./parts/Scene1').then(plug => this.initScene(framebuffer, plug, 1)), // cubicles
-            import('./parts/Scene2').then(plug => this.initScene(framebuffer, plug, 2)), // telephone
-            import('./parts/Scene3').then(plug => this.initScene(framebuffer, plug, 3)), // title screen here
-            import('./parts/Scene4').then(plug => this.initScene(framebuffer, plug, 4)), // pizza delivery guy
-            import('./parts/Scene5').then(plug => this.initScene(framebuffer, plug, 5)), // replace with something else
-            import('./parts/Scene6').then(plug => this.initScene(framebuffer, plug, 6)), // spikeball + plane deformation
-            import('./parts/Scene7').then(plug => this.initScene(framebuffer, plug, 7)), // cube + rotozoomer
-            import('./parts/Scene8').then(plug => this.initScene(framebuffer, plug, 8)), // ledplasma + voxelcubes
-            import('./parts/Scene9').then(plug => this.initScene(framebuffer, plug, 9)), // blender camera
-            import('./parts/Scene10').then(plug => this.initScene(framebuffer, plug, 10)), // MetalHeadzScene
-            import('./parts/Scene11').then(plug => this.initScene(framebuffer, plug, 11)), // AbstractCube
-            import('./parts/Scene12').then(plug => this.initScene(framebuffer, plug, 12)), // DofBallsScene
-            import('./parts/Scene13').then(plug => this.initScene(framebuffer, plug, 13)), // TorusKnotTunnelScene
-            import('./parts/Scene14').then(plug => this.initScene(framebuffer, plug, 14 )), // GearsScene
-            import('./parts/Scene15').then(plug => this.initScene(framebuffer, plug, 15)), // BakedLighting
-            import('./parts/Scene16').then(plug => this.initScene(framebuffer, plug, 16)), // ParticleStreamsScene
-            import('./parts/Scene17').then(plug => this.initScene(framebuffer, plug, 17)), // HoodlumScene
-            import('./parts/Scene18').then(plug => this.initScene(framebuffer, plug, 18)), // TwisterScene
-            import('./parts/Scene19').then(plug => this.initScene(framebuffer, plug , 19)), // RazorScene
-            import('./parts/Scene20').then(plug => this.initScene(framebuffer, plug, 20)), // sinescroller
+            ...demoOrder.map((element, index) =>
+                import(`${element}`).then(plug => this.initScene(framebuffer, plug, index+1))
+            ),
+
 
         ], (percent: number) => {
 
@@ -120,9 +125,6 @@ export class DemoScene extends AbstractScene {
             for (const p of this.stats) {
                 p.update();
             }
-
-            console.info('percent', percent)
-
             requestAnimationFrame(animate);
         });
     }
@@ -136,7 +138,7 @@ export class DemoScene extends AbstractScene {
      * @param   {Object} plug                        imported class
      * @returns {Promise<any>}                       resolves promise after completion
      */
-    /*
+    
     private initScene(framebuffer: Framebuffer, plug: unknown, ...args: Array<any>): Promise<any> {
         const constructorName = Object.keys(plug)[0];
         const newNode: DLNode<AbstractScene> = new DLNode();
@@ -152,13 +154,12 @@ export class DemoScene extends AbstractScene {
         })
         ]);
     }
-    */
+    
 
-
-
-    private initScene(framebuffer: Framebuffer, plug: unknown, ...args: Array<any>): Promise<any> {
+/*
+    private initScene(framebuffer: Framebuffer, plug: unknown, index: number): Promise<any> {
         const constructorName = Object.keys(plug)[0];
-        return this.appendScene(framebuffer, new plug[constructorName](args),  this.sceneList.length - 1);
+        return this.appendScene(framebuffer, new plug[constructorName](), index);
 
         // return newNode.data.init(framebuffer);
     }
@@ -166,11 +167,11 @@ export class DemoScene extends AbstractScene {
     private appendScene(framebuffer: Framebuffer, scene: any, indexOrder: number): Promise<any> {
         const newNode: DLNode<AbstractScene> = new DLNode();
         newNode.data = scene;
-        newNode.next
         this.sceneList.insert(newNode, this.sceneList.length - 1);
         console.info('added', indexOrder)
         return newNode.data.init(framebuffer);
     }
+*/
 
     // this runs after init() has finished
     public onInit(): void {
@@ -178,7 +179,7 @@ export class DemoScene extends AbstractScene {
         this.canvasRecorder = new CanvasRecorder();
 
         // jump to last effect in timeline and set mute vs unmuted
-         this.soundManager.initTimeline();
+        this.soundManager.initTimeline();
 
         console.info('this.sceneList', this.sceneList)
 
@@ -400,7 +401,7 @@ export class DemoScene extends AbstractScene {
         // get which effect to run
         this.nodeInstance = this.sceneList.getNode(this.soundManager.musicProperties.sceneData.effect || 0);
 
-        if (this.soundManager.musicProperties === undefined ) return;
+        if (this.soundManager.musicProperties === undefined) return;
 
         // console.info('this.nodeInstance', this.nodeInstance);
 

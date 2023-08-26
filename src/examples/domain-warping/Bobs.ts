@@ -4,11 +4,6 @@ import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { PlaneDeformationTunnelScene } from '../plane-deformation-tunnel/PlaneDeformationTunnelScene';
 
-
-//import * as Mmage from '../../assets/flower.png';
-import Mmage from '../../assets/flower.png';
-
-console.log(Mmage)
 /**
  * TODO: extract lens into effect class
  */
@@ -22,7 +17,7 @@ export class Bobs extends AbstractScene {
         this.scene = new PlaneDeformationTunnelScene();
         return Promise.all([
             this.scene.init(framebuffer),
-            TextureUtils.load(Mmage, true).then(
+            TextureUtils.load(require('../../assets/flower.png'), false).then(
                 (texture: Texture) => this.texture5 = texture
             ),
             TextureUtils.load(require('../../assets/ball2.png'), true).then(
