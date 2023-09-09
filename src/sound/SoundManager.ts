@@ -237,7 +237,7 @@ export class SoundManager {
         // jump to last position on timeline for local development reloading
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const newLocal = this;
-        const jumpTo = 0;//Number(localStorage.getItem('lastTime')) || 0;
+        const jumpTo = Number(localStorage.getItem('lastTime')) || 0;
 
         // poll for mod player since library does not use promises
         if ((window as any).libopenmpt) {
