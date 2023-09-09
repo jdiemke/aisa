@@ -3,7 +3,7 @@ Name          : Aisa Demo
 Release Date  : TBD
 Platform      : JavaScript
 Category      : Demo
-Notes         : Software rendered effects written in Typescript
+Notes         : Software rendered demoscene effects written in Typescript
 */
 
 // Core
@@ -63,8 +63,6 @@ export class DemoScene extends AbstractScene {
         this.canvasRef = document.getElementById('aisa-canvas') as HTMLCanvasElement;
 
         // establish loading scene
-        // this.appendScene(framebuffer, new LoadingScene());
-
         const newNode: DLNode<AbstractScene> = new DLNode();
         newNode.data = new LoadingScene();
         this.sceneList.insertStart(newNode);
@@ -98,6 +96,12 @@ export class DemoScene extends AbstractScene {
             './parts/Scene20',
         ]
 
+        // create placeholder nodes since dynamically importing will create out of order
+        for (let i = 0; i < demoOrder.length; i++) {
+            const newNodeInsert: DLNode<AbstractScene> = new DLNode();
+            this.sceneList.insert(newNodeInsert, this.sceneList.length - 1);
+        }
+
         // initialize effects with progress
         return this.allProgress([
 
@@ -111,10 +115,9 @@ export class DemoScene extends AbstractScene {
             this.soundManager.prepareSync(require('../../assets/sound/demo.rocket'), true),
 
             // load and initialze effects
-            ...demoOrder.map((element, index) =>
-                import(`${element}`).then(plug => this.initScene(framebuffer, plug, index+1))
+            ...demoOrder.map(async (element, index) =>
+                await import(`${element}`).then(plug => this.initScene(framebuffer, plug, index + 1))
             ),
-
 
         ], (percent: number) => {
 
@@ -129,8 +132,6 @@ export class DemoScene extends AbstractScene {
         });
     }
 
-
-
     /**
      * Adds AbstractScenes to sceneList array and initializes it
      *
@@ -138,40 +139,20 @@ export class DemoScene extends AbstractScene {
      * @param   {Object} plug                        imported class
      * @returns {Promise<any>}                       resolves promise after completion
      */
-    
-    private initScene(framebuffer: Framebuffer, plug: unknown, ...args: Array<any>): Promise<any> {
-        const constructorName = Object.keys(plug)[0];
-        const newNode: DLNode<AbstractScene> = new DLNode();
-        newNode.data = new plug[constructorName](...args);
-        this.sceneList.insert(newNode, this.sceneList.length - 1);
 
-
-        return Promise.all([
-            newNode.data.init(framebuffer),
-            new Promise<void>(resolve => {
-                if(newNode.data.onInit) newNode.data.onInit();
-                resolve();
-        })
-        ]);
-    }
-    
-
-/*
     private initScene(framebuffer: Framebuffer, plug: unknown, index: number): Promise<any> {
         const constructorName = Object.keys(plug)[0];
-        return this.appendScene(framebuffer, new plug[constructorName](), index);
+        const currentNode = this.sceneList.getNode(index);
+        currentNode.data = new plug[constructorName]();
 
-        // return newNode.data.init(framebuffer);
+        return Promise.all([
+            currentNode.data.init(framebuffer),
+            new Promise<void>(resolve => {
+                if (currentNode.data.onInit) currentNode.data.onInit();
+                resolve();
+            })
+        ]);
     }
-
-    private appendScene(framebuffer: Framebuffer, scene: any, indexOrder: number): Promise<any> {
-        const newNode: DLNode<AbstractScene> = new DLNode();
-        newNode.data = scene;
-        this.sceneList.insert(newNode, this.sceneList.length - 1);
-        console.info('added', indexOrder)
-        return newNode.data.init(framebuffer);
-    }
-*/
 
     // this runs after init() has finished
     public onInit(): void {
@@ -182,7 +163,6 @@ export class DemoScene extends AbstractScene {
         this.soundManager.initTimeline();
 
         console.info('this.sceneList', this.sceneList)
-
 
         // this.nodeInstance = this.sceneList.getNode(0);
 
