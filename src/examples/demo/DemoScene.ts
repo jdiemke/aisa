@@ -162,10 +162,6 @@ export class DemoScene extends AbstractScene {
         // jump to last effect in timeline and set mute vs unmuted
         this.soundManager.initTimeline();
 
-        console.info('this.sceneList', this.sceneList)
-
-        // this.nodeInstance = this.sceneList.getNode(0);
-
         // show debug / timeline navigator
         document.getElementById('debug').style.display = 'block';
     }
@@ -383,15 +379,10 @@ export class DemoScene extends AbstractScene {
 
         if (this.soundManager.musicProperties === undefined) return;
 
-        // console.info('this.nodeInstance', this.nodeInstance);
-
         // if "transitionType" in JSRocket is zero then run the effect by itself
         if (this.soundManager.musicProperties.sceneData.transitionType === 0) {
-            // console.info('got here', this.nodeInstance);
             this.nodeInstance.data.render(framebuffer, this.soundManager.musicProperties.timeMilliseconds)
         } else {
-            // console.info('this.nodeInstance', this.nodeInstance)
-            // console.info('this.soundManager.musicProperties', this.soundManager.musicProperties)
             // otherwise blend two effects together
             this.BlockFade.transition(
                 framebuffer,
