@@ -3,17 +3,17 @@ Name          : Aisa Demo
 Release Date  : TBD
 Platform      : JavaScript
 Category      : Demo
-Notes         : Software rendered effects written in Typescript
+Notes         : Software rendered demoscene effects written in Typescript
 */
 
 // Core
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { SoundManager } from '../../sound/SoundManager';
-import { Color } from '../../core/Color';
 import { BlockFade } from '../block-fade/BlockFade';
 import { DoublyLinkedList } from '../../core/LinkedList';
 import { DLNode } from '../../core/Node';
+import { LoadingScene } from './parts/LoadingScene';
 
 // Stats
 import * as Stats from 'stats.js';
@@ -62,55 +62,73 @@ export class DemoScene extends AbstractScene {
 
         this.canvasRef = document.getElementById('aisa-canvas') as HTMLCanvasElement;
 
+        // establish loading scene
+        const newNode: DLNode<AbstractScene> = new DLNode();
+        newNode.data = new LoadingScene();
+        this.sceneList.insertStart(newNode);
+
+        // update screen
+        const animate = () => {
+            this.canvasRef.getContext('2d').putImageData(framebuffer.getImageData(), 0, 0);
+            requestAnimationFrame(animate);
+        };
+
+        const demoOrder = [
+            './parts/Scene1',
+            './parts/Scene2',
+            './parts/Scene3',
+            './parts/Scene4',
+            './parts/Scene5',
+            './parts/Scene6',
+            './parts/Scene7',
+            './parts/Scene8',
+            './parts/Scene9',
+            './parts/Scene10',
+            './parts/Scene11',
+            './parts/Scene12',
+            './parts/Scene13',
+            './parts/Scene14',
+            './parts/Scene15',
+            './parts/Scene16',
+            './parts/Scene17',
+            './parts/Scene18',
+            './parts/Scene19',
+            './parts/Scene20',
+        ]
+
+        // create placeholder nodes since dynamically importing will create out of order
+        for (let i = 0; i < demoOrder.length; i++) {
+            const newNodeInsert: DLNode<AbstractScene> = new DLNode();
+            this.sceneList.insert(newNodeInsert, this.sceneList.length - 1);
+        }
+
         // initialize effects with progress
         return this.allProgress([
-
-            // load music
-            // this.soundManager.loadMusic(require(`../../assets/sound/dubmood_-_cromenu1_haschkaka.xm`)),
-            this.soundManager.loadMusic(require(`../../assets/sound/showeroflove.mod`)),
-            // this.soundManager.loadMusic(require('../../assets/sound/NotMixedorMastered.ogg')),
-
-            // load *.rocket file for scene/music synchronization
-            this.soundManager.prepareSync(require('../../assets/sound/demo.rocket'), true),
 
             // we use this for transitions
             this.BlockFade.init(framebuffer),
 
+            // load music
+            this.soundManager.loadMusic(require(`../../assets/sound/showeroflove.mod`)),
+
+            // load *.rocket file for scene/music synchronization
+            this.soundManager.prepareSync(require('../../assets/sound/demo.rocket'), true),
+
             // load and initialze effects
-            import('./parts/Scene1').then(plug => this.initScene(framebuffer, plug)), // cubicles
-            import('./parts/Scene1').then(plug => this.initScene(framebuffer, plug)), // cubicles
-            import('./parts/Scene2').then(plug => this.initScene(framebuffer, plug)), // telephone
-            import('./parts/Scene3').then(plug => this.initScene(framebuffer, plug)), // title screen here
-            import('./parts/Scene4').then(plug => this.initScene(framebuffer, plug)), // pizza delivery guy
-            import('./parts/Scene5').then(plug => this.initScene(framebuffer, plug)), // replace with something else
-            import('./parts/Scene6').then(plug => this.initScene(framebuffer, plug)), // spikeball + plane deformation
-            import('./parts/Scene7').then(plug => this.initScene(framebuffer, plug)), // cube + rotozoomer
-            import('./parts/Scene8').then(plug => this.initScene(framebuffer, plug)), // ledplasma + voxelcubes
-            import('./parts/Scene9').then(plug => this.initScene(framebuffer, plug)), // blender camera
-            import('./parts/Scene10').then(plug => this.initScene(framebuffer, plug)), // MetalHeadzScene
-            import('./parts/Scene11').then(plug => this.initScene(framebuffer, plug)), // AbstractCube
-            import('./parts/Scene12').then(plug => this.initScene(framebuffer, plug)), // DofBallsScene
-            import('./parts/Scene13').then(plug => this.initScene(framebuffer, plug)), // TorusKnotTunnelScene
-            import('./parts/Scene14').then(plug => this.initScene(framebuffer, plug)), // GearsScene
-            import('./parts/Scene15').then(plug => this.initScene(framebuffer, plug)), // BakedLighting
-            import('./parts/Scene16').then(plug => this.initScene(framebuffer, plug)), // ParticleStreamsScene
-            import('./parts/Scene17').then(plug => this.initScene(framebuffer, plug)), // HoodlumScene
-            import('./parts/Scene18').then(plug => this.initScene(framebuffer, plug)), // TwisterScene
-            import('./parts/Scene19').then(plug => this.initScene(framebuffer, plug)), // RazorScene
-            import('./parts/Scene20').then(plug => this.initScene(framebuffer, plug)), // sinescroller
+            ...demoOrder.map(async (element, index) =>
+                await import(`${element}`).then(plug => this.initScene(framebuffer, plug, index + 1))
+            ),
 
         ], (percent: number) => {
-            // update the progress bar via canvas
-            const outputX = Math.ceil(framebuffer.width * percent);
-            framebuffer.drawRect2(0, (framebuffer.height / 2) - 5, outputX, 10, Color.WHITE.toPackedFormat());
 
-            // update the canvas
-            this.canvasRef.getContext('2d').putImageData(framebuffer.getImageData(), 0, 0);
+            // update the loading screen with percent
+            this.sceneList.getNode(0).data.render(framebuffer, percent)
 
             // update memory usage
             for (const p of this.stats) {
                 p.update();
             }
+            requestAnimationFrame(animate);
         });
     }
 
@@ -121,19 +139,18 @@ export class DemoScene extends AbstractScene {
      * @param   {Object} plug                        imported class
      * @returns {Promise<any>}                       resolves promise after completion
      */
-    private initScene(framebuffer: Framebuffer, plug: unknown, ...args: Array<any>): Promise<any> {
-        const constructorName = Object.keys(plug)[0];
-        const newNode: DLNode<AbstractScene> = new DLNode();
-        newNode.data = new plug[constructorName](...args);
-        this.sceneList.insert(newNode, this.sceneList.length - 1);
 
+    private initScene(framebuffer: Framebuffer, plug: unknown, index: number): Promise<any> {
+        const constructorName = Object.keys(plug)[0];
+        const currentNode = this.sceneList.getNode(index);
+        currentNode.data = new plug[constructorName]();
 
         return Promise.all([
-            newNode.data.init(framebuffer),
+            currentNode.data.init(framebuffer),
             new Promise<void>(resolve => {
-                if(newNode.data.onInit) newNode.data.onInit();
+                if (currentNode.data.onInit) currentNode.data.onInit();
                 resolve();
-        })
+            })
         ]);
     }
 
@@ -353,11 +370,14 @@ export class DemoScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer) {
+
         // get time and values from music
         this.soundManager.updateMusic();
 
         // get which effect to run
-        this.nodeInstance = this.sceneList.getNode(this.soundManager.musicProperties.sceneData.effect);
+        this.nodeInstance = this.sceneList.getNode(this.soundManager.musicProperties.sceneData.effect || 0);
+
+        if (this.soundManager.musicProperties === undefined) return;
 
         // if "transitionType" in JSRocket is zero then run the effect by itself
         if (this.soundManager.musicProperties.sceneData.transitionType === 0) {

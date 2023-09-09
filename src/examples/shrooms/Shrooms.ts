@@ -1,15 +1,13 @@
 import { Framebuffer } from '../../Framebuffer';
-import { Utils } from '../../core/Utils';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { PlaneDeformationTunnelScene } from '../plane-deformation-tunnel/PlaneDeformationTunnelScene';
-import { PlasmaScene } from '../plasma/PlasmaScene';
 
 /**
  * TODO: extract lens into effect class
  */
-export class Bobs extends AbstractScene {
+export class Shrooms extends AbstractScene {
 
     private texture5: Texture;
     private texture7: Texture;
@@ -33,7 +31,6 @@ export class Bobs extends AbstractScene {
         time = time *0.5;
         //framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.texture5.texture);
 
-       const scale = Math.sin(time * 0.0002)*3;
        const scale2 = 1.7;
         this.texture5.setClamp(false);
         for(let y = 0; y < 200; y++) {

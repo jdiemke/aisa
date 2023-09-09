@@ -138,7 +138,7 @@ export class BlockFade extends AbstractScene {
             }
 
             // delete loose particles
-            this.particleArray.splice(0, this.particleArray.length);
+            this.particleArray.length = 0;
         }
 
         for (let y = 0; y < renderBuffer.height; y++) {
@@ -262,19 +262,21 @@ export class BlockFade extends AbstractScene {
         const horizontalUnits = Math.ceil(framebuffer.width / blockWidth);
         const verticalUnits = Math.ceil(framebuffer.height / blockWidth);
 
-        const fadeArray = new Array<number>(horizontalUnits * verticalUnits);
         const rng = new RandomNumberGenerator();
         rng.setSeed(366);
-        for (let y = 0; y < verticalUnits; y++) {
-            for (let x = 0; x < horizontalUnits; x++) {
-                fadeArray[x + y * horizontalUnits] = 500 + Math.round(rng.getFloat() * 600000) % 10000;
-            }
-        }
+
+        const fadeArray = Array.from({ length: horizontalUnits * verticalUnits }, () => {
+            return 500 + Math.round(rng.getFloat() * 600000) % 10000;
+        });
 
         for (let y = 0; y < verticalUnits; y++) {
+            const yPos = y * blockWidth;
+
             for (let x = 0; x < horizontalUnits; x++) {
-                framebuffer.drawTextureRect(x * blockWidth, y * blockWidth, x * blockWidth, y * blockWidth, blockWidth, blockWidth, pixelArray, pixelArrayWidth,
-                    Interpolator.interpolate(startTime + fadeArray[x + y * horizontalUnits], startTime + fadeArray[x + y * horizontalUnits] + 700, time)
+                const xPos = x * blockWidth;
+                const fadeIndex = x + y * horizontalUnits;
+                framebuffer.drawTextureRect(xPos, yPos, xPos, yPos, blockWidth, blockWidth, pixelArray, pixelArrayWidth,
+                    Interpolator.interpolate(startTime + fadeArray[fadeIndex], startTime + fadeArray[fadeIndex] + 700, time)
                 );
             }
         }

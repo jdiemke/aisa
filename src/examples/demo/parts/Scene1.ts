@@ -3,9 +3,11 @@ import { PlaneDeformationScene } from '../../plane-deformation/PlaneDeformationS
 
 // sideways 3D office scene
 export class Scene1 {
-    private PlaneDeformationFloorScene = new PlaneDeformationScene(8, require('../../../assets/ground.png'));
+    private PlaneDeformationFloorScene: PlaneDeformationScene;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+
+        this.PlaneDeformationFloorScene = new PlaneDeformationScene(8, require('../../../assets/ground.png'));
 
         return Promise.all([
             this.PlaneDeformationFloorScene.init(framebuffer)

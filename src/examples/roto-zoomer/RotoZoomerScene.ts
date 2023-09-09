@@ -14,7 +14,7 @@ export class RotoZoomerScene extends AbstractScene {
 
     private logoTexture: Texture;
     private floor: TexturedMesh;
-    private modelViewMatrix: ModelViewMatrix = new ModelViewMatrix();
+    private modelViewMatrix: ModelViewMatrix;
     private logo: Texture;
     private face: Texture;
     private ground: Texture;
@@ -22,6 +22,8 @@ export class RotoZoomerScene extends AbstractScene {
     private texturedRenderingPipeline: TexturingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+
+        this.modelViewMatrix = new ModelViewMatrix();
         this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
         this.texturedRenderingPipeline.enableAlphaBlending();
         this.texturedRenderingPipeline.setAlpha(1.0);
@@ -82,7 +84,6 @@ export class RotoZoomerScene extends AbstractScene {
         this.drawRotoZoomer(framebuffer, time);
 
         //framebuffer.drawTexture(33,35,this.logo,1.2);
-
 
         const scale = (Math.sin(time * 0.0002)*0.5+0.5)*130+370;
         const scale2 = 2.1;
