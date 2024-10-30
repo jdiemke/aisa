@@ -18,7 +18,7 @@ export class TorusScene extends AbstractScene {
         this.renderingPipeline.setCullFace(CullFace.BACK);
 
         return Promise.all([
-            TextureUtils.load(require('./assets/razor1911.png'), true).then(
+            TextureUtils.load(require('@assets/razor1911.png'), true).then(
                 (texture: Texture) => this.razorLogo = texture
             )
         ]);

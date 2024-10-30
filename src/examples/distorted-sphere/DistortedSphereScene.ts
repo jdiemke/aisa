@@ -28,10 +28,10 @@ export class DistortedSphereScene extends AbstractScene {
     public init(framebuffer: Framebuffer): Promise<any> {
         this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
         return Promise.all([
-            TextureUtils.load(require('../../assets/heightmapSphere.png'), false).then(
+            TextureUtils.load(require('@assets/heightmapSphere.png'), false).then(
                 texture => this.heightmapSphere = texture
             ),
-            TextureUtils.load(require('../../assets/envmap.png'), false).then(
+            TextureUtils.load(require('@assets/envmap.png'), false).then(
                 texture => this.env = texture
             ),
         ]).then(

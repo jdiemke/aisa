@@ -14,10 +14,10 @@ export class CinematicScroller extends AbstractScene {
 
     public init(): Promise<any> {
         return Promise.all([
-            TextureUtils.load(require('../../assets/battleofilona.png'), false).then(
+            TextureUtils.load(require('@assets/battleofilona.png'), false).then(
                 (texture: Texture) => this.ledTexture = texture
             ),
-            TextureUtils.load(require('../../assets/font.png'), true).then(
+            TextureUtils.load(require('@assets/fonts/font.png'), true).then(
                 (texture: Texture) => this.texture4 = texture
             )
         ]);

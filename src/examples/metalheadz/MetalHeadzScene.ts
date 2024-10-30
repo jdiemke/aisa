@@ -34,22 +34,22 @@ export class MetalHeadzScene extends AbstractScene {
 
         return Promise.all([
             this.skyBox.init(),
-            BlenderLoader.loadWithTexture(require('../../assets/jsx/metalheadz.jsx')).then(
+            BlenderLoader.loadWithTexture(require('@assets/jsx/metalheadz.jsx')).then(
                 (mesh: Array<TexturedMesh>) => this.blenderObjMetal = mesh
             ),
-            TextureUtils.load(require('../../assets/metalheadz.png'), false).then(
+            TextureUtils.load(require('@assets/metalheadz.png'), false).then(
                 (texture: Texture) => this.metalheadz = texture
             ),
-            TextureUtils.load(require('../../assets/ring.png'), true).then(
+            TextureUtils.load(require('@assets/ring.png'), true).then(
                 (texture: Texture) => this.texture11 = texture
             ),
-            TextureUtils.load(require('../../assets/bokeh.png'), true).then(
+            TextureUtils.load(require('@assets/bokeh.png'), true).then(
                 (texture: Texture) => this.texture13 = texture
             ),
             TextureUtils.generateProceduralNoise().then(
                 (texture: Texture) => this.noise = texture
             ),
-            TextureUtils.load(require('../../assets/dirt.png'), true).then(
+            TextureUtils.load(require('@assets/dirt.png'), true).then(
                 (texture: Texture) => this.dirt = texture
             ),
         ]);

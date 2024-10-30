@@ -26,10 +26,10 @@ export class TorusKnotScene extends AbstractScene {
         this.renderingPipeline.setFog(new LinearFog(-160, -380, new Vector4f(0, 0, 0, 1)));
         this.startTime = Date.now();
         return Promise.all([
-            TextureUtils.load(require('../../assets/rave.png'), false).then(
+            TextureUtils.load(require('@assets/rave.png'), false).then(
                 (texture: Texture) => this.rave = texture
             ),
-            TextureUtils.load(require('../../assets/microstrange.png'), false).then(
+            TextureUtils.load(require('@assets/microstrange.png'), false).then(
                 (texture: Texture) => this.micro = texture
             ),
             TextureUtils.generateProceduralNoise().then(

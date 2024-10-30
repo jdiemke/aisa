@@ -36,10 +36,10 @@ export class EnvironmentMappingScene extends AbstractScene {
         this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
         return Promise.all([
     
-            TextureUtils.load(require('../../assets/flood.png'), false).then(
+            TextureUtils.load(require('@assets/flood.png'), false).then(
                 texture => this.blurred = texture
             ),
-            TextureUtils.load(require('../../assets/envmap.png'), false).then(
+            TextureUtils.load(require('@assets/envmap.png'), false).then(
                 texture => this.env = texture
             ),
         ]).then(() => this.plane = this.createPlane());

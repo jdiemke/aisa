@@ -22,7 +22,10 @@ module.exports = {
             "path": false,
             "crypto": false,
             "path-browserify": false
-        }
+        },
+        alias: {
+            '@assets': path.resolve(__dirname, './src/assets'),
+        },
     },
     performance: {
         hints: 'warning',

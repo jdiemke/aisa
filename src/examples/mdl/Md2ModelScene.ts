@@ -40,16 +40,16 @@ export class Md2ModelScene extends AbstractScene {
         this.renderingPipeline.setCullFace(CullFace.BACK);
         this.startTime = Date.now();
         return Promise.all([
-            TextureUtils.load(require('../../assets/md2/texture2.jpg'), false).then(
+            TextureUtils.load(require('@assets/md2/texture2.jpg'), false).then(
                 (texture: Texture) => this.ogroTexture = texture
             ),
-            MDLLoader.load(require('../../assets/mdl/gijoe.mdl')).then(
+            MDLLoader.load(require('@assets/mdl/gijoe.mdl')).then(
                 (mesh: MDLModel) => this.mdl = mesh
             ),
-            WavefrontLoader.load(require('../../assets/dragon.obj')).then(
+            WavefrontLoader.load(require('@assets/dragon.obj')).then(
                 (value: Array<FlatshadedMesh>) => this.meshes = value
             ),
-            TextureUtils.load(require('../../assets/font.png'), true).then(
+            TextureUtils.load(require('@assets/fonts/font.png'), true).then(
                 (texture: Texture) => this.texture4 = texture),
         ]);
     }

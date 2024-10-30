@@ -25,7 +25,7 @@ export class ThirdPersonCameraScene extends AbstractScene {
         this.texturedRenderingPipeline.setCullFace(CullFace.BACK);
 
         return Promise.all([
-            TextureUtils.load(require('../../assets/starwars.png'), true).then(
+            TextureUtils.load(require('@assets/starwars.png'), true).then(
                 (texture: Texture) => this.ground = texture)
         ]);
     }

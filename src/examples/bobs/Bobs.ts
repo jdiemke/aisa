@@ -13,10 +13,10 @@ export class Bobs extends AbstractScene {
 
     public init(): Promise<any> {
         return Promise.all([
-            TextureUtils.load(require('../../assets/atlantis.png'), false).then(
+            TextureUtils.load(require('@assets/atlantis.png'), false).then(
                 (texture: Texture) => this.texture5 = texture
             ),
-            TextureUtils.load(require('../../assets/ball2.png'), true).then(
+            TextureUtils.load(require('@assets/ball2.png'), true).then(
                 (texture: Texture) => this.texture7 = texture
             ),
         ]);

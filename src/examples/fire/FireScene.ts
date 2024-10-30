@@ -56,7 +56,7 @@ export class FireScene extends AbstractScene {
         this.tile = this.makeTile(framebuffer.width, framebuffer.height);
 
         return Promise.all([
-            TextureUtils.load(require('../../assets/tristar.png'), true).then(
+            TextureUtils.load(require('@assets/tristar.png'), true).then(
                 (texture: Texture) => this.logo = texture
             ),
         ]);

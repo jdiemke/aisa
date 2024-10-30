@@ -26,13 +26,13 @@ export class PlatonianScene extends AbstractScene {
         this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
 
         return Promise.all([
-            BlenderLoader.loadWithTexture(require('../../assets/jsx/platonian_backed.jsx')).then(
+            BlenderLoader.loadWithTexture(require('@assets/jsx/platonian_backed.jsx')).then(
                 (mesh: Array<TexturedMesh>) => this.platonianMesh = mesh
             ),
-            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
+            TextureUtils.load(require('@assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
             ),
-            TextureUtils.load(require('../../assets/platonian_baked.png'), false).then(
+            TextureUtils.load(require('@assets/platonian_baked.png'), false).then(
                 (texture: Texture) => this.platonian = texture
             ),
             TextureUtils.generateProceduralNoise().then(

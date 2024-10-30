@@ -18,7 +18,7 @@ export class ParticleSystemScene extends AbstractScene {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         this.particleSystem = new ParticleSystem(Date.now() * 0.8);
         return Promise.all([
-            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
+            TextureUtils.load(require('@assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
             ),
             TextureUtils.generateProceduralParticleTexture().then(

@@ -16,10 +16,10 @@ export class DofBallsScene extends AbstractScene {
     public init(framebuffer: Framebuffer): Promise<any> {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         return Promise.all([
-            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
+            TextureUtils.load(require('@assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
             ),
-            TextureUtils.load(require('../../assets/spriteBlur.png'), true).then(
+            TextureUtils.load(require('@assets/spriteBlur.png'), true).then(
                 (texture: Texture) => this.particleTexture2 = texture
             ),
             TextureUtils.generateProceduralNoise().then(

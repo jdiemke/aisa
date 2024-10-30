@@ -11,8 +11,8 @@ export class PsychadelicPlaneDeformationScene extends AbstractScene {
     public init(): Promise<any> {
 
         return Promise.all([
-            TextureUtils.load(require('../../assets/hoodlumLogo.png'), true).then(texture => this.hoodlumLogo = texture),
-            TextureUtils.load(require('../../assets/abstract.png'), false).then(texture => this.abstract = texture),
+            TextureUtils.load(require('@assets/hoodlumLogo.png'), true).then(texture => this.hoodlumLogo = texture),
+            TextureUtils.load(require('@assets/abstract.png'), false).then(texture => this.abstract = texture),
         ]);
     }
 

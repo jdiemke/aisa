@@ -17,7 +17,7 @@ export class MovingTorusScene extends AbstractScene {
         framebuffer.setCullFace(CullFace.BACK);
 
         return Promise.all([
-            TextureUtils.load(require('../../assets/atlantis.png'), true).then(
+            TextureUtils.load(require('@assets/atlantis.png'), true).then(
                 (texture: Texture) => this.background = texture
             )
         ]);

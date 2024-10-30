@@ -7,7 +7,7 @@ export class Scene1 {
 
     public init(framebuffer: Framebuffer): Promise<any> {
 
-        this.PlaneDeformationFloorScene = new PlaneDeformationScene(8, require('../../../assets/ground.png'));
+        this.PlaneDeformationFloorScene = new PlaneDeformationScene(8, require('@assets/ground.png'));
 
         return Promise.all([
             this.PlaneDeformationFloorScene.init(framebuffer)

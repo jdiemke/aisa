@@ -8,7 +8,7 @@ export class Scene2 {
 
     public init(): Promise<any> {
         return Promise.all([
-            TextureUtils.load(require('../../../assets/logos/chick-on-phone.png'), true).then(
+            TextureUtils.load(require('@assets/logos/chick-on-phone.png'), true).then(
                 (texture: Texture) => this.logo = texture
             )
         ]);

@@ -11,13 +11,13 @@ export class VoxelLandscapeScene extends AbstractScene {
 
     public init(): Promise<any> {
         return Promise.all([
-            TextureUtils.load(require('../../assets/razor1911.png'), true).then(
+            TextureUtils.load(require('@assets/razor1911.png'), true).then(
                 (texture: Texture) => this.texture2 = texture
             ),
-            TextureUtils.load(require('../../assets/heightmap.png'), false).then(
+            TextureUtils.load(require('@assets/heightmap.png'), false).then(
                 (texture: Texture) => this.heightmap = texture
             ),
-            TextureUtils.load(require('../../assets/abstract.png'), false).then(
+            TextureUtils.load(require('@assets/abstract.png'), false).then(
                 (texture: Texture) => this.abstract = texture
             ),
         ]);

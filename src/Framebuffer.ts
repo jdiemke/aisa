@@ -32,8 +32,8 @@ import { PointLight } from './shading/light/PointLight';
 */
 
 
-// let labJson2 = <any>require('./assets/lab2.json');
-// let bakedJson = <any>require('./assets/abstract.json');
+// let labJson2 = <any>require('@assets/lab2.json');
+// let bakedJson = <any>require('@assets/abstract.json');
 
 export class Framebuffer {
 

@@ -37,40 +37,40 @@ export class ParallaxScrollingScene extends AbstractScene {
 
     public init(): Promise<any> {
         return Promise.all([
-            TextureUtils.load(require('../../assets/xenusion/BG_sky.png'), true).then(
+            TextureUtils.load(require('@assets/xenusion/BG_sky.png'), true).then(
                 (texture: Texture) => this.BG_sky = texture
             ),
-            TextureUtils.load(require('../../assets/xenusion/BG_city.png'), true).then(
+            TextureUtils.load(require('@assets/xenusion/BG_city.png'), true).then(
                 (texture: Texture) => this.BG_city = texture
             ),
-            TextureUtils.load(require('../../assets/xenusion/BG_dirt1.png'), true).then(
+            TextureUtils.load(require('@assets/xenusion/BG_dirt1.png'), true).then(
                 (texture: Texture) => this.BG_dirt1 = texture
             ),
-            TextureUtils.load(require('../../assets/xenusion/BG_dirt2.png'), true).then(
+            TextureUtils.load(require('@assets/xenusion/BG_dirt2.png'), true).then(
                 (texture: Texture) => this.BG_dirt2 = texture
             ),
-            TextureUtils.load(require('../../assets/xenusion/BG_dirt3.png'), true).then(
+            TextureUtils.load(require('@assets/xenusion/BG_dirt3.png'), true).then(
                 (texture: Texture) => this.BG_dirt3 = texture
             ),
-            TextureUtils.load(require('../../assets/xenusion/BG_road.png'), true).then(
+            TextureUtils.load(require('@assets/xenusion/BG_road.png'), true).then(
                 (texture: Texture) => this.BG_road = texture
             ),
-            TextureUtils.load(require('../../assets/xenusion/AR_oldhouse.png'), true).then(
+            TextureUtils.load(require('@assets/xenusion/AR_oldhouse.png'), true).then(
                 (texture: Texture) => this.AR_oldhouse = texture
             ),
-            TextureUtils.load(require('../../assets/xenusion/AR_grill.png'), true).then(
+            TextureUtils.load(require('@assets/xenusion/AR_grill.png'), true).then(
                 (texture: Texture) => this.AR_grill = texture
             ),
-            TextureUtils.load(require('../../assets/xenusion/PR_tree1.png'), true).then(
+            TextureUtils.load(require('@assets/xenusion/PR_tree1.png'), true).then(
                 (texture: Texture) => this.PR_tree1 = texture
             ),
-            TextureUtils.load(require('../../assets/xenusion/PR_tree2.png'), true).then(
+            TextureUtils.load(require('@assets/xenusion/PR_tree2.png'), true).then(
                 (texture: Texture) => this.PR_tree2 = texture
             ),
-            TextureUtils.load(require('../../assets/xenusion/PR_lamp.png'), true).then(
+            TextureUtils.load(require('@assets/xenusion/PR_lamp.png'), true).then(
                 (texture: Texture) => this.PR_lamp = texture
             ),
-            TextureUtils.load(require('../../assets/xenusion/AR_haneu.png'), true).then(
+            TextureUtils.load(require('@assets/xenusion/AR_haneu.png'), true).then(
                 (texture: Texture) => this.AR_haneu = texture
             ),
         ]);

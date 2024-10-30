@@ -26,9 +26,9 @@ export class TexturedTorusScene extends AbstractScene {
         this.torusMesh = this.computeTexturedTorusMesh();
 
         return Promise.all([
-            TextureUtils.load(require('../../assets/font.png'), true).then(texture => this.texture4 = texture),
-            TextureUtils.load(require('../../assets/cyber.png'), false).then(texture => this.abstract = texture),
-            TextureUtils.load(require('../../assets/atlantis.png'), false).then(texture => this.texture5 = texture),
+            TextureUtils.load(require('@assets/fonts/font.png'), true).then(texture => this.texture4 = texture),
+            TextureUtils.load(require('@assets/cyber.png'), false).then(texture => this.abstract = texture),
+            TextureUtils.load(require('@assets/atlantis.png'), false).then(texture => this.texture5 = texture),
         ]);
     }
 

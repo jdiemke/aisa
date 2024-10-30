@@ -9,10 +9,10 @@ export class Scene3 {
 
     public init(): Promise<any> {
         return Promise.all([
-            TextureUtils.load(require('../../../assets/logos/chick-on-phone.png'), true).then(
+            TextureUtils.load(require('@assets/logos/chick-on-phone.png'), true).then(
                 (texture: Texture) => this.background = texture
             ),
-            TextureUtils.load(require('../../../assets/logos/pizza_express.png'), true).then(
+            TextureUtils.load(require('@assets/logos/pizza_express.png'), true).then(
                 (texture: Texture) => this.logo = texture
             ),
         ]);

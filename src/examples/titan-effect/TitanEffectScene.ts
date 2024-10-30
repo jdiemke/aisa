@@ -15,10 +15,10 @@ export class TitanEffectScene extends AbstractScene {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         this.startTime = Date.now();
         return Promise.all([
-            TextureUtils.load(require('../../assets/atlantis.png'), false).then(
+            TextureUtils.load(require('@assets/atlantis.png'), false).then(
                 (texture: Texture) => this.atlantisBackground = texture
             ),
-            TextureUtils.load(require('../../assets/hoodlumLogo.png'), true).then(
+            TextureUtils.load(require('@assets/hoodlumLogo.png'), true).then(
                 (texture: Texture) => this.hoodlumLogo = texture
             ),
         ]);

@@ -13,7 +13,7 @@ export class LedTunnelScene extends AbstractScene {
 
     public init(): Promise<any> {
         return Promise.all([
-            TextureUtils.load(require('../../assets/led.png'), false).then(
+            TextureUtils.load(require('@assets/led.png'), false).then(
                 (texture: Texture) => this.ledTexture = texture
             ),
         ]);

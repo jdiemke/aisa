@@ -109,10 +109,10 @@ export class DemoScene extends AbstractScene {
             this.BlockFade.init(framebuffer),
 
             // load music
-            this.soundManager.loadMusic(require(`../../assets/sound/showeroflove.mod`)),
+            this.soundManager.loadMusic(require(`@assets/sound/showeroflove.mod`)),
 
             // load *.rocket file for scene/music synchronization
-            this.soundManager.prepareSync(require('../../assets/sound/demo.rocket'), true),
+            this.soundManager.prepareSync(require('@assets/sound/demo.rocket'), true),
 
             // load and initialze effects
             ...demoOrder.map(async (element, index) =>

@@ -23,7 +23,7 @@ export class VoxelBallsScene extends AbstractScene {
         framebuffer.setCullFace(CullFace.BACK);
         this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         return Promise.all([
-            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
+            TextureUtils.load(require('@assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
             )
         ]);

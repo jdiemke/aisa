@@ -34,19 +34,19 @@ export class SkyBoxScene extends AbstractScene {
             this.skyBox.init(),
             this.torus.init(framebuffer),
 
-            TextureUtils.load(require('../../assets/metalheadz.png'), false).then(
+            TextureUtils.load(require('@assets/metalheadz.png'), false).then(
                 (texture: Texture) => this.metalheadz = texture
             ),
-            TextureUtils.load(require('../../assets/ring.png'), true).then(
+            TextureUtils.load(require('@assets/ring.png'), true).then(
                 (texture: Texture) => this.texture11 = texture
             ),
-            TextureUtils.load(require('../../assets/bokeh.png'), true).then(
+            TextureUtils.load(require('@assets/bokeh.png'), true).then(
                 (texture: Texture) => this.texture13 = texture
             ),
             TextureUtils.generateProceduralNoise().then(
                 (texture: Texture) => this.noise = texture
             ),
-            TextureUtils.load(require('../../assets/dirt.png'), true).then(
+            TextureUtils.load(require('@assets/dirt.png'), true).then(
                 (texture: Texture) => this.dirt = texture
             )
         ]);

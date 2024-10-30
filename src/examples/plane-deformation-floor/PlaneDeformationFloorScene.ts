@@ -10,7 +10,7 @@ export class PlaneDeformationFloorScene extends AbstractScene {
     private hoodlumLogo: Texture;
     private fontRenderer2: FontRenderer;
     private startTime: number = Date.now();
-    private PlaneDeformationFloorScene = new PlaneDeformationScene(8, require('../../assets/heightmap.png'));
+    private PlaneDeformationFloorScene = new PlaneDeformationScene(8, require('@assets/heightmap.png'));
 
     public init(framebuffer: Framebuffer): Promise<any> {
 
@@ -24,11 +24,11 @@ export class PlaneDeformationFloorScene extends AbstractScene {
         this.fontRenderer2 = new FontRenderer(
             framebuffer,
             32, 32, fonts2,
-            require('./../../assets/equinox.png')
+            require('@assets/equinox.png')
         );
 
         return Promise.all([
-            TextureUtils.load(require('../../assets/tristar.png'), true).then(
+            TextureUtils.load(require('@assets/tristar.png'), true).then(
                 (texture: Texture) => this.hoodlumLogo = texture
             ),
             this.fontRenderer2.init(),

@@ -23,20 +23,20 @@ export class DofBallsScene extends AbstractScene {
     this.fontRenderer = new FontRenderer(
         framebuffer,
         8, 8, fonts,
-        require('../../assets/font.png')
+        require('@assets/fonts/font.png')
     );
         return Promise.all([
             this.fontRenderer.init(),
-            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
+            TextureUtils.load(require('@assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
             ),
-            TextureUtils.load(require('../../assets/spriteBlur.png'), true).then(
+            TextureUtils.load(require('@assets/spriteBlur.png'), true).then(
                 (texture: Texture) => this.particleTexture2 = texture
             ),
             TextureUtils.generateProceduralNoise().then(
                 (texture: Texture) => this.noise = texture
             ),
-            TextureUtils.load(require('../../assets/cocoon.png'), false).then(
+            TextureUtils.load(require('@assets/cocoon.png'), false).then(
                 (texture: Texture) => this.cocoon = texture
             ),
         ]);

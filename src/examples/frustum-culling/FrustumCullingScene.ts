@@ -24,7 +24,7 @@ export class FrustumCullingScene extends AbstractScene {
         this.renderingPipeline.setCullFace(CullFace.BACK);
 
         return Promise.all([
-            BlenderLoader.load(require('../../assets/jsx/world2.jsx')).then(
+            BlenderLoader.load(require('@assets/jsx/world2.jsx')).then(
                 (mesh: Array<FlatshadedMesh>) => this.world = BoundingVolumeExpander.expand(mesh)
             )
         ]);

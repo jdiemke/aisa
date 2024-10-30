@@ -31,8 +31,8 @@ export class BumpMap extends AbstractScene {
         }
 
         return Promise.all([
-            TextureUtils.load(require('./map.png'), false).then(texture => this.map = texture),
-            TextureUtils.load(require('./bump.png'), false).then(texture => this.bump = texture),
+            TextureUtils.load(require('@assets/map.png'), false).then(texture => this.map = texture),
+            TextureUtils.load(require('@assets/bump.png'), false).then(texture => this.bump = texture),
         ]).then(
             () => {
                 // precompute normal map

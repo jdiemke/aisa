@@ -50,7 +50,7 @@ export class BlockFade extends AbstractScene {
         this.initDissolve(framebuffer.width, framebuffer.height);
 
         return Promise.all([
-            TextureUtils.load(require('../../assets/atlantis.png'), false).then(
+            TextureUtils.load(require('@assets/atlantis.png'), false).then(
                 (textureBackground: Texture) => this.ledTexture = textureBackground
             ),
         ]);

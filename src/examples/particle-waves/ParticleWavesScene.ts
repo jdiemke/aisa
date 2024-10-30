@@ -16,7 +16,7 @@ export class ParticleWavesScene extends AbstractScene {
     public init(framebuffer: Framebuffer): Promise<any> {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         return Promise.all([
-            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(texture => this.blurred = texture),
+            TextureUtils.load(require('@assets/blurredBackground.png'), false).then(texture => this.blurred = texture),
             this.createProceduralTexture3().then(texture => this.particleTexture2 = texture),
             TextureUtils.generateProceduralNoise().then(texture => this.noise = texture),
         ]);

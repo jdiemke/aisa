@@ -9,7 +9,7 @@ export class PolarVoxelsScene extends AbstractScene {
 
     public init(): Promise<any> {
         return Promise.all([
-            TextureUtils.load(require('../../assets/heightmap.png'), false).then(
+            TextureUtils.load(require('@assets/heightmap.png'), false).then(
                 (texture: Texture) => this.heightmap = texture
             ),
             TextureUtils.generateProceduralNoise().then((texture: Texture) => this.noise = texture)

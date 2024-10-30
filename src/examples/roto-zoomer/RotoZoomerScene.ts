@@ -32,16 +32,16 @@ export class RotoZoomerScene extends AbstractScene {
         this.scene = new FeedbackRadialBlur();
         return Promise.all([
             this.scene.init(framebuffer),
-            TextureUtils.load(require('../../assets/meth.png'), true).then(
+            TextureUtils.load(require('@assets/meth.png'), true).then(
                 (texture: Texture) => this.logo = texture
             ),
-            TextureUtils.load(require('../../assets/xray.png'), false).then(
+            TextureUtils.load(require('@assets/xray.png'), false).then(
                 (texture: Texture) => this.logoTexture = texture
             ),
-            TextureUtils.load(require('../../assets/face.png'), true).then(
+            TextureUtils.load(require('@assets/face.png'), true).then(
                 (texture: Texture) => this.face = texture
             ),
-            TextureUtils.load(require('../../assets/hlm.png'), true).then(
+            TextureUtils.load(require('@assets/hlm.png'), true).then(
                 (texture: Texture) => this.ground = texture)
         ]);
     }

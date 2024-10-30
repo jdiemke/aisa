@@ -62,10 +62,10 @@ export class VoxelLandScapeFadeScene extends AbstractScene {
         this.colorLut = new Uint32Array(65536);
 
         return Promise.all([
-            TextureUtils.load(require('./assets/height_256.png'), false).then(
+            TextureUtils.load(require('@assets/voxel/height_256.png'), false).then(
                 (texture: Texture) => this.voxelmap = texture
             ),
-            TextureUtils.load(require('./assets/lines_256.png'), true).then(
+            TextureUtils.load(require('@assets/voxel/lines_256.png'), true).then(
                 (texture: Texture) => this.colormap = texture
             ),
         ]).then(

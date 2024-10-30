@@ -17,10 +17,10 @@ export class Shrooms extends AbstractScene {
         this.scene = new PlaneDeformationTunnelScene();
         return Promise.all([
             this.scene.init(framebuffer),
-            TextureUtils.load(require('../../assets/pattern.png'), false).then(
+            TextureUtils.load(require('@assets/pattern.png'), false).then(
                 (texture: Texture) => this.texture5 = texture
             ),
-            TextureUtils.load(require('../../assets/ball2.png'), true).then(
+            TextureUtils.load(require('@assets/ball2.png'), true).then(
                 (texture: Texture) => this.texture7 = texture
             ),
         ]);

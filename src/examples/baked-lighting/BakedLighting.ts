@@ -33,10 +33,10 @@ export class BakedLighting extends AbstractScene {
 
         return Promise.all([
             this.skyBox.init(),
-            BlenderLoader.loadWithTexture(require('../../assets/jsx/abstract.jsx')).then(
+            BlenderLoader.loadWithTexture(require('@assets/jsx/abstract.jsx')).then(
                 (mesh: Array<TexturedMesh>) => this.blenderObj8 = mesh
             ),
-            TextureUtils.load(require('../../assets/Backed.png'), false).then(
+            TextureUtils.load(require('@assets/Backed.png'), false).then(
                 (texture: Texture) => this.baked = texture
             ),
             TextureUtils.generateProceduralNoise().then(

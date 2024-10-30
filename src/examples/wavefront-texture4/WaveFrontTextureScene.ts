@@ -20,13 +20,13 @@ export class WaveFrontTextureScene extends AbstractScene {
         this.texturedRenderingPipeline.setCullFace(CullFace.BACK);
 
         return Promise.all([
-            TextureUtils.load(require('../../assets/wavefront/abstract/abstract.png'), false).then(
+            TextureUtils.load(require('@assets/wavefront/abstract/abstract.png'), false).then(
                 (texture: Texture) => this.spikeBallTexture = texture
             ),
-            WavefrontLoader.loadWithTexture(require('../../assets/wavefront/abstract/abstract.obj')).then(
+            WavefrontLoader.loadWithTexture(require('@assets/wavefront/abstract/abstract.obj')).then(
                 (x: Array<TexturedMesh>) => this.spikeBallMesh = x
             ),
-            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
+            TextureUtils.load(require('@assets/blurredBackground.png'), false).then(
                 texture => this.backgroundTexture = texture
             ),
         ]);

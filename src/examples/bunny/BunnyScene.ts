@@ -28,10 +28,10 @@ export class BunnyScene extends AbstractScene {
         this.renderingPipeline.setMaterial(this.constructSceneMaterial());
 
         return Promise.all([
-            BlenderLoader.load(require('../../assets/jsx/mybunny.jsx')).then(
+            BlenderLoader.load(require('@assets/jsx/mybunny.jsx')).then(
                 (mesh: Array<FlatshadedMesh>) => this.scene = mesh
             ),
-            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
+            TextureUtils.load(require('@assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
             ),
             TextureUtils.generateProceduralNoise().then(

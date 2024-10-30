@@ -31,19 +31,19 @@ export class RoomScene extends AbstractScene {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
 
         return Promise.all([
-            this.soundManager.loadMusic(require("../../assets/music/K303XPRS.xm")),
-            //"../../assets/music/keith303_-_into_the_unknown.xm")),
-            BlenderLoader.load(require('../../assets/jsx/room.jsx')).then(
+            this.soundManager.loadMusic(require("@assets/music/K303XPRS.xm")),
+            //"@assets/music/keith303_-_into_the_unknown.xm")),
+            BlenderLoader.load(require('@assets/jsx/room.jsx')).then(
                 (mesh: Array<FlatshadedMesh>) => this.blenderObj4 = mesh
             ),
-            BlenderLoader.load(require('../../assets/jsx/hoodlum.jsx')).then(
+            BlenderLoader.load(require('@assets/jsx/hoodlum.jsx')).then(
                 (mesh: Array<FlatshadedMesh>) => this.blenderObj5 = mesh
             ),
             TextureUtils.generateProceduralNoise().then(texture => this.noise = texture),
-            TextureUtils.load(require('../../assets/spark.png'), true).then(texture => this.texture10 = texture),
-            TextureUtils.load(require('../../assets/ring.png'), true).then(texture => this.texture11 = texture),
-            TextureUtils.load(require('../../assets/bokeh.png'), true).then(texture => this.texture13 = texture),
-            TextureUtils.load(require('../../assets/dirt.png'), true).then(texture => this.dirt = texture)
+            TextureUtils.load(require('@assets/spark.png'), true).then(texture => this.texture10 = texture),
+            TextureUtils.load(require('@assets/ring.png'), true).then(texture => this.texture11 = texture),
+            TextureUtils.load(require('@assets/bokeh.png'), true).then(texture => this.texture13 = texture),
+            TextureUtils.load(require('@assets/dirt.png'), true).then(texture => this.dirt = texture)
         ]);
     }
 

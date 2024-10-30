@@ -41,11 +41,11 @@ export class ThirdPersonCameraScene extends AbstractScene {
         return Promise.all([
             this.scene.init(framebuffer),
             this.scene2.init(),
-            this.soundManager.loadMusic(require("../../assets/music/muffler_-_aphrodisiae.mod")),
-            TextureUtils.load(require('../../assets/psychadelic.png'), false).then(
+            this.soundManager.loadMusic(require("@assets/music/muffler_-_aphrodisiae.mod")),
+            TextureUtils.load(require('@assets/psychadelic.png'), false).then(
                 (texture: Texture) => this.textureBackground = texture
             ),
-            TextureUtils.load(require('../../assets/eye.png'), true).then(
+            TextureUtils.load(require('@assets/eye.png'), true).then(
                 (texture: Texture) => this.ground = texture)
         ]);
     }

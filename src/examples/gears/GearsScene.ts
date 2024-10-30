@@ -23,10 +23,10 @@ export class GearsScene extends AbstractScene {
         this.renderingPipeline.setCullFace(CullFace.FRONT);
 
         return Promise.all([
-            BlenderLoader.load(require('../../assets/jsx/gear.jsx')).then(
+            BlenderLoader.load(require('@assets/jsx/gear.jsx')).then(
                 (mesh: Array<FlatshadedMesh>) => this.gearsMesh = mesh
             ),
-            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
+            TextureUtils.load(require('@assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
             ),
             TextureUtils.generateProceduralNoise().then(

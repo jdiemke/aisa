@@ -36,13 +36,13 @@ export class EnvironmentMappingCylinderScene extends AbstractScene {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
         return Promise.all([
-            TextureUtils.load(require('../../assets/flood.png'), false).then(
+            TextureUtils.load(require('@assets/flood.png'), false).then(
                 texture => this.blurred = texture
             ),
-            TextureUtils.load(require('../../assets/envmap.png'), false).then(
+            TextureUtils.load(require('@assets/envmap.png'), false).then(
                 texture => this.env = texture
             ),
-            TextureUtils.load(require('../../assets/heightmap.png'), false).then(texture => this.heightmap = texture),
+            TextureUtils.load(require('@assets/heightmap.png'), false).then(texture => this.heightmap = texture),
             TextureUtils.generateProceduralNoise().then(texture => this.noise = texture),
         ]).then(() => this.plane = this.createCylinder2(this.heightmap));
     }
