@@ -35,24 +35,24 @@ export class RotatingGearsScene extends AbstractScene {
     this.fontRenderer = new FontRenderer(
         framebuffer,
         8, 8, fonts,
-        require('../../assets/font.png')
+        require('@assets/fonts/font.png')
     );
         return Promise.all([
             this.fontRenderer.init(),
-            this.soundManager.loadMusic(require("../../assets/music/ctrix_-_rok_at_party.mod")),
-            BlenderLoader.load(require('../../assets/jsx/gear.jsx')).then(
+            this.soundManager.loadMusic(require("@assets/music/ctrix_-_rok_at_party.mod")),
+            BlenderLoader.load(require('@assets/jsx/gear.jsx')).then(
                 (mesh: Array<FlatshadedMesh>) => this.gearsMesh = mesh
             ),
-            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
+            TextureUtils.load(require('@assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
             ),
             TextureUtils.generateProceduralNoise().then(
                 (texture: Texture) => this.noise = texture
             ),
-            TextureUtils.load(require('../../assets/hoodlumLogo.png'), true).then(
+            TextureUtils.load(require('@assets/hoodlumLogo.png'), true).then(
                 (texture: Texture) => this.hoodlumLogo = texture
             ),
-            TextureUtils.load(require('../../assets/robot.png'), true).then(
+            TextureUtils.load(require('@assets/robot.png'), true).then(
                 (texture: Texture) => this.robot = texture
             )
         ]);

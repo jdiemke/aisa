@@ -17,7 +17,7 @@ export class CubeScene extends AbstractScene {
         this.renderingPipeline.setCullFace(CullFace.BACK);
 
         return Promise.all([
-            TextureUtils.load(require('../../assets/logo-fairlight-10.png'), false).then(texture => this.fairlight = texture),
+            TextureUtils.load(require('@assets/logo-fairlight-10.png'), false).then(texture => this.fairlight = texture),
         ]);
     }
 

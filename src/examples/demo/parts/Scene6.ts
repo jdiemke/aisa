@@ -14,14 +14,14 @@ export class Scene6 {
 
     public init(framebuffer: Framebuffer): Promise<any> {
 
-        this.PlaneDeformationScene = new PlaneDeformationScene(3, require('../../../assets/textures/checker.png'));
+        this.PlaneDeformationScene = new PlaneDeformationScene(3, require('@assets/textures/checker.png'));
         this.DistortedSphereScene = new DistortedSphereScene();
 
         return Promise.all([
             this.DistortedSphereScene.init(framebuffer),
             this.PlaneDeformationScene.init(framebuffer),
             // https://www.pngitem.com/middle/iwTwxh_face-facial-hair-sitting-tongue-fear-woman-png/
-            TextureUtils.load(require('../../../assets/logos/drug-chick-2.png'), true).then(
+            TextureUtils.load(require('@assets/logos/drug-chick-2.png'), true).then(
                 (texture: Texture) => this.logo = texture
             ),
         ])

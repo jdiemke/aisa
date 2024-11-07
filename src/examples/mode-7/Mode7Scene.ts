@@ -72,186 +72,186 @@ export class Mode7Scene extends AbstractScene {
 
         this.fontRenderer = new FontRenderer(
             framebuffer, 8, 14, '0123456789',
-            require('./assets/sprites/time.png')
+            require('@assets/mode-7/sprites/time.png')
         );
 
         return Promise.all([
             this.fontRenderer.init(),
-            TextureUtils.load(require('./assets/map.png'), false).then(
+            TextureUtils.load(require('@assets/mode-7/map.png'), false).then(
                 (texture: Texture) => this.map = texture
             ),
-            TextureUtils.load(require('./assets/sprites/bump.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/bump.png'), true).then(
                 (texture: Texture) => this.bump = texture
             ),
-            TextureUtils.load(require('./assets/sprites/banana.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/banana.png'), true).then(
                 (texture: Texture) => this.banana = texture
             ),
-            TextureUtils.load(require('./assets/sprites/egg.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/egg.png'), true).then(
                 (texture: Texture) => this.egg = texture
             ),
-            TextureUtils.load(require('./assets/sprites/flower.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/flower.png'), true).then(
                 (texture: Texture) => this.flower = texture
             ),
-            TextureUtils.load(require('./assets/sprites/pipe2.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/pipe2.png'), true).then(
                 (texture: Texture) => this.pipe2 = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mapHUD.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mapHUD.png'), true).then(
                 (texture: Texture) => this.mapHud = texture
             ),
-            TextureUtils.load(require('./assets/background.png'), false).then(
+            TextureUtils.load(require('@assets/mode-7/background.png'), false).then(
                 (texture: Texture) => this.back = texture
             ),
-            TextureUtils.load(require('./assets/grass.png'), false).then(
+            TextureUtils.load(require('@assets/mode-7/grass.png'), false).then(
                 (texture: Texture) => this.grass = texture
             ),
-            TextureUtils.load(require('./assets/pipe.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/pipe.png'), true).then(
                 (texture: Texture) => this.pipe = texture
-            ), TextureUtils.load(require('./assets/sprites/lap2.png'), true).then(
+            ), TextureUtils.load(require('@assets/mode-7/sprites/lap2.png'), true).then(
                 (texture: Texture) => this.lap2Texture = texture
-            ), TextureUtils.load(require('./assets/sprites/shadow.png'), true).then(
+            ), TextureUtils.load(require('@assets/mode-7/sprites/shadow.png'), true).then(
                 (texture: Texture) => this.shadowTexture = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario01.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario01.png'), true).then(
                 (texture: Texture) => this.marioTextures[0] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario02.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario02.png'), true).then(
                 (texture: Texture) => this.marioTextures[1] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario03.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario03.png'), true).then(
                 (texture: Texture) => this.marioTextures[2] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario04.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario04.png'), true).then(
                 (texture: Texture) => this.marioTextures[3] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario05.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario05.png'), true).then(
                 (texture: Texture) => this.marioTextures[4] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario06.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario06.png'), true).then(
                 (texture: Texture) => this.marioTextures[5] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario07.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario07.png'), true).then(
                 (texture: Texture) => this.marioTextures[6] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario08.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario08.png'), true).then(
                 (texture: Texture) => this.marioTextures[7] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario09.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario09.png'), true).then(
                 (texture: Texture) => this.marioTextures[8] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario10.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario10.png'), true).then(
                 (texture: Texture) => this.marioTextures[9] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario11.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario11.png'), true).then(
                 (texture: Texture) => this.marioTextures[10] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario12.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario12.png'), true).then(
                 (texture: Texture) => this.marioTextures[11] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario13.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario13.png'), true).then(
                 (texture: Texture) => this.marioTextures[12] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario14.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario14.png'), true).then(
                 (texture: Texture) => this.marioTextures[13] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario15.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario15.png'), true).then(
                 (texture: Texture) => this.marioTextures[14] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario16.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario16.png'), true).then(
                 (texture: Texture) => this.marioTextures[15] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario17.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario17.png'), true).then(
                 (texture: Texture) => this.marioTextures[16] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario18.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario18.png'), true).then(
                 (texture: Texture) => this.marioTextures[17] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario19.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario19.png'), true).then(
                 (texture: Texture) => this.marioTextures[18] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario20.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario20.png'), true).then(
                 (texture: Texture) => this.marioTextures[19] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario21.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario21.png'), true).then(
                 (texture: Texture) => this.marioTextures[20] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/mario22.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/mario22.png'), true).then(
                 (texture: Texture) => this.marioTextures[21] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/metrics.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/metrics.png'), true).then(
                 (texture: Texture) => this.metrics = texture
             )
 
             ,
-            TextureUtils.load(require('./assets/sprites/joshi01.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi01.png'), true).then(
                 (texture: Texture) => this.joshiTextures[0] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi02.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi02.png'), true).then(
                 (texture: Texture) => this.joshiTextures[1] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi03.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi03.png'), true).then(
                 (texture: Texture) => this.joshiTextures[2] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi04.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi04.png'), true).then(
                 (texture: Texture) => this.joshiTextures[3] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi05.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi05.png'), true).then(
                 (texture: Texture) => this.joshiTextures[4] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi06.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi06.png'), true).then(
                 (texture: Texture) => this.joshiTextures[5] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi07.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi07.png'), true).then(
                 (texture: Texture) => this.joshiTextures[6] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi08.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi08.png'), true).then(
                 (texture: Texture) => this.joshiTextures[7] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi09.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi09.png'), true).then(
                 (texture: Texture) => this.joshiTextures[8] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi10.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi10.png'), true).then(
                 (texture: Texture) => this.joshiTextures[9] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi11.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi11.png'), true).then(
                 (texture: Texture) => this.joshiTextures[10] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi12.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi12.png'), true).then(
                 (texture: Texture) => this.joshiTextures[11] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi13.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi13.png'), true).then(
                 (texture: Texture) => this.joshiTextures[12] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi14.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi14.png'), true).then(
                 (texture: Texture) => this.joshiTextures[13] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi15.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi15.png'), true).then(
                 (texture: Texture) => this.joshiTextures[14] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi16.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi16.png'), true).then(
                 (texture: Texture) => this.joshiTextures[15] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi17.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi17.png'), true).then(
                 (texture: Texture) => this.joshiTextures[16] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi18.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi18.png'), true).then(
                 (texture: Texture) => this.joshiTextures[17] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi19.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi19.png'), true).then(
                 (texture: Texture) => this.joshiTextures[18] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi20.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi20.png'), true).then(
                 (texture: Texture) => this.joshiTextures[19] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi21.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi21.png'), true).then(
                 (texture: Texture) => this.joshiTextures[20] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/joshi22.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/joshi22.png'), true).then(
                 (texture: Texture) => this.joshiTextures[21] = texture
             ),
-            TextureUtils.load(require('./assets/sprites/pos.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/pos.png'), true).then(
                 (texture: Texture) => this.pos = texture
             ),
-            TextureUtils.load(require('./assets/sprites/posJoshi.png'), true).then(
+            TextureUtils.load(require('@assets/mode-7/sprites/posJoshi.png'), true).then(
                 (texture: Texture) => this.posJoshi = texture
             ),
         ]).then(

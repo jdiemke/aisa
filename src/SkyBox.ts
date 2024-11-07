@@ -18,22 +18,22 @@ export class SkyBox {
     public init(): Promise<any> {
 
         return Promise.all([
-            TextureUtils.load(require('./assets/skybox/skybox_back.png'), false).then(
+            TextureUtils.load(require('@assets/skybox/skybox_back.png'), false).then(
                 (texture: Texture) => this.back = texture
             ),
-            TextureUtils.load(require('./assets/skybox/skybox_down.png'), false).then(
+            TextureUtils.load(require('@assets/skybox/skybox_down.png'), false).then(
                 (texture: Texture) => this.down = texture
             ),
-            TextureUtils.load(require('./assets/skybox/skybox_front.png'), false).then(
+            TextureUtils.load(require('@assets/skybox/skybox_front.png'), false).then(
                 (texture: Texture) => this.front = texture
             ),
-            TextureUtils.load(require('./assets/skybox/skybox_left.png'), false).then(
+            TextureUtils.load(require('@assets/skybox/skybox_left.png'), false).then(
                 (texture: Texture) => this.left = texture
             ),
-            TextureUtils.load(require('./assets/skybox/skybox_right.png'), false).then(
+            TextureUtils.load(require('@assets/skybox/skybox_right.png'), false).then(
                 (texture: Texture) => this.right = texture
             ),
-            TextureUtils.load(require('./assets/skybox/skybox_up.png'), false).then(
+            TextureUtils.load(require('@assets/skybox/skybox_up.png'), false).then(
                 (texture: Texture) => this.up = texture
             )]).then(() => {
                 this.back.setClamp(true);

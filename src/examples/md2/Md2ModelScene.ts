@@ -36,10 +36,10 @@ export class Md2ModelScene extends AbstractScene {
         this.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
         this.startTime = Date.now();
         return Promise.all([
-            TextureUtils.load(require('../../assets/md2/texture2.jpg'), false).then(
+            TextureUtils.load(require('@assets/md2/texture2.jpg'), false).then(
                 (texture: Texture) => this.ogroTexture = texture
             ),
-            MD2Loader.load(require('../../assets/md2/drfreak.md2')).then(
+            MD2Loader.load(require('@assets/md2/drfreak.md2')).then(
                 (mesh: MD2Model) => this.md2 = mesh
             )
         ]);

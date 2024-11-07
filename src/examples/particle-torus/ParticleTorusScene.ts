@@ -19,7 +19,7 @@ export class ParticleTorusScene extends AbstractScene {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         this.start = Date.now();
         return Promise.all([
-            TextureUtils.load(require('../../assets/eye-background.png'), false).then(
+            TextureUtils.load(require('@assets/eye-background.png'), false).then(
                 (texture: Texture) => this.blurred = texture
             ),
             TextureUtils.generateProceduralParticleTexture().then((texture) => this.particleTexture2 = texture),

@@ -24,7 +24,7 @@ export class GlowScene extends AbstractScene {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         return Promise.all([
             this.scene.init(framebuffer),
-            TextureUtils.load(require('../../assets/led.png'), false).then(
+            TextureUtils.load(require('@assets/led.png'), false).then(
                 (texture: Texture) => this.ledTexture = texture
             ),
             TextureUtils.generateProceduralNoise().then(texture => this.noise = texture),

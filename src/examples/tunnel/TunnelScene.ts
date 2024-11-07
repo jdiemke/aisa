@@ -19,13 +19,13 @@ export class TunnelScene extends AbstractScene {
         this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         return Promise.all([
-            BlenderLoader.loadWithTexture(require('../../assets/jsx/metalheadz.jsx')).then(
+            BlenderLoader.loadWithTexture(require('@assets/jsx/metalheadz.jsx')).then(
                 (mesh: Array<TexturedMesh>) => this.blenderObjMetal = mesh
             ),
-            TextureUtils.load(require('../../assets/cyber.png'), false).then(
+            TextureUtils.load(require('@assets/cyber.png'), false).then(
                 (texture: Texture) => this.metall = texture
             ),
-            TextureUtils.load(require('../../assets/metalheadz.png'), false).then(
+            TextureUtils.load(require('@assets/metalheadz.png'), false).then(
                 (texture: Texture) => this.metalheadz = texture
             ),
         ]);

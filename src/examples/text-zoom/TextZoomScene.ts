@@ -25,16 +25,16 @@ export class TextZoomScene extends AbstractScene {
         this.start = Date.now();
         return Promise.all([
 
-            TextureUtils.load(require('../../assets/atlantis.png'), false).then(
+            TextureUtils.load(require('@assets/atlantis.png'), false).then(
                 (texture: Texture) => this.atlantisBackground = texture
             ),
-            TextureUtils.load(require('../../assets/hoodlumLogo.png'), true).then(
+            TextureUtils.load(require('@assets/hoodlumLogo.png'), true).then(
                 (texture: Texture) => this.hoodlumLogo = texture
             ),
             TextureUtils.generateProceduralNoise().then(texture => this.noise = texture),
-            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(texture => this.blurred = texture),
-            TextureUtils.load(require('../../assets/cross.png'), true).then(texture => this.cross = texture),
-            TextureUtils.load(require('../../assets/microstrange.png'), false).then(texture => this.micro = texture),
+            TextureUtils.load(require('@assets/blurredBackground.png'), false).then(texture => this.blurred = texture),
+            TextureUtils.load(require('@assets/cross.png'), true).then(texture => this.cross = texture),
+            TextureUtils.load(require('@assets/microstrange.png'), false).then(texture => this.micro = texture),
         ]);
     }
     public render(framebuffer: Framebuffer, time: number): void {

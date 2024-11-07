@@ -11,7 +11,7 @@ export class ScrollingBackgroundScene extends AbstractScene {
 
     public init(): Promise<any> {
         return Promise.all([
-            TextureUtils.load(require('../../assets/pandabear.png'), false).then(
+            TextureUtils.load(require('@assets/pandabear.png'), false).then(
                 (texture: Texture) => this.logoTexture = texture
             ),
         ]);

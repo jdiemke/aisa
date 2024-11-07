@@ -29,16 +29,16 @@ export class HoodlumScene extends AbstractScene {
         this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         return Promise.all([
-            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
+            TextureUtils.load(require('@assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
             ),
-            BlenderLoader.loadWithTexture(require('../../assets/jsx/lab2.jsx')).then(
+            BlenderLoader.loadWithTexture(require('@assets/jsx/lab2.jsx')).then(
                 (mesh: Array<TexturedMesh>) => this.spaceLabMesh = mesh
             ),
-            BlenderLoader.load(require('../../assets/jsx/hoodlum2018.jsx')).then(
+            BlenderLoader.load(require('@assets/jsx/hoodlum2018.jsx')).then(
                 (mesh: Array<FlatshadedMesh>) => this.hoodlumLogoMesh = mesh
             ),
-            TextureUtils.load(require('../../assets/lab2.png'), false).then(texture => this.lab2 = texture),
+            TextureUtils.load(require('@assets/lab2.png'), false).then(texture => this.lab2 = texture),
             TextureUtils.generateProceduralNoise().then(texture => this.noise = texture),
             this.createProceduralTexture3().then(texture => this.particleTexture2 = texture),
         ]);

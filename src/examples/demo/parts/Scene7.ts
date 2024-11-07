@@ -18,7 +18,7 @@ export class Scene7 {
             this.CubeScene.init(framebuffer),
             this.RotoZoomerScene.init(framebuffer),
             // pngitem.com/middle/Tommih_happy-surprised-woman-surprised-girl-png-transparent-png/
-            TextureUtils.load(require('../../../assets/logos/drug-chick.png'), true).then(
+            TextureUtils.load(require('@assets/logos/drug-chick.png'), true).then(
                 (texture: Texture) => this.logo = texture
             ),
         ])

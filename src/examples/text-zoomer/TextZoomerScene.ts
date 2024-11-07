@@ -13,7 +13,7 @@ export class TextZoomerScene extends AbstractScene {
     public init(): Promise<any> {
 
         return Promise.all([
-            TextureUtils.load(require('../../assets/microstrange.png'), false).then(texture => this.micro = texture),
+            TextureUtils.load(require('@assets/microstrange.png'), false).then(texture => this.micro = texture),
             TextureUtils.generateProceduralNoise().then(texture => this.noise = texture)
         ]);
     }

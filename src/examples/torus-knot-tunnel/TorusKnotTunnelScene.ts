@@ -27,7 +27,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
 
         return Promise.all([
             TextureUtils.generateProceduralNoise().then((texture: Texture) => this.noise = texture),
-            TextureUtils.load(require('../../assets/cocoon.png'), false).then(
+            TextureUtils.load(require('@assets/cocoon.png'), false).then(
                 (texture: Texture) => this.cocoon = texture
             ),
             TextureUtils.generateProceduralParticleTexture2().then(

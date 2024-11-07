@@ -22,8 +22,8 @@ export class TexturedCubePlasmaScene extends AbstractScene {
         this.cubeMesh = this.computeTexturedCubeMesh();
 
         return Promise.all([
-            TextureUtils.load(require('../../assets/robot2.png'), false).then(texture => this.texture = texture),
-            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
+            TextureUtils.load(require('@assets/robot2.png'), false).then(texture => this.texture = texture),
+            TextureUtils.load(require('@assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
             )
         ]);

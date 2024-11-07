@@ -28,10 +28,10 @@ export class AbstractCube extends AbstractScene {
         this.renderingPipeline.setCullFace(CullFace.BACK);
 
         return Promise.all([
-            BlenderLoader.load(require('../../assets/jsx/stravaganza.jsx')).then(
+            BlenderLoader.load(require('@assets/jsx/stravaganza.jsx')).then(
                 (mesh: Array<FlatshadedMesh>) => this.scene = mesh
             ),
-            TextureUtils.load(require('../../assets/blurredBackground.png'), false).then(
+            TextureUtils.load(require('@assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
             ),
             TextureUtils.generateProceduralNoise().then(

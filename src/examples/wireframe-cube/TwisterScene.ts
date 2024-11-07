@@ -20,19 +20,19 @@ export class TwisterScene extends AbstractScene {
         this.framebuffer = framebuffer;
         this.linerClipper = new CohenSutherlandLineClipper(framebuffer);
         return Promise.all([
-            TextureUtils.load(require('../../assets/atlantis.png'), false).then(
+            TextureUtils.load(require('@assets/atlantis.png'), false).then(
                 (texture: Texture) => this.backgroundTexture = texture
             ),
-            TextureUtils.load(require('../../assets/logo.png'), false).then(
+            TextureUtils.load(require('@assets/logo.png'), false).then(
                 (texture: Texture) => this.logoTexture = texture
             ),
-            TextureUtils.load(require('../../assets/atlantis.png'), false).then(
+            TextureUtils.load(require('@assets/atlantis.png'), false).then(
                 (texture: Texture) => this.backgroundTexture = texture
             ),
-            TextureUtils.load(require('../../assets/logo.png'), false).then(
+            TextureUtils.load(require('@assets/logo.png'), false).then(
                 (texture: Texture) => this.logoTexture = texture
             ),
-            TextureUtils.load(require('../../assets/haujobb-overlay.png'), true).then(
+            TextureUtils.load(require('@assets/haujobb-overlay.png'), true).then(
                 (texture: Texture) => this.greets = texture
             ),
         ]);

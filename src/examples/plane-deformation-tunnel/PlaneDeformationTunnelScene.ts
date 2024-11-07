@@ -13,11 +13,11 @@ export class PlaneDeformationTunnelScene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.scaleClipBlitter = new ScaleClipBlitter(framebuffer);
-        this.PlaneDeformationScene = new PlaneDeformationScene(3, require('../../assets/textures/checker.png'));
+        this.PlaneDeformationScene = new PlaneDeformationScene(3, require('@assets/textures/checker.png'));
 
         return Promise.all([
 
-            TextureUtils.load(require('../../assets/hoodlumLogo.png'), true).then(
+            TextureUtils.load(require('@assets/hoodlumLogo.png'), true).then(
                 (texture: Texture) => this.hoodlumLogo = texture
             ),
             this.PlaneDeformationScene.init(framebuffer),

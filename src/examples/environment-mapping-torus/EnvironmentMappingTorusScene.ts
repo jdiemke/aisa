@@ -25,10 +25,10 @@ export class EnvironmentMappingScene extends AbstractScene {
         this.buildTorusMesh();
 
         return Promise.all([
-            TextureUtils.load(require('../../assets/flood.png'), false).then(
+            TextureUtils.load(require('@assets/flood.png'), false).then(
                 texture => this.flood = texture
             ),
-            TextureUtils.load(require('../../assets/envmap.png'), false).then(
+            TextureUtils.load(require('@assets/envmap.png'), false).then(
                 texture => this.env = texture
             ),
         ]);

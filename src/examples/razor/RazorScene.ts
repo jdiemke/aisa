@@ -41,10 +41,10 @@ export class RazorScene extends AbstractScene {
         this.icosahedron = new Sphere(6, 10);
 
         return Promise.all([
-            TextureUtils.load(require('./assets/spark.png'), true).then(texture => this.texture10 = texture),
-            TextureUtils.load(require('./assets/ring.png'), true).then(texture => this.texture11 = texture),
-            TextureUtils.load(require('./assets/bokeh.png'), true).then(texture => this.texture13 = texture),
-            TextureUtils.load(require('./assets/dirt.png'), true).then(texture => this.dirt = texture),
+            TextureUtils.load(require('@assets/spark.png'), true).then(texture => this.texture10 = texture),
+            TextureUtils.load(require('@assets/ring.png'), true).then(texture => this.texture11 = texture),
+            TextureUtils.load(require('@assets/bokeh.png'), true).then(texture => this.texture13 = texture),
+            TextureUtils.load(require('@assets/dirt.png'), true).then(texture => this.dirt = texture),
             TextureUtils.generateProceduralNoise().then(texture => this.noise = texture),
         ]);
     }

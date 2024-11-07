@@ -13,10 +13,10 @@ export class TwisterScene extends AbstractScene {
 
     public init(): Promise<any> {
         return Promise.all([
-            TextureUtils.load(require('../../assets/atlantis.png'), false).then(
+            TextureUtils.load(require('@assets/atlantis.png'), false).then(
                 (texture: Texture) => this.backgroundTexture = texture
             ),
-            TextureUtils.load(require('../../assets/logo.png'), false).then(
+            TextureUtils.load(require('@assets/logo.png'), false).then(
                 (texture: Texture) => this.logoTexture = texture
             ),
         ]);

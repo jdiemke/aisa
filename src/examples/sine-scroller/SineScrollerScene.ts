@@ -26,7 +26,7 @@ export class SineScrollerScene extends AbstractScene {
         this.fontRenderer = new FontRenderer(
             framebuffer,
             32, 34, fonts,
-            require('./assets/fraxionFont.png')
+            require('@assets/fonts/fraxionFont.png')
         );
 
         const fonts2: string =
@@ -39,7 +39,7 @@ export class SineScrollerScene extends AbstractScene {
         this.fontRenderer2 = new FontRenderer(
             framebuffer,
             16, 18, fonts2,
-            require('./assets/anarchyFont.png')
+            require('@assets/fonts/anarchyFont.png')
         );
         /*
                 const fonts: string =
@@ -51,10 +51,10 @@ export class SineScrollerScene extends AbstractScene {
                 this.fontRenderer = new FontRenderer(
                     framebuffer,
                     32, 25, fonts,
-                    require('./assets/dragonsFont.png')
+                    require('@assets/dragonsFont.png')
                 );*/
         return Promise.all([
-            TextureUtils.load(require('../../assets/hoodlumLogo.png'), true).then(
+            TextureUtils.load(require('@assets/hoodlumLogo.png'), true).then(
                 (texture: Texture) => this.texture2 = texture
             ),
             this.fontRenderer.init(),

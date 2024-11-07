@@ -15,10 +15,10 @@ export class Scene4 {
 
         return Promise.all([
             // https://www.pngkey.com/detail/u2r5r5o0o0e6a9i1_sign-up-for-deals-pizza-delivery-guy-png/
-            TextureUtils.load(require('../../../assets/logos/pizza-delivery.png'), true).then(
+            TextureUtils.load(require('@assets/logos/pizza-delivery.png'), true).then(
                 (texture: Texture) => this.pizza = texture
             ),
-            TextureUtils.load(require('../../../assets/lsd.png'), true).then(
+            TextureUtils.load(require('@assets/lsd.png'), true).then(
                 (texture: Texture) => this.image = texture
             ),
             this.PlasmaScene.init()
