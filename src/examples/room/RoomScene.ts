@@ -146,9 +146,32 @@ export class RoomScene extends AbstractScene {
         const light = camera.multiply(new Vector3f(20, 19, -90));
         const lensflareScreenSpace = framebuffer.project(light);
 
-        framebuffer.drawParticleStreams(framebuffer, elapsedTime, spark, light );
+        this.drawParticleStreams(framebuffer, elapsedTime, spark, light );
 
         LensFlare.drawLensFlare(framebuffer, lensflareScreenSpace, elapsedTime * 0.15, texture, dirt);
+    }
+
+    public drawParticleStreams(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, light: Vector3f) {
+
+        const points: Array<Vector3f> = new Array<Vector3f>();
+        const points2: Array<Vector3f> = new Array<Vector3f>(points.length);
+        const transformed = framebuffer.project(light);
+
+        points2.push(transformed);
+        points2.sort((a, b) => {
+            return a.z - b.z;
+        });
+
+        points2.forEach(element => {
+            // let size = -(2.0 * 192 / (element.z));
+            const size = -(80.3 * 192 / (element.z));
+
+            framebuffer.drawParticle2(
+                Math.round(element.x - size / 2),
+                Math.round(element.y - size / 2),
+                Math.round(size), Math.round(size), texture, 1 / element.z, 1.0, 0, 200);
+        });
+
     }
 
 }

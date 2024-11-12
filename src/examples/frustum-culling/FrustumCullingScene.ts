@@ -12,6 +12,7 @@ import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/Goura
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture';
 import { BlenderLoader } from '../../model/blender/BlenderLoader';
+import { Color } from '../../core/Color';
 
 export class FrustumCullingScene extends AbstractScene {
 
@@ -114,7 +115,37 @@ export class FrustumCullingScene extends AbstractScene {
             });
         }
         // framebuffer.drawText(8, 18 + 8, 'RENDERED OBJECTS: ' + count + '/' + this.world.length, texture);
-        framebuffer.drawScreenBounds(framebuffer);
+        this.drawScreenBounds(framebuffer);
+    }
+
+    public drawScreenBounds(framebuffer: Framebuffer): void {
+        const color: number = Color.WHITE.toPackedFormat();
+        const width: number = framebuffer.width / 2;
+        const height: number = framebuffer.height / 2;
+
+        framebuffer.drawLineDDANoZ(
+            new Vector3f(width / 2, height / 2, 0),
+            new Vector3f(width / 2 + width, height / 2, -100),
+            color
+        );
+
+        framebuffer.drawLineDDANoZ(
+            new Vector3f(width / 2, height / 2, 0),
+            new Vector3f(width / 2, height / 2 + height, -100),
+            color
+        );
+
+        framebuffer.drawLineDDANoZ(
+            new Vector3f(width / 2 + width, height / 2, 0),
+            new Vector3f(width / 2 + width, height / 2 + height, -100),
+            color
+        );
+
+        framebuffer.drawLineDDANoZ(
+            new Vector3f(width / 2, height / 2 + height, 0),
+            new Vector3f(width / 2 + width, height / 2 + height, -100),
+            color
+        );
     }
 
 }

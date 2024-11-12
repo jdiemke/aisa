@@ -93,6 +93,7 @@ const examples = [
     new Example('endless-zoom'),
     new Example('domain-warping'),
     new Example('shrooms'),
+    new Example('matterjs'),
 ];
 
 module.exports = examples;

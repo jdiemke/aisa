@@ -47,6 +47,8 @@
         "webpack-dev-server": "4.15.1"
     },
     "dependencies": {
-        "@types/stats": "^0.16.30"
+        "@types/matter-js": "^0.19.7",
+        "@types/stats": "^0.16.30",
+        "matter-js": "^0.20.0"
     }
 }
