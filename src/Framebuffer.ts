@@ -11,6 +11,7 @@ import RandomNumberGenerator from './RandomNumberGenerator';
 import { FlatShadingTriangleRasterizer } from './rasterizer/FlatShadingTriangleRasterizer';
 import { LineRasterizerDda } from './rasterizer/line/LineRasterizer';
 import { LineRasterizerNoZ } from './rasterizer/line/LineRasterizerNoZ';
+import { TexturedAlphaBlendingTriangleRasterizer } from './rasterizer/TexturedAlphaBlendingTriangleRasterizer';
 import { TexturedTriangleRasterizer } from './rasterizer/TexturedTriangleRasterizer';
 import { TexturingRenderingPipeline } from './rendering-pipelines/TexturingRenderingPipeline';
 import { AbstractClipEdge } from './screen-space-clipping/AbstractClipEdge';
@@ -52,7 +53,7 @@ export class Framebuffer {
     public bob: Texture;
     public triangleRasterizer = new FlatShadingTriangleRasterizer(this);
     public texturedTriangleRasterizer = new TexturedTriangleRasterizer(this);
-
+   
     public scaleClipBlitter = new ScaleClipBlitter(this);
     // public renderingPipeline: FlatShadingRenderingPipeline;
      public texturedRenderingPipeline: TexturingRenderingPipeline;
@@ -1485,60 +1486,6 @@ export class Framebuffer {
                 this.framebuffer[i++] = final;
             }
         }
-    }
-
-
-    public drawScreenBounds(framebuffer: Framebuffer): void {
-        const color: number = Color.WHITE.toPackedFormat();
-        const width: number = this.width / 2;
-        const height: number = this.height / 2;
-
-        framebuffer.drawLineDDANoZ(
-            new Vector3f(width / 2, height / 2, 0),
-            new Vector3f(width / 2 + width, height / 2, -100),
-            color
-        );
-
-        framebuffer.drawLineDDANoZ(
-            new Vector3f(width / 2, height / 2, 0),
-            new Vector3f(width / 2, height / 2 + height, -100),
-            color
-        );
-
-        framebuffer.drawLineDDANoZ(
-            new Vector3f(width / 2 + width, height / 2, 0),
-            new Vector3f(width / 2 + width, height / 2 + height, -100),
-            color
-        );
-
-        framebuffer.drawLineDDANoZ(
-            new Vector3f(width / 2, height / 2 + height, 0),
-            new Vector3f(width / 2 + width, height / 2 + height, -100),
-            color
-        );
-    }
-
-    public drawParticleStreams(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, light: Vector3f) {
-
-        const points: Array<Vector3f> = new Array<Vector3f>();
-        const points2: Array<Vector3f> = new Array<Vector3f>(points.length);
-        const transformed = framebuffer.project(light);
-
-        points2.push(transformed);
-        points2.sort((a, b) => {
-            return a.z - b.z;
-        });
-
-        points2.forEach(element => {
-            // let size = -(2.0 * 192 / (element.z));
-            const size = -(80.3 * 192 / (element.z));
-
-            framebuffer.drawParticle2(
-                Math.round(element.x - size / 2),
-                Math.round(element.y - size / 2),
-                Math.round(size), Math.round(size), texture, 1 / element.z, 1.0, 0, 200);
-        });
-
     }
 
     public drawPlaneDeformation(elapsedTime: number, texture: Texture): void {
