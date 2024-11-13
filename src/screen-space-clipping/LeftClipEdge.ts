@@ -44,4 +44,19 @@ export class LeftClipEdge extends AbstractClipEdge {
         return vertex;
     }
 
+    public computeIntersection3(p1: Vertex, p2: Vertex): Vertex {
+        const vertex = new Vertex();
+        vertex.projection =
+            new Vector4f(this.framebuffer.minWindow.x,
+                Math.round(p1.projection.y + (p2.projection.y - p1.projection.y) * (this.framebuffer.minWindow.x - p1.projection.x) / (p2.projection.x - p1.projection.x)),
+               0);
+
+        const textCoord = new TextureCoordinate();
+
+        textCoord.u = (p1.textureCoordinate.u  + (p2.textureCoordinate.u - p1.textureCoordinate.u) * (this.framebuffer.minWindow.x - p1.projection.x) / (p2.projection.x - p1.projection.x)) ;
+        textCoord.v = (p1.textureCoordinate.v  + (p2.textureCoordinate.v  - p1.textureCoordinate.v) * (this.framebuffer.minWindow.x - p1.projection.x) / (p2.projection.x - p1.projection.x)) ;
+        vertex.textureCoordinate = textCoord;
+
+        return vertex;
+    }
 }

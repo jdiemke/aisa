@@ -9,5 +9,6 @@ export abstract class AbstractClipEdge {
     public abstract isInside2(p: Vertex): boolean;
     public abstract computeIntersection(p1: Vertex, p2: Vertex): Vertex;
     public abstract computeIntersection2(p1: Vertex, p2: Vertex): Vertex;
+    public abstract computeIntersection3(p1: Vertex, p2: Vertex): Vertex;
 
 }
