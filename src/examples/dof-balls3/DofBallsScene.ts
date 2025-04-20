@@ -13,11 +13,14 @@ export class DofBallsScene extends AbstractScene {
     private particleTexture2: Texture;
     private noise: Texture;
     private hoodlumLogo: Texture;
+    private perlin: Texture;
 
     private accumulationBuffer: Uint32Array;
+    private dist: Uint32Array;
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
+        this.dist = new Uint32Array(framebuffer.width * framebuffer.height);
         return Promise.all([
             TextureUtils.load(require('@assets/blurredBackground.png'), false).then(
                 (texture: Texture) => this.blurred = texture
@@ -31,6 +34,9 @@ export class DofBallsScene extends AbstractScene {
             TextureUtils.load(require('@assets/hoodlumLogo.png'), true).then(
                 (texture: Texture) => this.hoodlumLogo = texture
             ),
+            TextureUtils.load(require('@assets/perlin.png'), true).then(
+                (texture: Texture) => this.perlin = texture
+            ),
         ]);
     }
 
@@ -38,6 +44,7 @@ export class DofBallsScene extends AbstractScene {
         // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
         this.drawParticleTorus(framebuffer, time*0.7, this.particleTexture2, true);
+
 
         time = time *0.2;
         for (let i: number = 0; i < this.hoodlumLogo.width; i++) {
@@ -49,6 +56,31 @@ export class DofBallsScene extends AbstractScene {
                 Interpolator.cosineInterpolate(0.0, 1.0, time*0.003-2)
             );
         }
+
+        this.perlin.setClamp(false);
+        const distort: Texture = new Texture(this.dist, framebuffer.width, framebuffer.height);
+        distort.setClamp(true)
+        framebuffer.fastFramebufferCopy(distort.texture,framebuffer.framebuffer);
+        let i = 0;
+        let offset= time*0.1;
+        const scale2 = (Math.sin(time*0.0008)*0.5+0.5)*20;
+        for (let y = 0; y < framebuffer.height; y++) {
+            for (let x = 0; x < framebuffer.width; x++) {
+
+
+                // FIXME: scale by 256
+                const disp = this.perlin.getBilinearFilteredPixel2(x+offset,y+offset);
+                const disp2 = this.perlin.getBilinearFilteredPixel2(x+40+offset,y+30+offset);
+                const color1 = distort.getBilinearFilteredPixel2(
+                    x+((disp&  0xff)/255*scale2-scale2/2),
+                    y+(((disp2>>8)&  0xff)/255*scale2-scale2/2));
+
+
+                framebuffer.framebuffer[i++] = color1;
+            }
+        }
+
+
 
         const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         framebuffer.drawTexture(0, 0, texture3, 0.60);
