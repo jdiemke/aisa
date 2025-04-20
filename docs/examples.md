@@ -90,3 +90,5 @@
 * [Shrooms](https://jdiemke.github.io/aisa/shrooms.html)
 * [Domain Warping](https://jdiemke.github.io/aisa/domain-warping.html)
 * [Matter.js](https://jdiemke.github.io/aisa/matterjs.html)
+* [DOF Balls with Logo](https://jdiemke.github.io/aisa/dof-balls3.html)
+* [Wavefront with Texture 5](https://jdiemke.github.io/aisa/wavefront-texture5.html)
