@@ -1,4 +1,3 @@
-import { Color } from '../core/Color';
 import { Framebuffer } from '../Framebuffer';
 import { Vertex } from '../Vertex';
 import { AbstractTriangleRasterizer } from './AbstractTriangleRasterizer';
@@ -56,70 +55,66 @@ export class SubPixelTriangleRasterizer extends AbstractTriangleRasterizer {
 
         // precalculate the area of the parallelogram defined by our triangle
         const area = this.cross(v0.projection, v1.projection, v2.projection);
+        // precompute reciprocal so we multiply instead of divide per pixel
+        const invArea = 1 / area;
 
-        // calculate edges
-        const edge0 = { x: v2.projection.x - v1.projection.x, y: v2.projection.y - v1.projection.y };
-        const edge1 = { x: v0.projection.x - v2.projection.x, y: v0.projection.y - v2.projection.y };
-        const edge2 = { x: v1.projection.x - v0.projection.x, y: v1.projection.y - v0.projection.y };
+        // hoist projection and color reads out of the loop
+        const v0p = v0.projection, v1p = v1.projection, v2p = v2.projection;
+        const v0r = v0.color.r, v0g = v0.color.g, v0b = v0.color.b, v0a = v0p.x;
+        const v1r = v1.color.r, v1g = v1.color.g, v1b = v1.color.b, v1a = v1p.x;
+        const v2r = v2.color.r, v2g = v2.color.g, v2b = v2.color.b, v2a = v2p.x;
 
         // calculate which edges are right edges so we can easily skip them
         // right edges go up, or (bottom edges) are horizontal edges that go right
-        const edgeRight0 = edge0.y < 0 || (edge0.y === 0 && edge0.x > 0);
-        const edgeRight1 = edge1.y < 0 || (edge1.y === 0 && edge0.x > 0);
-        const edgeRight2 = edge2.y < 0 || (edge2.y === 0 && edge0.x > 0);
+        const e0x = v2p.x - v1p.x, e0y = v2p.y - v1p.y;
+        const e1y = v0p.y - v2p.y;
+        const e2y = v1p.y - v0p.y;
+        const edgeRight0 = e0y < 0 || (e0y === 0 && e0x > 0);
+        const edgeRight1 = e1y < 0 || (e1y === 0 && e0x > 0);
+        const edgeRight2 = e2y < 0 || (e2y === 0 && e0x > 0);
 
-        // p is our 2D pixel location point
-        const p = { x: null, y: null };
+        // incremental barycentric step deltas (step size = 0.5 to match loop increment)
+        // cross(a,b,p) is linear in p, so Δw per step = (b.y-a.y)*Δx or -(b.x-a.x)*Δy
+        const dw0dx = (v2p.y - v1p.y) * 0.5, dw0dy = -(v2p.x - v1p.x) * 0.5;
+        const dw1dx = (v0p.y - v2p.y) * 0.5, dw1dy = -(v0p.x - v2p.x) * 0.5;
+        const dw2dx = (v1p.y - v0p.y) * 0.5, dw2dy = -(v1p.x - v0p.x) * 0.5;
 
-        // fragment is the resulting pixel with all the vertex attributes interpolated
-        const fragment = {
-            r: undefined,
-            g: undefined,
-            b: undefined,
-            a: undefined,
-            z: 0
-        };
+        // compute starting barycentric weights at the first sample point (minX+0.5, minY+0.5)
+        const pStart = { x: minX + 0.5, y: minY + 0.5 };
+        let w0Row = this.cross(v1p, v2p, pStart);
+        let w1Row = this.cross(v2p, v0p, pStart);
+        let w2Row = this.cross(v0p, v1p, pStart);
 
-        for (let y = minY; y < maxY; y += .5) {
-            for (let x = minX; x < maxX; x += .5) {
-                // sample from the center of the pixel, not the top-left corner
-                p.x = x + 0.5; p.y = y + .5;
+        for (let y = minY; y < maxY; y += 0.5) {
+            let w0 = w0Row;
+            let w1 = w1Row;
+            let w2 = w2Row;
 
-                // calculate vertex weights
-                // should divide these by area, but we do that later
-                // so we divide once, not three times
-                const w0 = this.cross(v1.projection, v2.projection, p);
-                const w1 = this.cross(v2.projection, v0.projection, p);
-                const w2 = this.cross(v0.projection, v1.projection, p);
+            for (let x = minX; x < maxX; x += 0.5) {
 
-                // if the point is not inside our polygon, skip fragment
-                if (w0 < 0 || w1 < 0 || w2 < 0) {
-                    continue;
+                // if the point is inside the triangle and not on a right/bottom edge
+                if (w0 >= 0 && w1 >= 0 && w2 >= 0 &&
+                    !((w0 === 0 && edgeRight0) || (w1 === 0 && edgeRight1) || (w2 === 0 && edgeRight2))) {
+
+                    // interpolate color components and inline pack — avoids new Color() allocation
+                    const r = (w0 * v0r + w1 * v1r + w2 * v2r) * invArea;
+                    const g = (w0 * v0g + w1 * v1g + w2 * v2g) * invArea;
+                    const b = (w0 * v0b + w1 * v1b + w2 * v2b) * invArea;
+                    const a = (w0 * v0a + w1 * v1a + w2 * v2a) * invArea;
+                    const packed = (r | 0) | ((g | 0) << 8) | ((b | 0) << 16) | ((a | 0) << 24);
+
+                    framebuffer.drawPixelAntiAliasedSpacial(x, y, packed);
                 }
 
-                // if this is a right or bottom edge, skip fragment (top-left rule):
-                if ((w0 === 0 && edgeRight0) || (w1 === 0 && edgeRight1) || (w2 === 0 && edgeRight2)) {
-                    continue;
-                }
-
-                // interpolate our vertices
-                fragment.r = (w0 * v0.color.r + w1 * v1.color.r + w2 * v2.color.r) / area;
-                fragment.g = (w0 * v0.color.g + w1 * v1.color.g + w2 * v2.color.g) / area;
-                fragment.b = (w0 * v0.color.b + w1 * v1.color.b + w2 * v2.color.b) / area;
-                fragment.a = (w0 * v0.projection.x + w1 * v1.projection.x + w2 * v2.projection.x) / area;
-                fragment.z = (w0 * v0.projection.z + w1 * v1.projection.z + w2 * v2.projection.z) / area;
-
-                const fragColor = new Color(
-                    fragment.r, fragment.g, fragment.b, fragment.a
-                )
-
-                // this can be optimized to only draw aliased pixels on the edges
-
-                // if (this.depthBuffer.testDepth(x, y, fragment.z)) {
-                framebuffer.drawPixelAntiAliasedSpacial(x, y, fragColor.toPackedFormat());
-                // }
-
+                w0 += dw0dx;
+                w1 += dw1dx;
+                w2 += dw2dx;
             }
+
+            // step row weights down by one y-step
+            w0Row += dw0dy;
+            w1Row += dw1dy;
+            w2Row += dw2dy;
         }
     }
 
