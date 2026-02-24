@@ -30,6 +30,7 @@ export class SubPixelRenderingPipeline extends AbstractRenderingPipeline {
     // flat, gouroud, texture mapping etc.. should be done with clipper as well!
     private triangleRasterizer: AbstractTriangleRasterizer = null;
     private clipper: SutherlandHodgman2DClipper;
+    private phongLighting: PhongLighting = new PhongLighting();
 
     private projectedVertices: Array<Vector4f> = new Array<Vector4f>(
         new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1)
@@ -103,7 +104,23 @@ export class SubPixelRenderingPipeline extends AbstractRenderingPipeline {
             modelViewMartrix.multiplyHomArr(mesh.points[i], mesh.transformedPoints[i]);
         }
 
-        for (let i: number = 0; i < mesh.faces.length; i++) {
+        // Sort faces back-to-front (painter's algorithm) so that farther faces are
+        // drawn first and nearer faces correctly paint over them.
+        // In view space z is negative for visible geometry, so ascending sort
+        // (most-negative first) gives back-to-front order.
+        const faceOrder: Array<number> = Array.from({ length: mesh.faces.length }, (_, k) => k);
+        faceOrder.sort((a, b) => {
+            const za = mesh.transformedPoints[mesh.faces[a].v1].z
+                     + mesh.transformedPoints[mesh.faces[a].v2].z
+                     + mesh.transformedPoints[mesh.faces[a].v3].z;
+            const zb = mesh.transformedPoints[mesh.faces[b].v1].z
+                     + mesh.transformedPoints[mesh.faces[b].v2].z
+                     + mesh.transformedPoints[mesh.faces[b].v3].z;
+            return za - zb;
+        });
+
+        for (let fi: number = 0; fi < faceOrder.length; fi++) {
+            const i: number = faceOrder[fi];
             const v1: Vector4f = mesh.transformedPoints[mesh.faces[i].v1];
             const v2: Vector4f = mesh.transformedPoints[mesh.faces[i].v2];
             const v3: Vector4f = mesh.transformedPoints[mesh.faces[i].v3];
@@ -112,9 +129,11 @@ export class SubPixelRenderingPipeline extends AbstractRenderingPipeline {
             const normal2: Vector4f = mesh.transformedNormals[mesh.faces[i].n2];
             const normal3: Vector4f = mesh.transformedNormals[mesh.faces[i].n3];
 
-            if (this.isInFrontOfNearPlane(v1) &&
-                this.isInFrontOfNearPlane(v2) &&
-                this.isInFrontOfNearPlane(v3)) {
+            const v1Front: boolean = this.isInFrontOfNearPlane(v1);
+            const v2Front: boolean = this.isInFrontOfNearPlane(v2);
+            const v3Front: boolean = this.isInFrontOfNearPlane(v3);
+
+            if (v1Front && v2Front && v3Front) {
 
                 this.project2(v1, this.projectedVertices[0]);
                 this.project2(v2, this.projectedVertices[1]);
@@ -133,9 +152,7 @@ export class SubPixelRenderingPipeline extends AbstractRenderingPipeline {
                 this.vertexArray[2].normal = normal3;
 
                 this.renderConvexPolygon(framebuffer, this.vertexArray, true);
-            } else if (!this.isInFrontOfNearPlane(v1) &&
-                !this.isInFrontOfNearPlane(v2) &&
-                !this.isInFrontOfNearPlane(v3)) {
+            } else if (!v1Front && !v2Front && !v3Front) {
                 continue;
             } else {
                 this.vertexArray[0].position = v1;
@@ -155,11 +172,11 @@ export class SubPixelRenderingPipeline extends AbstractRenderingPipeline {
                 const output: Array<Vertex> = this.zClipTriangle(this.vertexArray);
 
                 if (output.length < 3) {
-                    return;
+                    continue;
                 }
 
                 for (let j: number = 0; j < output.length; j++) {
-                    output[j].projection = this.project(output[j].position);
+                    this.project2(output[j].position, output[j].projection);
                 }
 
                 this.renderConvexPolygon(framebuffer, output, false);
@@ -272,7 +289,7 @@ export class SubPixelRenderingPipeline extends AbstractRenderingPipeline {
         // TODO: if lighting is enabled use mat and light
         // else use Color set
 
-        let vertexColor: Vector4f = new PhongLighting().computeColor(this.material, this.lights, normal, vertex);
+        let vertexColor: Vector4f = this.phongLighting.computeColor(this.material, this.lights, normal, vertex);
 
         if (this.fog !== null) {
             vertexColor = this.fog.computeVertexColor(vertexColor, vertex);
