@@ -37,6 +37,13 @@ export class SoundManager {
     public loadMusic(filename: string): Promise<void> {
         return new Promise((resolve) => {
 
+            // Reset any stale modulePtr left over from a previous load (e.g. after a
+            // webpack HMR hot-reload).  The initTimeline poll checks window.modulePtr;
+            // if a stale truthy value remains, the poll fires immediately against the
+            // new generator whose closure modulePtr is still undefined, causing
+            // libopenmpt to crash with "Cannot read properties of undefined (reading 'ob')".
+            (window as any).modulePtr = 0;
+
             const fileExtension = filename.split('.').pop().toLowerCase();
             let audioPlayer;
 
@@ -57,7 +64,11 @@ export class SoundManager {
             }
             const track = new audioPlayer.Track(filename);
             this.audioElement = track.open();
-            resolve();
+            // Resolve only after the audio metadata is available, meaning the
+            // underlying XHR + WASM initialisation (and window.modulePtr) are done.
+            // Cowbell's WebAudioPlayer fires onloadedmetadata from inside
+            // generator.load()'s callback, after initModule() has completed.
+            this.audioElement.onloadedmetadata = () => resolve();
         });
     }
 
@@ -71,15 +82,9 @@ export class SoundManager {
     prepareSync(filename: string, demoMode: boolean): Promise<void> {
         this.demoMode = demoMode;
         return new Promise((resolve) => {
-            if (this.demoMode) {
-                this.syncDevice.setConfig({
-                    'rocketXML': filename
-                });
-                this.syncDevice.init('demo');
-
-            } else {
-                this.syncDevice.init();
-            }
+            // Register event listeners BEFORE calling init() to avoid a race condition
+            // where the 'ready' event fires before the listener is attached (demo mode
+            // loads the XML immediately, which can trigger 'ready' synchronously).
 
             // XML file from JS Rocket library was loaded and parsed, make sure your ogg is ready
             this.syncDevice.on('ready', () => this.onSyncReady());
@@ -90,7 +95,17 @@ export class SoundManager {
             // [JS Rocket - Spacebar] in Rocket calls one of those
             this.syncDevice.on('play', () => this.onPlay());
             this.syncDevice.on('pause', () => this.onPause());
-            resolve()
+
+            if (this.demoMode) {
+                this.syncDevice.setConfig({
+                    'rocketXML': filename
+                });
+                this.syncDevice.init('demo');
+            } else {
+                this.syncDevice.init();
+            }
+
+            resolve();
         });
     }
 
@@ -118,6 +133,12 @@ export class SoundManager {
     updateMusic() {
         // show message if rocket app is not running in background
         if (!this.syncDevice.connected && !this.demoMode) {
+            return;
+        }
+
+        // In demo mode the early-return above is skipped, so guard against
+        // sceneData not yet populated (onSyncReady fires async after XML loads).
+        if (!this.sceneData) {
             return;
         }
 

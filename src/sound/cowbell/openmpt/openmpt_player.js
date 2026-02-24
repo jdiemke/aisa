@@ -120,7 +120,11 @@
 		this.seekable = true;
 
 		this.seek = function(position) {
-			libopenmpt._openmpt_module_set_position_seconds(modulePtr, position);
+			// Guard: if the module hasn't been created yet (modulePtr is 0/undefined),
+			// silently skip the seek rather than crashing into uninitialised WASM exports.
+			if (modulePtr) {
+				libopenmpt._openmpt_module_set_position_seconds(modulePtr, position);
+			}
 		};
 
 		this.reset = function() {

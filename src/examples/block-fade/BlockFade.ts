@@ -131,9 +131,6 @@ export class BlockFade extends AbstractScene {
                         this.croud[index] = renderBuffer2[index];
                     }
                     this.prevMask[index] = this.curMask[index] = this.croud[index] < 0;
-                    if (Math.random() > 0.90) {
-                        this.noiseMask[index] = !isBackground;
-                    }
                 }
             }
 

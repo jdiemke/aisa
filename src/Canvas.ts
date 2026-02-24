@@ -57,7 +57,9 @@ export class Canvas {
                 this.startTime = Date.now();
                 this.renderLoop();
             }
-        );
+        ).catch((error: Error) => {
+            console.error('[Canvas] Scene failed to initialise:', error);
+        });
     }
 
     public renderLoop(): void {

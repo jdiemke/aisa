@@ -4,7 +4,7 @@ import { AbstractScene } from '../../../scenes/AbstractScene';
 
 export class LoadingScene extends AbstractScene {
 
-    public init(framebuffer: Framebuffer): Promise<any> {
+    public init(): Promise<any> {
         return Promise.all([
         ]);
     }
