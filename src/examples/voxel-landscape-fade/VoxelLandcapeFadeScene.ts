@@ -1,6 +1,7 @@
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
+import './../../default-style.css';
 
 /**
  * Voxel Landscape

@@ -53,7 +53,7 @@ export class BlenderCameraScene extends AbstractScene {
         this.skyBox = new SkyBox();
         return Promise.all([
             this.skyBox.init(),
-            WavefrontLoader.load(require('@assets/monkey.obj')).then(
+            WavefrontLoader.load(require('@assets/wavefront/monkey.obj')).then(
                 (value: Array<FlatshadedMesh>) => this.meshes = value
             ),
             CameraLoader.load(require('@assets/camera-path.jsx')).then(
