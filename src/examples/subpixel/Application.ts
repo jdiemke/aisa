@@ -1,12 +1,12 @@
 import { Canvas } from '../../Canvas';
-import { SubPixelCubeScene } from './SubPixelCubeScene';
+import { SubPixelScene } from './SubPixelScene';
 
 import './../../default-style.css';
 
 class Application {
 
     public static main(): void {
-        const canvas: Canvas = new Canvas(320, 200, new SubPixelCubeScene());
+        const canvas: Canvas = new Canvas(320, 200, new SubPixelScene());
         canvas.init();
     }
 
