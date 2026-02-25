@@ -1,27 +1,31 @@
 import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { Cube } from '../../geometrical-objects/Cube';
+import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { Matrix4f } from '../../math';
+import { WavefrontLoader } from '../../model/wavefront-obj/WavefrontLoader';
 import { SubPixelRenderingPipeline } from '../../rendering-pipelines/SubPixelRenderingPipeline';
 import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
 
-export class SubPixelCubeScene extends AbstractScene {
+export class SubPixelScene extends AbstractScene {
 
     private static BACKGROUND_COLOR: number = Color.BLACK.toPackedFormat();
     private subPixelRenderingPipeline: SubPixelRenderingPipeline;
     private gouraudRenderingPipeline: GouraudShadingRenderingPipeline;
-    private cubeMesh: Cube = new Cube();
+    private mesh: Array<FlatshadedMesh>;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.subPixelRenderingPipeline = new SubPixelRenderingPipeline(framebuffer);
+        this.subPixelRenderingPipeline.setCullFace(CullFace.BACK);
+
+        this.gouraudRenderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
+        this.gouraudRenderingPipeline.setCullFace(CullFace.BACK);
 
         return Promise.all([
-            this.subPixelRenderingPipeline = new SubPixelRenderingPipeline(framebuffer),
-            this.subPixelRenderingPipeline.setCullFace(CullFace.BACK),
-
-            this.gouraudRenderingPipeline = new GouraudShadingRenderingPipeline(framebuffer),
-            this.gouraudRenderingPipeline.setCullFace(CullFace.BACK),
+            WavefrontLoader.loadModel(require('@assets/wavefront/dragon.obj')).then(
+                (loader: WavefrontLoader) => this.mesh = loader.getMesh()
+            ),
         ]);
 
     }
@@ -29,18 +33,12 @@ export class SubPixelCubeScene extends AbstractScene {
     public render(framebuffer: Framebuffer, time: number): void {
         // rotate slowly to showcase
         const elapsedTime: number = time * 0.001;
-        framebuffer.clearColorBuffer(SubPixelCubeScene.BACKGROUND_COLOR);
+        framebuffer.clearColorBuffer(SubPixelScene.BACKGROUND_COLOR);
         framebuffer.clearDepthBuffer();
 
         // compare subpixel to gourad
-        this.subPixelRenderingPipeline.draw(framebuffer, this.cubeMesh.getMesh(), this.getModelViewMatrix(elapsedTime,-3));
-        this.gouraudRenderingPipeline.draw(framebuffer, this.cubeMesh.getMesh(), this.getModelViewMatrix(elapsedTime,3));
-    }
-
-    public renderBackground(framebuffer: Framebuffer, time: number): void {
-        const elapsedTime: number = time * 0.02;
-        framebuffer.clearDepthBuffer();
-        this.subPixelRenderingPipeline.draw(framebuffer, this.cubeMesh.getMesh(), this.getModelViewMatrix(elapsedTime,5));
+        this.subPixelRenderingPipeline.draw(framebuffer, this.mesh[0], this.getModelViewMatrix(elapsedTime, -3));
+        this.gouraudRenderingPipeline.draw(framebuffer, this.mesh[0], this.getModelViewMatrix(elapsedTime, 3));
     }
 
     private getModelViewMatrix(elapsedTime: number, xShift: number): Matrix4f {

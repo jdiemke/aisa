@@ -49,7 +49,7 @@ export class WavefrontScene extends AbstractScene {
 
         this.startTime = Date.now();
         return Promise.all([
-            WavefrontLoader.load(require('@assets/dragon.obj')).then(
+            WavefrontLoader.load(require('@assets/wavefront/dragon.obj')).then(
                 (value: Array<FlatshadedMesh>) => this.meshes = value
             ),
             TextureUtils.load(require('@assets/fonts/font.png'), true).then(

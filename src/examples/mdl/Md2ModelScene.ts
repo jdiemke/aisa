@@ -46,7 +46,7 @@ export class Md2ModelScene extends AbstractScene {
             MDLLoader.load(require('@assets/mdl/gijoe.mdl')).then(
                 (mesh: MDLModel) => this.mdl = mesh
             ),
-            WavefrontLoader.load(require('@assets/dragon.obj')).then(
+            WavefrontLoader.load(require('@assets/wavefront/dragon.obj')).then(
                 (value: Array<FlatshadedMesh>) => this.meshes = value
             ),
             TextureUtils.load(require('@assets/fonts/font.png'), true).then(
