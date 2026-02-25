@@ -23,10 +23,10 @@ export class WaveFrontTextureScene extends AbstractScene {
         this.texturedRenderingPipeline.setCullFace(CullFace.BACK);
 
         return Promise.all([
-            TextureUtils.load(require('@assets/spikes/texture.png'), false).then(
+            TextureUtils.load(require('@assets/wavefront/spikes/texture.png'), false).then(
                 (texture: Texture) => this.platonian = texture
             ),
-            WavefrontLoader.loadWithTexture(require('@assets/spikes/spike-ball-tex.obj')).then(
+            WavefrontLoader.loadWithTexture(require('@assets/wavefront/spikes/spike-ball-tex.obj')).then(
                 (x: Array<TexturedMesh>) => this.platonianMesh = x
             ),
             TextureUtils.load(require('@assets/flood2.png'), false).then(

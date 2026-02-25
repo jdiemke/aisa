@@ -23,10 +23,10 @@ export class WaveFrontTextureScene extends AbstractScene {
         this.texturedRenderingPipeline.setCullFace(CullFace.BACK);
 
         return Promise.all([
-            TextureUtils.load(require('@assets/baked_susanna.png'), false).then(
+            TextureUtils.load(require('@assets/wavefront/baked_susanna.png'), false).then(
                 (texture: Texture) => this.platonian = texture
             ),
-            WavefrontLoader.loadWithTexture(require('@assets/susanna.obj')).then(
+            WavefrontLoader.loadWithTexture(require('@assets/wavefront/susanna.obj')).then(
                 (x: Array<TexturedMesh>) => this.platonianMesh = x
             ),
    

@@ -1,5 +1,6 @@
 import { Canvas } from '../../Canvas';
 import { TwisterScene } from './TwisterScene';
+import './../../default-style.css';
 
 class Application {
 

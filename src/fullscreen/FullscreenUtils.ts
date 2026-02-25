@@ -1,13 +1,17 @@
 export class FullscreenUtils {
 
     public static toggleFullscreen(element: Element): void {
-        if (!this.fullscreen) {
+        const isFullscreen: boolean = !!(
+            document.fullscreenElement ||
+            (document as any).webkitFullscreenElement ||
+            (document as any).mozFullScreenElement ||
+            (document as any).msFullscreenElement
+        );
+        if (!isFullscreen) {
             FullscreenUtils.enterFullscreen(element);
-            this.fullscreen = true;
             this.setStyle(element, 'cursor: none');
         } else {
             FullscreenUtils.exitFullscreen();
-            this.fullscreen = false;
             this.setStyle(element, 'cursor: zoom-in');
         }
     }
@@ -37,7 +41,5 @@ export class FullscreenUtils {
             document.webkitExitFullscreen();
         }
     }
-
-    private static fullscreen: boolean = false;
 
 }
