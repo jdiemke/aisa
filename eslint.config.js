@@ -21,7 +21,6 @@ module.exports = [
         },
         rules: {
             ...tsPlugin.configs.recommended.rules,
-            ...js.configs.recommended.rules,
             "no-undef": "off",
             "@typescript-eslint/no-inferrable-types": "off",
             "@typescript-eslint/no-empty-function": "off",
