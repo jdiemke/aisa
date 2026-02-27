@@ -24,7 +24,6 @@
     "author": "Johannes Diemke",
     "license": "MIT",
     "engines": {
-        "npm": ">=8.15.0 <9.0.0",
         "node": ">=20.5.0 <25.3.0"
     },
     "devDependencies": {
