@@ -11,7 +11,6 @@ import RandomNumberGenerator from './RandomNumberGenerator';
 import { FlatShadingTriangleRasterizer } from './rasterizer/FlatShadingTriangleRasterizer';
 import { LineRasterizerDda } from './rasterizer/line/LineRasterizer';
 import { LineRasterizerNoZ } from './rasterizer/line/LineRasterizerNoZ';
-import { TexturedAlphaBlendingTriangleRasterizer } from './rasterizer/TexturedAlphaBlendingTriangleRasterizer';
 import { TexturedTriangleRasterizer } from './rasterizer/TexturedTriangleRasterizer';
 import { TexturingRenderingPipeline } from './rendering-pipelines/TexturingRenderingPipeline';
 import { AbstractClipEdge } from './screen-space-clipping/AbstractClipEdge';
