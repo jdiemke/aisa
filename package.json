@@ -24,7 +24,7 @@
     "author": "Johannes Diemke",
     "license": "MIT",
     "engines": {
-        "node": ">=20.5.0 <25.3.0"
+        "node": ">=20.19.0 <25.3.0"
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",
