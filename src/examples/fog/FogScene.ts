@@ -14,7 +14,6 @@ export class FogScene extends AbstractScene {
         ]);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public render(framebuffer: Framebuffer, time: number): void {
         this.scene.render(framebuffer);
         framebuffer.drawFog(new Color(10,25,10,45),0.04, 0);

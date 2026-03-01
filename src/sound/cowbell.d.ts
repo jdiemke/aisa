@@ -1,4 +1,3 @@
-/* eslint-disable no-inner-declarations */
 // Type definitions for CowBell
 // Project: https://github.com/demozoo/cowbell
 

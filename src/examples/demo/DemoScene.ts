@@ -27,13 +27,16 @@ export class DemoScene extends AbstractScene {
     private canvasRef: HTMLCanvasElement;
     private demoStats: DemoStats;
     private demoControls: DemoControls;
+    private demoMode: boolean = true; // Set to false to enable JS Rocket connection
+    private defaultScene: number;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        this.soundManager  = new SoundManager();
-        this.sceneList     = new DoublyLinkedList();
-        this.canvasRef     = document.getElementById('aisa-canvas') as HTMLCanvasElement;
-        this.BlockFade     = new BlockFade();
+        this.soundManager = new SoundManager();
+        this.sceneList = new DoublyLinkedList();
+        this.canvasRef = document.getElementById('aisa-canvas') as HTMLCanvasElement;
+        this.BlockFade = new BlockFade();
         this.canvasRecorder = new CanvasRecorder();
+        this.defaultScene = this.demoMode ? 0 : 1;
 
         // Set up performance stats panels
         this.demoStats = new DemoStats();
@@ -74,7 +77,7 @@ export class DemoScene extends AbstractScene {
             this.soundManager.loadMusic(require(`@assets/sound/showeroflove.mod`)),
 
             // JS Rocket sync data
-            this.soundManager.prepareSync(require('@assets/sound/demo.rocket'), true),
+            this.soundManager.prepareSync(require('@assets/sound/demo.rocket'), this.demoMode),
 
             // All scene effects (loaded in parallel, inserted at their correct index)
             ...demoOrder.map(async (element, index) =>
@@ -105,7 +108,7 @@ export class DemoScene extends AbstractScene {
         if (musicProps === undefined) return;
 
         const sceneData = musicProps.sceneData;
-        const node = this.sceneList.getNode(sceneData.effect || 0);
+        const node = this.sceneList.getNode(sceneData.effect ||  this.defaultScene);
 
         if (sceneData.transitionType === 0) {
             // Run the current effect on its own

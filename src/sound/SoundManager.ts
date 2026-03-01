@@ -102,7 +102,22 @@ export class SoundManager {
                 });
                 this.syncDevice.init('demo');
             } else {
-                this.syncDevice.init();
+                // Probe whether the Rocket editor is running before letting
+                // JSRocket create its own WebSocket (which logs ugly errors).
+                const probe = new WebSocket('ws://localhost:1339');
+                probe.onopen = () => {
+                    probe.close();
+                    // Rocket is running — connect normally
+                    this.syncDevice.init();
+                };
+                probe.onerror = () => {
+                    probe.close();
+                    // Rocket is not running — fall back to demo mode
+                    console.warn('[SoundManager] Rocket not available — falling back to demo mode');
+                    this.demoMode = true;
+                    this.syncDevice.setConfig({ 'rocketXML': filename });
+                    this.syncDevice.init('demo');
+                };
             }
 
             resolve();
@@ -227,7 +242,7 @@ export class SoundManager {
     public seek(time: number) {
         this.audioElement.currentTime = time;
         // update rocket editor position to new timeline location
-        if (!this.demoMode) {
+        if (!this.demoMode && this.syncDevice.connected) {
             this.syncDevice.update(this.audioElement.currentTime * ROW_RATE);
         }
     }
@@ -256,7 +271,6 @@ export class SoundManager {
      */
     public initTimeline() {
         // jump to last position on timeline for local development reloading
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
         const newLocal = this;
         const jumpTo = Number(localStorage.getItem('lastTime')) || 0;
 
