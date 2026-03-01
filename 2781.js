@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkaisa=self.webpackChunkaisa||[]).push([[2781],{2781(e,n,s){s.r(n),s.d(n,{Scene13:()=>u});var r=s(8027);class u{TorusKnotTunnelScene;init(e){return this.TorusKnotTunnelScene=new r.I,Promise.all([this.TorusKnotTunnelScene.init(e)])}render(e,n){this.TorusKnotTunnelScene.render(e,n)}}}}]);
+//# sourceMappingURL=2781.js.map

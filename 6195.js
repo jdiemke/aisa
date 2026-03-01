@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkaisa=self.webpackChunkaisa||[]).push([[6195],{6195(e,s,t){t.r(s),t.d(s,{Scene2:()=>h});var a=t(8566);class h{logo;init(){return Promise.all([a.V.load(t(2695),!0).then(e=>this.logo=e)])}render(e){e.drawTexture(0,e.height/2-this.logo.height/2|0,this.logo,1)}}},2695(e,s,t){e.exports=t.p+"bd6865288f34d1fe7642.png"}}]);
+//# sourceMappingURL=6195.js.map
