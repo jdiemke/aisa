@@ -9,6 +9,11 @@ This will create a copy of the repository in your current working directory. Mov
 > npm install
 ```
 ### How to build
+
+Prerequisites:
+- Node.js 20.5.0 or newer
+- npm 8.15.0 or newer
+
 Type the following command into your shell:
 ```bash
 > npm run build
