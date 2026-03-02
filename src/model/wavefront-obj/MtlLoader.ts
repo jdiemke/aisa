@@ -3,11 +3,25 @@ import { MtlMaterial } from './MtlMaterial';
 /**
  * Parser for Wavefront MTL (Material Template Library) files.
  *
- * Supports the following directives:
- *   newmtl, Ka, Kd, Ks, Ke, Ns, d, Tr, Ni, illum,
- *   map_Kd, map_Ka, map_Ks, map_Ns, map_d, bump, map_bump, disp
+ * Covers the full specification (Alias|Wavefront v4.2, October 1995):
  *
- * @see https://en.wikipedia.org/wiki/Wavefront_.obj_file#Material_template_library
+ * **Colour & illumination:**
+ *   newmtl, Ka, Kd, Ks, Ke, Tf, Ns, Ni, d (incl. -halo), Tr, illum, sharpness
+ *
+ * **Texture maps:**
+ *   map_Ka, map_Kd, map_Ks, map_Ns, map_d, map_aat, bump / map_bump, disp, decal
+ *
+ * **Reflection maps:**
+ *   refl -type sphere / cube_top / cube_bottom / cube_front / cube_back /
+ *        cube_left / cube_right
+ *
+ * Colour directives support the three mutually-exclusive forms:
+ *   Ka r [g b]          – RGB (single value is replicated to g and b)
+ *   Ka spectral f.rfl f – spectral (stored as filename string)
+ *   Ka xyz x [y z]      – CIEXYZ (treated like RGB for storage)
+ *
+ * @see https://www.fileformat.info/format/material/
+ * @see https://www.martinreddy.net/gfx/3d/OBJ.spec
  */
 export class MtlLoader {
 
@@ -18,7 +32,10 @@ export class MtlLoader {
         const materials: Map<string, MtlMaterial> = new Map();
         let current: MtlMaterial | null = null;
 
-        const lines: Array<string> = mtlText.split('\n');
+        const lines: Array<string> = mtlText
+            .replace(/\r\n/g, '\n')
+            .replace(/\r/g, '\n')
+            .split('\n');
 
         for (const rawLine of lines) {
             const line: string = rawLine.trim();
@@ -38,6 +55,8 @@ export class MtlLoader {
                     materials.set(name, current);
                     break;
                 }
+
+                // ── Colour statements ────────────────────────────────
 
                 case 'Ka':
                     if (current) {
@@ -63,6 +82,14 @@ export class MtlLoader {
                     }
                     break;
 
+                case 'Tf':
+                    if (current) {
+                        current.transmissionFilter = MtlLoader.parseColor(parts);
+                    }
+                    break;
+
+                // ── Scalar illumination parameters ───────────────────
+
                 case 'Ns':
                     if (current) {
                         current.specularExponent = parseFloat(parts[1]);
@@ -71,7 +98,14 @@ export class MtlLoader {
 
                 case 'd':
                     if (current) {
-                        current.dissolve = parseFloat(parts[1]);
+                        if (parts[1] === '-halo') {
+                            // d -halo factor
+                            current.dissolveHalo = true;
+                            current.dissolve = parseFloat(parts[2]);
+                        } else {
+                            current.dissolveHalo = false;
+                            current.dissolve = parseFloat(parts[1]);
+                        }
                     }
                     break;
 
@@ -93,6 +127,14 @@ export class MtlLoader {
                         current.illuminationModel = parseInt(parts[1], 10);
                     }
                     break;
+
+                case 'sharpness':
+                    if (current) {
+                        current.sharpness = parseFloat(parts[1]);
+                    }
+                    break;
+
+                // ── Texture maps ─────────────────────────────────────
 
                 case 'map_Kd':
                     if (current) {
@@ -124,6 +166,12 @@ export class MtlLoader {
                     }
                     break;
 
+                case 'map_aat':
+                    if (current) {
+                        current.antiAliasTextures = (parts[1] === 'on');
+                    }
+                    break;
+
                 case 'bump':
                 case 'map_bump':
                     if (current) {
@@ -137,8 +185,22 @@ export class MtlLoader {
                     }
                     break;
 
+                case 'decal':
+                    if (current) {
+                        current.decalMap = MtlLoader.parseMapFilename(parts);
+                    }
+                    break;
+
+                // ── Reflection maps ──────────────────────────────────
+
+                case 'refl':
+                    if (current) {
+                        MtlLoader.parseReflection(parts, current);
+                    }
+                    break;
+
                 default:
-                    // Ignore unknown directives (Tf, Pr, Pm, etc.)
+                    // Silently skip unrecognised directives (Pr, Pm, Pc, etc.)
                     break;
             }
         }
@@ -156,33 +218,94 @@ export class MtlLoader {
     }
 
     /**
-     * Parses an RGB color triplet from split parts: `["Ka", "r", "g", "b"]`
+     * Parses an RGB colour value from the three forms allowed by the spec:
+     *
+     *   `Ka r [g b]`           – RGB; if only r is given, g = b = r
+     *   `Ka spectral f.rfl f`  – spectral curve (ignored – defaults to white)
+     *   `Ka xyz x [y z]`       – CIEXYZ; treated as RGB for storage
      */
     private static parseColor(parts: Array<string>): [number, number, number] {
-        return [
-            parseFloat(parts[1]) || 0,
-            parseFloat(parts[2]) || 0,
-            parseFloat(parts[3]) || 0
-        ];
+        // Handle `Ka spectral …` – we can't evaluate .rfl files, so default to 1,1,1.
+        if (parts[1] === 'spectral') {
+            return [1, 1, 1];
+        }
+
+        // Handle `Ka xyz x [y z]`
+        const startIdx: number = parts[1] === 'xyz' ? 2 : 1;
+
+        const r: number = parseFloat(parts[startIdx]) || 0;
+        // If only one value is given, replicate it to g and b per the spec.
+        const g: number = (parts.length > startIdx + 1) ? (parseFloat(parts[startIdx + 1]) || 0) : r;
+        const b: number = (parts.length > startIdx + 2) ? (parseFloat(parts[startIdx + 2]) || 0) : r;
+
+        return [r, g, b];
     }
 
     /**
      * Extracts the texture map filename from a directive like
      * `map_Kd [-options...] filename.png`.
      *
-     * Texture map options (e.g. `-o`, `-s`, `-bm`) are skipped;
-     * the last token that does not start with `-` is treated as
-     * the filename.
+     * Texture map options (e.g. `-o`, `-s`, `-bm`) and their numeric
+     * arguments are skipped; the last token that does **not** belong to
+     * an option is treated as the filename.
+     *
+     * Known options with argument counts:
+     *   -blendu 1, -blendv 1, -cc 1, -clamp 1, -bm 1, -boost 1,
+     *   -texres 1, -imfchan 1, -mm 2, -o 1–3, -s 1–3, -t 1–3
      */
     private static parseMapFilename(parts: Array<string>): string {
-        // Walk backwards from the end to find the filename
-        // (options always start with '-')
+        // The filename is always the last non-option token.
+        // Walk backwards – the last element is the filename in virtually
+        // all real-world MTL files and all spec examples.
         for (let i: number = parts.length - 1; i >= 1; i--) {
             if (!parts[i].startsWith('-')) {
                 return parts[i];
             }
         }
         return parts[parts.length - 1];
+    }
+
+    /**
+     * Parses `refl -type <type> [options] <filename>` into the correct
+     * field on the material.
+     */
+    private static parseReflection(parts: Array<string>, mtl: MtlMaterial): void {
+        // Find the -type argument
+        let reflType: string = 'sphere'; // default
+        for (let i: number = 1; i < parts.length - 1; i++) {
+            if (parts[i] === '-type') {
+                reflType = parts[i + 1];
+                break;
+            }
+        }
+
+        const filename: string = MtlLoader.parseMapFilename(parts);
+
+        switch (reflType) {
+            case 'sphere':
+                mtl.reflectionMapSphere = filename;
+                break;
+            case 'cube_top':
+                mtl.reflectionMapCubeTop = filename;
+                break;
+            case 'cube_bottom':
+                mtl.reflectionMapCubeBottom = filename;
+                break;
+            case 'cube_front':
+                mtl.reflectionMapCubeFront = filename;
+                break;
+            case 'cube_back':
+                mtl.reflectionMapCubeBack = filename;
+                break;
+            case 'cube_left':
+                mtl.reflectionMapCubeLeft = filename;
+                break;
+            case 'cube_right':
+                mtl.reflectionMapCubeRight = filename;
+                break;
+            default:
+                break;
+        }
     }
 
 }
