@@ -49,20 +49,8 @@ export class TexturedTriangleRasterizer extends AbstractScannlineTriangleRasteri
             for (let j = 0; j < length; j++) {
                 if (wStart < framebuffer.wBuffer[framebufferIndex]) {
                     framebuffer.wBuffer[framebufferIndex] = wStart;
-                    const z = 1 / wStart;
-
-                    let u = Math.max(Math.min((uStart * z * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
-                    let v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
-                    let color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
-
-
-                    u = uStart * z * (framebuffer.bob.width-1);
-                    v = vStart * z * (framebuffer.bob.height-1);
-
-                   color2 = framebuffer.bob.getBilinearFilteredPixelRasterizer(u,v);
-
+                    const color2 = this.sampleTexturePerspective(framebuffer, uStart, vStart, wStart);
                     framebuffer.framebuffer[framebufferIndex] = color2;
-
                 }
                 framebufferIndex++;
                 wStart += spanzStep;
@@ -116,19 +104,7 @@ export class TexturedTriangleRasterizer extends AbstractScannlineTriangleRasteri
             for (let j = 0; j < length; j++) {
                 if (wStart < framebuffer.wBuffer[framebufferIndex]) {
                     framebuffer.wBuffer[framebufferIndex] = wStart;
-
-                    const z = 1 / wStart;
-
-
-                    let u = Math.max(Math.min((uStart * z * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
-                    let v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
-                    let color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
-
-                    u = uStart * z * (framebuffer.bob.width-1);
-                    v = vStart * z * (framebuffer.bob.height-1);
-
-                   color2 = framebuffer.bob.getBilinearFilteredPixelRasterizer(u,v);
-
+                    const color2 = this.sampleTexturePerspective(framebuffer, uStart, vStart, wStart);
                     framebuffer.framebuffer[framebufferIndex] = color2;
                 }
                 framebufferIndex++;
@@ -197,20 +173,7 @@ export class TexturedTriangleRasterizer extends AbstractScannlineTriangleRasteri
             for (let j = 0; j < length; j++) {
                 if (wStart < framebuffer.wBuffer[framebufferIndex]) {
                     framebuffer.wBuffer[framebufferIndex] = wStart;
-                    const z = 1 / wStart;
-
-
-                    let u = Math.max(Math.min((uStart * z * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
-                    let v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
-                    let color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
-
-
-
-                    u = uStart * z * (framebuffer.bob.width-1);
-                    v = vStart * z * (framebuffer.bob.height-1);
-
-                   color2 = framebuffer.bob.getBilinearFilteredPixelRasterizer(u,v);
-
+                    const color2 = this.sampleTexturePerspective(framebuffer, uStart, vStart, wStart);
                     framebuffer.framebuffer[framebufferIndex] = color2;
                 }
                 framebufferIndex++;
@@ -263,17 +226,7 @@ export class TexturedTriangleRasterizer extends AbstractScannlineTriangleRasteri
             for (let j = 0; j < length; j++) {
                 if (wStart < framebuffer.wBuffer[framebufferIndex]) {
                     framebuffer.wBuffer[framebufferIndex] = wStart;
-                    const z = 1 / wStart;
-
-                    let u = Math.max(Math.min((uStart * z * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
-                    let v = Math.max(Math.min((vStart * z * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
-                    let color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
-
-                    u = uStart * z * (framebuffer.bob.width-1);
-                    v = vStart * z * (framebuffer.bob.height-1);
-
-                   color2 = framebuffer.bob.getBilinearFilteredPixelRasterizer(u,v);
-
+                    const color2 = this.sampleTexturePerspective(framebuffer, uStart, vStart, wStart);
                     framebuffer.framebuffer[framebufferIndex] = color2;
                 }
                 framebufferIndex++;

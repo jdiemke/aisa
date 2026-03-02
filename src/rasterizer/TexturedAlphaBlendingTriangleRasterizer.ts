@@ -60,17 +60,7 @@ export class TexturedAlphaBlendingTriangleRasterizer extends AbstractScannlineTr
                 const currentColor = this.framebuffer.framebuffer[framebufferIndex];
                 if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
                     this.framebuffer.wBuffer[framebufferIndex] = wStart;
-                    const z = 1 / wStart;
-
-                    let u = Math.max(Math.min((uStart * z * this.framebuffer.bob.width), this.framebuffer.bob.width - 1), 0) | 0;
-                    let v = Math.max(Math.min((vStart * z * this.framebuffer.bob.height), this.framebuffer.bob.height - 1), 0) | 0;
-                    let color2 = this.framebuffer.bob.texture[u + v * this.framebuffer.bob.width];
-
-                    u = uStart * z * (framebuffer.bob.width-1);
-                    v = vStart * z * (framebuffer.bob.height-1);
-
-                   color2 = framebuffer.bob.getBilinearFilteredPixelRasterizer(u,v);
-
+                    const color2 = this.sampleTexturePerspective(this.framebuffer, uStart, vStart, wStart);
 
                     // TODO: move out of loops!
                     const alpha = this.pipeline.alpha * (color2 >> 24 & 0xff) / 255;
@@ -136,18 +126,7 @@ export class TexturedAlphaBlendingTriangleRasterizer extends AbstractScannlineTr
             for (let j = 0; j < length; j++) {
                 if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
                     this.framebuffer.wBuffer[framebufferIndex] = wStart;
-
-                    const z = 1 / wStart;
-
-
-                    let u = Math.max(Math.min((uStart * z * this.framebuffer.bob.width), this.framebuffer.bob.width - 1), 0) | 0;
-                    let v = Math.max(Math.min((vStart * z * this.framebuffer.bob.height), this.framebuffer.bob.height - 1), 0) | 0;
-                    let color2 = this.framebuffer.bob.texture[u + v * this.framebuffer.bob.width];
-
-                    u = uStart * z * (framebuffer.bob.width-1);
-                    v = vStart * z * (framebuffer.bob.height-1);
-
-                   color2 = framebuffer.bob.getBilinearFilteredPixelRasterizer(u,v);
+                    const color2 = this.sampleTexturePerspective(this.framebuffer, uStart, vStart, wStart);
 
                     const alpha = this.pipeline.alpha * (color2 >> 24 & 0xff) / 255;
                     const inverseAlpha = 1 - alpha;
@@ -226,17 +205,7 @@ export class TexturedAlphaBlendingTriangleRasterizer extends AbstractScannlineTr
             for (let j = 0; j < length; j++) {
                 if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
                     this.framebuffer.wBuffer[framebufferIndex] = wStart;
-                    const z = 1 / wStart;
-
-
-                    let u = Math.max(Math.min((uStart * z * this.framebuffer.bob.width), this.framebuffer.bob.width - 1), 0) | 0;
-                    let v = Math.max(Math.min((vStart * z * this.framebuffer.bob.height), this.framebuffer.bob.height - 1), 0) | 0;
-                    let color2 = this.framebuffer.bob.texture[u + v * this.framebuffer.bob.width];
-
-                    u = uStart * z * (framebuffer.bob.width-1);
-                    v = vStart * z * (framebuffer.bob.height-1);
-
-                   color2 = framebuffer.bob.getBilinearFilteredPixelRasterizer(u,v);
+                    const color2 = this.sampleTexturePerspective(this.framebuffer, uStart, vStart, wStart);
 
                     const alpha = this.pipeline.alpha * (color2 >> 24 & 0xff) / 255;
                     const inverseAlpha = 1 - alpha;
@@ -299,16 +268,7 @@ export class TexturedAlphaBlendingTriangleRasterizer extends AbstractScannlineTr
             for (let j = 0; j < length; j++) {
                 if (wStart < this.framebuffer.wBuffer[framebufferIndex]) {
                     this.framebuffer.wBuffer[framebufferIndex] = wStart;
-                    const z = 1 / wStart;
-
-                    let u = Math.max(Math.min((uStart * z * this.framebuffer.bob.width), this.framebuffer.bob.width - 1), 0) | 0;
-                    let v = Math.max(Math.min((vStart * z * this.framebuffer.bob.height), this.framebuffer.bob.height - 1), 0) | 0;
-                    let color2 = this.framebuffer.bob.texture[u + v * this.framebuffer.bob.width];
-
-                    u = uStart * z * (framebuffer.bob.width-1);
-                    v = vStart * z * (framebuffer.bob.height-1);
-
-                   color2 = framebuffer.bob.getBilinearFilteredPixelRasterizer(u,v);
+                    const color2 = this.sampleTexturePerspective(this.framebuffer, uStart, vStart, wStart);
 
                     const alpha = this.pipeline.alpha * (color2 >> 24 & 0xff) / 255;
                     const inverseAlpha = 1 - alpha;

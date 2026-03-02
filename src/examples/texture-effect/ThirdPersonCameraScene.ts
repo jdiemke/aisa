@@ -117,10 +117,4 @@ export class ThirdPersonCameraScene extends AbstractScene {
        // framebuffer.drawFog(new Color(20,20,20,45),0.04, 0.15);
     }
 
-    private computeModelViewTransformation(time: number): void {
-
-    }
-
-
-
 }
