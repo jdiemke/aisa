@@ -108,7 +108,7 @@ export class DemoScene extends AbstractScene {
         if (musicProps === undefined) return;
 
         const sceneData = musicProps.sceneData;
-        const node = this.sceneList.getNode(sceneData.effect ||  this.defaultScene);
+        const node = this.sceneList.getNode(sceneData.effect || this.defaultScene);
 
         if (sceneData.transitionType === 0) {
             // Run the current effect on its own
