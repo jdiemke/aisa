@@ -91,13 +91,14 @@ export class WavefrontLoader {
                     facesByMaterial.get(matName).push(face);
                 }
 
-                // Convert shared vertex/normal data once
                 const points: Array<Vector4f> = mesh.vertices.map(
                     (v: Vector) => new Vector4f(v.x, v.y, v.z)
                 );
                 const normals: Array<Vector4f> = mesh.normals.map(
                     (v: Vector) => new Vector4f(v.x, v.y, v.z).normalize()
                 );
+                const transformedPoints: Array<Vector4f> = points.map(() => new Vector4f(0, 0, 0, 0));
+                const transformedNormals: Array<Vector4f> = normals.map(() => new Vector4f(0, 0, 0, 0));
 
                 // Create one FlatshadedMesh per material group
                 facesByMaterial.forEach((faces: Array<Face>, matName: string) => {
@@ -114,8 +115,8 @@ export class WavefrontLoader {
                         faces: flatFaces,
                         normals,
                         points,
-                        transformedNormals: normals.map(() => new Vector4f(0, 0, 0, 0)),
-                        transformedPoints: points.map(() => new Vector4f(0, 0, 0, 0)),
+                        transformedNormals,
+                        transformedPoints,
                     };
 
                     materialMeshes.push({ mesh: subMesh, materialName: matName });
