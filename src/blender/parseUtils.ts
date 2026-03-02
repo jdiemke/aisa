@@ -7,6 +7,7 @@ export function convertToMeshArray(data: string): Array<Mesh> {
     const json: Array<Mesh> = new Array<Mesh>();
 
     let currentObject: Mesh = null;
+    let currentMaterial: string | undefined = undefined;
 
     let normalCount: number = 0;
     let vertexCount: number = 0;
@@ -31,6 +32,10 @@ export function convertToMeshArray(data: string): Array<Mesh> {
             normalOffset = normalCount;
             vertexOffset = vertexCount;
             uvOffset = uvCount;
+        }
+
+        if (line.startsWith('usemtl ')) {
+            currentMaterial = line.substring(7).trim();
         }
 
         if (currentObject === null &&
@@ -81,11 +86,13 @@ export function convertToMeshArray(data: string): Array<Mesh> {
 
         if (line.startsWith('f ')) {
             const coords: Array<string> = line.split(' ');
+            const vertexTokenCount: number = coords.length - 1; // exclude the 'f' token
 
             const face: Face = new Face();
             face.vertices = [];
             face.normals = [];
             face.uv = [];
+            face.materialName = currentMaterial;
 
             // vertex indices
             face.vertices.push(Number(coords[1].split('/')[0]) - 1 - vertexOffset);
@@ -103,6 +110,30 @@ export function convertToMeshArray(data: string): Array<Mesh> {
             face.normals.push(Number(coords[3].split('/')[2]) - 1 - normalOffset);
 
             currentObject.faces.push(face);
+
+            // Triangulate quads (and higher-order polygons) using fan triangulation
+            for (let qi: number = 4; qi <= vertexTokenCount; qi++) {
+                const extraFace: Face = new Face();
+                extraFace.vertices = [];
+                extraFace.normals = [];
+                extraFace.uv = [];
+                extraFace.materialName = currentMaterial;
+
+                // Fan triangle: vertex 1, vertex (qi-1), vertex qi
+                extraFace.vertices.push(Number(coords[1].split('/')[0]) - 1 - vertexOffset);
+                extraFace.vertices.push(Number(coords[qi - 1].split('/')[0]) - 1 - vertexOffset);
+                extraFace.vertices.push(Number(coords[qi].split('/')[0]) - 1 - vertexOffset);
+
+                extraFace.uv.push(Number(coords[1].split('/')[1]) - 1 - uvOffset);
+                extraFace.uv.push(Number(coords[qi - 1].split('/')[1]) - 1 - uvOffset);
+                extraFace.uv.push(Number(coords[qi].split('/')[1]) - 1 - uvOffset);
+
+                extraFace.normals.push(Number(coords[1].split('/')[2]) - 1 - normalOffset);
+                extraFace.normals.push(Number(coords[qi - 1].split('/')[2]) - 1 - normalOffset);
+                extraFace.normals.push(Number(coords[qi].split('/')[2]) - 1 - normalOffset);
+
+                currentObject.faces.push(extraFace);
+            }
         }
     });
 
