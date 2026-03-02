@@ -1,8 +1,15 @@
 import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
+import { Face } from '../../blender/face';
 import { Mesh } from '../../blender/mesh';
 import { convertToMeshArray } from '../../blender/parseUtils';
+import { Vector } from '../../blender/vector';
+import { FlatShadedFace } from '../../geometrical-objects/FlatShadedFace';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
+import { Vector4f } from '../../math/Vector4f';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
+import { MtlLoader } from './MtlLoader';
+import { MtlMaterial } from './MtlMaterial';
+import { MaterialMesh, WavefrontMaterialModel } from './WavefrontMaterialModel';
 
 export class WavefrontLoader {
 
@@ -48,6 +55,76 @@ export class WavefrontLoader {
         return WavefrontLoader.loadWithTexture(filename).then(
             (meshes: Array<TexturedMesh>) => new WavefrontLoader([], meshes)
         );
+    }
+
+    /**
+     * Loads an OBJ file together with its companion MTL material library.
+     *
+     * The meshes are split by `usemtl` assignments so each returned
+     * {@link MaterialMesh} contains only the faces that share the same
+     * material, paired with the material name for look-up in the
+     * returned materials map.
+     *
+     * @param objUrl  URL of the .obj file (e.g. via `require('@assets/...')`)
+     * @param mtlUrl  URL of the .mtl file (e.g. via `require('@assets/...')`)
+     * @returns A promise resolving to a {@link WavefrontMaterialModel}.
+     */
+    public static loadWithMaterial(
+        objUrl: string,
+        mtlUrl: string
+    ): Promise<WavefrontMaterialModel> {
+        return Promise.all([
+            fetch(objUrl).then((r: Response) => r.text()).then((text: string) => convertToMeshArray(text)),
+            MtlLoader.load(mtlUrl)
+        ]).then(([meshes, materials]: [Array<Mesh>, Map<string, MtlMaterial>]) => {
+            const materialMeshes: Array<MaterialMesh> = [];
+
+            for (const mesh of meshes) {
+                // Group faces by material name
+                const facesByMaterial: Map<string, Array<Face>> = new Map();
+
+                for (const face of mesh.faces) {
+                    const matName: string = face.materialName || '__default__';
+                    if (!facesByMaterial.has(matName)) {
+                        facesByMaterial.set(matName, []);
+                    }
+                    facesByMaterial.get(matName).push(face);
+                }
+
+                const points: Array<Vector4f> = mesh.vertices.map(
+                    (v: Vector) => new Vector4f(v.x, v.y, v.z)
+                );
+                const normals: Array<Vector4f> = mesh.normals.map(
+                    (v: Vector) => new Vector4f(v.x, v.y, v.z).normalize()
+                );
+                const transformedPoints: Array<Vector4f> = points.map(() => new Vector4f(0, 0, 0, 0));
+                const transformedNormals: Array<Vector4f> = normals.map(() => new Vector4f(0, 0, 0, 0));
+
+                // Create one FlatshadedMesh per material group
+                facesByMaterial.forEach((faces: Array<Face>, matName: string) => {
+                    const flatFaces: Array<FlatShadedFace> = faces.map((f: Face) => ({
+                        n1: f.normals[0],
+                        n2: f.normals[1],
+                        n3: f.normals[2],
+                        v1: f.vertices[0],
+                        v2: f.vertices[1],
+                        v3: f.vertices[2],
+                    }));
+
+                    const subMesh: FlatshadedMesh = {
+                        faces: flatFaces,
+                        normals,
+                        points,
+                        transformedNormals,
+                        transformedPoints,
+                    };
+
+                    materialMeshes.push({ mesh: subMesh, materialName: matName });
+                });
+            }
+
+            return new WavefrontMaterialModel(materialMeshes, materials);
+        });
     }
 
     /** @deprecated Use {@link loadModel} for an instance-based API. */

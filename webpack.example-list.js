@@ -88,6 +88,7 @@ const examples = [
     new Example('voxel-balls'),
     new Example('voxel-landscape-fade'),
     new Example('voxel-landscape'),
+    new Example('wavefront-material'),
     new Example('wavefront-texture'),
     new Example('wavefront-texture2'),
     new Example('wavefront-texture3'),

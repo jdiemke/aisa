@@ -43,7 +43,7 @@ module.exports = {
                 use: ['style-loader', 'css-loader'],
             },
             {
-                test: /\.(png|jpg|mp3|ogg|md2|mdl|tga|xm|obj|rocket|jsx|mod|s3m|it|mptm)$/,
+                test: /\.(png|jpg|mp3|ogg|md2|mdl|tga|xm|obj|mtl|rocket|jsx|mod|s3m|it|mptm)$/,
                 type: 'asset/resource'
             }
         ]
