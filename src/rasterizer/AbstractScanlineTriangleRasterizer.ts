@@ -45,4 +45,41 @@ export abstract class AbstractScannlineTriangleRasterizer extends AbstractTriang
 
     protected abstract fillLongRightTriangle(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void;
     protected abstract fillLongLeftTriangle(framebuffer: Framebuffer, v1: Vertex, v2: Vertex, v3: Vertex): void;
+
+    /**
+     * Perspective-correct bilinear texture sample.
+     * @param framebuffer - the framebuffer whose bob texture is sampled
+     * @param uStart - perspective-divided u (u/z accumulated along edge)
+     * @param vStart - perspective-divided v (v/z accumulated along edge)
+     * @param wStart - 1/z value at the current pixel
+     * @returns packed ARGB colour from the bilinear filter
+     */
+    protected sampleTexturePerspective(
+        framebuffer: Framebuffer,
+        uStart: number,
+        vStart: number,
+        wStart: number,
+    ): number {
+        const z = 1 / wStart;
+        const u = uStart * z * (framebuffer.bob.width - 1);
+        const v = vStart * z * (framebuffer.bob.height - 1);
+        return framebuffer.bob.getBilinearFilteredPixelRasterizer(u, v);
+    }
+
+    /**
+     * Affine (non-perspective) nearest-neighbour texture sample for 2-D triangles.
+     * @param framebuffer - the framebuffer whose bob texture is sampled
+     * @param uStart - normalised u coordinate in [0, 1]
+     * @param vStart - normalised v coordinate in [0, 1]
+     * @returns packed ARGB colour from the texture
+     */
+    protected sampleTexture2D(
+        framebuffer: Framebuffer,
+        uStart: number,
+        vStart: number,
+    ): number {
+        const u = Math.max(Math.min(uStart * framebuffer.bob.width, framebuffer.bob.width - 1), 0) | 0;
+        const v = Math.max(Math.min(vStart * framebuffer.bob.height, framebuffer.bob.height - 1), 0) | 0;
+        return framebuffer.bob.texture[u + v * framebuffer.bob.width];
+    }
 }

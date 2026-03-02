@@ -9,6 +9,7 @@ import { TextureCoordinate } from '../../TextureCoordinate';
 import { Texture, TextureUtils } from '../../texture';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 import { SutherlandHodgmanClipper } from '../../portal-system';
+import { ClipMode } from '../../screen-space-clipping/ClipMode';
 import { SutherlandHodgman2DClipper } from '../../screen-space-clipping/SutherlandHodgman2DClipper';
 import { TexturedTriangleRasterizer2D } from '../../rasterizer/TexturedTriangleRasterizer2D';
 import { ParallaxScrollingScene } from '../xenusion/ParallaxScrollingScene';
@@ -37,18 +38,18 @@ export class MatterScene extends AbstractScene {
         this.scene = new ParallaxScrollingScene();
 
         // create two boxes and a ground
-        var boxA = Matter.Bodies.rectangle(400, 200 - 1900, 90, 90, { angle: Math.random() * Math.PI, velocity: { x: 1, y: 0.2 } });
-        var boxB = Matter.Bodies.rectangle(450, 50 - 900, 80, 120, { angle: Math.random() * 2 * Math.PI });
-        var boxC = Matter.Bodies.rectangle(365, -80 - 990, 200, 200, { angle: Math.random() * Math.PI });
-        var boxD = Matter.Bodies.rectangle(498, -190 - 900, 83, 110, { angle: Math.random() * 2 * Math.PI });
-        var ground = Matter.Bodies.rectangle(400, 608, 810, 60, { isStatic: true });
+        const boxA = Matter.Bodies.rectangle(400, 200 - 1900, 90, 90, { angle: Math.random() * Math.PI, velocity: { x: 1, y: 0.2 } });
+        const boxB = Matter.Bodies.rectangle(450, 50 - 900, 80, 120, { angle: Math.random() * 2 * Math.PI });
+        const boxC = Matter.Bodies.rectangle(365, -80 - 990, 200, 200, { angle: Math.random() * Math.PI });
+        const boxD = Matter.Bodies.rectangle(498, -190 - 900, 83, 110, { angle: Math.random() * 2 * Math.PI });
+        const ground = Matter.Bodies.rectangle(400, 608, 810, 60, { isStatic: true });
 
 
         // add all of the bodies to the world
         Matter.Composite.add(this.engine.world, [boxA, boxB, boxC, boxD, ground]);
 
         setInterval(() => {
-            let body = Matter.Bodies.rectangle(400, 50 - 900, 80, 80, { angle: Math.random() * 2 * Math.PI });
+            const body = Matter.Bodies.rectangle(400, 50 - 900, 80, 80, { angle: Math.random() * 2 * Math.PI });
             Matter.Body.applyForce(body, body.position, { x: 0.1 * Math.sin(Math.random() * Math.PI * 2), y: 0.2 });
             Matter.Composite.add(this.engine.world, [body]);
         }, 400);
@@ -125,28 +126,11 @@ export class MatterScene extends AbstractScene {
     }
 
     public clipConvexPolygon(framebuffer: Framebuffer, subject: Array<Vertex>): void {
-
-        let output = subject;
-
-        for (let j = 0; j < framebuffer.clipRegion.length; j++) {
-            const edge = framebuffer.clipRegion[j];
-            const input = output;
-            output = new Array<Vertex>();
-            let S = input[input.length - 1];
-
-            for (let i = 0; i < input.length; i++) {
-                const point = input[i];
-                if (edge.isInside2(point)) {
-                    if (!edge.isInside2(S)) {
-                        output.push(edge.computeIntersection3(S, point));
-                    }
-                    output.push(point);
-                } else if (edge.isInside2(S)) {
-                    output.push(edge.computeIntersection3(S, point));
-                }
-                S = point;
-            }
-        }
+        const output = this.clipper.clipConvexPolygon(
+            subject,
+            ClipMode.AFFINE_TEXTURE,
+            framebuffer.clipRegion,
+        );
 
         if (output.length < 3) {
             return;
@@ -154,7 +138,7 @@ export class MatterScene extends AbstractScene {
 
         // triangulate new point set
         for (let i = 0; i < output.length - 2; i++) {
-           this.rasterizer.drawTriangleDDA(framebuffer, output[0], output[1 + i], output[2 + i]);
+            this.rasterizer.drawTriangleDDA(framebuffer, output[0], output[1 + i], output[2 + i]);
         }
     }
 

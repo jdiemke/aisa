@@ -1,4 +1,5 @@
 import { Vertex } from '../Vertex';
+import { ClipMode } from './ClipMode';
 
 // TODO:
 // - use polymorphism in order to have different intersection methods
@@ -11,4 +12,18 @@ export abstract class AbstractClipEdge {
     public abstract computeIntersection2(p1: Vertex, p2: Vertex): Vertex;
     public abstract computeIntersection3(p1: Vertex, p2: Vertex): Vertex;
 
+    /**
+     * Dispatches to the appropriate intersection method based on ClipMode.
+     */
+    public computeIntersectionForMode(p1: Vertex, p2: Vertex, mode: ClipMode): Vertex {
+        switch (mode) {
+            case ClipMode.PERSPECTIVE_TEXTURE:
+                return this.computeIntersection2(p1, p2);
+            case ClipMode.AFFINE_TEXTURE:
+                return this.computeIntersection3(p1, p2);
+            case ClipMode.GOURAUD:
+            default:
+                return this.computeIntersection(p1, p2);
+        }
+    }
 }

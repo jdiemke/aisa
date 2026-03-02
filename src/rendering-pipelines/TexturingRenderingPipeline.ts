@@ -4,6 +4,8 @@ import { Vector4f } from '../math/Vector4f';
 import { AbstractTriangleRasterizer } from '../rasterizer/AbstractTriangleRasterizer';
 import { TexturedAlphaBlendingTriangleRasterizer } from '../rasterizer/TexturedAlphaBlendingTriangleRasterizer';
 import { TexturedTriangleRasterizer } from '../rasterizer/TexturedTriangleRasterizer';
+import { ClipMode } from '../screen-space-clipping/ClipMode';
+import { SutherlandHodgman2DClipper } from '../screen-space-clipping/SutherlandHodgman2DClipper';
 import { TextureCoordinate } from '../TextureCoordinate';
 import { Vertex } from '../Vertex';
 import { AbstractRenderingPipeline } from './AbstractRenderingPipeline';
@@ -27,10 +29,13 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
         new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1), new Vector4f(0, 0, 0, 1)
     );
 
+    private clipper: SutherlandHodgman2DClipper;
+
     constructor(framebuffer: Framebuffer) {
         super(framebuffer);
         this.setAlpha(1.0);
         this.triangleRasterizer = new TexturedTriangleRasterizer(framebuffer);
+        this.clipper = new SutherlandHodgman2DClipper(framebuffer);
     }
 
     public setFramebuffer(framebuffer: Framebuffer) {
@@ -195,28 +200,11 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
 
 
     public clipConvexPolygon(framebuffer: Framebuffer, subject: Array<Vertex>): void {
-
-        let output = subject;
-
-        for (let j = 0; j < framebuffer.clipRegion.length; j++) {
-            const edge = framebuffer.clipRegion[j];
-            const input = output;
-            output = new Array<Vertex>();
-            let S = input[input.length - 1];
-
-            for (let i = 0; i < input.length; i++) {
-                const point = input[i];
-                if (edge.isInside2(point)) {
-                    if (!edge.isInside2(S)) {
-                        output.push(edge.computeIntersection2(S, point));
-                    }
-                    output.push(point);
-                } else if (edge.isInside2(S)) {
-                    output.push(edge.computeIntersection2(S, point));
-                }
-                S = point;
-            }
-        }
+        const output = this.clipper.clipConvexPolygon(
+            subject,
+            ClipMode.PERSPECTIVE_TEXTURE,
+            framebuffer.clipRegion,
+        );
 
         if (output.length < 3) {
             return;

@@ -47,15 +47,8 @@ export class TexturedTriangleRasterizer2D extends AbstractScannlineTriangleRaste
             let uStart = curu1;
             let vStart = curv1;
             for (let j = 0; j < length; j++) {
-               
-                  
-
-                    let u = Math.max(Math.min((uStart * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
-                    let v = Math.max(Math.min((vStart * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
-                    let color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
-
-                    framebuffer.framebuffer[framebufferIndex] = color2;
-            
+                const color2 = this.sampleTexture2D(framebuffer, uStart, vStart);
+                framebuffer.framebuffer[framebufferIndex] = color2;
                 framebufferIndex++;
                 uStart += spanuStep;
                 vStart += spanvStep;
@@ -103,19 +96,9 @@ export class TexturedTriangleRasterizer2D extends AbstractScannlineTriangleRaste
             let uStart = curu1;
             let vStart = curv1;
             for (let j = 0; j < length; j++) {
-               
-
-
-                    let u = Math.max(Math.min((uStart  * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
-                    let v = Math.max(Math.min((vStart  * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
-                    let color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
-
-                  
-
-                    framebuffer.framebuffer[framebufferIndex] = color2;
-                
+                const color2 = this.sampleTexture2D(framebuffer, uStart, vStart);
+                framebuffer.framebuffer[framebufferIndex] = color2;
                 framebufferIndex++;
-             
                 uStart += spanuStep;
                 vStart += spanvStep;
             }
@@ -172,21 +155,9 @@ export class TexturedTriangleRasterizer2D extends AbstractScannlineTriangleRaste
             let uStart = curu1;
             let vStart = curv1;
             for (let j = 0; j < length; j++) {
-              
-
-
-                    let u = Math.max(Math.min((uStart  * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
-                    let v = Math.max(Math.min((vStart  * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
-                    let color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
-
-
-
-                 
-
-                    framebuffer.framebuffer[framebufferIndex] = color2;
-               
+                const color2 = this.sampleTexture2D(framebuffer, uStart, vStart);
+                framebuffer.framebuffer[framebufferIndex] = color2;
                 framebufferIndex++;
-               
                 uStart += spanuStep;
                 vStart += spanvStep;
             }
@@ -231,18 +202,9 @@ export class TexturedTriangleRasterizer2D extends AbstractScannlineTriangleRaste
             let uStart = curu1;
             let vStart = curv1;
             for (let j = 0; j < length; j++) {
-               
-
-                    let u = Math.max(Math.min((uStart  * framebuffer.bob.width), framebuffer.bob.width - 1), 0) | 0;
-                    let v = Math.max(Math.min((vStart  * framebuffer.bob.height), framebuffer.bob.height - 1), 0) | 0;
-                    let color2 = framebuffer.bob.texture[u + v * framebuffer.bob.width];
-
-                  
-
-                    framebuffer.framebuffer[framebufferIndex] = color2;
-               
+                const color2 = this.sampleTexture2D(framebuffer, uStart, vStart);
+                framebuffer.framebuffer[framebufferIndex] = color2;
                 framebufferIndex++;
-               
                 uStart += spanuStep;
                 vStart += spanvStep;
             }
