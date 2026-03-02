@@ -6,8 +6,8 @@
         "build": "webpack-cli --mode production",
         "build:dev": "webpack-cli",
         "serve": "webpack serve",
-        "lint": "eslint",
-        "lint:fix": "eslint --fix",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
         "obj2json": "ts-node src/blender/obj2json.ts"
     },
     "repository": {
