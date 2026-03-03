@@ -150,9 +150,9 @@ export function convertToMeshArray(data: string): Array<Mesh> {
 
             // ── Material library (metadata – stored on current mesh) ──
             case 'mtllib':
-                ensureMesh();
-                // Store as a property; the loader can use it to auto-resolve MTL files.
-                (currentObject as any).mtllib = tokens.slice(1).join(' ');
+                if (currentObject !== null) {
+                    (currentObject as any).mtllib = tokens.slice(1).join(' ');
+                }
                 break;
 
             // ── Material assignment ─────────────────────────────────
