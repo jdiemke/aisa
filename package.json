@@ -8,7 +8,8 @@
         "serve": "webpack serve",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
-        "obj2json": "ts-node src/blender/obj2json.ts"
+        "obj2json": "ts-node src/blender/obj2json.ts",
+        "generate-examples": "node helper-scripts/generate-examples.js"
     },
     "repository": {
         "type": "git",
