@@ -69,6 +69,7 @@ export function convertToMeshArray(data: string): Array<Mesh> {
     let currentObject: Mesh | null = null;
     let currentMaterial: string | undefined = undefined;
     let currentSmoothingGroup: string | number | undefined = undefined;
+    let pendingMtllib: string | undefined = undefined;
 
     // Global running counters for absolute → local index conversion.
     let vertexCount: number = 0;
@@ -97,6 +98,10 @@ export function convertToMeshArray(data: string): Array<Mesh> {
         currentObject.vertices = [];
         currentObject.faces = [];
         currentObject.uv = [];
+        if (pendingMtllib !== undefined) {
+            currentObject.mtllib = pendingMtllib;
+            pendingMtllib = undefined;
+        }
         meshes.push(currentObject);
         vertexOffset = vertexCount;
         normalOffset = normalCount;
@@ -113,6 +118,10 @@ export function convertToMeshArray(data: string): Array<Mesh> {
         currentObject.vertices = [];
         currentObject.faces = [];
         currentObject.uv = [];
+        if (pendingMtllib !== undefined) {
+            currentObject.mtllib = pendingMtllib;
+            pendingMtllib = undefined;
+        }
         meshes.push(currentObject);
         vertexOffset = vertexCount;
         normalOffset = normalCount;
@@ -149,11 +158,15 @@ export function convertToMeshArray(data: string): Array<Mesh> {
                 break;
 
             // ── Material library (metadata – stored on current mesh) ──
-            case 'mtllib':
+            case 'mtllib': {
+                const libName: string = tokens.slice(1).join(' ');
                 if (currentObject !== null) {
-                    (currentObject as any).mtllib = tokens.slice(1).join(' ');
+                    currentObject.mtllib = libName;
+                } else {
+                    pendingMtllib = libName;
                 }
                 break;
+            }
 
             // ── Material assignment ─────────────────────────────────
             case 'usemtl':

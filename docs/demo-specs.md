@@ -17,6 +17,8 @@ The engine supports the following 3D asset formats:
 | Quake II MD2 | `.md2` | Keyframe-animated vertex models; single skin texture |
 | Quake MDL | `.mdl` | Original Quake model format |
 | Wavefront OBJ | `.obj` | Static meshes; triangles only; single texture |
+| Wavefront OBJ + MTL | `.obj` + `.mtl` | Static meshes with per-face Phong materials (Ka/Kd/Ks/Ns) |
+| GLB (Binary glTF 2.0) | `.glb` | Static meshes with PBR metallic-roughness materials; node transforms (TRS / matrix); doubleSided support |
 | Blender JSON | `.json` | Custom export of Blender scenes (vertices, faces, UVs, baked lighting) |
 
 ### Constraints

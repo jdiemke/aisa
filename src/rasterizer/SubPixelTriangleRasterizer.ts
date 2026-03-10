@@ -40,6 +40,11 @@ export class SubPixelTriangleRasterizer extends AbstractTriangleRasterizer {
         const v1r = v1.color.r, v1g = v1.color.g, v1b = v1.color.b, v1a = v1.color.a;
         const v2r = v2.color.r, v2g = v2.color.g, v2b = v2.color.b, v2a = v2.color.a;
 
+        // Reciprocal-Z for depth-buffer testing (1/z; more negative = closer)
+        const w0z = 1.0 / v0p.z;
+        const w1z = 1.0 / v1p.z;
+        const w2z = 1.0 / v2p.z;
+
         // calculate which edges are right edges so we can easily skip them
         // right edges go up, or (bottom edges) are horizontal edges that go right
         const e0x = v2p.x - v1p.x, e0y = v2p.y - v1p.y;
@@ -86,16 +91,33 @@ export class SubPixelTriangleRasterizer extends AbstractTriangleRasterizer {
 
                     // interior sub-pixel samples are skipped — integer-position writes cover them fully
                     if (!interior || (xIsInt && yIsInt)) {
-                        const r = (w0 * v0r + w1 * v1r + w2 * v2r) * invArea;
-                        const g = (w0 * v0g + w1 * v1g + w2 * v2g) * invArea;
-                        const b = (w0 * v0b + w1 * v1b + w2 * v2b) * invArea;
-                        const a = (w0 * v0a + w1 * v1a + w2 * v2a) * invArea;
-                        const packed = (r | 0) | ((g | 0) << 8) | ((b | 0) << 16) | ((a | 0) << 24);
+                        // Interpolate reciprocal depth for this pixel
+                        const pixelW = (w0 * w0z + w1 * w1z + w2 * w2z) * invArea;
 
-                        if (interior) {
-                            framebuffer.drawPixel(x, y, packed);
-                        } else {
-                            framebuffer.drawPixelAntiAliasedSpacial(x, y, packed);
+                        // Integer-pixel index for depth test
+                        const px = xIsInt ? x : (x - 0.5);
+                        const py = yIsInt ? y : (y - 0.5);
+                        const depthIdx = px + py * framebuffer.width;
+
+                        if (pixelW < framebuffer.wBuffer[depthIdx]) {
+                            const r = (w0 * v0r + w1 * v1r + w2 * v2r) * invArea;
+                            const g = (w0 * v0g + w1 * v1g + w2 * v2g) * invArea;
+                            const b = (w0 * v0b + w1 * v1b + w2 * v2b) * invArea;
+                            const a = (w0 * v0a + w1 * v1a + w2 * v2a) * invArea;
+                            const packed = (r | 0) | ((g | 0) << 8) | ((b | 0) << 16) | ((a | 0) << 24);
+
+                            if (interior) {
+                                framebuffer.wBuffer[depthIdx] = pixelW;
+                                framebuffer.drawPixel(x, y, packed);
+                            } else {
+                                // For edge pixels, only update depth when this is an
+                                // integer-aligned sample to avoid sub-pixel depth
+                                // artifacts, but still blend color on sub-pixel positions.
+                                if (xIsInt && yIsInt) {
+                                    framebuffer.wBuffer[depthIdx] = pixelW;
+                                }
+                                framebuffer.drawPixelAntiAliasedSpacial(x, y, packed);
+                            }
                         }
                     }
                 }
