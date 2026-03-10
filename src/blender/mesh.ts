@@ -9,5 +9,6 @@ export class Mesh {
     public normals: Array<Vector>;
     public uv: Array<TexCoord>;
     public faces: Array<Face>;
+    public mtllib?: string;
 
 }

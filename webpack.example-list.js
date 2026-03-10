@@ -29,6 +29,7 @@ const examples = [
     new Example('frustum-culling'),
     new Example('gears-2'),
     new Example('gears'),
+    new Example('glb').withTitle('GLB Model'),
     new Example('glow'),
     new Example('hoodlum'),
     new Example('led-plasma').withTitle('LED Plasma'),

@@ -2,7 +2,6 @@ import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
 import { Face } from '../../blender/face';
 import { Mesh } from '../../blender/mesh';
 import { convertToMeshArray } from '../../blender/parseUtils';
-import { Vector } from '../../blender/vector';
 import { FlatShadedFace } from '../../geometrical-objects/FlatShadedFace';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { Vector4f } from '../../math/Vector4f';
@@ -77,51 +76,58 @@ export class WavefrontLoader {
             fetch(objUrl).then((r: Response) => r.text()).then((text: string) => convertToMeshArray(text)),
             MtlLoader.load(mtlUrl)
         ]).then(([meshes, materials]: [Array<Mesh>, Map<string, MtlMaterial>]) => {
-            const materialMeshes: Array<MaterialMesh> = [];
+            // ── Merge all mesh vertices & normals into single arrays ──
+            const allPoints: Array<Vector4f> = [];
+            const allNormals: Array<Vector4f> = [];
+            const allFacesWithMaterial: Array<{ face: Face; pointOffset: number; normalOffset: number }> = [];
 
             for (const mesh of meshes) {
-                // Group faces by material name
-                const facesByMaterial: Map<string, Array<Face>> = new Map();
+                const pointOffset: number = allPoints.length;
+                const normalOffset: number = allNormals.length;
 
-                for (const face of mesh.faces) {
-                    const matName: string = face.materialName || '__default__';
-                    if (!facesByMaterial.has(matName)) {
-                        facesByMaterial.set(matName, []);
-                    }
-                    facesByMaterial.get(matName).push(face);
+                for (const v of mesh.vertices) {
+                    allPoints.push(new Vector4f(v.x, v.y, v.z));
                 }
+                for (const v of mesh.normals) {
+                    allNormals.push(new Vector4f(v.x, v.y, v.z).normalize());
+                }
+                for (const face of mesh.faces) {
+                    allFacesWithMaterial.push({ face, pointOffset, normalOffset });
+                }
+            }
 
-                const points: Array<Vector4f> = mesh.vertices.map(
-                    (v: Vector) => new Vector4f(v.x, v.y, v.z)
-                );
-                const normals: Array<Vector4f> = mesh.normals.map(
-                    (v: Vector) => new Vector4f(v.x, v.y, v.z).normalize()
-                );
-                const transformedPoints: Array<Vector4f> = points.map(() => new Vector4f(0, 0, 0, 0));
-                const transformedNormals: Array<Vector4f> = normals.map(() => new Vector4f(0, 0, 0, 0));
+            const transformedPoints: Array<Vector4f> = allPoints.map(() => new Vector4f(0, 0, 0, 0));
+            const transformedNormals: Array<Vector4f> = allNormals.map(() => new Vector4f(0, 0, 0, 0));
 
-                // Create one FlatshadedMesh per material group
-                facesByMaterial.forEach((faces: Array<Face>, matName: string) => {
-                    const flatFaces: Array<FlatShadedFace> = faces.map((f: Face) => ({
-                        n1: f.normals[0],
-                        n2: f.normals[1],
-                        n3: f.normals[2],
-                        v1: f.vertices[0],
-                        v2: f.vertices[1],
-                        v3: f.vertices[2],
-                    }));
+            // ── Group faces by material name ────────────────────────
+            const materialMeshes: Array<MaterialMesh> = [];
+            const facesByMaterial: Map<string, Array<FlatShadedFace>> = new Map();
 
-                    const subMesh: FlatshadedMesh = {
-                        faces: flatFaces,
-                        normals,
-                        points,
-                        transformedNormals,
-                        transformedPoints,
-                    };
-
-                    materialMeshes.push({ mesh: subMesh, materialName: matName });
+            for (const { face, pointOffset, normalOffset } of allFacesWithMaterial) {
+                const matName: string = face.materialName || '__default__';
+                if (!facesByMaterial.has(matName)) {
+                    facesByMaterial.set(matName, []);
+                }
+                facesByMaterial.get(matName).push({
+                    v1: face.vertices[0] + pointOffset,
+                    v2: face.vertices[1] + pointOffset,
+                    v3: face.vertices[2] + pointOffset,
+                    n1: face.normals[0] + normalOffset,
+                    n2: face.normals[1] + normalOffset,
+                    n3: face.normals[2] + normalOffset,
                 });
             }
+
+            facesByMaterial.forEach((flatFaces: Array<FlatShadedFace>, matName: string) => {
+                const subMesh: FlatshadedMesh = {
+                    faces: flatFaces,
+                    normals: allNormals,
+                    points: allPoints,
+                    transformedNormals,
+                    transformedPoints,
+                };
+                materialMeshes.push({ mesh: subMesh, materialName: matName });
+            });
 
             return new WavefrontMaterialModel(materialMeshes, materials);
         });
