@@ -97,6 +97,7 @@ const examples = [
     new Example('wavefront-texture5').withTitle('Wavefront with Texture 5'),
     new Example('wavefront').withTitle('Stanford Dragon'),
     new Example('wireframe-cube'),
+    new Example('wireframe-outline').withTitle('Wireframe Outline (Surface IDs)'),
     new Example('xenusion').withTitle('Paralax'),
 ];
 
