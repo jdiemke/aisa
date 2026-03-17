@@ -17,6 +17,27 @@ interface Point2D {
  *  4. Output stereo audio: Left = X, Right = Y (normalised to [-1, 1]).
  */
 export class XYOscilloscopeGenerator {
+    /**
+     * Smooths a path using a moving average filter.
+     * @param path Array of Point2D
+     * @param window Window size (odd integer, default 5)
+     */
+    public static smoothPathMovingAverage(path: Point2D[], window: number = 5): Point2D[] {
+        if (window < 2 || path.length < window) return path.slice();
+        const half = Math.floor(window / 2);
+        const smoothed: Point2D[] = [];
+        for (let i = 0; i < path.length; i++) {
+            let sumX = 0, sumY = 0, count = 0;
+            for (let j = -half; j <= half; j++) {
+                const idx = Math.min(Math.max(i + j, 0), path.length - 1);
+                sumX += path[idx].x;
+                sumY += path[idx].y;
+                count++;
+            }
+            smoothed.push({ x: sumX / count, y: sumY / count });
+        }
+        return smoothed;
+    }
 
     // ------------------------------------------------------------------ //
     //  Step 1 – Extract outline pixel coordinates
@@ -123,6 +144,9 @@ export class XYOscilloscopeGenerator {
         const left = new Float32Array(totalSamples);
         const right = new Float32Array(totalSamples);
         const z = xyzMode ? new Float32Array(totalSamples) : undefined;
+
+        // Apply moving average smoothing (window size 5)
+        path = XYOscilloscopeGenerator.smoothPathMovingAverage(path, 2);
 
         if (path.length === 0) return { left, right, z };
 
