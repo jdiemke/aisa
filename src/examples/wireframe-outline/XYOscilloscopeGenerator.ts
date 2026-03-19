@@ -242,7 +242,19 @@ export class XYOscilloscopeGenerator {
 
             left[s] = (x / width) * 2 - 1;
             right[s] = -((y / height) * 2 - 1);
-            if (z) z[s] = beamOn ? 1 : -1;
+        }
+
+        // Z channel: filled in a separate pass so it never affects X/Y.
+        // Jump segments have zero arc-length, so the arc-length loop above
+        // never visits them and beamOn would always be true there.
+        // Instead, map each sample to a path segment by proportional point index
+        // and write 0 (jump/off) or 1 (draw/on) accordingly.
+        if (z !== undefined) {
+            for (let s = 0; s < totalSamples; s++) {
+                const cyclePhase = (s * totalCycles / totalSamples) % 1;
+                const segIdx = Math.min(Math.floor(cyclePhase * path.length) + 1, path.length - 1);
+                z[s] = isJump[segIdx] ? -1 : 1;
+            }
         }
 
         return { left, right, z };
@@ -330,7 +342,7 @@ export class XYOscilloscopeGenerator {
 
             left.set(frameAudio.left, sampleOffset);
             right.set(frameAudio.right, sampleOffset);
-            if (z && frameAudio.z) z.set(frameAudio.z, sampleOffset);
+            if (z !== undefined && frameAudio.z !== undefined) z.set(frameAudio.z, sampleOffset);
             sampleOffset += frameSamples;
 
             if (onProgress) {
