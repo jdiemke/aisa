@@ -44,6 +44,7 @@ const examples = [
     new Example('misc'),
     new Example('mode-7').withTitle('SNES Mode7'),
     new Example('moving-torus'),
+    new Example('oscilloscope'),
     new Example('other-md2').withCustomEntryPoint('./src/examples/different-md2/Application.ts').withTitle('Quake 2 Model (Ratamahatta)'),
     new Example('particle-scroller'),
     new Example('particle-streams'),
@@ -96,8 +97,8 @@ const examples = [
     new Example('wavefront-texture4').withTitle('Wavefront with Texture 4'),
     new Example('wavefront-texture5').withTitle('Wavefront with Texture 5'),
     new Example('wavefront').withTitle('Stanford Dragon'),
-    new Example('wireframe-cube'),
-    new Example('wireframe-outline').withTitle('Wireframe Outline (Surface IDs)'),
+    new Example('wireframe'),
+    new Example('wireframe-outline'),
     new Example('xenusion').withTitle('Paralax'),
 ];
 

@@ -1,5 +1,5 @@
-import { Framebuffer } from '../../Framebuffer';
-import { WavEncoder } from './WavEncoder';
+import { Framebuffer } from '../Framebuffer';
+import { WavEncoder } from '../sound/WavEncoder';
 
 interface Point2D {
     x: number;
@@ -16,7 +16,7 @@ interface Point2D {
  *  3. Close the loop and resample the path at constant arc-length speed.
  *  4. Output stereo audio: Left = X, Right = Y (normalised to [-1, 1]).
  */
-export class XYOscilloscopeGenerator {
+export class OscilloscopeGenerator {
     /**
      * Smooths a path using a moving average filter.
      * @param path Array of Point2D
@@ -146,7 +146,7 @@ export class XYOscilloscopeGenerator {
         const z = xyzMode ? new Float32Array(totalSamples) : undefined;
 
         // Apply moving average smoothing (window size 5)
-        path = XYOscilloscopeGenerator.smoothPathMovingAverage(path, 2);
+        path = OscilloscopeGenerator.smoothPathMovingAverage(path, 2);
 
         if (path.length === 0) return { left, right, z };
 

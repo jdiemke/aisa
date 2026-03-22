@@ -8,12 +8,11 @@ import { WireFrameRenderingPipeline } from '../../rendering-pipelines/WireFrameR
 import { AbstractScene } from '../../scenes/AbstractScene';
 
 /**
- * Wireframe outline rendering of a cube using the surface-ID
- * edge-detection technique.
+ * See-through wireframe rendering
  *
  * @see {@link WireFrameRenderingPipeline}
  */
-export class WireframeOutlineScene extends AbstractScene {
+export class WireframeScene extends AbstractScene {
 
     private mesh: FlatshadedMesh;
     private renderingPipeline: WireFrameRenderingPipeline;
@@ -23,20 +22,10 @@ export class WireframeOutlineScene extends AbstractScene {
         this.renderingPipeline = new WireFrameRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.BACK);
 
-        // Dark outlines on a white background
         this.renderingPipeline.setOutlineColor(Color.BLACK.toPackedFormat());
         this.renderingPipeline.setBackgroundColor(Color.SLATE_GRAY.toPackedFormat());
 
-        // Explode shared-vertex mesh into per-face vertices so that
-        // computeSurfaceIds can distinguish faces with different normals.
-        this.mesh = FlatshadedMesh.explode(new Icosahedron().getMesh());
-
-        // Compute surface IDs once from the mesh topology.
-        // Use a tight threshold (30°) so that only truly coplanar faces
-        // (e.g. triangles within the same pentagonal face) are merged.
-        // The default 80° is too wide for the dodecahedron whose adjacent
-        // face normals differ by only ~63°.
-        this.renderingPipeline.computeSurfaceIds(this.mesh, 30);
+        this.mesh = new Icosahedron().getMesh();
 
         // Auto-fit camera to mesh bounds
         this.modelView = new ModelViewMatrix();
@@ -47,14 +36,13 @@ export class WireframeOutlineScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
+        framebuffer.clearColorBuffer(Color.SLATE_GRAY.toPackedFormat());
         framebuffer.clearDepthBuffer();
         this.renderingPipeline.setFramebuffer(framebuffer);
         this.renderingPipeline.clearBuffers();
 
-        const mesh: FlatshadedMesh = this.mesh;
-
-        this.renderingPipeline.drawOutline(
-            framebuffer, mesh, this.modelView.getMatrix(time)
+        this.renderingPipeline.drawSeeThroughWireframe(
+            framebuffer, this.mesh, this.modelView.getMatrix(time)
         );
     }
 

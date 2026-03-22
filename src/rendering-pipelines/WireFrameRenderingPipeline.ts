@@ -1,5 +1,7 @@
 import { Framebuffer } from '../Framebuffer';
 import { FlatshadedMesh } from '../geometrical-objects/FlatshadedMesh';
+import { Matrix4f } from '../math/Matrix4f';
+import { Vector3f } from '../math/Vector3f';
 import { Vector4f } from '../math/Vector4f';
 import { AbstractRenderingPipeline } from './AbstractRenderingPipeline';
 
@@ -610,18 +612,22 @@ export class WireFrameRenderingPipeline extends AbstractRenderingPipeline {
      * Scans the surface-ID buffer and depth buffer, writing outline
      * pixels into the colour framebuffer wherever an edge is detected.
      *
-     * To avoid double-thick lines the kernel only compares each pixel
-     * with its **right** and **bottom** neighbours.  This guarantees
-     * every boundary is detected exactly once, producing single-pixel
-     * outlines.
+     * Edge types and their single-pixel strategies:
      *
-     * An edge is detected at pixel (x, y) when:
-     *  - Its right or bottom neighbour has a different surface ID, OR
-     *  - The depth difference to that neighbour exceeds the threshold.
+     *  1. **Silhouette** (geometry bordering background): all 4 cardinal
+     *     neighbours are checked.  Background pixels (ID 0) are skipped
+     *     entirely so no double marking occurs.
      *
-     * Additionally, silhouette edges at the geometry/background
-     * boundary are detected when a geometry pixel borders a background
-     * pixel in any of the 4 cardinal directions.
+     *  2. **Internal edges** (different surface IDs): all 4 cardinal
+     *     neighbours are checked, but the outline is drawn only when
+     *     the current pixel's surface ID is **smaller** than the
+     *     differing neighbour.  Every boundary is therefore marked on
+     *     exactly one side (the smaller-ID side), producing 1 px lines
+     *     regardless of edge orientation.
+     *
+     *  3. **Depth discontinuity** (same surface ID, large depth jump):
+     *     only right and down neighbours — the directional check alone
+     *     keeps these at 1 px because both pixels share the same ID.
      *
      * The background is filled with the configured background colour;
      * edges are drawn with the configured outline colour.
@@ -648,36 +654,98 @@ export class WireFrameRenderingPipeline extends AbstractRenderingPipeline {
                 if (s === 0) continue;
 
                 // Silhouette: geometry pixel that borders background
-                // (check all 4 neighbours for background = 0)
+                // (check all 4 neighbours — safe because background
+                // pixels are never checked, so no double marking)
                 if (sid[idx - 1] === 0 || sid[idx + 1] === 0 ||
                     sid[idx - w] === 0 || sid[idx + w] === 0) {
                     fb[idx] = this.outlineColor;
                     continue;
                 }
 
-                const d = depth[idx];
-
-                // Internal edges: only check RIGHT and DOWN neighbours
-                // so each boundary is marked on one side only (1px lines)
+                // Internal edges: check all 4 cardinal neighbours but
+                // only mark when this pixel's surface ID is smaller
+                // than the neighbour's.  Each boundary is drawn on
+                // exactly one side → 1 px lines.
+                const sL = sid[idx - 1];
                 const sR = sid[idx + 1];
+                const sU = sid[idx - w];
                 const sD = sid[idx + w];
 
-                if (sR !== s || sD !== s) {
+                if ((sR !== s && s < sR) ||
+                    (sL !== s && s < sL) ||
+                    (sD !== s && s < sD) ||
+                    (sU !== s && s < sU)) {
                     fb[idx] = this.outlineColor;
                     continue;
                 }
 
-                // Depth discontinuity (silhouette edges between
-                // overlapping surfaces at different depths) — again
-                // only right and down to keep lines thin.
-                const dR = depth[idx + 1];
-                const dD = depth[idx + w];
+                // Depth discontinuity within the same surface:
+                // right+down only (1 px guaranteed since same ID on
+                // both sides).
+                const d = depth[idx];
 
-                if (Math.abs(d - dR) > threshold ||
-                    Math.abs(d - dD) > threshold) {
+                if (Math.abs(d - depth[idx + 1]) > threshold ||
+                    Math.abs(d - depth[idx + w]) > threshold) {
                     fb[idx] = this.outlineColor;
                 }
             }
+        }
+    }
+
+    // ── High-level drawing helpers ──────────────────────────────────
+
+    /**
+     * Transform mesh vertices from model space into view space.
+     */
+    public transformVertices(mesh: FlatshadedMesh, modelViewMatrix: Matrix4f): void {
+        for (let i = 0; i < mesh.points.length; i++) {
+            modelViewMatrix.multiplyHomArr(mesh.points[i], mesh.transformedPoints[i]);
+        }
+    }
+
+    /**
+     * Draw the mesh as solid-looking wireframe outlines (hidden-line
+     * removal via surface-ID edge detection).  If `modelViewMatrix` is
+     * provided, vertices are transformed first; otherwise
+     * `mesh.transformedPoints` must already be in view space.
+     */
+    public drawOutline(
+        framebuffer: Framebuffer, mesh: FlatshadedMesh, modelViewMatrix?: Matrix4f
+    ): void {
+        if (modelViewMatrix) {
+            this.transformVertices(mesh, modelViewMatrix);
+        }
+        for (let fi = 0; fi < mesh.faces.length; fi++) {
+            this.drawFace(framebuffer, mesh, fi);
+        }
+        this.postProcessOutlines(framebuffer);
+    }
+
+    /**
+     * Draw the mesh as a see-through wireframe — every triangle edge is
+     * rendered with no depth test and no backface culling.  If
+     * `modelViewMatrix` is provided, vertices are transformed first;
+     * otherwise `mesh.transformedPoints` must already be in view space.
+     *
+     * @param color  Packed ARGB line colour (defaults to outlineColor).
+     */
+    public drawSeeThroughWireframe(
+        framebuffer: Framebuffer, mesh: FlatshadedMesh,
+        modelViewMatrix?: Matrix4f, color?: number
+    ): void {
+        if (modelViewMatrix) {
+            this.transformVertices(mesh, modelViewMatrix);
+        }
+        const c = color !== undefined ? color : this.outlineColor;
+        const tp = mesh.transformedPoints;
+        for (let fi = 0; fi < mesh.faces.length; fi++) {
+            const face = mesh.faces[fi];
+            const a = new Vector3f(tp[face.v1].x, tp[face.v1].y, tp[face.v1].z);
+            const b = new Vector3f(tp[face.v2].x, tp[face.v2].y, tp[face.v2].z);
+            const c2 = new Vector3f(tp[face.v3].x, tp[face.v3].y, tp[face.v3].z);
+            framebuffer.nearPlaneClipping(a, b, c);
+            framebuffer.nearPlaneClipping(b, c2, c);
+            framebuffer.nearPlaneClipping(c2, a, c);
         }
     }
 

@@ -8,12 +8,12 @@ import { WireFrameRenderingPipeline } from '../../rendering-pipelines/WireFrameR
 import { AbstractScene } from '../../scenes/AbstractScene';
 
 /**
- * Wireframe outline rendering of a cube using the surface-ID
- * edge-detection technique.
+ * Oscilloscope-style rendering scene based on WireframeOutlineScene.
+ * Renders a wireframe mesh suitable for oscilloscope XY output.
  *
  * @see {@link WireFrameRenderingPipeline}
  */
-export class WireframeOutlineScene extends AbstractScene {
+export class OscilloscopeScene extends AbstractScene {
 
     private mesh: FlatshadedMesh;
     private renderingPipeline: WireFrameRenderingPipeline;
@@ -25,7 +25,7 @@ export class WireframeOutlineScene extends AbstractScene {
 
         // Dark outlines on a white background
         this.renderingPipeline.setOutlineColor(Color.BLACK.toPackedFormat());
-        this.renderingPipeline.setBackgroundColor(Color.SLATE_GRAY.toPackedFormat());
+        this.renderingPipeline.setBackgroundColor(Color.WHITE.toPackedFormat());
 
         // Explode shared-vertex mesh into per-face vertices so that
         // computeSurfaceIds can distinguish faces with different normals.
@@ -33,14 +33,12 @@ export class WireframeOutlineScene extends AbstractScene {
 
         // Compute surface IDs once from the mesh topology.
         // Use a tight threshold (30°) so that only truly coplanar faces
-        // (e.g. triangles within the same pentagonal face) are merged.
-        // The default 80° is too wide for the dodecahedron whose adjacent
-        // face normals differ by only ~63°.
+        // are merged.
         this.renderingPipeline.computeSurfaceIds(this.mesh, 30);
 
         // Auto-fit camera to mesh bounds
         this.modelView = new ModelViewMatrix();
-        this.modelView.extraScale = 2.5;
+        this.modelView.extraScale = 1.35;
         this.modelView.autoFit(this.mesh.points);
 
         return Promise.resolve();
@@ -53,9 +51,12 @@ export class WireframeOutlineScene extends AbstractScene {
 
         const mesh: FlatshadedMesh = this.mesh;
 
+        // --- Left side: outline mode (with postProcessOutlines) ---
         this.renderingPipeline.drawOutline(
             framebuffer, mesh, this.modelView.getMatrix(time)
         );
+
+
     }
 
 }

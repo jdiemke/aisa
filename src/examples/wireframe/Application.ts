@@ -1,11 +1,11 @@
 import { Canvas } from '../../Canvas';
-import { TwisterScene } from './TwisterScene';
+import { WireframeScene } from './WireframeScene';
 import './../../default-style.css';
 
 class Application {
 
     public static main(): void {
-        const canvas: Canvas = new Canvas(320, 200, new TwisterScene());
+        const canvas: Canvas = new Canvas(320, 200, new WireframeScene());
         canvas.init();
     }
 
