@@ -30,6 +30,7 @@ const examples = [
     new Example('gears-2'),
     new Example('gears'),
     new Example('glb').withTitle('GLB Model'),
+    new Example('glb-animation').withTitle('GLB Animation (T-Rex)'),
     new Example('glow'),
     new Example('hoodlum'),
     new Example('led-plasma').withTitle('LED Plasma'),

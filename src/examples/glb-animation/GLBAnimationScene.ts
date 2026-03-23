@@ -3,64 +3,61 @@ import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { Matrix4f, ModelViewMatrix, Vector4f } from '../../math';
+import { GLBAnimatedModel } from '../../model/glb/GLBAnimatedModel';
 import { GLBLoader } from '../../model/glb/GLBLoader';
-import { GLBModel } from '../../model/glb/GLBModel';
 import { SubPixelRenderingPipeline } from '../../rendering-pipelines/SubPixelRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Material } from '../../shading/material/Material';
 import { PointLight } from '../../shading/light/PointLight';
 
-/**
- * A software-rendered, flat-shaded, sub-pixel-accurate, depth-sorted,
- * back-face-culled, two-point-lit, multi-material, perspective-projected,
- * near-plane-clipped, normal-matrix-corrected, GLB-loaded 3D model.
- *
- * Demonstrates loading a GLB (Binary glTF 2.0) file.  Each mesh
- * primitive is rendered with Phong-lit sub-pixel shading using PBR
- * material properties approximated from the glTF metallic-roughness
- * model.
- *
- * Material conversion and depth-sorting are handled by
- * {@link GLBModel}; the scene only owns the rendering
- * pipeline, lights, and camera.
- */
-export class GLBScene extends AbstractScene {
+export class GLBAnimationScene extends AbstractScene {
 
-    private model: GLBModel;
+    private model: GLBAnimatedModel;
     private renderingPipeline: SubPixelRenderingPipeline;
+
     private mv: ModelViewMatrix = new ModelViewMatrix();
+    private clipIndex: number = 0;
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.renderingPipeline = new SubPixelRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.BACK);
         this.renderingPipeline.enableLighting(true);
 
-        // Set up scene lights
-        const keyLight: PointLight = new PointLight();
-        keyLight.ambientIntensity = new Vector4f(0.7, 0.7, 0.7, 1);
-        keyLight.diffuseIntensity = new Vector4f(1.2, 1.15, 1.1, 1);
-        keyLight.specularIntensity = new Vector4f(1.2, 1.2, 1.2, 1);
+        const keyLight = new PointLight();
+        keyLight.ambientIntensity = new Vector4f(1.1, 1.1, 1.1, 1);
+        keyLight.diffuseIntensity = new Vector4f(1.6, 1.55, 1.5, 1);
+        keyLight.specularIntensity = new Vector4f(1.3, 1.3, 1.3, 1);
         keyLight.position = new Vector4f(80, -120, -180, 1);
 
-        const fillLight: PointLight = new PointLight();
-        fillLight.ambientIntensity = new Vector4f(0.4, 0.4, 0.45, 1);
-        fillLight.diffuseIntensity = new Vector4f(0.8, 0.8, 0.9, 1);
-        fillLight.specularIntensity = new Vector4f(0.5, 0.5, 0.5, 1);
+        const fillLight = new PointLight();
+        fillLight.ambientIntensity = new Vector4f(0.75, 0.75, 0.8, 1);
+        fillLight.diffuseIntensity = new Vector4f(1.2, 1.2, 1.3, 1);
+        fillLight.specularIntensity = new Vector4f(0.7, 0.7, 0.7, 1);
         fillLight.position = new Vector4f(-120, -60, -80, 1);
 
-        const rimLight: PointLight = new PointLight();
-        rimLight.ambientIntensity = new Vector4f(0.15, 0.15, 0.2, 1);
-        rimLight.diffuseIntensity = new Vector4f(0.5, 0.5, 0.6, 1);
-        rimLight.specularIntensity = new Vector4f(0.4, 0.4, 0.4, 1);
+        const rimLight = new PointLight();
+        rimLight.ambientIntensity = new Vector4f(0.4, 0.4, 0.45, 1);
+        rimLight.diffuseIntensity = new Vector4f(0.9, 0.9, 1.0, 1);
+        rimLight.specularIntensity = new Vector4f(0.6, 0.6, 0.6, 1);
         rimLight.position = new Vector4f(0, -180, 100, 1);
 
         this.renderingPipeline.setLights([keyLight, fillLight, rimLight]);
 
-        return GLBLoader.load(
-            require('@assets/glb/computer.glb')
-        ).then((meshGroups) => {
-            this.model = new GLBModel(meshGroups);
+        return GLBLoader.loadRaw(
+            require('@assets/glb/T-Rex.glb')
+        ).then(({ gltf, binChunk }) => {
+            this.model = new GLBAnimatedModel(gltf, binChunk);
+
+            // Select the walk animation by name (falls back to clip 0)
+            const walkIdx = this.model.getAnimationIndex('Armature|TRex_Walk');
+            this.clipIndex = walkIdx >= 0 ? walkIdx : 0;
+
+            // Pose the model at t=0 so computeBounds measures the
+            // actual animated geometry rather than raw bind-pose vertices.
+            this.model.getMesh(0, this.clipIndex);
+
             this.mv.xSpeed = 0;
+            this.mv.extraScale = 2.50;
             this.mv.autoFit(this.model.mergedMesh.points);
         });
     }
@@ -69,11 +66,14 @@ export class GLBScene extends AbstractScene {
         framebuffer.clearColorBuffer(Color.SLATE_GRAY.toPackedFormat());
         framebuffer.clearDepthBuffer();
 
-        const modelViewMatrix: Matrix4f = this.mv.getMatrix(time);
+        // Animate the skeleton (time in ms → seconds)
+        const animTime = time * 0.001;
+        this.model.getMesh(animTime, this.clipIndex);
+
+        const modelViewMatrix = this.mv.getMatrix(time);
         this.renderingPipeline.setFramebuffer(framebuffer);
 
-        // Transform all vertices and normals once
-        const normalMatrix: Matrix4f = modelViewMatrix.computeNormalMatrix();
+        const normalMatrix = modelViewMatrix.computeNormalMatrix();
         const mesh: FlatshadedMesh = this.model.mergedMesh;
 
         for (let i = 0; i < mesh.normals.length; i++) {
@@ -83,13 +83,12 @@ export class GLBScene extends AbstractScene {
             modelViewMatrix.multiplyHomArr(mesh.points[i], mesh.transformedPoints[i]);
         }
 
-        // Sort faces back-to-front and draw with per-face material switching
-        const faceOrder: Array<number> = this.model.sortFacesByDepth();
+        const faceOrder = this.model.sortFacesByDepth();
 
-        let currentMaterial: string = '';
-        let currentDoubleSided: boolean = false;
+        let currentMaterial = '';
+        let currentDoubleSided = false;
         for (const fi of faceOrder) {
-            const matName: string = this.model.getMaterialNameForFace(fi);
+            const matName = this.model.getMaterialNameForFace(fi);
             if (matName !== currentMaterial) {
                 currentMaterial = matName;
                 const engineMat: Material | undefined = this.model.getMaterialForFace(fi);
@@ -98,8 +97,7 @@ export class GLBScene extends AbstractScene {
                 }
             }
 
-            // Toggle back-face culling for doubleSided materials
-            const ds: boolean = this.model.isFaceDoubleSided(fi);
+            const ds = this.model.isFaceDoubleSided(fi);
             if (ds !== currentDoubleSided) {
                 currentDoubleSided = ds;
                 this.renderingPipeline.setCullFace(ds ? CullFace.DISABLED : CullFace.BACK);
