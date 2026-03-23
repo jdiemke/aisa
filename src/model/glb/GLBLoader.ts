@@ -61,15 +61,37 @@ export class GLBLoader {
             .then((arrayBuffer: ArrayBuffer) => GLBLoader.parse(arrayBuffer));
     }
 
+    /**
+     * Fetches a `.glb` file and returns the raw parsed glTF JSON object
+     * and the BIN chunk.  Used by animation / skinning code that needs
+     * access to the full glTF document.
+     */
+    public static loadRaw(url: string): Promise<{ gltf: any; binChunk: ArrayBuffer | null }> {
+        return fetch(url)
+            .then((response: Response) => response.arrayBuffer())
+            .then((arrayBuffer: ArrayBuffer) => GLBLoader.parseRaw(arrayBuffer));
+    }
+
     // ── Parsing entry point ────────────────────────────────────────
 
+    private static parseRaw(arrayBuffer: ArrayBuffer): { gltf: any; binChunk: ArrayBuffer | null } {
+        const { jsonChunk, binChunk } = GLBLoader.extractChunks(arrayBuffer);
+        const gltf = JSON.parse(jsonChunk);
+        return { gltf, binChunk };
+    }
+
     private static parse(arrayBuffer: ArrayBuffer): Array<InstanceType<typeof GLBLoader.MeshGroup>> {
+        const { jsonChunk, binChunk } = GLBLoader.extractChunks(arrayBuffer);
+        const gltf = JSON.parse(jsonChunk);
+        return GLBLoader.buildMeshGroups(gltf, binChunk);
+    }
+
+    private static extractChunks(arrayBuffer: ArrayBuffer): { jsonChunk: string; binChunk: ArrayBuffer | null } {
         const view = new DataView(arrayBuffer);
 
         // ── Header ─────────────────────────────────────────────────
         const magic   = view.getUint32(0, true);
         const version = view.getUint32(4, true);
-        // const length  = view.getUint32(8, true);  // total file length
 
         if (magic !== GLBLoader.GLB_MAGIC) {
             throw new Error('GLBLoader: invalid magic number – not a GLB file');
@@ -94,7 +116,6 @@ export class GLBLoader {
             } else if (chunkType === GLBLoader.CHUNK_TYPE_BIN) {
                 binChunk = arrayBuffer.slice(chunkStart, chunkStart + chunkLength);
             }
-            // skip unknown chunk types per spec
 
             offset = chunkStart + chunkLength;
         }
@@ -103,8 +124,7 @@ export class GLBLoader {
             throw new Error('GLBLoader: missing JSON chunk');
         }
 
-        const gltf = JSON.parse(jsonChunk);
-        return GLBLoader.buildMeshGroups(gltf, binChunk);
+        return { jsonChunk, binChunk };
     }
 
     // ── Build mesh groups from glTF JSON + BIN ─────────────────────
@@ -309,7 +329,7 @@ export class GLBLoader {
     /**
      * Reads a VEC3 float accessor and returns an array of Vector4f (w=1).
      */
-    private static readAccessorVec3(
+    public static readAccessorVec3(
         gltf: any,
         binChunk: ArrayBuffer | null,
         accessorIdx: number
@@ -339,7 +359,7 @@ export class GLBLoader {
      * Reads a SCALAR accessor (typically indices) and returns a plain number
      * array, handling UNSIGNED_BYTE / UNSIGNED_SHORT / UNSIGNED_INT types.
      */
-    private static readAccessorScalar(
+    public static readAccessorScalar(
         gltf: any,
         binChunk: ArrayBuffer | null,
         accessorIdx: number
@@ -381,7 +401,7 @@ export class GLBLoader {
      * Returns the raw ArrayBuffer for the given buffer index.
      * Buffer 0 with no URI is the GLB-stored BIN chunk.
      */
-    private static getBufferData(
+    public static getBufferData(
         gltf: any,
         binChunk: ArrayBuffer | null,
         bufferIdx: number
@@ -441,7 +461,7 @@ export class GLBLoader {
     /**
      * Converts a glTF quaternion [x, y, z, w] to a Matrix4f rotation matrix.
      */
-    private static quaternionToMatrix4f(q: number[]): Matrix4f {
+    public static quaternionToMatrix4f(q: number[]): Matrix4f {
         const [x, y, z, w] = q;
         const mat = Matrix4f.constructIdentityMatrix();
 
