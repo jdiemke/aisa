@@ -101,6 +101,8 @@ const examples = [
     new Example('wireframe'),
     new Example('wireframe-outline'),
     new Example('xenusion').withTitle('Paralax'),
+    new Example('glow2'),
+    new Example('texture-trick2'),
 ];
 
 module.exports = examples;
