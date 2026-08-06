@@ -23,6 +23,16 @@ export class Texture {
         return texture.texture[(x & 0xff) + (y & 0xff) * 256];
     }
 
+    public colorize(r: number, g:number, b:number) {
+        for(let i=0; i < this.width *this.height; i++) {
+            let pixel = this.texture[i];
+            let col_r = (pixel & 0xff) *r;
+            let col_g = (pixel >> 8 & 0xff)*g;
+            let col_b = (pixel >> 16 & 0xff)*b;
+            this.texture[i] = col_r | col_g << 8 | col_b << 16 | 255 << 24;
+        }
+    }
+
     public getBilinearFilteredPixel(x: number, y: number): number {
         const x0 = (((x | 0) % 256) + 256) % 256;
         const x1 = ((((x + 1) | 0) % 256) + 256) % 256;
@@ -119,7 +129,7 @@ export class Texture {
     }
 
     public getPixelRasterizer(texture: Texture, x: number, y: number): number {
-        return this.texture[(x & (this.width-1)) + (y&(this.height-1)) * this.width];
+        return this.texture[(x % (this.width)) + (y%(this.height)) * this.width];
     }
 
     public getPixel3(texture: Texture, x: number, y: number): number {

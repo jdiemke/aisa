@@ -51,12 +51,13 @@ export class Framebuffer {
 
     public camera: ControllableCamera;
     public bob: Texture;
-    public triangleRasterizer = new FlatShadingTriangleRasterizer(this);
-    public texturedTriangleRasterizer = new TexturedTriangleRasterizer(this);
+    public triangleRasterizer ;
+
 
     public scaleClipBlitter = new ScaleClipBlitter(this);
     // public renderingPipeline: FlatShadingRenderingPipeline;
      public texturedRenderingPipeline: TexturingRenderingPipeline;
+         public texturedTriangleRasterizer ;
     public lineRasterizer = new LineRasterizerDda(this);
     public lineRasterizerNo = new LineRasterizerNoZ(this);
     public tmpGlitch: Uint32Array;
@@ -104,6 +105,8 @@ export class Framebuffer {
         this.tmpGlitch = new Uint32Array(width * height);
         // this.renderingPipeline = new FlatShadingRenderingPipeline(this);
      this.texturedRenderingPipeline = new TexturingRenderingPipeline(this);
+
+     this.texturedTriangleRasterizer= new TexturedAlphaBlendingTriangleRasterizer(this, this.texturedRenderingPipeline)
         this.minWindow = new Vector2f(0, 0);
         this.maxWindow = new Vector2f(width - 1, height - 1);
 
@@ -1564,6 +1567,18 @@ export class Framebuffer {
         const result = this.sphereMapCoords(reflectionVector);
         vertex.textureCoordinate.u =result.u;
         vertex.textureCoordinate.v = result.v;
+    }
+
+    public refrac(normal: Vector4f, eyeSpaceVertex: Vector4f, vertex: Vertex): void {
+        // https://www.mvps.org/directx/articles/spheremap.htm
+        // vertex.textureCoordinate.u = 0.5 + normal.x * 0.5;
+        // vertex.textureCoordinate.v = 0.5 - normal.y * 0.5;
+        const incidentVector = eyeSpaceVertex.normalize();
+        const reflectionVector = incidentVector.sub(normal.mul(incidentVector.dot(normal) * 2.0));
+
+        const result = this.sphereMapCoords(reflectionVector);
+        vertex.textureCoordinate.u = (Math.min(Math.max(Math.round(vertex.projection.x+ reflectionVector.x*35)/319 , 0), 1));
+        vertex.textureCoordinate.v = (Math.min(Math.max(Math.round(vertex.projection.y+reflectionVector.y*35)/199,0),1));
     }
 
     public drawLineDDA(start: Vector3f, end: Vector3f, color: number): void {

@@ -4,8 +4,8 @@ import { AbstractTriangleRasterizer } from "./AbstractTriangleRasterizer";
 
 export abstract class AbstractScannlineTriangleRasterizer extends AbstractTriangleRasterizer {
 
-    private temp: Vertex = null;
-    
+    private temp: Vertex | null = null;
+
     /**
      * Triangle rasterization using edge-walking strategy for scan-conversion.
      * Internally DDA is used for edge-walking.

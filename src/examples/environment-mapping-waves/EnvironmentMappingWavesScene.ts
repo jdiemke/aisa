@@ -44,7 +44,8 @@ export class EnvironmentMappingScene extends AbstractScene {
             TextureUtils.load(require('@assets/envmap.png'), false).then(
                 texture => {
                     this.env = texture;
-                    this.env.setClamp(true)
+                   // this.env.setClamp(true)
+                   // this.env.colorize(0.8,0.8,1)
                 }
             ),
         ]).then(() => this.plane = this.createPlane());
@@ -53,6 +54,7 @@ export class EnvironmentMappingScene extends AbstractScene {
     public render(framebuffer: Framebuffer, time: number): void {
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
 
+        //framebuffer.texturedRenderingPipeline.setAlpha(Math.abs(Math.sin(Date.now()*0.00012)));
         framebuffer.setCullFace(CullFace.BACK);
         framebuffer.setTexture(this.env);
         this.shadingPlaneEnv(framebuffer, time * 0.001, this.plane);
@@ -66,7 +68,7 @@ export class EnvironmentMappingScene extends AbstractScene {
         const result = plane;
 
         const elapsedTime2 = elapsedTime *1.2;
-        const scale2 = (Math.sin(elapsedTime * 1.8) + 1) * 0.5;
+
         for (let i = 0; i < result.vertices.length; i++) {
             const y = result.vertices[i].y - 30;
             const x = result.vertices[i].x - 50;
@@ -74,9 +76,9 @@ export class EnvironmentMappingScene extends AbstractScene {
             result.deformedVertices[i].y = result.vertices[i].y;
             result.deformedVertices[i].x = result.vertices[i].x;
             result.deformedVertices[i].z = result.vertices[i].z + (
-                Math.sin(result.vertices[i].y * 0.2 + elapsedTime2 * 2.83) * 5.3
-                + Math.sin(result.vertices[i].x * 0.5 + elapsedTime2 * 2.83) * 4.3) * scale2
-                + Math.sin(length * 0.4 - elapsedTime2 * 3.83) * 3.3;
+                Math.sin(result.vertices[i].y * 0.08 + elapsedTime2 * 2.83) * 5.6
+                + Math.sin(result.vertices[i].x * 0.1 + elapsedTime2 * 2.83) * 5.9)
+                + Math.sin(length * 0.4 - elapsedTime2 * 3.83) * 3.3 * 0.56;
 
             result.normals[i].x = 0;
             result.normals[i].y = 0;

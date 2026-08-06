@@ -1,5 +1,5 @@
 import { Framebuffer } from '../../Framebuffer';
-import { Matrix4f, Vector3f, Vector4f } from '../../math';
+import { Matrix4f, Vector2f, Vector3f, Vector4f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
@@ -10,26 +10,28 @@ import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingR
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 
 
+
 export class EnvironmentMappingScene extends AbstractScene {
 
     private flood: Texture;
     public env: Texture;
     private texturedRenderingPipeline: TexturingRenderingPipeline;
-    private mesh: TexturedMesh ;
+    private mesh: TexturedMesh;
     points: Array<Vector4f> = [];
     textCoords: Array<TextureCoordinate> = [];
     index: Array<number> = [];
     normals: Array<Vector4f> = new Array<Vector4f>();
     public init(framebuffer: Framebuffer): Promise<any> {
         this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
+        //this.texturedRenderingPipeline.disablePerspectiveCorrectness();
         this.buildTorusMesh();
 
         return Promise.all([
             TextureUtils.load(require('@assets/flood.png'), false).then(
                 texture => this.flood = texture
             ),
-            TextureUtils.load(require('@assets/envmap.png'), false).then(
-                texture => this.env = texture
+            TextureUtils.load(require('@assets/flood.png'), false).then(
+                texture => {this.env = texture; this.env.colorize(0.82,0.82,0.93)}
             ),
         ]);
     }
@@ -41,24 +43,24 @@ export class EnvironmentMappingScene extends AbstractScene {
         framebuffer.setTexture(this.env);
 
         const scale = 2.1;
-        const elapsedTime =  time * 0.008;
+        const elapsedTime = time * 0.008;
         let modelViewMartrix = Matrix4f.constructScaleMatrix(scale, scale, scale).multiplyMatrix(Matrix4f.constructYRotationMatrix(elapsedTime * 0.25));
         modelViewMartrix = modelViewMartrix.multiplyMatrix(Matrix4f.constructXRotationMatrix(elapsedTime * 0.3));
-        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.09) * 10+20, Math.sin(elapsedTime * 0.1) * 10
-            , -85)
+        modelViewMartrix = Matrix4f.constructTranslationMatrix(Math.sin(elapsedTime * 0.09) * 50, Math.sin(elapsedTime * 0.1) * 10
+            , -135)
             .multiplyMatrix(modelViewMartrix);
 
-            framebuffer.wBuffer.fill(100);
-           
-        this.shadingTorusENvironment(framebuffer,modelViewMartrix);
-     
+        framebuffer.wBuffer.fill(100);
+
+        this.shadingTorusENvironment(framebuffer, modelViewMartrix);
+
     }
 
     private buildTorusMesh(): void {
         const STEPS = 35 * 2;
-        const STEPS2 = 8 * 2;
+        const STEPS2 = 8 * 3;
         for (let i = 0; i < STEPS + 1; i++) {
-        const frame = this.torusFunction3(i * 2 * Math.PI / STEPS);
+            const frame = this.torusFunction3(i * 2 * Math.PI / STEPS);
             const frame2 = this.torusFunction3(i * 2 * Math.PI / STEPS + 0.01);
             const tangent = frame2.sub(frame);
             let up = frame.add(frame2).normalize();
@@ -88,49 +90,53 @@ export class EnvironmentMappingScene extends AbstractScene {
                 this.index.push((((STEPS2 + 1) * j) + (0 + i))); // 5
             }
         }
-    
-      this.mesh = new TexturedMesh();
-      this.mesh.points = this.points;
-      this.mesh.normals = this.normals;
-      this.mesh.normals2 = this.normals.map(() => new Vector4f(0,0,0));
-      this.mesh.points2 = this.points.map(() => new Vector4f(0,0,0));
-      this.mesh.uv = this.points.map(() => new TextureCoordinate());
-     const faces = [];
-      for (let i = 0; i < this.index.length; i += 3) {
 
+        this.mesh = new TexturedMesh();
+        this.mesh.points = this.points;
+        this.mesh.normals = this.normals;
+        this.mesh.normals2 = this.normals.map(() => new Vector4f(0, 0, 0));
+        this.mesh.points2 = this.points.map(() => new Vector4f(0, 0, 0));
 
+        this.mesh.uv = this.points.map(() => new TextureCoordinate());
 
+        // TODO: make faces type and import
+        const faces: Array<{
+            vertices: Array<number>,
+            normals?: Array<number>
+            uv: Array<number>
+        }> = [];
 
-        const face = {
-            vertices: [this.index[i], this.index[i+1], this.index[i+2]],
-            uv: null,
-            normals: [this.index[i], this.index[i+1], this.index[i+2]]
-        };
-        faces.push(face);
-      }
-      this.mesh.faces = faces;
+        for (let i = 0; i < this.index.length; i += 3) {
+            const face = {
+                vertices: [this.index[i], this.index[i + 1], this.index[i + 2]],
+                uv: null,
+                normals: [this.index[i], this.index[i + 1], this.index[i + 2]]
+            };
+
+            faces.push(face);
+        }
+        this.mesh.faces = faces;
     }
 
     private torusFunction3(alpha: number): Vector3f {
         const p = 2
         const q = 3;
         const r = 0.5 * (2 + Math.sin(q * alpha));
-        return new Vector3f(r * Math.cos(p * alpha),
+
+        return new Vector3f(
+            r * Math.cos(p * alpha),
             r * Math.cos(q * alpha),
-            r * Math.sin(p * alpha)).mul(10);
+            r * Math.sin(p * alpha)
+        ).mul(10);
     }
 
-
-    public shadingTorusENvironment(framebuffer: Framebuffer,modelViewMartrix: Matrix4f): void {
-   
-      
-
-        
+    public shadingTorusENvironment(framebuffer: Framebuffer, modelViewMartrix: Matrix4f): void {
         this.texturedRenderingPipeline.setSphereMapping(true);
         framebuffer.setCullFace(CullFace.BACK);
         this.texturedRenderingPipeline.setModelViewMatrix(modelViewMartrix);
-       this.texturedRenderingPipeline.draw(framebuffer, this.mesh);
-    }
 
+        this.env.setClamp(false);
+        this.texturedRenderingPipeline.draw(framebuffer, this.mesh);
+    }
 
 }

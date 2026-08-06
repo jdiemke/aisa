@@ -1,9 +1,11 @@
+
 import { Framebuffer } from '../Framebuffer';
 import { Matrix4f } from '../math/Matrix4f';
 import { Vector4f } from '../math/Vector4f';
 import { AbstractTriangleRasterizer } from '../rasterizer/AbstractTriangleRasterizer';
 import { TexturedAlphaBlendingTriangleRasterizer } from '../rasterizer/TexturedAlphaBlendingTriangleRasterizer';
 import { TexturedTriangleRasterizer } from '../rasterizer/TexturedTriangleRasterizer';
+import { TexturedTriangleRasterizer2D } from '../rasterizer/TexturedTriangleRasterizer2D';
 import { ClipMode } from '../screen-space-clipping/ClipMode';
 import { SutherlandHodgman2DClipper } from '../screen-space-clipping/SutherlandHodgman2DClipper';
 import { TextureCoordinate } from '../TextureCoordinate';
@@ -14,7 +16,7 @@ import { TexturedMesh } from './TexturedMesh';
 export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
 
     private sphereMapping: boolean = false;
-    public triangleRasterizer: AbstractTriangleRasterizer = null;
+    public triangleRasterizer: AbstractTriangleRasterizer | null = null;
 
     private vertexArray: Array<Vertex> = new Array<Vertex>(
         new Vertex(), new Vertex(), new Vertex()
@@ -46,6 +48,10 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
         this.triangleRasterizer = new TexturedAlphaBlendingTriangleRasterizer(this.framebuffer, this);
     }
 
+    public disablePerspectiveCorrectness() {
+        this.triangleRasterizer = new TexturedTriangleRasterizer2D(this.framebuffer)
+    }
+
     public disableAlphaBlending(): void {
         this.triangleRasterizer = new TexturedTriangleRasterizer(this.framebuffer);
     }
@@ -62,7 +68,7 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
     }
 
     public draw(framebuffer: Framebuffer, mesh: TexturedMesh): void {
-        if (mesh.normals) {
+        if (mesh.normals && mesh.normals2) {
             const normalMatrix: Matrix4f = this.modelViewMatrix.computeNormalMatrix();
 
             for (let i: number = 0; i < mesh.normals.length; i++) {
@@ -96,18 +102,35 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
                     this.vertexArray[1].projection = this.projectedVertices[1];
                     this.vertexArray[2].projection = this.projectedVertices[2];
 
-                    if (this.sphereMapping) {
+                    if (this.sphereMapping && mesh.normals2) {
                         const n1: Vector4f = mesh.normals2[mesh.faces[i].normals[0]];
                         const n2: Vector4f = mesh.normals2[mesh.faces[i].normals[1]];
                         const n3: Vector4f = mesh.normals2[mesh.faces[i].normals[2]];
-                        framebuffer.fakeSphere(n1, this.vertexArray[0]);
-                        framebuffer.fakeSphere(n2, this.vertexArray[1]);
-                        framebuffer.fakeSphere(n3, this.vertexArray[2]);
+
+                        const e1 = mesh.points2[mesh.faces[i].vertices[0]];
+                        const e2 = mesh.points2[mesh.faces[i].vertices[1]];
+                        const e3 = mesh.points2[mesh.faces[i].vertices[2]];
+
+                        // TDOD: remove this code and move after model view transformation
+                        // and compute there the mesh.uv values
+                        //framebuffer.fakeSphere(n1, this.vertexArray[0]);
+                        //framebuffer.fakeSphere(n2, this.vertexArray[1]);
+                        //framebuffer.fakeSphere(n3, this.vertexArray[2]);
+
+                        framebuffer.fakeSphere3(n1,  e1, this.vertexArray[0]);
+                        framebuffer.fakeSphere3(n2,  e2, this.vertexArray[1]);
+                        framebuffer.fakeSphere3(n3,  e3, this.vertexArray[2]);
+
+                        framebuffer.refrac(n1,  e1, this.vertexArray[0]);
+                        framebuffer.refrac(n2,  e2, this.vertexArray[1]);
+                        framebuffer.refrac(n3,  e3, this.vertexArray[2]);
                     } else {
                         this.vertexArray[0].textureCoordinate = mesh.uv[mesh.faces[i].uv[0]];
                         this.vertexArray[1].textureCoordinate = mesh.uv[mesh.faces[i].uv[1]];
                         this.vertexArray[2].textureCoordinate = mesh.uv[mesh.faces[i].uv[2]];
                     }
+
+ //new TriangleRasterizer33().rasterize(this.framebuffer, {v0:this.vertexArray[0],  v1:  this.vertexArray[1], v2:  this.vertexArray[2]})
 
                     this.clipConvexPolygon(framebuffer, this.vertexArray);
                 }
@@ -213,6 +236,7 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
         // triangulate new point set
         for (let i = 0; i < output.length - 2; i++) {
             this.triangleRasterizer.drawTriangleDDA(framebuffer, output[0], output[1 + i], output[2 + i]);
+            //new TriangleRasterizer33().rasterize(this.framebuffer, {v0:  output[0],  v1:  output[1], v2:  output[2]})
         }
     }
 
