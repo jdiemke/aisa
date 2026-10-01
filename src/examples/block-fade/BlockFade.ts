@@ -217,17 +217,18 @@ export class BlockFade extends AbstractScene {
         framebuffer: Framebuffer,
         transitionSceneFrom: AbstractScene,
         transitionSceneTo: AbstractScene,
-        transitionMethod: TransitionMethods,
-        transitionValue: number,
-        time: number) {
+        time: number,
+        sceneData: any) {
+
+        const transitionValue = sceneData.transitionValue;
 
         // render the 'To' effect into the framebuffer
-        transitionSceneTo.render(this.transitionFramebufferTo, time);
+        transitionSceneTo.render(this.transitionFramebufferTo, time, sceneData);
 
         // render 'From' effect into framebuffer
-        transitionSceneFrom.render(framebuffer, time);
+        transitionSceneFrom.render(framebuffer, time, sceneData);
         // apply transition to framebuffer (fromEffect) using texture (toEffect) 0-255
-        switch (Math.trunc(transitionMethod)) {
+        switch (Math.trunc(sceneData.transitionType)) {
             case TransitionMethods.BLOCKFADE: // 0 - 12000
                 this.blockFade(framebuffer, this.transitionFramebufferTo.framebuffer, this.transitionFramebufferTo.width, Utils.map(transitionValue, 0, 255, 0, 12000), 0);
                 break;
@@ -309,7 +310,7 @@ export class BlockFade extends AbstractScene {
                 framebuffer.drawPixel(x, y,
                     Framebuffer.blend(
                         startColor,
-                        this.transitionFramebufferTo.framebuffer[x + y * framebuffer.width],
+                        framebuffer.framebuffer[x + y * framebuffer.width],
                         alpha)
                 );
             }

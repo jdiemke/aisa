@@ -1,4 +1,5 @@
 import { Framebuffer } from './../Framebuffer';
+import { sceneData } from '../sound/MusicProperties';
 
 export abstract class AbstractScene {
 
@@ -10,6 +11,6 @@ export abstract class AbstractScene {
 
     }
 
-    public abstract render(framebuffer: Framebuffer, time: number): void;
+    public abstract render(framebuffer: Framebuffer, time: number, sceneData?: sceneData): void;
 
 }
