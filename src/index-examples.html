@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AISA Examples</title>
+<style>
+    body { margin: 0; padding: 24px; background: #111; color: #eee; font-family: sans-serif; }
+    h1 { text-align: center; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 1200px; margin: 0 auto; }
+    .card { display: flex; flex-direction: column; align-items: center; color: #8cf; text-decoration: none; background: #1c1c1c; padding: 8px; border-radius: 6px; }
+    .card:hover { background: #2a2a2a; }
+    .card img { width: 100%; aspect-ratio: 8 / 5; object-fit: cover; image-rendering: pixelated; background: #000; }
+    .card span { margin-top: 8px; }
+    @media (max-width: 800px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+<h1>Examples</h1>
+<div class="grid">
+<% examples.forEach(ex => { %>
+    <a class="card" href="<%- ex.name %>.html"><img src="examples/<%- ex.name %>.png" alt="<%- ex.title %>" loading="lazy"><span><%- ex.title %></span></a>
+<% }) %>
+</div>
+</body>
+</html>

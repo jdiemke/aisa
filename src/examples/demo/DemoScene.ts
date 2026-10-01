@@ -27,8 +27,7 @@ export class DemoScene extends AbstractScene {
     private canvasRef: HTMLCanvasElement;
     private demoStats: DemoStats;
     private demoControls: DemoControls;
-    private demoMode: boolean = true; // Set to false to enable JS Rocket connection
-    private defaultScene: number;
+    private demoMode: boolean = false; // Set to false to enable JS Rocket connection
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.soundManager = new SoundManager();
@@ -36,7 +35,6 @@ export class DemoScene extends AbstractScene {
         this.canvasRef = document.getElementById('aisa-canvas') as HTMLCanvasElement;
         this.BlockFade = new BlockFade();
         this.canvasRecorder = new CanvasRecorder();
-        this.defaultScene = this.demoMode ? 0 : 1;
 
         // Set up performance stats panels
         this.demoStats = new DemoStats();
@@ -74,7 +72,8 @@ export class DemoScene extends AbstractScene {
             this.BlockFade.init(framebuffer),
 
             // Music
-            this.soundManager.loadMusic(require(`@assets/sound/showeroflove.mod`)),
+            this.soundManager.loadMusic(require(`@assets/music/lizard.mp3`)),
+            // this.soundManager.loadMusic(require(`@assets/sound/showeroflove.mod`)),
 
             // JS Rocket sync data
             this.soundManager.prepareSync(require('@assets/sound/demo.rocket'), this.demoMode),
@@ -108,20 +107,19 @@ export class DemoScene extends AbstractScene {
         if (musicProps === undefined) return;
 
         const sceneData = musicProps.sceneData;
-        const node = this.sceneList.getNode(sceneData.effect || this.defaultScene);
+        const node = this.sceneList.getNode(sceneData.effect);
 
         if (sceneData.transitionType === 0) {
             // Run the current effect on its own
-            node.data.render(framebuffer, musicProps.timeMilliseconds);
+            node.data.render(framebuffer, musicProps.timeMilliseconds, sceneData);
         } else {
             // Blend two consecutive effects together
             this.BlockFade.transition(
                 framebuffer,
                 node.data,
                 node.next.data,
-                sceneData.transitionType,
-                sceneData.transitionValue,
-                musicProps.timeMilliseconds
+                musicProps.timeMilliseconds,
+                sceneData
             );
         }
 

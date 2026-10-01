@@ -64,7 +64,9 @@ export class DemoControls {
         }
 
         this.sceneRef.innerText = soundManager.musicProperties.sceneData.effect.toString();
-        this.timeRef.innerText  = soundManager.musicProperties.timeSeconds.toFixed(2);
+        const timeSeconds = soundManager.musicProperties.timeSeconds;
+        const timeMinutes = (timeSeconds / 60).toFixed(2);
+        this.timeRef.innerText  = `${timeMinutes} m ( ${timeSeconds.toFixed(2)} s )`;
     }
 
     // -------------------------------------------------------------------------

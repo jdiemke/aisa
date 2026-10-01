@@ -14,7 +14,8 @@ module.exports.getWebpackPlugins = () => {
     // copy openmpt wasm
     let plug = [new CopyPlugin({
         patterns: [
-            { from: "./src/sound/cowbell/openmpt", to: "openmpt" }
+            { from: "./src/sound/cowbell/openmpt", to: "openmpt" },
+            { from: "./docs/examples", to: "examples" }
         ],
     })]
     // generate examples
@@ -26,9 +27,17 @@ module.exports.getWebpackPlugins = () => {
         }))
     });
 
-    // copy favicon
-    plug.push( new HtmlWebpackPlugin({
-        favicon: "./src/favicon.ico"
+    // index page listing all examples (also copies favicon)
+    plug.push(new HtmlWebpackPlugin({
+        favicon: "./src/favicon.ico",
+        filename: 'index.html',
+        chunks: [],
+        template: './src/index-examples.html',
+        templateParameters: {
+            examples: [...examples]
+                .sort((a, b) => a.getTitle().localeCompare(b.getTitle()))
+                .map(ex => ({ name: ex.name, title: ex.getTitle() }))
+        }
     }));
 
     return plug;

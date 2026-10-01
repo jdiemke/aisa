@@ -289,9 +289,13 @@ export class SoundManager {
                 setTimeout(poll, 150);
             })();
         } else {
-            newLocal.audioElement.onloadedmetadata = function () {
+            if (newLocal.audioElement.duration) {
                 newLocal.updateRange(newLocal.audioElement.duration);
-            };
+            } else {
+                newLocal.audioElement.onloadedmetadata = function () {
+                    newLocal.updateRange(newLocal.audioElement.duration);
+                };
+            }
             newLocal.seek(jumpTo);
         }
 
