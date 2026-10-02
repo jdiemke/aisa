@@ -22,7 +22,7 @@ export class CubeScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.fairlight.texture);
+        framebuffer.drawScaledTextureClipBi(0, 0, framebuffer.width, framebuffer.height, this.fairlight, 1.0);
         framebuffer.clearDepthBuffer();
 
         this.renderCube(framebuffer,time);

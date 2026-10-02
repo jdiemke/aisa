@@ -13,11 +13,12 @@ export class RotoZoomDemoScene extends AbstractScene {
     private cube: CubeScene = new CubeScene();
     private accumulationBuffer: Uint32Array;
     fbo2: Framebuffer = new Framebuffer(214,188);
+    zoomerFbo: Framebuffer = new Framebuffer(90,60);
     public init(framebuffer: Framebuffer): Promise<any> {
 
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         return Promise.all([
-           this.zoomer.init(framebuffer),
+           this.zoomer.init(this.zoomerFbo),
             this.cube.init(this.fbo2)
         ]);
     }
@@ -26,10 +27,8 @@ export class RotoZoomDemoScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-       const fbo: Framebuffer = new Framebuffer(90,60);
-
-        const texture: Texture = new Texture(fbo.framebuffer, 90,60);
-        this.zoomer.render(fbo, time*0.5);
+        const texture: Texture = new Texture(this.zoomerFbo.framebuffer, 90,60);
+        this.zoomer.render(this.zoomerFbo, time*0.5);
 
 
         const texture2: Texture = new Texture(this.fbo2.framebuffer, 214, 188);

@@ -3,6 +3,7 @@ import './cowbell/cowbell'
 import './cowbell/audio_player'
 import './cowbell/web_audio_player'
 import './cowbell/openmpt/openmpt_player'
+import { OpenMptVuMeter } from './OpenMptVuMeter';
 import {
     musicProperties,
     ROW_RATE,
@@ -19,6 +20,11 @@ export class SoundManager {
     public musicProperties: musicProperties;
     public sceneData: sceneData;
     public audioElement: HTMLAudioElement;
+
+    // Sample/instrument number each VU channel reacts to; undefined keeps a channel inert.
+    private channelSamples: Array<number | undefined> = [];
+    // Fraction of a channel's level retained each frame while decaying (lower falls faster).
+    private channelDecay: number = 0.85;
 
     public constructor() {
 
@@ -302,6 +308,49 @@ export class SoundManager {
         // remember last sound preferences
         const isMuted = localStorage.getItem('soundToggle') === 'true';
         this.toggleSound(document.getElementById('ticker_volume'), isMuted);
+    }
+
+    /**
+     * Map each VU channel to the sample/instrument number that drives it.
+     * Initialises musicProperties.channels so scenes can read the levels.
+     *
+     * @param  {Array<number | undefined>} sampleIndices  sample per channel; undefined keeps a channel inert
+     * @param  {number} decay                             fraction of level kept per frame (lower falls faster)
+     */
+    public configureChannels(sampleIndices: Array<number | undefined>, decay: number = 0.85): void {
+        this.channelSamples = sampleIndices.slice();
+        this.channelDecay = decay;
+        if (!this.musicProperties) {
+            this.musicProperties = {
+                timeSeconds: 0,
+                timeMilliseconds: 0,
+                sceneData: undefined,
+                channels: []
+            };
+        }
+        this.musicProperties.channels = sampleIndices.map(() => 0);
+    }
+
+    /**
+     * Advance per-channel VU levels: pop to full on a note onset for the mapped
+     * sample, otherwise decay toward zero. Levels are exposed on
+     * musicProperties.channels for scenes to render.
+     */
+    public updateChannelLevels(): void {
+        const channels = this.musicProperties?.channels;
+        if (!channels) {
+            return;
+        }
+
+        const isPlaying = !!this.audioElement && !this.audioElement.paused;
+        for (let i = 0; i < channels.length; i++) {
+            const sample = this.channelSamples[i];
+            if (isPlaying && sample !== undefined && OpenMptVuMeter.consumeSampleTrigger(sample)) {
+                channels[i] = 1;
+            } else {
+                channels[i] *= this.channelDecay;
+            }
+        }
     }
 
     /**
