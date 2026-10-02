@@ -25,10 +25,10 @@ export class Texture {
 
     public colorize(r: number, g:number, b:number) {
         for(let i=0; i < this.width *this.height; i++) {
-            let pixel = this.texture[i];
-            let col_r = (pixel & 0xff) *r;
-            let col_g = (pixel >> 8 & 0xff)*g;
-            let col_b = (pixel >> 16 & 0xff)*b;
+            const pixel = this.texture[i];
+            const col_r = (pixel & 0xff) *r;
+            const col_g = (pixel >> 8 & 0xff)*g;
+            const col_b = (pixel >> 16 & 0xff)*b;
             this.texture[i] = col_r | col_g << 8 | col_b << 16 | 255 << 24;
         }
     }
