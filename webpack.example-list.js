@@ -91,6 +91,7 @@ const examples = [
     new Example('voxel-balls').withTitle('Cubes'),
     new Example('voxel-landscape-fade'),
     new Example('voxel-landscape'),
+    new Example('vu-meter').withTitle('VU Meter'),
     new Example('wavefront-material'),
     new Example('wavefront-texture').withTitle('Wavefront OBJ with Texture'),
     new Example('wavefront-texture2').withTitle('Wavefront with Texture 2'),

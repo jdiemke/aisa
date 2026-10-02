@@ -499,7 +499,7 @@ export class Framebuffer {
 
     // 6 times faster than the slow method that clips and does alpha blending
     public fastFramebufferCopy(dest: Uint32Array, src: Uint32Array) {
-        dest.set(src);
+        dest.set(src.length > dest.length ? src.subarray(0, dest.length) : src);
     }
 
     public noise(elapsedTime: number, texture: Texture, scale: number = 0.07): void {

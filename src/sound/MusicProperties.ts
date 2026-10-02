@@ -2,6 +2,8 @@ export interface musicProperties {
     timeSeconds: number;
     timeMilliseconds: number;
     sceneData: sceneData;
+    // Per-channel VU levels (0..1) driven by sample/instrument note onsets.
+    channels?: number[];
 }
 
 // scene variables | things you set through jsRocket

@@ -88,21 +88,21 @@ export class RotoZoomerScene extends AbstractScene {
         const scale = (Math.sin(time * 0.0002)*0.5+0.5)*130+370;
         const scale2 = 2.1;
          this.logo.setClamp(false);
-         for(let y = 0; y < 200; y++) {
-             for(let x = 0; x < 320; x++) {
+         for(let y = 0; y < framebuffer.height; y++) {
+             for(let x = 0; x < framebuffer.width; x++) {
                  const xoff = (Math.sin(time*0.00041+y*0.022)*0.5+0.5) *scale+time*0.001;
                  const yoff = (Math.cos(time*0.00042+x*0.016)*0.5+0.5) *scale+time*0.002;
 
 
                  const texturePixel =this.logo.getBilinearFilteredPixel2(x*scale2+xoff, y*scale2+yoff);
-                 const framebufferPixel =framebuffer.framebuffer[x + y * 320];
+                 const framebufferPixel =framebuffer.framebuffer[x + y * framebuffer.width];
                  const alpha = ((texturePixel>>24)&0xff)/255* (Math.sin(time * 0.02)*0.5+0.5)*1.2;
                  const inverseAlpha = 1 - alpha;
                  const r = (framebufferPixel >> 0 & 0xff) * inverseAlpha + (texturePixel >> 0 & 0xff) * alpha;
                  const g = (framebufferPixel >> 8 & 0xff) * inverseAlpha + (texturePixel >> 8 & 0xff) * alpha;
                  const b = (framebufferPixel >> 16 & 0xff) * inverseAlpha + (texturePixel >> 16 & 0xff) * alpha;
 
-                 framebuffer.framebuffer[x + y * 320]= r | (g << 8) | (b << 16) | (255 << 24);
+                 framebuffer.framebuffer[x + y * framebuffer.width]= r | (g << 8) | (b << 16) | (255 << 24);
              }
          }
 

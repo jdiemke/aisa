@@ -11,6 +11,16 @@ module.exports = {
         },
         compress: true,
         port: 9000,
+        hot: true,
+        liveReload: true,
+        watchFiles: {
+            paths: ['src/**/*', 'webpack.config.js', 'webpack.example-list.js'],
+            options: {
+                usePolling: true,
+                interval: 500,
+                ignored: /node_modules/
+            }
+        },
         client: {
             progress: true,
         },
