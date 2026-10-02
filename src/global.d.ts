@@ -14,3 +14,5 @@ interface Document {
     webkitExitFullscreen?(): void;
 }
 
+declare module '*.css';
+

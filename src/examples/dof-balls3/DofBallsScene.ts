@@ -48,7 +48,7 @@ export class DofBallsScene extends AbstractScene {
 
         time = time *0.2;
         for (let i: number = 0; i < this.hoodlumLogo.width; i++) {
-            let elapsedTime = time*0.001+Math.sin(time*0.002+i*0.002)*10;
+            const elapsedTime = time*0.001+Math.sin(time*0.002+i*0.002)*10;
             this.drawVerticalSpan(framebuffer, this.hoodlumLogo, i,
                 Math.round(Math.sin(i * 0.009 + elapsedTime * 0.9 + Math.PI * 2 / 4) * 60 + 100),
                 Math.round(Math.sin(i * 0.009 + elapsedTime * 0.9 + Math.PI * 2 / 4 * 2) * 60 + 100),
@@ -62,7 +62,7 @@ export class DofBallsScene extends AbstractScene {
         distort.setClamp(true)
         framebuffer.fastFramebufferCopy(distort.texture,framebuffer.framebuffer);
         let i = 0;
-        let offset= time*0.1;
+        const offset= time*0.1;
         const scale2 = (Math.sin(time*0.0008)*0.5+0.5)*20;
         for (let y = 0; y < framebuffer.height; y++) {
             for (let x = 0; x < framebuffer.width; x++) {
@@ -145,7 +145,7 @@ export class DofBallsScene extends AbstractScene {
         r.setSeed(115)
 
         for (let i = 0; i < num; i++) {
-            let s = 6+(Math.sin(elapsedTime*0.004+i*0.1)*0.5+0.5)*6;
+            const s = 6+(Math.sin(elapsedTime*0.004+i*0.1)*0.5+0.5)*6;
             const x = (r.getFloat()-0.5)  *s*3;
             const y = (r.getFloat()-0.5)  *s*3;
             const z = (r.getFloat()-0.5)  *s*3;

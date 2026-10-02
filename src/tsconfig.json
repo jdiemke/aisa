@@ -2,8 +2,10 @@
     "compilerOptions": {
         "module": "ESNext",
         "target": "ES2022",
+        "strict": false,
         "noImplicitAny": false,
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
+        "esModuleInterop": true,
         "sourceMap": true,
         "types": [
             "node"

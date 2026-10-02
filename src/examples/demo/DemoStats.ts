@@ -1,4 +1,4 @@
-import * as Stats from 'stats.js';
+import Stats from 'stats.js';
 
 /**
  * Manages the three stats.js performance panels (Memory, FPS, MS)
