@@ -19,12 +19,12 @@ with audio data, and seeking to a specified time.
                 if (!audioCtx) {
                     var AudioContext = window.AudioContext || window.webkitAudioContext;
                     audioCtx = new AudioContext({
-                        latencyHint: "playback",
+                        latencyHint: "interactive",
                         sampleRate: 22050
                       });
                 }
 
-                var BUFFER_SIZE = 4096;
+                var BUFFER_SIZE = 2048;
 
                 self.HAVE_NOTHING = 0;
                 self.HAVE_METADATA = 1;

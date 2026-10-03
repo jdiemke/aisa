@@ -66,6 +66,13 @@ export class SubPixelTriangleRasterizer extends AbstractTriangleRasterizer {
         const thresh1 = Math.abs(dw1dx) + Math.abs(dw1dy);
         const thresh2 = Math.abs(dw2dx) + Math.abs(dw2dy);
 
+        // "deep interior" thresholds: when a sample's weight exceeds this, not only the
+        // sample but also its next sub-pixel neighbour one 0.5-step over in x stays fully
+        // interior. Such runs can be filled at integer resolution with the plain opaque
+        // drawPixel, skipping the sub-pixel samples that would never produce anti-aliasing.
+        const adx0 = Math.abs(dw0dx), adx1 = Math.abs(dw1dx), adx2 = Math.abs(dw2dx);
+        const deep0 = thresh0 + adx0, deep1 = thresh1 + adx1, deep2 = thresh2 + adx2;
+
         // compute starting barycentric weights at the first sample point (minX+0.5, minY+0.5)
         // inlined to avoid allocating a temporary object per triangle
         const psx = minX + 0.5, psy = minY + 0.5;
@@ -79,12 +86,44 @@ export class SubPixelTriangleRasterizer extends AbstractTriangleRasterizer {
             let w1 = w1Row;
             let w2 = w2Row;
 
-            for (let ix = 0, x = minX; x < maxX; ix++, x += 0.5) {
+            let ix = 0, x = minX;
+            while (x < maxX) {
                 const xIsInt = (ix & 1) === 0;
 
                 // if the point is inside the triangle and not on a right/bottom edge
                 if (w0 >= 0 && w1 >= 0 && w2 >= 0 &&
                     !((w0 === 0 && edgeRight0) || (w1 === 0 && edgeRight1) || (w2 === 0 && edgeRight2))) {
+
+                    // Fast interior fill: when deeply inside the triangle and aligned to an
+                    // integer column, fill a horizontal run with the plain (non-antialiased)
+                    // drawPixel and skip the interior sub-pixel samples that never blend.
+                    if (xIsInt && w0 > deep0 && w1 > deep1 && w2 > deep2) {
+                        if (yIsInt) {
+                            do {
+                                const pixelW = (w0 * w0z + w1 * w1z + w2 * w2z) * invArea;
+                                const depthIdx = x + y * framebuffer.width;
+                                if (pixelW < framebuffer.wBuffer[depthIdx]) {
+                                    const r = (w0 * v0r + w1 * v1r + w2 * v2r) * invArea;
+                                    const g = (w0 * v0g + w1 * v1g + w2 * v2g) * invArea;
+                                    const b = (w0 * v0b + w1 * v1b + w2 * v2b) * invArea;
+                                    const a = (w0 * v0a + w1 * v1a + w2 * v2a) * invArea;
+                                    const packed = (r | 0) | ((g | 0) << 8) | ((b | 0) << 16) | ((a | 0) << 24);
+                                    framebuffer.wBuffer[depthIdx] = pixelW;
+                                    framebuffer.drawPixel(x, y, packed);
+                                }
+                                // advance one whole pixel (two 0.5 sub-steps)
+                                w0 += 2 * dw0dx; w1 += 2 * dw1dx; w2 += 2 * dw2dx;
+                                x += 1.0; ix += 2;
+                            } while (x < maxX && w0 > deep0 && w1 > deep1 && w2 > deep2);
+                        } else {
+                            // sub-pixel row: interior produces no output, just skip the run
+                            do {
+                                w0 += 2 * dw0dx; w1 += 2 * dw1dx; w2 += 2 * dw2dx;
+                                x += 1.0; ix += 2;
+                            } while (x < maxX && w0 > deep0 && w1 > deep1 && w2 > deep2);
+                        }
+                        continue;
+                    }
 
                     // interior: all 4 surrounding integer pixels are also inside — no blending needed
                     const interior = w0 > thresh0 && w1 > thresh1 && w2 > thresh2;
@@ -125,6 +164,8 @@ export class SubPixelTriangleRasterizer extends AbstractTriangleRasterizer {
                 w0 += dw0dx;
                 w1 += dw1dx;
                 w2 += dw2dx;
+                x += 0.5;
+                ix++;
             }
 
             // step row weights down by one y-step
