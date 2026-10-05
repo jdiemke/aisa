@@ -25,6 +25,44 @@ export class Color {
     constructor(public r: number = 0, public g: number = 0, public b: number = 0, public a: number = 255) {
     }
 
+    public static blend(firstColor: number, secondColor: number, alpha: number): number {
+        if (0 === alpha) {
+            return firstColor;
+        }
+
+        if (255 === alpha) {
+            return secondColor;
+        }
+
+        const inverseAlpha = 255 - alpha;
+        const firstRed = (firstColor & 0x00FF0000) >> 16;
+        const secondRed = (secondColor & 0x00FF0000) >> 16;
+        const red = (secondRed * alpha + firstRed * inverseAlpha) >> 8;
+        const firstGreen = (firstColor & 0x0000FF00) >> 8;
+        const secondGreen = (secondColor & 0x0000FF00) >> 8;
+        const green = (secondGreen * alpha + firstGreen * inverseAlpha) >> 8;
+        const firstBlue = firstColor & 0x000000FF;
+        const secondBlue = secondColor & 0x000000FF;
+        const blue = (secondBlue * alpha + firstBlue * inverseAlpha) >> 8;
+
+        return 0xff000000 | red << 16 | green << 8 | blue;
+    }
+
+    public static addColor(firstColor: number, secondColor: number): number {
+        const firstRed = (firstColor >> 16) & 0xFF;
+        const firstGreen = (firstColor >> 8) & 0xFF;
+        const firstBlue = firstColor & 0xFF;
+        const secondRed = (secondColor >> 16) & 0xFF;
+        const secondGreen = (secondColor >> 8) & 0xFF;
+        const secondBlue = secondColor & 0xFF;
+
+        const red = firstRed + secondRed < 0xFF ? firstRed + secondRed : 0xFF;
+        const green = firstGreen + secondGreen < 0xFF ? firstGreen + secondGreen : 0xFF;
+        const blue = firstBlue + secondBlue < 0xFF ? firstBlue + secondBlue : 0xFF;
+
+        return 0xFF << 24 | red << 16 | green << 8 | blue;
+    }
+
     public toPackedFormat(): number {
         return this.r | this.g << 8 | this.b << 16 | this.a << 24;
     }
