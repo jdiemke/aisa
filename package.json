@@ -9,7 +9,8 @@
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "obj2json": "ts-node src/blender/obj2json.ts",
-        "generate-examples": "node helper-scripts/generate-examples.js"
+        "generate:examples": "node helper-scripts/generate-examples.js",
+        "test:examples": "playwright test"
     },
     "repository": {
         "type": "git",
@@ -29,11 +30,11 @@
         "node": ">=20.5.0 <25.0.0"
     },
     "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "@playwright/test": "^1.63.0",
         "@types/dom-mediacapture-record": "1.0.22",
         "@types/node": "26.6.4",
         "@types/stats.js": "0.17.4",
-        "@eslint/js": "^10.0.1",
-        "typescript-eslint": "^8.71.0",
         "copy-webpack-plugin": "^14.0.0",
         "css-loader": "^7.1.5",
         "eslint": "10.11.0",
@@ -43,6 +44,7 @@
         "ts-loader": "9.6.2",
         "ts-node": "10.9.2",
         "typescript": "6.0.3",
+        "typescript-eslint": "^8.71.0",
         "webpack": "5.111.1",
         "webpack-cli": "7.2.3",
         "webpack-dev-server": "6.0.0"
