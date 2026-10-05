@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 import examples from '../webpack.example-list';
 
 const RENDER_TIME_MS = 3000;
+const GENERATE_SCREENSHOTS = process.env.GENERATE_SCREENSHOTS === '1';
 
 for (const { name } of examples) {
     test(`example "${name}" renders without errors`, async ({ page }) => {
@@ -16,7 +17,9 @@ for (const { name } of examples) {
         await expect(canvas).toBeVisible({ timeout: 30_000 });
         await page.waitForTimeout(RENDER_TIME_MS);
 
-        await canvas.screenshot({ path: `test-results/screenshots/${name}.png` });
+        if (GENERATE_SCREENSHOTS) {
+            await canvas.screenshot({ path: `test-results/screenshots/${name}.png` });
+        }
         expect(errors, errors.join('\n')).toEqual([]);
     });
 }

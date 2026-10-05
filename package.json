@@ -6,10 +6,12 @@
         "build": "webpack-cli --mode production",
         "build:dev": "webpack-cli",
         "serve": "webpack serve",
+        "serve:dist": "http-server dist -p 9000 -c-1",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "obj2json": "ts-node src/blender/obj2json.ts",
         "generate:examples": "node helper-scripts/generate-examples.js",
+        "generate:screenshots": "cross-env GENERATE_SCREENSHOTS=1 playwright test",
         "test:examples": "playwright test"
     },
     "repository": {
@@ -36,8 +38,10 @@
         "@types/node": "26.6.4",
         "@types/stats.js": "0.17.4",
         "copy-webpack-plugin": "^14.0.0",
+        "cross-env": "^7.0.3",
         "css-loader": "^7.1.5",
         "eslint": "10.11.0",
+        "http-server": "^14.1.1",
         "html-webpack-plugin": "5.6.8",
         "stats.js": "0.17.0",
         "style-loader": "^4.0.0",

@@ -23,8 +23,8 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Test examples
-        run: npm run test:examples
-
       - name: Build
         run: npm run build
+
+      - name: Test examples
+        run: npm run test:examples
