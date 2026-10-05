@@ -27,7 +27,7 @@ export class DemoScene extends AbstractScene {
     private canvasRef: HTMLCanvasElement;
     private demoStats: DemoStats;
     private demoControls: DemoControls;
-    private demoMode: boolean = false; // Set to false to enable JS Rocket connection
+    private demoMode: boolean = true; // Set to false to enable JS Rocket connection
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.soundManager = new SoundManager();
