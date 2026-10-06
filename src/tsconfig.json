@@ -5,6 +5,11 @@
         "strict": false,
         "noImplicitAny": false,
         "moduleResolution": "bundler",
+        "paths": {
+            "@core/*": ["./core/*"],
+            "@effects/*": ["./effects/*"],
+            "@examples/*": ["./examples/*"]
+        },
         "esModuleInterop": true,
         "sourceMap": true,
         "types": [

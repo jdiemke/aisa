@@ -35,6 +35,9 @@ module.exports = {
         },
         alias: {
             '@assets': path.resolve(__dirname, './src/assets'),
+            '@core': path.resolve(__dirname, './src/core'),
+            '@effects': path.resolve(__dirname, './src/effects'),
+            '@examples': path.resolve(__dirname, './src/examples'),
         },
     },
     performance: {
