@@ -1,5 +1,6 @@
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f, Vector4f } from '../../math';
+import { ComputationalGeometryUtils } from '../../math/Geometry';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
@@ -271,13 +272,19 @@ export class DistortedSphereScene extends AbstractScene {
             if (framebuffer.isTriangleCCW(v1, v2, v3)) {
 
                 vertexArray[0].projection = v1;
-                framebuffer.fakeSphere(n1, vertex1);
+                const uv1 = ComputationalGeometryUtils.normalMapCoords(n1);
+                vertex1.textureCoordinate.u = uv1.u;
+                vertex1.textureCoordinate.v = uv1.v;
 
                 vertexArray[1].projection = v2;
-                framebuffer.fakeSphere(n2, vertex2);
+                const uv2 = ComputationalGeometryUtils.normalMapCoords(n2);
+                vertex2.textureCoordinate.u = uv2.u;
+                vertex2.textureCoordinate.v = uv2.v;
 
                 vertexArray[2].projection = v3;
-                framebuffer.fakeSphere(n3, vertex3);
+                const uv3 = ComputationalGeometryUtils.normalMapCoords(n3);
+                vertex3.textureCoordinate.u = uv3.u;
+                vertex3.textureCoordinate.v = uv3.v;
 
                 if (v1.x < framebuffer.minWindow.x ||
                     v2.x < framebuffer.minWindow.x ||

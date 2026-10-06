@@ -1,7 +1,7 @@
-import { Framebuffer } from "../Framebuffer";
-import { Vector3f } from "../math";
-import { Interpolator } from "../math/Interpolator";
-import { Texture } from "../texture";
+import { Framebuffer } from '../../Framebuffer';
+import { Vector3f } from '../../math';
+import { Interpolator } from '../../math/Interpolator';
+import { Texture } from '../../texture';
 
 export class LensFlare {
 

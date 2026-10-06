@@ -6,7 +6,7 @@ import { Material } from '../../shading/material/Material';
 import { BlenderLoader } from './../../model/blender/BlenderLoader';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
-import { LensFlare } from '../../special-effects/LensFlare';
+import { LensFlare } from '../../effects/lens-flare/LensFlare';
 import { Interpolator } from '../../math/Interpolator';
 import { SoundManager } from '../../sound/SoundManager';
 

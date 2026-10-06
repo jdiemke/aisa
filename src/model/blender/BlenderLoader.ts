@@ -1,7 +1,7 @@
-import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
+import { BlenderJsonParser } from './BlenderJsonParser';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
-import { BlenderScene } from '../../blender/BlenderScene';
+import { BlenderScene } from './BlenderScene';
 
 /**
  * Load Wavefront OBJ file that was converted via obj2json utility.

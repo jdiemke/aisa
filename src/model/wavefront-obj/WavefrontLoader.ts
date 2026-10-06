@@ -1,7 +1,7 @@
-import { BlenderJsonParser } from '../../blender/BlenderJsonParser';
-import { Face } from '../../blender/face';
-import { Mesh } from '../../blender/mesh';
-import { convertToMeshArray } from '../../blender/parseUtils';
+import { BlenderJsonParser } from '../blender/BlenderJsonParser';
+import { Face } from '../blender/face';
+import { Mesh } from '../blender/mesh';
+import { convertToMeshArray } from '../blender/parseUtils';
 import { FlatShadedFace } from '../../geometrical-objects/FlatShadedFace';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { Vector4f } from '../../math/Vector4f';

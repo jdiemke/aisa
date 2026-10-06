@@ -1,5 +1,5 @@
-import { Framebuffer } from '../Framebuffer';
-import { WavEncoder } from '../sound/WavEncoder';
+import { Framebuffer } from '../../Framebuffer';
+import { WavEncoder } from '../../sound/WavEncoder';
 
 interface Point2D {
     x: number;

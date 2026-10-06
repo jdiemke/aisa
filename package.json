@@ -9,7 +9,7 @@
         "serve:dist": "http-server dist -p 9000 -c-1",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
-        "obj2json": "ts-node src/blender/obj2json.ts",
+        "obj2json": "ts-node helper-scripts/obj2json.ts",
         "generate:examples": "node helper-scripts/generate-examples.js",
         "generate:screenshots": "cross-env GENERATE_SCREENSHOTS=1 playwright test",
         "test:examples": "playwright test"
@@ -30,6 +30,13 @@
     "engines": {
         "npm": ">=8.15.0 <12.0.0",
         "node": ">=20.5.0 <25.0.0"
+    },
+    "ts-node": {
+        "compilerOptions": {
+            "module": "CommonJS",
+            "moduleResolution": "Node",
+            "strict": false
+        }
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",

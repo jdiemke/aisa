@@ -1,13 +1,13 @@
-import { FlatShadedFace } from '../geometrical-objects/FlatShadedFace';
-import { FlatshadedMesh } from '../geometrical-objects/FlatshadedMesh';
-import { Vector4f } from '../math/index';
+import { FlatShadedFace } from '../../geometrical-objects/FlatShadedFace';
+import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
+import { Vector4f } from '../../math/index';
 import { BlenderScene } from './BlenderScene';
 import { Face } from './face';
 import { Mesh } from './mesh';
 import { Vector } from './vector';
-import { TexturedMesh } from '../rendering-pipelines/TexturedMesh';
-import { TextureCoordinate } from '../TextureCoordinate';
-import { ComputationalGeometryUtils } from '../math/Geometry';
+import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
+import { TextureCoordinate } from '../../TextureCoordinate';
+import { ComputationalGeometryUtils } from '../../math/Geometry';
 import { TexCoord } from './tex-coord';
 
 export class BlenderJsonParser {

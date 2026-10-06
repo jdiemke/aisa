@@ -7,7 +7,7 @@ import { Texture, TextureUtils } from '../../texture';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 import { BlenderLoader } from '../../model/blender/BlenderLoader';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
-import { LensFlare } from '../../special-effects/LensFlare';
+import { LensFlare } from '../../effects/lens-flare/LensFlare';
 
 export class MetalHeadzScene extends AbstractScene {
 
