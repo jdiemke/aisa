@@ -43,7 +43,6 @@ export class Scene extends AbstractScene {
     private particleTexture: Texture;
     private particleTexture2: Texture;
     private noise: Texture;
-    private rave: Texture;
     private metal: Texture;
     private micro: Texture;
     private hlm: Texture;
@@ -119,7 +118,6 @@ export class Scene extends AbstractScene {
             this.createProceduralDisplacementMap().then(texture => this.displacementMap = texture),
             this.createTexture(require('@assets/hoodlumLogo.png'), true).then(texture => this.hoodlumLogo = texture),
             this.createTexture(require('@assets/abstract.png'), false).then(texture => this.abstract = texture),
-            this.createTexture(require('@assets/rave.png'), false).then(texture => this.rave = texture),
             this.createTexture(require('@assets/microstrange.png'), false).then(texture => this.micro = texture),
             this.createTexture(require('@assets/Backed.png'), false).then(texture => this.baked = texture),
             this.createTexture(require('@assets/blurredBackground.png'), false).then(texture => this.blurred = texture),
@@ -137,7 +135,7 @@ export class Scene extends AbstractScene {
 
             const audioContext = new AudioContext();
             const request = new XMLHttpRequest();
-            request.open('GET', require('@assets/sound/xmix_q2_final.ogg'), true);
+            request.open('GET', 'assets/sound/xmix_q2_final.ogg', true);
             request.responseType = 'arraybuffer';
             request.onload = () => {
                 const undecodedAudio = request.response;

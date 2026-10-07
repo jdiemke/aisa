@@ -27,7 +27,6 @@ import { LeftClipEdge } from './screen-space-clipping/LeftClipEdge';
 import { RightClipEdge } from './screen-space-clipping/RightClipEdge';
 import { TopClipEdge } from './screen-space-clipping/TopClipEdge';
 import { Texture } from './texture/Texture';
-import { Vertex } from './Vertex';
 
 export class Framebuffer {
 
@@ -238,197 +237,6 @@ export class Framebuffer {
     // 6 times faster than the slow method that clips and does alpha blending
     public fastFramebufferCopy(dest: Uint32Array, src: Uint32Array) {
         dest.set(src.length > dest.length ? src.subarray(0, dest.length) : src);
-    }
-
-    public drawScaledTextureClipBi(xp: number, yp: number, width: number, height: number, texture: Texture, alphaBlend: number): void {
-        const xStep = texture.width / width;
-        const yStep = texture.height / height;
-        let xx = 0;
-        let yy = 0;
-
-        let newHeight: number;
-        let newWidth: number;
-        let yStart: number;
-        let xStart: number;
-
-        if (yp + height < 0 ||
-            yp > (this.height - 1) ||
-            xp + width < 0 ||
-            xp > (this.width - 1)) {
-            return;
-        }
-
-        if (yp < 0) {
-            yy = yStep * -yp;
-            newHeight = (height + yp) - Math.max(yp + height - this.height, 0);
-            yStart = 0;
-        } else {
-            yStart = yp;
-            newHeight = height - Math.max(yp + height - this.height, 0);
-        }
-
-        let xTextureStart: number;
-
-        if (xp < 0) {
-            xTextureStart = xx = xStep * -xp;
-            newWidth = (width + xp) - Math.max(xp + width - this.width, 0);
-            xStart = 0;
-        } else {
-            xTextureStart = 0;
-            xStart = xp;
-            newWidth = width - Math.max(xp + width - this.width, 0);
-        }
-
-        const alphaScale = 1 / 255 * alphaBlend;
-        let index2 = (xStart) + (yStart) * this.width;
-
-        for (let y = 0; y < newHeight; y++) {
-            for (let x = 0; x < newWidth; x++) {
-                // console.log(xx, yy);
-                // let textureIndex = //Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
-                const color = texture.getBilinearFilteredPixel2(xx, yy);
-
-                const alpha = 255 * alphaScale;
-                const inverseAlpha = 1 - alpha;
-
-                const framebufferPixel = this.framebuffer[index2];
-                const texturePixel = color;
-
-                const r = (framebufferPixel >> 0 & 0xff) * inverseAlpha + (texturePixel >> 0 & 0xff) * alpha;
-                const g = (framebufferPixel >> 8 & 0xff) * inverseAlpha + (texturePixel >> 8 & 0xff) * alpha;
-                const b = (framebufferPixel >> 16 & 0xff) * inverseAlpha + (texturePixel >> 16 & 0xff) * alpha;
-
-                this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
-                xx += xStep;
-                index2++;
-            }
-            yy += yStep;
-            xx = xTextureStart;
-            index2 += -newWidth + this.width;
-        }
-    }
-
-    public drawScaledTextureClipBiAdd(xp: number, yp: number, width: number, height: number, texture: Texture, alphaBlend: number): void {
-        const xStep = texture.width / width;
-        const yStep = texture.height / height;
-        let xx = 0;
-        let yy = 0;
-
-        let newHeight: number;
-        let newWidth: number;
-        let yStart: number;
-        let xStart: number;
-
-        if (yp + height < 0 ||
-            yp > (this.height - 1) ||
-            xp + width < 0 ||
-            xp > (this.width - 1)) {
-            return;
-        }
-
-        if (yp < 0) {
-            yy = yStep * -yp;
-            newHeight = (height + yp) - Math.max(yp + height - this.height, 0);
-            yStart = 0;
-        } else {
-            yStart = yp;
-            newHeight = height - Math.max(yp + height - this.height, 0);
-        }
-
-        let xTextureStart: number;
-
-        if (xp < 0) {
-            xTextureStart = xx = xStep * -xp;
-            newWidth = (width + xp) - Math.max(xp + width - this.width, 0);
-            xStart = 0;
-        } else {
-            xTextureStart = 0;
-            xStart = xp;
-            newWidth = width - Math.max(xp + width - this.width, 0);
-        }
-
-        let index2 = (xStart) + (yStart) * this.width;
-        for (let y = 0; y < newHeight; y++) {
-            for (let x = 0; x < newWidth; x++) {
-                // let textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
-                const color = texture.getBilinearFilteredPixel2(xx, yy);
-
-                const framebufferPixel = this.framebuffer[index2];
-                const texturePixel = color;
-
-                const r = Math.min((framebufferPixel >> 0 & 0xff) + (texturePixel >> 0 & 0xff) * alphaBlend, 255);
-                const g = Math.min((framebufferPixel >> 8 & 0xff) + (texturePixel >> 8 & 0xff) * alphaBlend, 255);
-                const b = Math.min((framebufferPixel >> 16 & 0xff) + (texturePixel >> 16 & 0xff) * alphaBlend, 255);
-
-                this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
-                xx += xStep;
-                index2++;
-            }
-            yy += yStep;
-            xx = xTextureStart;
-            index2 += -newWidth + this.width;
-        }
-    }
-
-    public drawScaledTextureClipAdd(xp: number, yp: number, width: number, height: number, texture: Texture, alpha: number = 1.0): void {
-        const xStep = texture.width / width;
-        const yStep = texture.height / height;
-        let xx = 0;
-        let yy = 0;
-
-        let newHeight: number;
-        let newWidth: number;
-        let yStart: number;
-        let xStart: number;
-
-        if (yp + height < 0 ||
-            yp > (this.height - 1) ||
-            xp + width < 0 ||
-            xp > (this.width - 1)) {
-            return;
-        }
-
-        if (yp < 0) {
-            yy = yStep * -yp;
-            newHeight = (height + yp) - Math.max(yp + height - this.height, 0);
-            yStart = 0;
-        } else {
-            yStart = yp;
-            newHeight = height - Math.max(yp + height - this.height, 0);
-        }
-
-        let xTextureStart: number;
-
-        if (xp < 0) {
-            xTextureStart = xx = xStep * -xp;
-            newWidth = (width + xp) - Math.max(xp + width - this.width, 0);
-            xStart = 0;
-        } else {
-            xTextureStart = 0;
-            xStart = xp;
-            newWidth = width - Math.max(xp + width - this.width, 0);
-        }
-
-        let index2 = (xStart) + (yStart) * this.width;
-        for (let y = 0; y < newHeight; y++) {
-            for (let x = 0; x < newWidth; x++) {
-                const textureIndex = Math.min(xx | 0, texture.width - 1) + Math.min(yy | 0, texture.height - 1) * texture.width;
-
-                const framebufferPixel = this.framebuffer[index2];
-                const texturePixel = texture.texture[textureIndex];
-
-                const r = Math.min((framebufferPixel >> 0 & 0xff) + (texturePixel >> 0 & 0xff) * alpha, 255);
-                const g = Math.min((framebufferPixel >> 8 & 0xff) + (texturePixel >> 8 & 0xff) * alpha, 255);
-                const b = Math.min((framebufferPixel >> 16 & 0xff) + (texturePixel >> 16 & 0xff) * alpha, 255);
-
-                this.framebuffer[index2] = r | (g << 8) | (b << 16) | (255 << 24);
-                xx += xStep;
-                index2++;
-            }
-            yy += yStep;
-            xx = xTextureStart;
-            index2 += -newWidth + this.width;
-        }
     }
 
     public drawTexture(x: number, y: number, texture: Texture, alpha2: number) {
@@ -645,31 +453,25 @@ export class Framebuffer {
 
         }
     }
-    public fakeSphere(normal: Vector4f, vertex: Vertex): void {
-        const coordinates = ComputationalGeometryUtils.normalMapCoords(normal);
-        vertex.textureCoordinate.u = coordinates.u;
-        vertex.textureCoordinate.v = coordinates.v;
-    }
-
-    public fakeSphere3(normal: Vector4f, eyeSpaceVertex: Vector4f, vertex: Vertex): void {
-        const reflectionVector = ComputationalGeometryUtils.reflectionVector(normal, eyeSpaceVertex);
-
-        const result = ComputationalGeometryUtils.sphereMapCoords(reflectionVector);
-        vertex.textureCoordinate.u = result.u;
-        vertex.textureCoordinate.v = result.v;
-    }
-
-    public refrac(normal: Vector4f, eyeSpaceVertex: Vector4f, vertex: Vertex): void {
-        const reflectionVector = ComputationalGeometryUtils.reflectionVector(normal, eyeSpaceVertex);
-
-        vertex.textureCoordinate.u = (Math.min(Math.max(Math.round(vertex.projection.x + reflectionVector.x * 35) / 319, 0), 1));
-        vertex.textureCoordinate.v = (Math.min(Math.max(Math.round(vertex.projection.y + reflectionVector.y * 35) / 199, 0), 1));
-    }
-
     // ------------------------------------------------------------------
     // TEMPORARY compatibility wrappers. Callers should migrate to the
     // new modules directly; remove these once all callers are updated.
     // ------------------------------------------------------------------
+
+    /** @deprecated Use {@link ScaleClipBlitter.drawScaledTextureClipBi}. */
+    public drawScaledTextureClipBi(xp: number, yp: number, width: number, height: number, texture: Texture, alphaBlend: number): void {
+        this.scaleClipBlitter.drawScaledTextureClipBi(xp, yp, width, height, texture, alphaBlend);
+    }
+
+    /** @deprecated Use {@link ScaleClipBlitter.drawScaledTextureClipBiAdd}. */
+    public drawScaledTextureClipBiAdd(xp: number, yp: number, width: number, height: number, texture: Texture, alphaBlend: number): void {
+        this.scaleClipBlitter.drawScaledTextureClipBiAdd(xp, yp, width, height, texture, alphaBlend);
+    }
+
+    /** @deprecated Use {@link ScaleClipBlitter.drawScaledTextureClipAdd}. */
+    public drawScaledTextureClipAdd(xp: number, yp: number, width: number, height: number, texture: Texture, alpha: number = 1.0): void {
+        this.scaleClipBlitter.drawScaledTextureClipAdd(xp, yp, width, height, texture, alpha);
+    }
 
     /** @deprecated Use a rendering pipeline's isTriangleCCW method. */
     public isTriangleCCW(v1: { x: number, y: number, z: number },

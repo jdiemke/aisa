@@ -1,12 +1,11 @@
 import { Framebuffer } from '../../Framebuffer';
-import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 
 /**
  * http://pascal.sources.ru/demo/bumpmap.htm
  */
-export class BumpMap extends AbstractScene {
+export class BumpMap {
 
     private map: Texture;
     private bump: Texture;
@@ -49,8 +48,8 @@ export class BumpMap extends AbstractScene {
 
     public render(framebuffer: Framebuffer, time: number): void {
         let framebufferIndex: number = 0;
-        const lightPosX = - Math.sin(2 * time * 0.0008) * (framebuffer.width/2) - (framebuffer.width/2);
-        const lightPosY = - Math.sin(3 * time * 0.0008) * (framebuffer.height/2) - (framebuffer.height/2);
+        const lightPosX = - Math.sin(2 * time * 0.0008) * (framebuffer.width / 2) - (framebuffer.width / 2);
+        const lightPosY = - Math.sin(3 * time * 0.0008) * (framebuffer.height / 2) - (framebuffer.height / 2);
         for (let y = 0; y < framebuffer.height; y++) {
             for (let x = 0; x < framebuffer.width; x++) {
 

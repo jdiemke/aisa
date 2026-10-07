@@ -2,7 +2,7 @@ import { Canvas } from '../../Canvas';
 import { Color } from '../../core/Color';
 import { Framebuffer } from '../../Framebuffer';
 import { OscilloscopeScene } from './OscilloscopeScene';
-import { OscilloscopeGenerator } from '../../special-effects/OscilloscopeGenerator';
+import { OscilloscopeGenerator } from './OscilloscopeGenerator';
 import { WavEncoder } from '../../sound/WavEncoder';
 
 class Application {

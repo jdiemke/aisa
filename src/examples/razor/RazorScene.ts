@@ -9,11 +9,8 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { Color } from '../../core/Color';
 import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
-import { LensFlare } from '../../special-effects/LensFlare';
+import { LensFlare } from '../../effects/lens-flare/LensFlare';
 
-/**
- * TODO: extract lens into effect class
- */
 export class RazorScene extends AbstractScene {
 
     private texture10: Texture;

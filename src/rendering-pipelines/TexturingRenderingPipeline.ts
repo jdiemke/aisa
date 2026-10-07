@@ -2,6 +2,7 @@
 import { Framebuffer } from '../Framebuffer';
 import { Matrix4f } from '../math/Matrix4f';
 import { Vector4f } from '../math/Vector4f';
+import { ComputationalGeometryUtils } from '../math/Geometry';
 import { AbstractTriangleRasterizer } from '../rasterizer/AbstractTriangleRasterizer';
 import { TexturedAlphaBlendingTriangleRasterizer } from '../rasterizer/TexturedAlphaBlendingTriangleRasterizer';
 import { TexturedTriangleRasterizer } from '../rasterizer/TexturedTriangleRasterizer';
@@ -113,17 +114,13 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
 
                         // TDOD: remove this code and move after model view transformation
                         // and compute there the mesh.uv values
-                        //framebuffer.fakeSphere(n1, this.vertexArray[0]);
-                        //framebuffer.fakeSphere(n2, this.vertexArray[1]);
-                        //framebuffer.fakeSphere(n3, this.vertexArray[2]);
+                        this.applySphereMapping(n1, e1, this.vertexArray[0]);
+                        this.applySphereMapping(n2, e2, this.vertexArray[1]);
+                        this.applySphereMapping(n3, e3, this.vertexArray[2]);
 
-                        framebuffer.fakeSphere3(n1,  e1, this.vertexArray[0]);
-                        framebuffer.fakeSphere3(n2,  e2, this.vertexArray[1]);
-                        framebuffer.fakeSphere3(n3,  e3, this.vertexArray[2]);
-
-                        framebuffer.refrac(n1,  e1, this.vertexArray[0]);
-                        framebuffer.refrac(n2,  e2, this.vertexArray[1]);
-                        framebuffer.refrac(n3,  e3, this.vertexArray[2]);
+                        this.applyRefractionMapping(n1, e1, this.vertexArray[0]);
+                        this.applyRefractionMapping(n2, e2, this.vertexArray[1]);
+                        this.applyRefractionMapping(n3, e3, this.vertexArray[2]);
                     } else {
                         this.vertexArray[0].textureCoordinate = mesh.uv[mesh.faces[i].uv[0]];
                         this.vertexArray[1].textureCoordinate = mesh.uv[mesh.faces[i].uv[1]];
@@ -151,6 +148,19 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
                 this.zClipTriangle(framebuffer, this.vertexArray);
             }
         }
+    }
+
+    private applySphereMapping(normal: Vector4f, eyeSpaceVertex: Vector4f, vertex: Vertex): void {
+        const reflection = ComputationalGeometryUtils.reflectionVector(normal, eyeSpaceVertex);
+        const coordinates = ComputationalGeometryUtils.sphereMapCoords(reflection);
+        vertex.textureCoordinate.u = coordinates.u;
+        vertex.textureCoordinate.v = coordinates.v;
+    }
+
+    private applyRefractionMapping(normal: Vector4f, eyeSpaceVertex: Vector4f, vertex: Vertex): void {
+        const reflection = ComputationalGeometryUtils.reflectionVector(normal, eyeSpaceVertex);
+        vertex.textureCoordinate.u = Math.min(Math.max(Math.round(vertex.projection.x + reflection.x * 35) / 319, 0), 1);
+        vertex.textureCoordinate.v = Math.min(Math.max(Math.round(vertex.projection.y + reflection.y * 35) / 199, 0), 1);
     }
 
     public project2(t1: { x: number, y: number, z: number }, result: Vector4f): void {

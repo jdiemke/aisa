@@ -1,5 +1,6 @@
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f, Vector4f } from '../../math';
+import { ComputationalGeometryUtils } from '../../math/Geometry';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
@@ -179,13 +180,22 @@ export class EnvironmentMappingScene extends AbstractScene {
 
                 // TODO: precompute texture coordinate only once for each vertex instead of multiple times per triangle!!!
                 vertexArray[0].projection = v1;
-                framebuffer.fakeSphere3(n1, e1, vertex1);
+                const reflection1 = ComputationalGeometryUtils.reflectionVector(n1, e1);
+                const uv1 = ComputationalGeometryUtils.sphereMapCoords(reflection1);
+                vertex1.textureCoordinate.u = uv1.u;
+                vertex1.textureCoordinate.v = uv1.v;
 
                 vertexArray[1].projection = v2;
-                framebuffer.fakeSphere3(n2, e2, vertex2);
+                const reflection2 = ComputationalGeometryUtils.reflectionVector(n2, e2);
+                const uv2 = ComputationalGeometryUtils.sphereMapCoords(reflection2);
+                vertex2.textureCoordinate.u = uv2.u;
+                vertex2.textureCoordinate.v = uv2.v;
 
                 vertexArray[2].projection = v3;
-                framebuffer.fakeSphere3(n3, e3, vertex3);
+                const reflection3 = ComputationalGeometryUtils.reflectionVector(n3, e3);
+                const uv3 = ComputationalGeometryUtils.sphereMapCoords(reflection3);
+                vertex3.textureCoordinate.u = uv3.u;
+                vertex3.textureCoordinate.v = uv3.v;
 /*
                 if (v1.x < Framebuffer.minWindow.x ||
                     v2.x < Framebuffer.minWindow.x ||
