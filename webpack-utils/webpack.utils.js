@@ -15,6 +15,7 @@ module.exports.getWebpackPlugins = () => {
     let plug = [new CopyPlugin({
         patterns: [
             { from: "./src/sound/cowbell/openmpt", to: "openmpt" },
+            { from: "./src/assets/sound/xmix_q2_final.ogg", to: "assets/sound/xmix_q2_final.ogg" },
             { from: "./docs/examples", to: "examples" }
         ],
     })]
