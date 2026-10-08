@@ -5,7 +5,7 @@ const examples = [
     new Example('baked-lighting'),
     new Example('bilinear-zoom'),
     new Example('blender-camera').withCustomEntryPoint('./src/examples/blender-camera-animation/Application.ts').withTitle('Blender Camera Export'),
-    new Example('block-fade'),
+    new Example('transition'),
     new Example('bobs'),
     new Example('bouncing-text'),
     new Example('bump-map').withTitle('2D Bump Mapping'),
