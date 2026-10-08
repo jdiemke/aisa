@@ -4,17 +4,18 @@ import { Framebuffer } from '../../Framebuffer';
 import { Interpolator } from '../../math/Interpolator';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Texture, TextureUtils } from '../../texture/index';
 import { TransitionMethods } from './TransitionMethods';
 import { Particle } from './Particle';
 
-export class BlockFade extends AbstractScene {
-    private ledTexture: Texture;
-    private startTime: number = Date.now();
+export class Transition {
     private transitionFramebufferTo: Framebuffer;
 
     public transitionCircle: Uint32Array;
-    public transitionWipe: Uint32Array;
+    public verticalWipe: Uint32Array;
+    public horizontalWipe: Uint32Array;
+    private blockFadeTimings: number[] = [];
+    private blockFadeWidth = 0;
+    private blockFadeHeight = 0;
 
     // dissolve 
     private croud: Float32Array;        // Stores data for mask control
@@ -25,17 +26,26 @@ export class BlockFade extends AbstractScene {
     private croudMask: Uint32Array;     // cloud mask
     private particleArray: Array<Particle>;
 
-    public init(framebuffer: Framebuffer): Promise<any> {
+    public init(framebuffer: Framebuffer): Promise<void> {
         this.transitionFramebufferTo = new Framebuffer(framebuffer.width, framebuffer.height);
 
-        // draw side wipe
-        this.transitionWipe = new Uint32Array(framebuffer.width * framebuffer.height);
+        // vertical wipe
+        this.verticalWipe = new Uint32Array(framebuffer.width * framebuffer.height);
         for (let y = 0; y < framebuffer.height; y++) {
             for (let x = 0; x < framebuffer.width; x++) {
-                const c2 = Utils.map(x, 0, framebuffer.width, 0, 255);
+                const progress = x / Math.max(framebuffer.width - 1, 1);
+                const easedProgress = progress * progress * (3 - 2 * progress);
+                const c2 = Math.round(easedProgress * 255);
                 const color = new Color(c2, c2, c2, 255).toPackedFormat();
-                this.transitionWipe[x + y * framebuffer.width] = color;
+                this.verticalWipe[x + y * framebuffer.width] = color;
             }
+        }
+
+        // horizontal wipe
+        this.horizontalWipe = new Uint32Array(framebuffer.width * framebuffer.height);
+        for (let y = 0; y < framebuffer.height; y++) {
+            const color = new Color(Utils.map(y, 0, framebuffer.height, 0, 255), 0, 0, 255).toPackedFormat();
+            this.horizontalWipe.fill(color, y * framebuffer.width, (y + 1) * framebuffer.width);
         }
 
         // draw circle gradient
@@ -49,11 +59,7 @@ export class BlockFade extends AbstractScene {
         //dissolve effect
         this.initDissolve(framebuffer.width, framebuffer.height);
 
-        return Promise.all([
-            TextureUtils.load(require('@assets/atlantis.png'), false).then(
-                (textureBackground: Texture) => this.ledTexture = textureBackground
-            ),
-        ]);
+        return Promise.resolve();
     }
 
     private initDissolve(width: number, height: number) {
@@ -160,13 +166,18 @@ export class BlockFade extends AbstractScene {
             }
         }
 
-        for (let it = 0; it < this.particleArray.length; it++) {
-            const p = this.particleArray[it];
+        for (let it = 0; it < this.particleArray.length;) {
+            const particle = this.particleArray[it];
 
-            if (!p.update()) {
-                this.particleArray.splice(it, 1); continue;
+            if (!particle.update()) {
+                this.particleArray[it] = this.particleArray[this.particleArray.length - 1];
+                this.particleArray.pop();
+                continue;
             }
-            renderBuffer.framebuffer[p.y * renderBuffer.width + p.x] = Framebuffer.addColor(renderBuffer.framebuffer[p.y * renderBuffer.width + p.x], p._color);
+
+            const index = particle.y * renderBuffer.width + particle.x;
+            renderBuffer.framebuffer[index] = Framebuffer.addColor(renderBuffer.framebuffer[index], particle._color);
+            it++;
         }
     }
 
@@ -199,21 +210,19 @@ export class BlockFade extends AbstractScene {
         }
     }
 
-    public render(framebuffer: Framebuffer): void {
-        const time: number = Date.now() - this.startTime;
-        framebuffer.clear();
-        this.blockFade(framebuffer, this.ledTexture.texture, this.ledTexture.width, time, 0);
-    }
-
     /**
-     * Transitions from one effect to another using using "transition" value from JSRocket
+     * Renders the source and destination scenes, then composites them using the selected transition.
      *
-     * @param  {Framebuffer} framebuffer             pixels
-     * @param  {AbstractScene} transitionSceneFrom   previous effect
-     * @param  {AbstractScene} transitionSceneTo     effect we are transitioning to
-     * @param  {number} transitionMethod             transition effect to use (blend, wipe, crossfade, etc)
+     * `sceneData.transitionType` selects the transition and `sceneData.transitionValue` controls its progress
+     * from 0 to 255. Block fade maps that value to its internal time range.
+     *
+     * @param framebuffer Framebuffer that receives the composited image.
+     * @param transitionSceneFrom Scene rendered as the transition source.
+     * @param transitionSceneTo Scene rendered as the transition destination.
+     * @param time Scene time passed to both scenes.
+     * @param sceneData Synchronization data containing `transitionType` and `transitionValue`.
      */
-    public transition(
+    public render(
         framebuffer: Framebuffer,
         transitionSceneFrom: AbstractScene,
         transitionSceneTo: AbstractScene,
@@ -244,8 +253,11 @@ export class BlockFade extends AbstractScene {
             case TransitionMethods.FADEOUT: // 0-255
                 this.fadeOut(framebuffer, transitionValue, 0);
                 break;
-            case TransitionMethods.WIPE_LEFT: // 0 - 255
-                this.crossFadeImage(framebuffer, transitionValue, this.transitionWipe);
+            case TransitionMethods.WIPE_VERTICAL: // 0 - 255
+                this.crossFadeImage(framebuffer, transitionValue, this.verticalWipe);
+                break;
+            case TransitionMethods.WIPE_HORIZONTAL: // 0 - 255
+                this.crossFadeImage(framebuffer, transitionValue, this.horizontalWipe);
                 break;
             case TransitionMethods.CIRCLE: // 0 - 255
                 this.crossFadeImage(framebuffer, transitionValue, this.transitionCircle);
@@ -260,12 +272,15 @@ export class BlockFade extends AbstractScene {
         const horizontalUnits = Math.ceil(framebuffer.width / blockWidth);
         const verticalUnits = Math.ceil(framebuffer.height / blockWidth);
 
-        const rng = new RandomNumberGenerator();
-        rng.setSeed(366);
-
-        const fadeArray = Array.from({ length: horizontalUnits * verticalUnits }, () => {
-            return 500 + Math.round(rng.getFloat() * 600000) % 10000;
-        });
+        if (this.blockFadeWidth !== framebuffer.width || this.blockFadeHeight !== framebuffer.height) {
+            const rng = new RandomNumberGenerator();
+            rng.setSeed(366);
+            this.blockFadeTimings = Array.from({ length: horizontalUnits * verticalUnits }, () => {
+                return 500 + Math.round(rng.getFloat() * 600000) % 10000;
+            });
+            this.blockFadeWidth = framebuffer.width;
+            this.blockFadeHeight = framebuffer.height;
+        }
 
         for (let y = 0; y < verticalUnits; y++) {
             const yPos = y * blockWidth;
@@ -274,7 +289,7 @@ export class BlockFade extends AbstractScene {
                 const xPos = x * blockWidth;
                 const fadeIndex = x + y * horizontalUnits;
                 framebuffer.drawTextureRect(xPos, yPos, xPos, yPos, blockWidth, blockWidth, pixelArray, pixelArrayWidth,
-                    Interpolator.interpolate(startTime + fadeArray[fadeIndex], startTime + fadeArray[fadeIndex] + 700, time)
+                    Interpolator.interpolate(startTime + this.blockFadeTimings[fadeIndex], startTime + this.blockFadeTimings[fadeIndex] + 700, time)
                 );
             }
         }
@@ -327,33 +342,6 @@ export class BlockFade extends AbstractScene {
                         endColor,
                         alpha)
                 );
-            }
-        }
-    }
-
-    // Alternating scanlines + RGB Distort /w external input
-    public renderScanlines(framebuffer: Framebuffer, shiftAmount: number) {
-        let i = 0;
-
-        const offRed = (2 * shiftAmount) << 0;
-        const offGreen = (5 * shiftAmount) << 0;
-        const offBlue = (2 * shiftAmount) << 0;
-
-        for (let y = 0; y < framebuffer.height; y++) {
-
-            // horizontal scanlines * intensity
-            const strips = (y & 1) * 16;
-            const verticalPosition = y * framebuffer.width;
-
-            for (let x = 0; x < framebuffer.width; x++) {
-                const imagePixelR = framebuffer.framebuffer[Utils.clamp(x + offRed, 0, framebuffer.width - 1) + verticalPosition] & 0xFF;
-                const imagePixelG = framebuffer.framebuffer[Utils.clamp(x + offGreen, 0, framebuffer.width - 1) + verticalPosition] >> 8 & 0xFF;
-                const imagePixelB = framebuffer.framebuffer[Utils.clamp(x + offBlue, 0, framebuffer.width - 1) + verticalPosition] >> 16 & 0xFF;
-
-                framebuffer.framebuffer[i++] = new Color(
-                    Utils.clamp(imagePixelR - strips, 0, 255),
-                    Utils.clamp(imagePixelG - strips, 0, 255),
-                    Utils.clamp(imagePixelB - strips, 0, 255)).toPackedFormat();
             }
         }
     }

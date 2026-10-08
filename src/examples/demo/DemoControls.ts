@@ -1,4 +1,5 @@
 import { SoundManager } from '../../sound/SoundManager';
+import { TransitionMethods } from '../../effects/transition/TransitionMethods';
 import { CanvasRecorder } from './canvas-record';
 
 /**
@@ -17,6 +18,7 @@ export class DemoControls {
     private timelineRef: HTMLInputElement;
     private sceneRef: HTMLSpanElement;
     private timeRef: HTMLSpanElement;
+    private transitionRef: HTMLSpanElement;
 
     /**
      * Resolves DOM elements, sizes the debug panel, and binds all events.
@@ -44,6 +46,7 @@ export class DemoControls {
         this.timelineRef = document.getElementById('timeline') as HTMLInputElement;
         this.sceneRef    = document.getElementById('scene')    as HTMLSpanElement;
         this.timeRef     = document.getElementById('time')     as HTMLSpanElement;
+        this.transitionRef = document.getElementById('transition') as HTMLSpanElement;
 
         this.bindEvents();
     }
@@ -67,6 +70,11 @@ export class DemoControls {
         const timeSeconds = soundManager.musicProperties.timeSeconds;
         const timeMinutes = (timeSeconds / 60).toFixed(2);
         this.timeRef.innerText  = `${timeMinutes} m ( ${timeSeconds.toFixed(2)} s )`;
+
+        const transitionType = Math.trunc(soundManager.musicProperties.sceneData.transitionType);
+        this.transitionRef.innerText = transitionType === 0
+            ? 'NONE'
+            : TransitionMethods[transitionType]?.replace('_', ' ') ?? 'UNKNOWN';
     }
 
     // -------------------------------------------------------------------------

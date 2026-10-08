@@ -9,7 +9,7 @@ Notes         : Software rendered demoscene effects written in Typescript
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { SoundManager } from '../../sound/SoundManager';
-import { BlockFade } from '../block-fade/BlockFade';
+import { Transition } from '../../effects/transition/Transition';
 import { DoublyLinkedList } from '../../core/LinkedList';
 import { DLNode } from '../../core/Node';
 import { LoadingScene } from './parts/LoadingScene';
@@ -23,7 +23,7 @@ export class DemoScene extends AbstractScene {
     private soundManager: SoundManager;
     private canvasRecorder: CanvasRecorder;
     private sceneList: DoublyLinkedList<AbstractScene>;
-    private BlockFade: BlockFade;
+    private transition: Transition;
     private canvasRef: HTMLCanvasElement;
     private demoStats: DemoStats;
     private demoControls: DemoControls;
@@ -33,7 +33,7 @@ export class DemoScene extends AbstractScene {
         this.soundManager = new SoundManager();
         this.sceneList = new DoublyLinkedList();
         this.canvasRef = document.getElementById('aisa-canvas') as HTMLCanvasElement;
-        this.BlockFade = new BlockFade();
+        this.transition = new Transition();
         this.canvasRecorder = new CanvasRecorder();
 
         // Set up performance stats panels
@@ -69,7 +69,7 @@ export class DemoScene extends AbstractScene {
 
         return allProgress([
             // Transition effect
-            this.BlockFade.init(framebuffer),
+            this.transition.init(framebuffer),
 
             // Music
             this.soundManager.loadMusic(require(`@assets/music/lizard.mp3`)),
@@ -114,7 +114,7 @@ export class DemoScene extends AbstractScene {
             node.data.render(framebuffer, musicProps.timeMilliseconds, sceneData);
         } else {
             // Blend two consecutive effects together
-            this.BlockFade.transition(
+            this.transition.render(
                 framebuffer,
                 node.data,
                 node.next.data,
