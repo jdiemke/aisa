@@ -104,9 +104,19 @@ export class DemoControls {
         // Record video (toggle)
         tickerRecordRef.addEventListener('click', () => {
             if (!this.canvasRecorder.recording) {
+                try {
+                    this.canvasRecorder.recordVideo(this.canvasRef, 10000, () => {
+                        tickerRecordRef.style.color = 'white';
+                        this.soundManager.onPause();
+                        tickerPlayRef.classList.add('fa-play');
+                        tickerPlayRef.classList.remove('fa-pause');
+                    }, this.soundManager.audioElement);
+                } catch (error) {
+                    console.error('Could not start recording:', error);
+                    return;
+                }
                 tickerRecordRef.style.color = 'red';
                 this.soundManager.onPlay();
-                this.canvasRecorder.recordVideo();
                 tickerPlayRef.classList.remove('fa-play');
                 tickerPlayRef.classList.add('fa-pause');
             } else {

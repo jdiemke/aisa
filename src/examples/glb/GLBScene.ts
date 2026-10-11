@@ -1,14 +1,20 @@
 import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
+import { Starfield } from '../../effects/starfield/Starfield';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { Matrix4f, ModelViewMatrix, Vector4f } from '../../math';
 import { GLBLoader } from '../../model/glb/GLBLoader';
 import { GLBModel } from '../../model/glb/GLBModel';
 import { SubPixelRenderingPipeline } from '../../rendering-pipelines/SubPixelRenderingPipeline';
+import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
+import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Material } from '../../shading/material/Material';
 import { PointLight } from '../../shading/light/PointLight';
+import { Texture } from '../../texture/Texture';
+import { TextureCoordinate } from '../../TextureCoordinate';
+import { CubeScene } from '../cube/CubeScene';
 
 /**
  * A software-rendered, flat-shaded, sub-pixel-accurate, depth-sorted,
@@ -29,8 +35,17 @@ export class GLBScene extends AbstractScene {
     private model: GLBModel;
     private renderingPipeline: SubPixelRenderingPipeline;
     private mv: ModelViewMatrix = new ModelViewMatrix();
+    private starfield: Starfield = new Starfield();
+    private cubeScene: CubeScene = new CubeScene();
+    private screenFramebuffer: Framebuffer;
+    private screenTexture: Texture;
+    private screenMesh: TexturedMesh;
+    private screenPipeline: TexturingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.screenFramebuffer = new Framebuffer(256, 200);
+        this.screenTexture = new Texture(this.screenFramebuffer.framebuffer, 256, 200);
+        this.screenPipeline = new TexturingRenderingPipeline(framebuffer);
         this.renderingPipeline = new SubPixelRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.BACK);
         this.renderingPipeline.enableLighting(true);
@@ -56,23 +71,66 @@ export class GLBScene extends AbstractScene {
 
         this.renderingPipeline.setLights([keyLight, fillLight, rimLight]);
 
-        return GLBLoader.load(
-            require('@assets/glb/computer.glb')
-        ).then((meshGroups) => {
-            this.model = new GLBModel(meshGroups);
+        return Promise.all([
+            GLBLoader.load(require('@assets/glb/computer.glb')),
+            this.cubeScene.init(this.screenFramebuffer)
+        ]).then(([meshGroups]) => {
+            const screen = meshGroups.find(group => group.materialName === 'M_screen_brightblue');
+            if (!screen) {
+                throw new Error('GLBScene: computer screen material not found');
+            }
+            const points = screen.mesh.points;
+            const minX = Math.min(...points.map(point => point.x));
+            const maxX = Math.max(...points.map(point => point.x));
+            const minY = Math.min(...points.map(point => point.y));
+            const maxY = Math.max(...points.map(point => point.y));
+            this.screenMesh = {
+                points,
+                points2: screen.mesh.transformedPoints,
+                uv: points.map(point => new TextureCoordinate(
+                    (point.x - minX) / (maxX - minX),
+                    (maxY - point.y) / (maxY - minY)
+                )),
+                faces: screen.mesh.faces.map(face => ({
+                    vertices: [face.v1, face.v2, face.v3],
+                    uv: [face.v1, face.v2, face.v3]
+                }))
+            };
+            this.model = new GLBModel(meshGroups.filter(
+                group => group.materialName !== 'M_screen_whitetext'
+            ));
             this.mv.xSpeed = 0;
+            this.mv.distanceFactor = 2.0;
             this.mv.autoFit(this.model.mergedMesh.points);
         });
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        framebuffer.clearColorBuffer(Color.SLATE_GRAY.toPackedFormat());
+        this.renderBackground(framebuffer, time);
+
+        const modelViewMatrix: Matrix4f = this.createModelViewMatrix(time);
+        this.transformModel(modelViewMatrix);
+        this.renderComputer(framebuffer);
+        this.renderScreen(framebuffer, time, modelViewMatrix);
+    }
+
+    private renderBackground(framebuffer: Framebuffer, time: number): void {
+        this.starfield.render(framebuffer, time);
         framebuffer.clearDepthBuffer();
+    }
 
-        const modelViewMatrix: Matrix4f = this.mv.getMatrix(time);
-        this.renderingPipeline.setFramebuffer(framebuffer);
+    private createModelViewMatrix(time: number): Matrix4f {
+        const yaw: number = Math.sin(time * 0.0006) * Math.PI / 6;
+        const scale: number = this.mv.scale * this.mv.extraScale;
+        return Matrix4f.constructTranslationMatrix(0, 0.15, this.mv.cameraZ)
+            .multiplyMatrix(Matrix4f.constructYRotationMatrix(yaw))
+            .multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale))
+            .multiplyMatrix(Matrix4f.constructTranslationMatrix(
+            -this.mv.center.x, -this.mv.center.y, -this.mv.center.z
+            ));
+    }
 
-        // Transform all vertices and normals once
+    private transformModel(modelViewMatrix: Matrix4f): void {
         const normalMatrix: Matrix4f = modelViewMatrix.computeNormalMatrix();
         const mesh: FlatshadedMesh = this.model.mergedMesh;
 
@@ -82,14 +140,20 @@ export class GLBScene extends AbstractScene {
         for (let i = 0; i < mesh.points.length; i++) {
             modelViewMatrix.multiplyHomArr(mesh.points[i], mesh.transformedPoints[i]);
         }
+    }
 
-        // Sort faces back-to-front and draw with per-face material switching
+    private renderComputer(framebuffer: Framebuffer): void {
+        this.renderingPipeline.setFramebuffer(framebuffer);
+        const mesh: FlatshadedMesh = this.model.mergedMesh;
         const faceOrder: Array<number> = this.model.sortFacesByDepth();
 
         let currentMaterial: string = '';
         let currentDoubleSided: boolean = false;
         for (const fi of faceOrder) {
             const matName: string = this.model.getMaterialNameForFace(fi);
+            if (matName === 'M_screen_brightblue') {
+                continue;
+            }
             if (matName !== currentMaterial) {
                 currentMaterial = matName;
                 const engineMat: Material | undefined = this.model.getMaterialForFace(fi);
@@ -107,6 +171,15 @@ export class GLBScene extends AbstractScene {
 
             this.renderingPipeline.drawFace(framebuffer, mesh, fi);
         }
+    }
+
+    private renderScreen(framebuffer: Framebuffer, time: number, modelViewMatrix: Matrix4f): void {
+        this.cubeScene.render(this.screenFramebuffer, time);
+        framebuffer.setTexture(this.screenTexture);
+        framebuffer.setCullFace(CullFace.BACK);
+        this.screenPipeline.setFramebuffer(framebuffer);
+        this.screenPipeline.setModelViewMatrix(modelViewMatrix);
+        this.screenPipeline.draw(framebuffer, this.screenMesh);
     }
 
 

@@ -41,15 +41,15 @@
     "devDependencies": {
         "@eslint/js": "^10.0.1",
         "@playwright/test": "^1.63.0",
-        "@types/dom-mediacapture-record": "1.0.22",
+        "@types/matter-js": "^0.20.2",
         "@types/node": "26.6.4",
         "@types/stats.js": "0.17.4",
         "copy-webpack-plugin": "^14.0.0",
         "cross-env": "^7.0.3",
         "css-loader": "^7.1.5",
         "eslint": "10.11.0",
-        "http-server": "^14.1.1",
         "html-webpack-plugin": "5.6.8",
+        "http-server": "^14.1.1",
         "stats.js": "0.17.0",
         "style-loader": "^4.0.0",
         "ts-loader": "9.6.2",
@@ -61,8 +61,6 @@
         "webpack-dev-server": "6.0.0"
     },
     "dependencies": {
-        "@types/matter-js": "^0.20.2",
-        "@types/stats": "^0.16.30",
         "matter-js": "^0.20.0"
     }
 }
