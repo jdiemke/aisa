@@ -73,7 +73,8 @@ export class GLBScene extends AbstractScene {
 
         return Promise.all([
             GLBLoader.load(require('@assets/glb/computer.glb')),
-            this.cubeScene.init(this.screenFramebuffer)
+            this.cubeScene.init(this.screenFramebuffer),
+            this.starfield.init()
         ]).then(([meshGroups]) => {
             const screen = meshGroups.find(group => group.materialName === 'M_screen_brightblue');
             if (!screen) {
@@ -115,14 +116,15 @@ export class GLBScene extends AbstractScene {
     }
 
     private renderBackground(framebuffer: Framebuffer, time: number): void {
-        this.starfield.render(framebuffer, time);
+        this.starfield.render3D(framebuffer, time);
         framebuffer.clearDepthBuffer();
     }
 
     private createModelViewMatrix(time: number): Matrix4f {
         const yaw: number = Math.sin(time * 0.0006) * Math.PI / 6;
         const scale: number = this.mv.scale * this.mv.extraScale;
-        return Matrix4f.constructTranslationMatrix(0, 0.15, this.mv.cameraZ)
+        const cameraZ = this.mv.cameraZ + (1 - Math.cos(time * Math.PI * 2 / 16000)) * 1.25;
+        return Matrix4f.constructTranslationMatrix(0, -0.05, cameraZ)
             .multiplyMatrix(Matrix4f.constructYRotationMatrix(yaw))
             .multiplyMatrix(Matrix4f.constructScaleMatrix(scale, scale, scale))
             .multiplyMatrix(Matrix4f.constructTranslationMatrix(
