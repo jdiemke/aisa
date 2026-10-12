@@ -1,3 +1,4 @@
+import { Primitives2D } from '../../primitives/Primitives2D';
 import { Color } from '../../core/Color';
 import { Framebuffer } from '../../Framebuffer';
 import { Vector2f } from '../../math/Vector2f';
@@ -82,8 +83,8 @@ export class SineScrollerScene extends AbstractScene {
             const blue = (Math.sin(myTime) + 1.0) * 0.5 * 255;
 
             const color: number = 255 << 24 | blue << 16 | green << 8 | red;
-            framebuffer.drawRect(i * 16, 68, 16, color);
-            framebuffer.drawRect(((horizontalUnits-1) - i) * 16, 168, 16, color);
+            Primitives2D.drawRect(framebuffer, i * 16, 68, 16, color);
+            Primitives2D.drawRect(framebuffer, ((horizontalUnits-1) - i) * 16, 168, 16, color);
         }
     }
 
@@ -106,14 +107,14 @@ export class SineScrollerScene extends AbstractScene {
         }
 
         frambuffer.clearColorBuffer(backgroundColor);
-        frambuffer.drawRect2(0, 68, frambuffer.width, 100, Color.DARK_BLUE.toPackedFormat());
+        Primitives2D.drawRect2(frambuffer, 0, 68, frambuffer.width, 100, Color.DARK_BLUE.toPackedFormat());
 
         for (let i = 0; i < 100; i++) {
-            frambuffer.drawPixel(((stars[i].x + elapsedTime * 0.02) | 0) % frambuffer.width, stars[i].y, darkStarColor);
+            Primitives2D.drawPixel(frambuffer, ((stars[i].x + elapsedTime * 0.02) | 0) % frambuffer.width, stars[i].y, darkStarColor);
         }
 
         for (let i = 0; i < 60; i++) {
-            frambuffer.drawPixel(((stars2[i].x + elapsedTime * 0.04) | 0) % frambuffer.width, stars2[i].y, lightStarColor);
+            Primitives2D.drawPixel(frambuffer, ((stars2[i].x + elapsedTime * 0.04) | 0) % frambuffer.width, stars2[i].y, lightStarColor);
         }
     }
 

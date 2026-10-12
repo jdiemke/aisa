@@ -1,3 +1,6 @@
+import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
+import { Noise } from '../../effects/noise/Noise';
+import { ParticleSpriteSubpixel } from '../../effects/particle-sprite-subpixel/ParticleSpriteSubpixel';
 import { Framebuffer } from '../../Framebuffer';
 import { Interpolator } from '../../math/Interpolator';
 import { Matrix4f } from '../../math/Matrix4f';
@@ -42,7 +45,7 @@ export class DofBallsScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer, time: number): void {
         // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
-        framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
+        framebuffer.scaleClipBlitter.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
         this.drawParticleTorus(framebuffer, time*0.7, this.particleTexture2, true);
 
 
@@ -86,7 +89,7 @@ export class DofBallsScene extends AbstractScene {
         framebuffer.drawTexture(0, 0, texture3, 0.60);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
 
-        framebuffer.noise(time, this.noise);
+        Noise.noise(framebuffer, time, this.noise);
     }
 
 
@@ -160,7 +163,7 @@ export class DofBallsScene extends AbstractScene {
         const points2: Array<Vector3f> = new Array<Vector3f>(points.length);
 
         points.forEach((element: Vector3f) => {
-            points2.push(framebuffer.project(modelViewMartrix.multiply(element)));
+            points2.push(LineRenderingPipeline.project(framebuffer, modelViewMartrix.multiply(element)));
         });
 
         points2.sort((a: Vector3f, b: Vector3f) => a.z - b.z);
@@ -169,7 +172,7 @@ export class DofBallsScene extends AbstractScene {
             const size: number = -(2.9 * 202 / (element.z));
             const spriteNum: number = Math.round(this.computeDepthBlur(0, -15, -70, element.z) * 13);
 
-            framebuffer.drawParticle2Sub(
+            ParticleSpriteSubpixel.drawParticle2Sub(framebuffer,
                 element.x - size / 2,
                 element.y - size / 2,
                 size, size, texture, 1 / element.z, 1.0, spriteNum, 128

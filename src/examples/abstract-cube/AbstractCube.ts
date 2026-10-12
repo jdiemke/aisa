@@ -1,3 +1,4 @@
+import { Noise } from '../../effects/noise/Noise';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
@@ -42,7 +43,7 @@ export class AbstractCube extends AbstractScene {
 
     public render(framebuffer: Framebuffer, time: number): void {
         // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
-        framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
+        framebuffer.scaleClipBlitter.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
 
         this.drawBlenderScene2(framebuffer, time);
 
@@ -50,7 +51,7 @@ export class AbstractCube extends AbstractScene {
         framebuffer.drawTexture(0, 0, texture3, 0.75);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
 
-        framebuffer.noise(time, this.noise);
+        Noise.noise(framebuffer, time, this.noise);
     }
 
     public drawBlenderScene2(framebuffer: Framebuffer, elapsedTime: number): void {

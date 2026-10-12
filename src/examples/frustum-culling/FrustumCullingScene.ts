@@ -1,3 +1,6 @@
+import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
+import { SoftParticle } from '../../effects/soft-particle/SoftParticle';
+import { Primitives2D } from '../../primitives/Primitives2D';
 import { CameraAnimator } from '../../animation/CameraAnimator';
 import { CameraKeyFrame } from '../../animation/CameraKeyFrame';
 import { BoundingVolumeExpander } from '../../clustered-culling/BoundingVolumeExpander';
@@ -64,6 +67,7 @@ export class FrustumCullingScene extends AbstractScene {
 
         const frustumCuller = new FrustumCuller(framebuffer);
         frustumCuller.updateFrustum(modelViewMartrix, cameraAnimator.pos);
+        const lines = new LineRenderingPipeline(framebuffer);
 
         for (let j = 0; j < this.world.length; j++) {
 
@@ -72,11 +76,11 @@ export class FrustumCullingScene extends AbstractScene {
             if (frustumCuller.isPotentiallyVisible(model[1])) {
                 this.renderingPipeline.draw(framebuffer, model[0], modelViewMartrix);
                 const colLine = 255 << 24 | 255 << 8;
-                framebuffer.drawBoundingSphere(model[1], modelViewMartrix, colLine);
+                lines.drawBoundingSphere(model[1], modelViewMartrix, colLine);
                 //  count++;
             } else {
                 const colLine = 255 << 24 | 255;
-                framebuffer.drawBoundingSphere(model[1], modelViewMartrix, colLine);
+                lines.drawBoundingSphere(model[1], modelViewMartrix, colLine);
             }
         }
 
@@ -98,7 +102,7 @@ export class FrustumCullingScene extends AbstractScene {
 
             const points2: Array<Vector3f> = new Array<Vector3f>(points.length);
             points.forEach(element => {
-                const transformed = framebuffer.project(modelViewMartrix.multiply(element));
+                const transformed = LineRenderingPipeline.project(framebuffer, modelViewMartrix.multiply(element));
                 points2.push(transformed);
             });
 
@@ -108,7 +112,7 @@ export class FrustumCullingScene extends AbstractScene {
 
             points2.forEach(element => {
                 const size = -(3.1 * 192 / (element.z));
-                framebuffer.drawSoftParticle(
+                SoftParticle.drawSoftParticle(framebuffer,
                     Math.round(element.x - size * 0.5),
                     Math.round(element.y - size * 0.5),
                     Math.round(size), Math.round(size), texture2, 1 / element.z, 1.0);
@@ -123,25 +127,25 @@ export class FrustumCullingScene extends AbstractScene {
         const width: number = framebuffer.width / 2;
         const height: number = framebuffer.height / 2;
 
-        framebuffer.drawLineDDANoZ(
+        Primitives2D.drawLineDDANoZ(framebuffer,
             new Vector3f(width / 2, height / 2, 0),
             new Vector3f(width / 2 + width, height / 2, -100),
             color
         );
 
-        framebuffer.drawLineDDANoZ(
+        Primitives2D.drawLineDDANoZ(framebuffer,
             new Vector3f(width / 2, height / 2, 0),
             new Vector3f(width / 2, height / 2 + height, -100),
             color
         );
 
-        framebuffer.drawLineDDANoZ(
+        Primitives2D.drawLineDDANoZ(framebuffer,
             new Vector3f(width / 2 + width, height / 2, 0),
             new Vector3f(width / 2 + width, height / 2 + height, -100),
             color
         );
 
-        framebuffer.drawLineDDANoZ(
+        Primitives2D.drawLineDDANoZ(framebuffer,
             new Vector3f(width / 2, height / 2 + height, 0),
             new Vector3f(width / 2 + width, height / 2 + height, -100),
             color

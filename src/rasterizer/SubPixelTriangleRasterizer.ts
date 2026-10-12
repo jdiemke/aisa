@@ -1,3 +1,4 @@
+import { Primitives2D } from '../primitives/Primitives2D';
 import { Framebuffer } from '../Framebuffer';
 import { Vertex } from '../Vertex';
 import { AbstractTriangleRasterizer } from './AbstractTriangleRasterizer';
@@ -108,7 +109,7 @@ export class SubPixelTriangleRasterizer extends AbstractTriangleRasterizer {
 
                             if (interior) {
                                 framebuffer.wBuffer[depthIdx] = pixelW;
-                                framebuffer.drawPixel(x, y, packed);
+                                Primitives2D.drawPixel(framebuffer, x, y, packed);
                             } else {
                                 // For edge pixels, only update depth when this is an
                                 // integer-aligned sample to avoid sub-pixel depth
@@ -116,7 +117,7 @@ export class SubPixelTriangleRasterizer extends AbstractTriangleRasterizer {
                                 if (xIsInt && yIsInt) {
                                     framebuffer.wBuffer[depthIdx] = pixelW;
                                 }
-                                framebuffer.drawPixelAntiAliasedSpacial(x, y, packed);
+                                Primitives2D.drawPixelAntiAliasedSpacial(framebuffer, x, y, packed);
                             }
                         }
                     }

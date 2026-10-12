@@ -1,3 +1,6 @@
+import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
+import { Noise } from '../../effects/noise/Noise';
+import { SoftParticle } from '../../effects/soft-particle/SoftParticle';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f, Vector3f } from '../../math';
@@ -49,7 +52,7 @@ export class HoodlumScene extends AbstractScene {
         framebuffer.setCullFace(CullFace.BACK);
 
         // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
-        framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
+        framebuffer.scaleClipBlitter.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
         framebuffer.setCullFace(CullFace.BACK);
         framebuffer.setTexture(this.lab2);
 
@@ -59,7 +62,7 @@ export class HoodlumScene extends AbstractScene {
         framebuffer.drawTexture(0, 0, texture3, 0.75);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
 
-        framebuffer.noise(time, this.noise);
+        Noise.noise(framebuffer, time, this.noise);
     }
 
     public drawBlenderScene9(framebuffer: Framebuffer, elapsedTime: number, texture3: Texture): void {
@@ -111,7 +114,7 @@ export class HoodlumScene extends AbstractScene {
         const points2: Array<Vector3f> = new Array<Vector3f>(points.length);
 
         points.forEach(element => {
-            const transformed = framebuffer.project(modelViewMartrix.multiply(element));
+            const transformed = LineRenderingPipeline.project(framebuffer, modelViewMartrix.multiply(element));
             points2.push(transformed);
         });
 
@@ -121,7 +124,7 @@ export class HoodlumScene extends AbstractScene {
 
         points2.forEach(element => {
             const size = -(4.3 * 192 / (element.z));
-            framebuffer.drawSoftParticle(
+            SoftParticle.drawSoftParticle(framebuffer,
                 Math.round(element.x - size / 2),
                 Math.round(element.y - size / 2),
                 Math.round(size), Math.round(size), texture3, 1 / element.z, 0.7);

@@ -8,6 +8,7 @@ import { Vertex } from '../../Vertex';
 import { TextureCoordinate } from '../../TextureCoordinate';
 import { CullFace } from '../../CullFace';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
+import { TexturedAlphaBlendingTriangleRasterizer } from '../../rasterizer/TexturedAlphaBlendingTriangleRasterizer';
 
 interface IndexMesh {
     vertices: Array<Vector4f>,
@@ -25,6 +26,7 @@ export class EnvironmentMappingScene extends AbstractScene {
     private env: Texture;
     private obj: IndexMesh;
     private texturedRenderingPipeline: TexturingRenderingPipeline;
+    private texturedTriangleRasterizer: TexturedAlphaBlendingTriangleRasterizer;
     private plane: {
         vertices: Vector4f[];
         deformedVertices: Vector4f[];
@@ -37,6 +39,7 @@ export class EnvironmentMappingScene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
+        this.texturedTriangleRasterizer = new TexturedAlphaBlendingTriangleRasterizer(framebuffer, this.texturedRenderingPipeline);
         return Promise.all([
 
             TextureUtils.load(require('@assets/flood.png'), false).then(
@@ -55,7 +58,7 @@ export class EnvironmentMappingScene extends AbstractScene {
     public render(framebuffer: Framebuffer, time: number): void {
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
 
-        //framebuffer.texturedRenderingPipeline.setAlpha(Math.abs(Math.sin(Date.now()*0.00012)));
+        //this.texturedRenderingPipeline.setAlpha(Math.abs(Math.sin(Date.now()*0.00012)));
         framebuffer.setCullFace(CullFace.BACK);
         framebuffer.setTexture(this.env);
         this.shadingPlaneEnv(framebuffer, time * 0.001, this.plane);
@@ -174,7 +177,8 @@ export class EnvironmentMappingScene extends AbstractScene {
             const e3 = transformedPoints[index[i + 2]];
             const n3 = normals2[index[i + 2]];
 
-            if (framebuffer.isTriangleCCW(v1, v2, v3)) {
+            this.texturedRenderingPipeline.setCullFace(framebuffer.cullMode);
+            if (this.texturedRenderingPipeline.isTriangleCCW(v1, v2, v3)) {
 
                 // const color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
 
@@ -212,7 +216,7 @@ export class EnvironmentMappingScene extends AbstractScene {
 
                     this.clipConvexPolygon2(vertexArray, color);
                 } else {*/
-                framebuffer.texturedTriangleRasterizer.drawTriangleDDA(framebuffer, vertexArray[0], vertexArray[1], vertexArray[2]);
+                this.texturedTriangleRasterizer.drawTriangleDDA(framebuffer, vertexArray[0], vertexArray[1], vertexArray[2]);
                // }
             }
         }

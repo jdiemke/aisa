@@ -53,12 +53,12 @@ export class BouncingTextScene extends AbstractScene {
 
         const size = Math.round(1 * smash);
         const size2 = Math.round(1* smash);
-        framebuffer.drawScaledTextureClipBiAdd(
+        framebuffer.scaleClipBlitter.drawScaledTextureClipBiAdd(
             320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)),
             200 / 2 - 20 + size,
             this.micro.width * 2, this.micro.height * 2, this.micro, 0.5);
 
-        framebuffer.drawScaledTextureClipBiAdd(
+        framebuffer.scaleClipBlitter.drawScaledTextureClipBiAdd(
             320 - (((time * 0.05) | 0) % (this.micro.width + 320)) ,
             200 / 2 - 60 - size2,
             this.micro.width, this.micro.height, this.micro, 0.5);

@@ -1,3 +1,4 @@
+import { Primitives2D } from '../../primitives/Primitives2D';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { TextureUtils } from '../../texture/TextureUtils';
@@ -71,7 +72,7 @@ export class PixelEffectScene extends AbstractScene {
             if (pos.x < 0 || pos.x > (framebuffer.width - 1) || pos.y < 0 || pos.y > (framebuffer.height - 1)) continue;
             const alpha =
                 Math.max(0, Math.min(1, (Date.now() - this.startTime - this.pixels[x].startTime) * 0.001));
-            framebuffer.drawPixel4(pos.x, pos.y, this.pixels[x].pixel, alpha);
+            Primitives2D.drawPixel4(framebuffer, pos.x, pos.y, this.pixels[x].pixel, alpha);
         }
     }
 }

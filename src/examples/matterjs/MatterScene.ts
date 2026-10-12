@@ -100,7 +100,7 @@ export class MatterScene extends AbstractScene {
            /* 
           for (let j = 0; j < vertices.length; j++) {
             
-              framebuffer.drawLineDDANoZ(
+              Primitives2D.drawLineDDANoZ(framebuffer,
                   new Vector3f(vertices[j].x, vertices[j].y, 0).mul(0.4).add(new Vector3f(30, -31, 0)),
                   new Vector3f(vertices[(j + 1) % (vertices.length)].x, vertices[(j + 1) % (vertices.length)].y, 0).mul(0.4).add(new Vector3f(30, -31, 0)),
                   Color.CYAN.toPackedFormat()

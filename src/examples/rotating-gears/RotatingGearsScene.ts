@@ -1,3 +1,5 @@
+import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
+import { Noise } from '../../effects/noise/Noise';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
@@ -72,10 +74,10 @@ export class RotatingGearsScene extends AbstractScene {
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
 
-        framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
+        framebuffer.scaleClipBlitter.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
         this.drawBlenderScene3(framebuffer, time);
 
-        framebuffer.noise(time, this.noise);
+        Noise.noise(framebuffer, time, this.noise);
         framebuffer.drawTexture(320 - this.robot.width +30, -8, this.robot, 1);
         this.fontRenderer.drawText(framebuffer,0,200-16-4,"YOUR ADVERTISEMENT COULD BE HERE +++ ", time, false);
     }
@@ -102,7 +104,7 @@ export class RotatingGearsScene extends AbstractScene {
             );
             this.renderingPipeline.draw(framebuffer, this.gearsMesh[0], mv);
         }
-        // let lensflareScreenSpace = framebuffer.project(camera.multiply(new Vector3f(16.0 * 20, 16.0 * 20, 0)));
+        // let lensflareScreenSpace = LineRenderingPipeline.project(framebuffer, camera.multiply(new Vector3f(16.0 * 20, 16.0 * 20, 0)));
         // framebuffer.drawLensFlare(lensflareScreenSpace, elapsedTime * 0.3, texture, dirt);
     }
 

@@ -1,3 +1,4 @@
+import { Noise } from '../../effects/noise/Noise';
 import { Framebuffer } from '../../Framebuffer';
 import { Interpolator } from '../../math/Interpolator';
 import { AbstractScene } from '../../scenes/AbstractScene';
@@ -44,12 +45,12 @@ export class TextZoomScene extends AbstractScene {
            // framebuffer.setCullFace(CullFace.BACK);
             //framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
 
-            framebuffer.drawScaledTextureClipAdd(
+            framebuffer.scaleClipBlitter.drawScaledTextureClipAdd(
                 320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)),
                 200 / 2 - 20,
                 this.micro.width * 2, this.micro.height * 2, this.micro);
 
-            framebuffer.drawScaledTextureClipAdd(
+            framebuffer.scaleClipBlitter.drawScaledTextureClipAdd(
                 320 - (((time * 0.05) | 0) % (this.micro.width + 320)),
                 200 / 2 - 60,
                 this.micro.width, this.micro.height, this.micro);
@@ -71,12 +72,12 @@ export class TextZoomScene extends AbstractScene {
             const height = Math.round(200 + smash * 200 / 50);
 
             // slow
-            framebuffer.drawScaledTextureClipBi(
+            framebuffer.scaleClipBlitter.drawScaledTextureClipBi(
                 Math.round(320 / 2 - width / 2),
                 Math.round(200 / 2 - height / 2),
                 width, height, texture, 1.0);
 
-            framebuffer.noise(time, this.noise);
+            Noise.noise(framebuffer, time, this.noise);
 
     }
 

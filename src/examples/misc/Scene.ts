@@ -1,3 +1,7 @@
+import { WireframeTerrain } from '../../effects/wireframe-terrain/WireframeTerrain';
+import { Pixelate } from '../../effects/pixelate/Pixelate';
+import { PlaneDeformNoCalc } from '../../effects/plane-deform-no-calc/PlaneDeformNoCalc';
+import { Reflections } from '../../effects/reflections/Reflections';
 // import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
@@ -164,13 +168,13 @@ export class Scene extends AbstractScene {
         }
         this.fpsCount++;
 
-        framebuffer.pixelate();
-        framebuffer.drawPlaneDeformation(currentTime, this.texture5);
+        Pixelate.pixelate(framebuffer);
+        PlaneDeformNoCalc.drawPlaneDeformation(framebuffer, currentTime, this.texture5);
 
         framebuffer.clear();
       //  framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.fairlight.texture);
-        framebuffer.wireFrameTerrain(currentTime*0.008,this.particleTexture2);
-     framebuffer.addReflections();
+        WireframeTerrain.wireFrameTerrain(framebuffer, currentTime*0.008,this.particleTexture2);
+     Reflections.addReflections(framebuffer);
     }
 
     public createProceduralTexture(): Promise<Texture> {

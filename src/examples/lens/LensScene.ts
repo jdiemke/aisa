@@ -55,7 +55,7 @@ export class LensScene extends AbstractScene {
 
         // draw the background
         /// framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.textureBackground.texture);
-        framebuffer.drawScaledTextureClipBi(0,0,this.textureBackground.width, this.textureBackground.height, this.textureBackground, 1.0);
+        framebuffer.scaleClipBlitter.drawScaledTextureClipBi(0,0,this.textureBackground.width, this.textureBackground.height, this.textureBackground, 1.0);
 
 
         // move the lens around

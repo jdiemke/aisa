@@ -1,3 +1,4 @@
+import { Noise } from '../../effects/noise/Noise';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f } from '../../math';
@@ -45,14 +46,14 @@ export class PlatonianScene extends AbstractScene {
         framebuffer.setCullFace(CullFace.BACK);
 
         // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
-        framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
+        framebuffer.scaleClipBlitter.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
 
         this.drawBlenderScene8(framebuffer, time);
 
         const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         framebuffer.drawTexture(0, 0, texture3, 0.75);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
-        framebuffer.noise(time, this.noise);
+        Noise.noise(framebuffer, time, this.noise);
     }
 
     public drawBlenderScene8(framebuffer: Framebuffer, elapsedTime: number): void {

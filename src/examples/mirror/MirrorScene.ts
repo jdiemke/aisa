@@ -1,3 +1,4 @@
+import { Noise } from '../../effects/noise/Noise';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
@@ -99,7 +100,7 @@ export class MirrorScene extends AbstractScene {
             let width = Math.round(320 + smash * 320 / 50);
             let height = Math.round(200 + smash * 200 / 50);
     
-            framebuffer.drawScaledTextureClipBi(
+            framebuffer.scaleClipBlitter.drawScaledTextureClipBi(
                 Math.round(320 / 2 - width / 2),
                 Math.round(200 / 2 - height / 2),
                 width, height, texture, 1.0);
@@ -115,18 +116,18 @@ export class MirrorScene extends AbstractScene {
             }
     
 
-            framebuffer.drawScaledTextureClipBiAdd(
+            framebuffer.scaleClipBlitter.drawScaledTextureClipBiAdd(
                 320 - (((time * 0.09) | 0) % (this.micro.width * 2 + 320)),
                 200 / 2 - 20,
                 this.micro.width * 2, this.micro.height * 2, this.micro,1);
     
-            framebuffer.drawScaledTextureClipBiAdd(
+            framebuffer.scaleClipBlitter.drawScaledTextureClipBiAdd(
                 320 - (((time * 0.05) | 0) % (this.micro.width + 320)),
                 200 / 2 - 60,
                 this.micro.width, this.micro.height, this.micro,1);
     
 
-            framebuffer.noise(time, this.noise);
+            Noise.noise(framebuffer, time, this.noise);
 
     }
 }

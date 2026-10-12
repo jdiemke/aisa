@@ -1,3 +1,6 @@
+import { LineRenderingPipeline } from '../../../rendering-pipelines/LineRenderingPipeline';
+import { Noise } from '../../../effects/noise/Noise';
+import { ParticleSpriteSubpixel } from '../../../effects/particle-sprite-subpixel/ParticleSpriteSubpixel';
 import { Framebuffer } from '../../../Framebuffer';
 import { Interpolator } from '../../../math/Interpolator';
 import { Matrix4f } from '../../../math/Matrix4f';
@@ -34,7 +37,7 @@ export class Scene2 {
         const time: number = Date.now();
 
         // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
-        framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
+        framebuffer.scaleClipBlitter.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
         this.drawParticleTorus(framebuffer, time*4, this.particleTexture2, true);
 
         const tmpGlitch: Uint32Array = new Uint32Array(framebuffer.width * framebuffer.height);
@@ -53,7 +56,7 @@ export class Scene2 {
         const width: number = Math.round(framebuffer.width + smash * framebuffer.width / 100);
         const height: number = Math.round(framebuffer.height + smash * framebuffer.height / 100);
 
-        framebuffer.drawScaledTextureClipBi(
+        framebuffer.scaleClipBlitter.drawScaledTextureClipBi(
             Math.round(framebuffer.width / 2 - width / 2),
             Math.round(framebuffer.height / 2 - height / 2),
             width, height, texture, 1.0);
@@ -62,7 +65,7 @@ export class Scene2 {
         framebuffer.drawTexture(0, 0, texture3, 0.85);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
 
-        framebuffer.noise(time, this.noise);
+        Noise.noise(framebuffer, time, this.noise);
     }
 
     public drawParticleTorus(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, noClear: boolean = false) {
@@ -88,7 +91,7 @@ export class Scene2 {
         const points2: Array<Vector3f> = new Array<Vector3f>(points.length);
         points.forEach((element) => {
 
-            const transformed = framebuffer.project(modelViewMartrix.multiply(element));
+            const transformed = LineRenderingPipeline.project(framebuffer, modelViewMartrix.multiply(element));
 
             points2.push(transformed);
         });
@@ -99,7 +102,7 @@ export class Scene2 {
 
         points2.forEach((element) => {
             const size = -(4.9 * 192 / (element.z));
-            framebuffer.drawParticle2Sub(
+            ParticleSpriteSubpixel.drawParticle2Sub(framebuffer,
                 element.x - size / 2,
                 element.y - size / 2,
                 size, size, texture, 1 / element.z, 0.7, 0, 256,

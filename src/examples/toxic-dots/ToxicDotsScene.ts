@@ -1,3 +1,5 @@
+import { ComputationalGeometryUtils } from '../../math/Geometry';
+import { Primitives2D } from '../../primitives/Primitives2D';
 import { Framebuffer } from '../../Framebuffer';
 import { Vector3f, Matrix4f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
@@ -25,8 +27,8 @@ export class ToxicDotsScene extends AbstractScene {
         const STEPS = 15 * 2;
         const STEPS2 = 12 * 2;
         for (let i = 0; i < STEPS; i++) {
-            const frame = framebuffer.torusFunction(i * 2 * Math.PI / STEPS);
-            const frame2 = framebuffer.torusFunction(i * 2 * Math.PI / STEPS + 0.1);
+            const frame = ComputationalGeometryUtils.circlePoint(i * 2 * Math.PI / STEPS);
+            const frame2 = ComputationalGeometryUtils.circlePoint(i * 2 * Math.PI / STEPS + 0.1);
             const up = new Vector3f(0.0, 4.0, 0);
             const right = frame2.sub(frame).cross(up);
 
@@ -64,7 +66,7 @@ export class ToxicDotsScene extends AbstractScene {
             const color = 0xffbbffbb;
             if (v1.x > framebuffer.minWindow.x && v1.x < framebuffer.maxWindow.x &&
                 v1.y > framebuffer.minWindow.y && v1.y < framebuffer.maxWindow.y) {
-                framebuffer.drawPixel(v1.x, v1.y, color);
+                Primitives2D.drawPixel(framebuffer, v1.x, v1.y, color);
             }
         }
     }

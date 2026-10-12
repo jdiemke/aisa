@@ -12,6 +12,7 @@ import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 
 export class TorusKnotTunnelScene extends AbstractScene {
+    private tmpGlitch: Uint32Array;
 
     private noise: Texture;
     private particleTexture: Texture;
@@ -21,6 +22,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
     private renderingPipeline: GouraudShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.tmpGlitch = new Uint32Array(framebuffer.width * framebuffer.height);
         this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.FRONT);
         this.renderingPipeline.setFog(this.fog);
@@ -39,12 +41,12 @@ export class TorusKnotTunnelScene extends AbstractScene {
     public render(framebuffer: Framebuffer, time: number): void {
         this.renderingPipeline.setCullFace(CullFace.FRONT);
         this.torusTunnel(framebuffer, time * 0.019);
-        framebuffer.drawScaledTextureClipAdd(
+        framebuffer.scaleClipBlitter.drawScaledTextureClipAdd(
             framebuffer.width / 2 - this.cocoon.width / 2,
             framebuffer.height / 2 - this.cocoon.height / 2,
             this.cocoon.width, this.cocoon.height, this.cocoon, 0.67);
 
-        // framebuffer.noise(time, this.noise);
+        // Noise.noise(framebuffer, time, this.noise);
         this.glitchScreen(framebuffer, time * 5, this.noise);
     }
 
@@ -81,7 +83,7 @@ export class TorusKnotTunnelScene extends AbstractScene {
             }
         }
 
-        framebuffer.fastFramebufferCopy(framebuffer.tmpGlitch, framebuffer.framebuffer);
+        framebuffer.fastFramebufferCopy(this.tmpGlitch, framebuffer.framebuffer);
 
         // now distort the tmpGlitch buffer and render to framebuffer again
 
@@ -101,14 +103,14 @@ export class TorusKnotTunnelScene extends AbstractScene {
                 let glIndex = yStart * framebuffer.width + framebuffer.width - offset;
 
                 for (let i = 0; i < Math.max(0, offset); i++) {
-                    framebuffer.framebuffer[index++] = framebuffer.tmpGlitch[glIndex++];
+                    framebuffer.framebuffer[index++] = this.tmpGlitch[glIndex++];
                 }
 
                 glIndex = yStart * framebuffer.width;
                 const count = framebuffer.width - offset;
 
                 for (let i = 0; i < count; i++) {
-                    framebuffer.framebuffer[index++] = framebuffer.tmpGlitch[glIndex++];
+                    framebuffer.framebuffer[index++] = this.tmpGlitch[glIndex++];
                 }
                 yStart++;
             }

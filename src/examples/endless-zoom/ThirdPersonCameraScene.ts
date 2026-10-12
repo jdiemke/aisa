@@ -97,7 +97,7 @@ export class ThirdPersonCameraScene extends AbstractScene {
         framebuffer.clearColorBuffer(ThirdPersonCameraScene.CLEAR_COLOR);
      //   framebuffer.clearDepthBuffer();
 
-     //framebuffer.drawScaledTextureClipBi(0,0,this.textureBackground.width, this.textureBackground.height, this.textureBackground, 1.0);
+     //framebuffer.scaleClipBlitter.drawScaledTextureClipBi(0,0,this.textureBackground.width, this.textureBackground.height, this.textureBackground, 1.0);
 
 
 
@@ -120,7 +120,7 @@ export class ThirdPersonCameraScene extends AbstractScene {
         this.scene.applyRadialBlur(framebuffer,time);
 
 
-       // framebuffer.drawFog(new Color(20,20,20,45),0.04, 0.15);
+       // Fog.drawFog(framebuffer, new Color(20,20,20,45),0.04, 0.15);
     }
 
     private computeModelViewTransformation(time: number): void {

@@ -31,7 +31,7 @@ export class BilinearZoom extends AbstractScene {
         // looks crappy with linear interpolation!
         // probably  bilinear is required here
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
-        framebuffer.drawScaledTextureClipBi(
+        framebuffer.scaleClipBlitter.drawScaledTextureClipBi(
             Math.round(320 / 2 - width2 / 2),
             Math.round(200 / 2 - height2 / 2),
             width2 | 0, height2 | 0, texture, 1.0);

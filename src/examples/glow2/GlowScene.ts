@@ -1,3 +1,5 @@
+import { PlaneDeformationTunnelAnim } from '../../effects/plane-deformation-tunnel-anim/PlaneDeformationTunnelAnim';
+import { Noise } from '../../effects/noise/Noise';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
@@ -104,7 +106,7 @@ export class GlowScene extends AbstractScene {
                 texture.texture[x + y * 32] = 252 | 130 << 8 | 195 << 16;
         }
 
-        framebuffer.drawPlanedeformationTunnelAnim(time, texture);
+        PlaneDeformationTunnelAnim.drawPlanedeformationTunnelAnim(framebuffer, time, texture);
 
 
 
@@ -155,7 +157,7 @@ export class GlowScene extends AbstractScene {
         glowTexture.setClamp(true);
 
 
-        framebuffer.drawScaledTextureClipBiAdd(0, 0, 320, 200, glowTexture, 0.70);
+        framebuffer.scaleClipBlitter.drawScaledTextureClipBiAdd(0, 0, 320, 200, glowTexture, 0.70);
         // Cube
 
 
@@ -205,7 +207,7 @@ export class GlowScene extends AbstractScene {
                     this.renderingPipeline.drawFace(framebuffer, mesh, fi);
                 }
 
-        framebuffer.noise(time, this.noise);
+        Noise.noise(framebuffer, time, this.noise);
 
 
     }

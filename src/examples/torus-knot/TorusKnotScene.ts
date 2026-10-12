@@ -12,6 +12,7 @@ import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/Goura
 import { Interpolator } from '../../math/Interpolator';
 
 export class TorusKnotScene extends AbstractScene {
+    private tmpGlitch: Uint32Array;
 
     private rave: Texture;
     private torus: TorusKnot = new TorusKnot();
@@ -21,6 +22,7 @@ export class TorusKnotScene extends AbstractScene {
     private renderingPipeline: GouraudShadingRenderingPipeline;
 
     public init(framebuffer: Framebuffer): Promise<any> {
+        this.tmpGlitch = new Uint32Array(framebuffer.width * framebuffer.height);
         this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         this.renderingPipeline.setCullFace(CullFace.BACK);
         this.renderingPipeline.setFog(new LinearFog(-160, -380, new Vector4f(0, 0, 0, 1)));
@@ -45,12 +47,12 @@ export class TorusKnotScene extends AbstractScene {
         this.glitchScreen(framebuffer, time, this.noise);
         // framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
 
-        framebuffer.drawScaledTextureClipAdd(
+        framebuffer.scaleClipBlitter.drawScaledTextureClipAdd(
             framebuffer.width - (((time * 0.13) | 0) % (this.micro.width * 2 + framebuffer.width)),
             framebuffer.height / 2 - 20,
             this.micro.width * 2, this.micro.height * 2, this.micro, 0.5);
 
-        framebuffer.drawScaledTextureClipAdd(
+        framebuffer.scaleClipBlitter.drawScaledTextureClipAdd(
             (((time * 0.1) | 0) % (this.micro.width + framebuffer.width)) - framebuffer.width,
             framebuffer.height / 2 - 60,
             this.micro.width, this.micro.height, this.micro, 0.5);
@@ -58,7 +60,7 @@ export class TorusKnotScene extends AbstractScene {
         framebuffer.setCullFace(CullFace.BACK);
         this.shadingTorus5(framebuffer, time * 0.03);
         /*
-                framebuffer.drawScaledTextureClipAdd(
+                framebuffer.scaleClipBlitter.drawScaledTextureClipAdd(
                     framebuffer.width - (((time * 0.05) | 0) % (this.micro.width + framebuffer.width)),
                     framebuffer.height / 2 - 60,
                     this.micro.width, this.micro.height, this.micro);*/
@@ -95,7 +97,7 @@ export class TorusKnotScene extends AbstractScene {
             }
         }
 
-        framebuffer.fastFramebufferCopy(framebuffer.tmpGlitch, framebuffer.framebuffer);
+        framebuffer.fastFramebufferCopy(this.tmpGlitch, framebuffer.framebuffer);
 
         // now distort the tmpGlitch buffer and render to framebuffer again
 
@@ -115,14 +117,14 @@ export class TorusKnotScene extends AbstractScene {
                 let glIndex = yStart * framebuffer.width + framebuffer.width - offset;
 
                 for (let i = 0; i < Math.max(0, offset); i++) {
-                    framebuffer.framebuffer[index++] = framebuffer.tmpGlitch[glIndex++];
+                    framebuffer.framebuffer[index++] = this.tmpGlitch[glIndex++];
                 }
 
                 glIndex = yStart * framebuffer.width;
                 const count = framebuffer.width - offset;
 
                 for (let i = 0; i < count; i++) {
-                    framebuffer.framebuffer[index++] = framebuffer.tmpGlitch[glIndex++];
+                    framebuffer.framebuffer[index++] = this.tmpGlitch[glIndex++];
                 }
                 yStart++;
             }

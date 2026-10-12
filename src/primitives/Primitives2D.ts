@@ -101,6 +101,14 @@ export class Primitives2D {
         }
     }
 
+    public static drawBox2(fb: Framebuffer, x: number, y: number, width: number, height: number, color: number): void {
+        let index = y * fb.width + x;
+        for (let i = 0; i < height; i++) {
+            fb.framebuffer.fill(color, index, index + width);
+            index += fb.width;
+        }
+    }
+
     /**
      * Digital differential analyser line drawing with w=1/z depth testing.
      */

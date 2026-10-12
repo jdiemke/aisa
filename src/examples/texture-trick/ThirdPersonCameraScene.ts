@@ -1,3 +1,4 @@
+import { Fog } from '../../effects/fog/Fog';
 import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
@@ -86,7 +87,7 @@ export class ThirdPersonCameraScene extends AbstractScene {
         this.texturedRenderingPipeline.setModelViewMatrix(this.modelViewMatrix.getMatrix());
         framebuffer.setTexture(this.ground);
         this.texturedRenderingPipeline.draw(framebuffer, this.floor);
-        framebuffer.drawFog(new Color(20,20,20,45),0.04, 0.15);
+        Fog.drawFog(framebuffer, new Color(20,20,20,45),0.04, 0.15);
     }
 
     private computeModelViewTransformation(time: number): void {

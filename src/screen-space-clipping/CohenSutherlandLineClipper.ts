@@ -1,3 +1,4 @@
+import { Primitives2D } from '../primitives/Primitives2D';
 import { Framebuffer } from '../Framebuffer';
 import { Vector3f } from '../math/Vector3f';
 
@@ -59,7 +60,7 @@ export class CohenSutherlandLineClipper {
         }
 
         if (accept) {
-            this.framebuffer.drawLineDDA(p1, p2, col);
+            Primitives2D.drawLineDDA(this.framebuffer, p1, p2, col);
         }
     }
 

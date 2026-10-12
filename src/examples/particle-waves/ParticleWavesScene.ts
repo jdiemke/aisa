@@ -1,3 +1,6 @@
+import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
+import { Noise } from '../../effects/noise/Noise';
+import { Particle } from '../../effects/particle/Particle';
 import { Framebuffer } from '../../Framebuffer';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
 import { Matrix4f, Vector3f } from '../../math';
@@ -30,7 +33,7 @@ export class ParticleWavesScene extends AbstractScene {
         framebuffer.drawTexture(0, 0, texture3, 0.85);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
 
-        framebuffer.noise(time, this.noise);
+        Noise.noise(framebuffer, time, this.noise);
     }
 
 
@@ -62,7 +65,7 @@ export class ParticleWavesScene extends AbstractScene {
         const points2: Array<Vector3f> = new Array<Vector3f>(points.length);
         points.forEach((element) => {
 
-            const transformed = framebuffer.project(modelViewMartrix.multiply(element));
+            const transformed = LineRenderingPipeline.project(framebuffer, modelViewMartrix.multiply(element));
 
             points2.push(transformed);
         });
@@ -73,7 +76,7 @@ export class ParticleWavesScene extends AbstractScene {
 
         points2.forEach((element) => {
             const size = -(1.3 * 192 / (element.z));
-            framebuffer.drawParticle(
+            Particle.drawParticle(framebuffer,
                 Math.round(element.x - size / 2),
                 Math.round(element.y - size / 2),
                 Math.round(size), Math.round(size), texture, 1 / element.z, Interpolator.interpolate(-60, -25, element.z));

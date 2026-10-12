@@ -1,3 +1,4 @@
+import { Primitives2D } from '../../primitives/Primitives2D';
 import { Framebuffer } from '../../Framebuffer';
 import { Vector2f, Vector3f } from '../../math/index';
 import { AbstractScene } from '../../scenes/AbstractScene';
@@ -445,7 +446,7 @@ export class Mode7Scene extends AbstractScene {
         // TODO: optimize
         for (let x: number = 0; x < framebuffer.width; x++) {
             for (let y: number = 0; y < this.back.height; y++) {
-                framebuffer.drawPixel(
+                Primitives2D.drawPixel(framebuffer,
                     x, y,
                     this.back.getPixel2(
                         this.back,
