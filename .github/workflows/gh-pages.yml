@@ -20,9 +20,11 @@ jobs:
           cache: npm
 
       - name: Install and Build 🔧
-        run: npm ci && npm run build
+        run: npm ci && npm run build -- --output-clean
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
+          branch: gh-pages
           folder: dist
+          clean: true

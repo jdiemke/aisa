@@ -101,6 +101,7 @@ const examples = [
     new Example('wavefront').withTitle('Stanford Dragon'),
     new Example('wireframe'),
     new Example('wireframe-outline'),
+    new Example('wormhole'),
     new Example('xenusion').withTitle('Paralax'),
     new Example('glow2'),
     new Example('texture-trick2'),

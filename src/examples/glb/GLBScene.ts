@@ -1,6 +1,6 @@
 import { Color } from '../../core/Color';
 import { CullFace } from '../../CullFace';
-import { Starfield } from '../../effects/starfield/Starfield';
+import { Starfield } from '@effects/starfield/Starfield';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { Matrix4f, ModelViewMatrix, Vector4f } from '../../math';

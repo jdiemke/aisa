@@ -1,5 +1,5 @@
 import { SoundManager } from '../../sound/SoundManager';
-import { TransitionMethods } from '../../effects/transition/TransitionMethods';
+import { TransitionMethods } from '@effects/transition/TransitionMethods';
 import { CanvasRecorder } from './canvas-record';
 
 /**

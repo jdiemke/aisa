@@ -1,6 +1,6 @@
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Fire } from '../../effects/fire/Fire';
+import { Fire } from '@effects/fire/Fire';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 

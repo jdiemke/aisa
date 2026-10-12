@@ -9,7 +9,7 @@ import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { Color } from '../../core/Color';
 import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
-import { LensFlare } from '../../effects/lens-flare/LensFlare';
+import { LensFlare } from '@effects/lens-flare/LensFlare';
 
 export class RazorScene extends AbstractScene {
 
