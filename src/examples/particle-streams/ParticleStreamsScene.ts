@@ -1,3 +1,6 @@
+import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
+import { Noise } from '../../effects/noise/Noise';
+import { ParticleNoDepth } from '../../effects/particle-no-depth/ParticleNoDepth';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Vector3f, Matrix4f, Matrix3f } from '../../math';
@@ -30,12 +33,12 @@ export class ParticleStreamsScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer, time: number): void {
         // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
-        framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
+        framebuffer.scaleClipBlitter.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
         this.drawParticleStreams(framebuffer, time, this.particleTexture2);
         const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         framebuffer.drawTexture(0, 0, texture3, 0.55);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
-        framebuffer.noise(time, this.noise);
+        Noise.noise(framebuffer, time, this.noise);
     }
 
     public drawParticleStreams(framebuffer: Framebuffer, elapsedTime: number, texture: Texture) {
@@ -71,7 +74,7 @@ export class ParticleStreamsScene extends AbstractScene {
             points.forEach(element => {
 
 
-                const transformed = framebuffer.project(modelViewMartrix.multiply(element));
+                const transformed = LineRenderingPipeline.project(framebuffer, modelViewMartrix.multiply(element));
 
                 points2.push(transformed);
             });
@@ -84,7 +87,7 @@ export class ParticleStreamsScene extends AbstractScene {
                 // let size = -(2.0 * 192 / (element.z));
                 const size = -(1.3 * 192 / (element.z));
                 if (element.z < -4)
-                    framebuffer.drawParticleNoDepth(
+                    ParticleNoDepth.drawParticleNoDepth(framebuffer,
                         Math.round(element.x - size / 2),
                         Math.round(element.y - size / 2),
                         Math.round(size), Math.round(size), texture, Interpolator.interpolate(-90, -55, element.z));

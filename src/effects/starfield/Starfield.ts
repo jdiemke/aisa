@@ -1,3 +1,4 @@
+import { Primitives2D } from '../../primitives/Primitives2D';
 import { Framebuffer } from '../../Framebuffer';
 import { Vector3f } from '../../math';
 import RandomNumberGenerator from '../../RandomNumberGenerator';
@@ -35,11 +36,11 @@ export class Starfield {
         framebuffer.clearColorBuffer(backgroundColor);
 
         for (const star of this.stars) {
-            framebuffer.drawPixel(((star.x + elapsedTime * 0.02) | 0) % framebuffer.width, star.y, darkStarColor);
+            Primitives2D.drawPixel(framebuffer, ((star.x + elapsedTime * 0.02) | 0) % framebuffer.width, star.y, darkStarColor);
         }
 
         for (const star of this.brightStars) {
-            framebuffer.drawPixel(((star.x + elapsedTime * 0.04) | 0) % framebuffer.width, star.y, lightStarColor);
+            Primitives2D.drawPixel(framebuffer, ((star.x + elapsedTime * 0.04) | 0) % framebuffer.width, star.y, lightStarColor);
         }
     }
 
@@ -74,7 +75,7 @@ export class Starfield {
 
             for (let py = top; py < bottom; py++) {
                 for (let px = left; px < right; px++) {
-                    framebuffer.drawPixel(px, py, color);
+                    Primitives2D.drawPixel(framebuffer, px, py, color);
                 }
             }
         }

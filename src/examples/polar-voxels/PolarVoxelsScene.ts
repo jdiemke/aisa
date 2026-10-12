@@ -1,3 +1,4 @@
+import { Noise } from '../../effects/noise/Noise';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
@@ -20,7 +21,7 @@ export class PolarVoxelsScene extends AbstractScene {
         
         this.drawVoxelLandscape4(framebuffer, this.heightmap, time);
         this.drawPolarDistotion2( framebuffer, time, this.getTempTexture(framebuffer, time));
-        framebuffer.noise(time, this.noise);
+        Noise.noise(framebuffer, time, this.noise);
     }
     
     public getTempTexture(framebuffer: Framebuffer, time: number): Texture {

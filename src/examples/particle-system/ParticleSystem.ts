@@ -1,3 +1,5 @@
+import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
+import { SoftParticle } from '../../effects/soft-particle/SoftParticle';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f } from '../../math/index';
 import { Texture } from '../../texture/index';
@@ -37,7 +39,7 @@ export class ParticleSystem {
             }
 
             x.update(elapsedTime, deltaTime);
-            x.transformedPosition = framebuffer.project(matrix.multiply(x.position)); // no temp object!
+            x.transformedPosition = LineRenderingPipeline.project(framebuffer, matrix.multiply(x.position)); // no temp object!
         }
 
         this.particles.sort((a: Particle, b: Particle) => {
@@ -52,7 +54,7 @@ export class ParticleSystem {
     private drawParticle(particle: Particle, framebuffer: Framebuffer, texture: Texture): void {
         const size: number = -(particle.size * 192 / (particle.transformedPosition.z));
         if (!particle.dead && particle.transformedPosition.z < -4) {
-            framebuffer.drawSoftParticle(
+            SoftParticle.drawSoftParticle(framebuffer,
                 Math.round(particle.transformedPosition.x - size / 2),
                 Math.round(particle.transformedPosition.y - size / 2),
                 Math.round(size),

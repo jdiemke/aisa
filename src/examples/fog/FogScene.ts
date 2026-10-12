@@ -1,3 +1,4 @@
+import { Fog } from '../../effects/fog/Fog';
 import { Color } from '../../core/Color';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
@@ -16,7 +17,7 @@ export class FogScene extends AbstractScene {
 
     public render(framebuffer: Framebuffer, time: number): void {
         this.scene.render(framebuffer);
-        framebuffer.drawFog(new Color(10,25,10,45),0.04, 0);
+        Fog.drawFog(framebuffer, new Color(10,25,10,45),0.04, 0);
     }
 
 

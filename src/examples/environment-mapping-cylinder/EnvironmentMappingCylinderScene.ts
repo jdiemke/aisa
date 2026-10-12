@@ -1,3 +1,4 @@
+import { Noise } from '../../effects/noise/Noise';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f, Vector4f } from '../../math';
 import { ComputationalGeometryUtils } from '../../math/Geometry';
@@ -8,6 +9,7 @@ import { Vertex } from '../../Vertex';
 import { TextureCoordinate } from '../../TextureCoordinate';
 import { CullFace } from '../../CullFace';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
+import { TexturedAlphaBlendingTriangleRasterizer } from '../../rasterizer/TexturedAlphaBlendingTriangleRasterizer';
 
 interface IndexMesh {
     points: Array<Vector4f>,
@@ -25,6 +27,7 @@ export class EnvironmentMappingCylinderScene extends AbstractScene {
     private env: Texture;
     private obj: IndexMesh;
     private texturedRenderingPipeline: TexturingRenderingPipeline;
+    private texturedTriangleRasterizer: TexturedAlphaBlendingTriangleRasterizer;
     private plane: {
         points: Vector4f[];
         points2: Vector4f[];
@@ -36,6 +39,7 @@ export class EnvironmentMappingCylinderScene extends AbstractScene {
     public init(framebuffer: Framebuffer): Promise<any> {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
         this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
+        this.texturedTriangleRasterizer = new TexturedAlphaBlendingTriangleRasterizer(framebuffer, this.texturedRenderingPipeline);
         return Promise.all([
             TextureUtils.load(require('@assets/flood.png'), false).then(
                 texture => this.blurred = texture
@@ -58,7 +62,7 @@ export class EnvironmentMappingCylinderScene extends AbstractScene {
         const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         framebuffer.drawTexture(0, 0, texture3, 0.75);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
-        framebuffer.noise(time, this.noise);
+        Noise.noise(framebuffer, time, this.noise);
     }
 
 
@@ -152,7 +156,8 @@ export class EnvironmentMappingCylinderScene extends AbstractScene {
             const v3 = points2[index[i + 2]];
             const n3 = normals2[index[i + 2]];
 
-            if (framebuffer.isTriangleCCW(v1, v2, v3)) {
+            this.texturedRenderingPipeline.setCullFace(framebuffer.cullMode);
+            if (this.texturedRenderingPipeline.isTriangleCCW(v1, v2, v3)) {
 
                 // const color = 255 << 24 | 255 << 16 | 255 << 8 | 255;
 
@@ -186,7 +191,7 @@ export class EnvironmentMappingCylinderScene extends AbstractScene {
                     this.texturedRenderingPipeline.clipConvexPolygon(framebuffer, vertexArray);
                     // this.clipConvexPolygon2(vertexArray, color);
                 } else {
-                    framebuffer.texturedTriangleRasterizer.drawTriangleDDA(framebuffer, vertexArray[0], vertexArray[1], vertexArray[2]);
+                    this.texturedTriangleRasterizer.drawTriangleDDA(framebuffer, vertexArray[0], vertexArray[1], vertexArray[2]);
                 }
             }
         }

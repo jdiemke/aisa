@@ -1,3 +1,4 @@
+import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f, Vector3f } from '../../math';
@@ -9,6 +10,7 @@ import { EnvironmentMappingScene } from '../environment-mapping-torus/Environmen
 import { LensFlare } from '@effects/lens-flare/LensFlare';
 
 export class SkyBoxScene extends AbstractScene {
+    private lensFlare = new LensFlare();
 
     private metalheadz: Texture;
     private texture11: Texture;
@@ -71,15 +73,15 @@ export class SkyBoxScene extends AbstractScene {
 
         this.drawLensFlare(framebuffer, camera, elapsedTime);
         this.drawMotionBlur(framebuffer);
-       // framebuffer.noise(time, this.noise);
+       // Noise.noise(framebuffer, time, this.noise);
     }
 
     private drawLensFlare(framebuffer: Framebuffer, camera: Matrix4f, elapsedTime: number): void {
         const scale: number = 15;
         const lensflareScreenSpace: Vector3f =
-            framebuffer.project(camera.getRotation().multiply(new Vector3f(1.1 * scale, 2 * scale, -0.9 * scale)));
+            LineRenderingPipeline.project(framebuffer, camera.getRotation().multiply(new Vector3f(1.1 * scale, 2 * scale, -0.9 * scale)));
 
-        LensFlare.drawLensFlare(framebuffer, lensflareScreenSpace, elapsedTime * 1.2, [
+        this.lensFlare.drawLensFlare(framebuffer, lensflareScreenSpace, elapsedTime * 1.2, [
             { tex: this.texture11, scale: 2.3, alpha: 0.5 },
             { tex: this.texture13, scale: 1.6, alpha: 0.35 },
             { tex: this.texture13, scale: 0.7, alpha: 0.32 },

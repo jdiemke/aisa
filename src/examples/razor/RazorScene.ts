@@ -1,3 +1,5 @@
+import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
+import { Noise } from '../../effects/noise/Noise';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Cube } from '../../geometrical-objects/Cube';
@@ -12,6 +14,7 @@ import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/Goura
 import { LensFlare } from '@effects/lens-flare/LensFlare';
 
 export class RazorScene extends AbstractScene {
+    private lensFlare = new LensFlare();
 
     private texture10: Texture;
     private texture11: Texture;
@@ -58,10 +61,10 @@ export class RazorScene extends AbstractScene {
 
         const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         // framebuffer.drawTexture(0, 0, texture3, 0.75);
-        framebuffer.drawScaledTextureClipBi(0, 0, framebuffer.width, framebuffer.height, texture3, .75);
+        framebuffer.scaleClipBlitter.drawScaledTextureClipBi(0, 0, framebuffer.width, framebuffer.height, texture3, .75);
 
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
-        framebuffer.noise(time, this.noise, 0.04);
+        Noise.noise(framebuffer, time, this.noise, 0.04);
     }
 
     public reproduceRazorScene(framebuffer: Framebuffer, elapsedTime: number, texture: Array<{ tex: Texture, scale: number, alpha: number }>, dirt: Texture): void {
@@ -169,9 +172,9 @@ export class RazorScene extends AbstractScene {
 
         this.renderingPipeline.enableLighting(true);
 
-        const lensflareScreenSpace = framebuffer.project(camera.multiply(new Vector3f(12.0, 4.0, 0)));
+        const lensflareScreenSpace = LineRenderingPipeline.project(framebuffer, camera.multiply(new Vector3f(12.0, 4.0, 0)));
 
-        LensFlare.drawLensFlare(framebuffer, lensflareScreenSpace, elapsedTime * 100, texture, dirt);
+        this.lensFlare.drawLensFlare(framebuffer, lensflareScreenSpace, elapsedTime * 100, texture, dirt);
     }
 
 }

@@ -1,3 +1,4 @@
+import { Color } from '../../core/Color';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
@@ -190,7 +191,7 @@ export class VoxelLandScapeFadeScene extends AbstractScene {
             const hi: number = this.heightMap[idx] >> 2;
 
             // fade out to the distance
-            const texel = Framebuffer.blend(this.texelMap[idx], 0xFF000000, i);
+            const texel = Color.blend(this.texelMap[idx], 0xFF000000, i);
             // texel = this.texelMap[idx];
 
             // while (hi > z && j3 > 0) {

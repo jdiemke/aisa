@@ -1,3 +1,4 @@
+import { Noise } from '../../effects/noise/Noise';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f } from '../../math/Matrix4f';
 import { AbstractScene } from '../../scenes/AbstractScene';
@@ -33,14 +34,14 @@ export class ParticleSystemScene extends AbstractScene {
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now() * 0.8;
         // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
-        framebuffer.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
+        framebuffer.scaleClipBlitter.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);
         framebuffer.clearDepthBuffer();
         const mat: Matrix4f = this.getMV(time * 3);
         this.particleSystem.drawParticleStreams(framebuffer, time, this.particleTexture2, mat);
         const texture3: Texture = new Texture(this.accumulationBuffer, framebuffer.width, framebuffer.height);
         framebuffer.drawTexture(0, 0, texture3, 0.55);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
-        framebuffer.noise(time, this.noise);
+        Noise.noise(framebuffer, time, this.noise);
     }
 
     private getMV(elapsedTime: number): Matrix4f {

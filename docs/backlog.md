@@ -1,37 +1,42 @@
 # Backlog
+
+## Completed
+
+- Procedural Textures
+- Transparency
+- Fog
+- Material
+
+## Partial
+
 - Make Texture Filtering configurable
     - LINEAR
     - NEAREST
     - CLAMP_TO_EDGE
-- Multitexturing
-- Generalized Perspective Correct Vertex Attribute Interpolation
-    - https://computergraphics.stackexchange.com/questions/4079/perspective-correct-texture-mapping
-    - http://www.flipcode.com/archives/The_Art_of_Demomaking-Issue_14_Perspective_Correct_Texture_Mapping.shtml
-    - http://www.lysator.liu.se/~mikaelk/doc/perspectivetexture/
-    - http://web.cs.ucdavis.edu/~amenta/s12/perspectiveCorrect.pdf
-- Milkshape 3D Skeletal Animation
 - Subpixel Accuracy (Lines and Polygons)
-- VFC with AABB Hierachies & PVS
 - Configurable Clipping Regions (Sprites / Geometry)
-- Procedural Textures
 - Render To Texture
     - Compositing
     - Flashing
 - Refactoring
     - Split Framebuffer.ts into multiple classes
     - Scenes / Effects / Core 3D Engine
-- Bounding Volume Hierachies
 - Bounding Volumes
     - Axis-Aligned Bounding Boxes (AABB)
     - Oriented Bounding Boxes (OBB)
+- Pixel Shaders (Bump Mapping, Parallax Mapping)
+
+## Remaining
+
+- Multitexturing
+- Generalized Perspective Correct Vertex Attribute Interpolation
+- Milkshape 3D Skeletal Animation
+- VFC with AABB Hierachies & PVS
+- Bounding Volume Hierachies
 - Quaternions
     - Spherical Linear Interpolation (SLERP)
 - Perspective Projection Matrix
-- Transparency
 - Water Relfection / Refraction
-- Fog
 - Particles Collision
 - Planar Reflections
-- Material
 - Shadow Mapping
-- Pixel Shaders (Bump Mapping, Parallax Mapping)

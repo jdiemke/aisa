@@ -1,3 +1,4 @@
+import { Primitives2D } from '../../primitives/Primitives2D';
 import { Color } from '../../core/Color';
 import { Utils } from '../../core/Utils';
 import { Framebuffer } from '../../Framebuffer';
@@ -176,7 +177,7 @@ export class Transition {
             }
 
             const index = particle.y * renderBuffer.width + particle.x;
-            renderBuffer.framebuffer[index] = Framebuffer.addColor(renderBuffer.framebuffer[index], particle._color);
+            renderBuffer.framebuffer[index] = Color.addColor(renderBuffer.framebuffer[index], particle._color);
             it++;
         }
     }
@@ -298,7 +299,7 @@ export class Transition {
     // blend entire image to another image
     public crossFade(framebuffer: Uint32Array, alpha: number) {
         for (let i = 0; i < framebuffer.length; i++) {
-            framebuffer[i] = Framebuffer.blend(
+            framebuffer[i] = Color.blend(
                 framebuffer[i],
                 this.transitionFramebufferTo.framebuffer[i],
                 alpha)
@@ -309,7 +310,7 @@ export class Transition {
     // https://github.com/Slynchy/SDL-AlphaMaskWipes/blob/master/Transition.h
     public crossFadeImage(framebuffer: Framebuffer, alpha: number, transitionImage: Uint32Array) {
         for (let i = 0; i < framebuffer.framebuffer.length; i++) {
-            framebuffer.framebuffer[i] = Framebuffer.blend(
+            framebuffer.framebuffer[i] = Color.blend(
                 framebuffer.framebuffer[i],
                 this.transitionFramebufferTo.framebuffer[i],
                 Utils.clamp(
@@ -322,8 +323,8 @@ export class Transition {
     public fadeIn(framebuffer: Framebuffer, alpha: number, startColor: number) {
         for (let y = 0; y < framebuffer.height; y++) {
             for (let x = 0; x < framebuffer.width; x++) {
-                framebuffer.drawPixel(x, y,
-                    Framebuffer.blend(
+                Primitives2D.drawPixel(framebuffer, x, y,
+                    Color.blend(
                         startColor,
                         framebuffer.framebuffer[x + y * framebuffer.width],
                         alpha)
@@ -336,8 +337,8 @@ export class Transition {
     public fadeOut(framebuffer: Framebuffer, alpha: number, endColor: number) {
         for (let y = 0; y < framebuffer.height; y++) {
             for (let x = 0; x < framebuffer.width; x++) {
-                framebuffer.drawPixel(x, y,
-                    Framebuffer.blend(
+                Primitives2D.drawPixel(framebuffer, x, y,
+                    Color.blend(
                         framebuffer.framebuffer[x + y * framebuffer.width],
                         endColor,
                         alpha)

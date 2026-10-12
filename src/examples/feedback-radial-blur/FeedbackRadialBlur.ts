@@ -35,7 +35,7 @@ export class FeedbackRadialBlur extends AbstractScene {
 
         const alphaScale = (Math.sin(time * 0.00005) * 0.5) + 0.5;
 
-        framebuffer.drawScaledTextureClipBi(
+        framebuffer.scaleClipBlitter.drawScaledTextureClipBi(
             Math.round(framebuffer.width / 2 - width / 2),
             Math.round(framebuffer.height / 2 - height / 2),
             width, height, texture, 1.0 * alphaScale

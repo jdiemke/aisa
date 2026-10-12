@@ -1,3 +1,4 @@
+import { Primitives2D } from '../../primitives/Primitives2D';
 import { CullFace } from '../../CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Torus } from '../../geometrical-objects/Torus';
@@ -54,7 +55,7 @@ export class TorusScene extends AbstractScene {
                 const size = Math.round(scale * 8 + 1) * 2;
                 const offset = (20 / 2 - size / 2) | 0;
                 const color = 255 << 24 | (85 * scale) << 16 | (55 * scale) << 8 | (55 * scale);
-                framebuffer.drawBox2(x * 20 + offset, y * 20 + offset, size, size, color);
+                Primitives2D.drawBox2(framebuffer, x * 20 + offset, y * 20 + offset, size, size, color);
             }
         }
 

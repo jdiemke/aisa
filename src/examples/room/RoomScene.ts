@@ -1,3 +1,6 @@
+import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
+import { Noise } from '../../effects/noise/Noise';
+import { ParticleSprite } from '../../effects/particle-sprite/ParticleSprite';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f, Vector3f, Vector4f } from '../../math';
 import { AbstractScene } from '../../scenes/AbstractScene';
@@ -13,6 +16,7 @@ import { SoundManager } from '../../sound/SoundManager';
 import './style.css';
 
 export class RoomScene extends AbstractScene {
+    private lensFlare = new LensFlare();
 
     private noise: Texture;
     private accumulationBuffer: Uint32Array;
@@ -69,7 +73,7 @@ export class RoomScene extends AbstractScene {
         const texture3 = new Texture(this.accumulationBuffer, 320, 200);
         framebuffer.drawTexture(0, 0, texture3, 0.80);
         framebuffer.fastFramebufferCopy(this.accumulationBuffer, framebuffer.framebuffer);
-        framebuffer.noise(time, this.noise);
+        Noise.noise(framebuffer, time, this.noise);
     }
 
     public drawBlenderScene5(framebuffer: Framebuffer, elapsedTime: number, texture: Array<{ tex: Texture, scale: number, alpha: number }>, dirt: Texture,
@@ -144,18 +148,18 @@ export class RoomScene extends AbstractScene {
                 Matrix4f.constructScaleMatrix(scale, scale, scale)));
 
         const light = camera.multiply(new Vector3f(20, 19, -90));
-        const lensflareScreenSpace = framebuffer.project(light);
+        const lensflareScreenSpace = LineRenderingPipeline.project(framebuffer, light);
 
         this.drawParticleStreams(framebuffer, elapsedTime, spark, light );
 
-        LensFlare.drawLensFlare(framebuffer, lensflareScreenSpace, elapsedTime * 0.15, texture, dirt);
+        this.lensFlare.drawLensFlare(framebuffer, lensflareScreenSpace, elapsedTime * 0.15, texture, dirt);
     }
 
     public drawParticleStreams(framebuffer: Framebuffer, elapsedTime: number, texture: Texture, light: Vector3f) {
 
         const points: Array<Vector3f> = new Array<Vector3f>();
         const points2: Array<Vector3f> = new Array<Vector3f>(points.length);
-        const transformed = framebuffer.project(light);
+        const transformed = LineRenderingPipeline.project(framebuffer, light);
 
         points2.push(transformed);
         points2.sort((a, b) => {
@@ -166,7 +170,7 @@ export class RoomScene extends AbstractScene {
             // let size = -(2.0 * 192 / (element.z));
             const size = -(80.3 * 192 / (element.z));
 
-            framebuffer.drawParticle2(
+            ParticleSprite.drawParticle2(framebuffer,
                 Math.round(element.x - size / 2),
                 Math.round(element.y - size / 2),
                 Math.round(size), Math.round(size), texture, 1 / element.z, 1.0, 0, 200);

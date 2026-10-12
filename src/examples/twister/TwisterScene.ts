@@ -23,7 +23,7 @@ export class TwisterScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        framebuffer.drawScaledTextureClipBi(
+        framebuffer.scaleClipBlitter.drawScaledTextureClipBi(
             0,
             0,
             framebuffer.width, framebuffer.height, this.backgroundTexture, 1.0);

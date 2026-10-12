@@ -3,26 +3,9 @@ import { ScaleClipBlitter } from './blitter/ScaleClipBlitter';
 import { ControllableCamera } from './camera';
 import { Color } from '@core/Color';
 import { CullFace } from './CullFace';
-import { Fog } from '@effects/fog/Fog';
-import { Noise } from '@effects/noise/Noise';
-import { Particle } from '@effects/particle/Particle';
-import { ParticleNoDepth } from '@effects/particle-no-depth/ParticleNoDepth';
-import { ParticleSprite } from '@effects/particle-sprite/ParticleSprite';
-import { ParticleSpriteSubpixel } from '@effects/particle-sprite-subpixel/ParticleSpriteSubpixel';
-import { Pixelate } from '@effects/pixelate/Pixelate';
-import { PlaneDeformNoCalc } from '@effects/plane-deform-no-calc/PlaneDeformNoCalc';
-import { PlaneDeformationTunnelAnim } from '@effects/plane-deformation-tunnel-anim/PlaneDeformationTunnelAnim';
-import { Reflections } from '@effects/reflections/Reflections';
-import { SoftParticle } from '@effects/soft-particle/SoftParticle';
-import { Matrix3f, Matrix4f, Vector2f, Vector3f, Vector4f } from './math';
-import { ComputationalGeometryUtils } from './math/Geometry';
-import { Sphere } from './math/Sphere';
-import { Primitives2D } from './primitives/Primitives2D';
-import { TexturedAlphaBlendingTriangleRasterizer } from './rasterizer/TexturedAlphaBlendingTriangleRasterizer';
-import { TexturingRenderingPipeline } from './rendering-pipelines/TexturingRenderingPipeline';
+import { Vector2f } from './math/Vector2f';
 import { AbstractClipEdge } from './screen-space-clipping/AbstractClipEdge';
 import { BottomClipEdge } from './screen-space-clipping/BottomClipEdge';
-import { CohenSutherlandLineClipper } from './screen-space-clipping/CohenSutherlandLineClipper';
 import { LeftClipEdge } from './screen-space-clipping/LeftClipEdge';
 import { RightClipEdge } from './screen-space-clipping/RightClipEdge';
 import { TopClipEdge } from './screen-space-clipping/TopClipEdge';
@@ -31,49 +14,29 @@ import { Texture } from './texture/Texture';
 export class Framebuffer {
 
     public static PIXEL_SIZE_IN_BYTES = 4;
-
     public minWindow: Vector2f;
     public maxWindow: Vector2f;
-
-
     public framebuffer: Uint32Array;
     public wBuffer: Float32Array;
-
     public cullMode: CullFace = CullFace.BACK;
-
     public camera: ControllableCamera;
     public bob: Texture;
-    public triangleRasterizer;
-
-
     public scaleClipBlitter = new ScaleClipBlitter(this);
-    public texturedRenderingPipeline: TexturingRenderingPipeline;
-    public texturedTriangleRasterizer;
-    public tmpGlitch: Uint32Array;
-
-    public lensFlareVisible: boolean = false;
-    public lensFlareStart = 0;
-    public lensFlareEnd = 0;
-
     public width: number;
     public height: number;
+    public clipRegion = Array<AbstractClipEdge>();
+
     private imageData: ImageData;
     private unsignedIntArray: Uint8ClampedArray;
-    private linerClipper = new CohenSutherlandLineClipper(this);
-    public clipRegion = Array<AbstractClipEdge>();
 
     constructor(width: number, height: number) {
         this.width = width;
         this.height = height;
-
         this.imageData = new ImageData(width, height);
         this.wBuffer = new Float32Array(width * height);
         const arrayBuffer = new ArrayBuffer(this.width * this.height * Framebuffer.PIXEL_SIZE_IN_BYTES);
         this.unsignedIntArray = new Uint8ClampedArray(arrayBuffer);
         this.framebuffer = new Uint32Array(arrayBuffer);
-        this.tmpGlitch = new Uint32Array(width * height);
-        this.texturedRenderingPipeline = new TexturingRenderingPipeline(this);
-        this.texturedTriangleRasterizer = new TexturedAlphaBlendingTriangleRasterizer(this, this.texturedRenderingPipeline)
         this.minWindow = new Vector2f(0, 0);
         this.maxWindow = new Vector2f(width - 1, height - 1);
 
@@ -92,8 +55,6 @@ export class Framebuffer {
     public setTexture(texture: Texture): void {
         this.bob = texture;
     }
-
-
 
     public getImageData(): ImageData {
         this.imageData.data.set(this.unsignedIntArray);
@@ -141,7 +102,6 @@ export class Framebuffer {
             frIndex += this.width - width;
         }
     }
-
 
     public drawTextureColorized(x: number, y: number, texture: Texture, color: Color): void {
 
@@ -311,283 +271,7 @@ export class Framebuffer {
         }
     }
 
-    // https://math.stackexchange.com/questions/859454/maximum-number-of-vertices-in-intersection-of-triangle-with-box/
-    public nearPlaneClipping(t1: Vector3f, t2: Vector3f, color: number): void {
-        const NEAR_PLANE_Z = -1.7;
-
-        if (t1.z < NEAR_PLANE_Z && t2.z < NEAR_PLANE_Z) {
-            this.linerClipper.cohenSutherlandLineClipper(this.project(t1), this.project(t2), color);
-        } else if (t1.z > NEAR_PLANE_Z && t2.z > NEAR_PLANE_Z) {
-            return;
-        } else if (t1.z < NEAR_PLANE_Z) {
-            const ratio = (NEAR_PLANE_Z - t1.z) / (t2.z - t1.z);
-            const t3 = new Vector3f(ratio * (t2.x - t1.x) + t1.x, ratio * (t2.y - t1.y) + t1.y, NEAR_PLANE_Z);
-            this.linerClipper.cohenSutherlandLineClipper(this.project(t1), this.project(t3), color);
-        } else if (t2.z < NEAR_PLANE_Z) {
-            const ratio = (NEAR_PLANE_Z - t2.z) / (t1.z - t2.z);
-            const t3 = new Vector3f(ratio * (t1.x - t2.x) + t2.x, ratio * (t1.y - t2.y) + t2.y, NEAR_PLANE_Z);
-            this.linerClipper.cohenSutherlandLineClipper(this.project(t2), this.project(t3), color);
-        }
-    }
-
-    public project(t1: { x: number, y: number, z: number }): Vector3f {
-        return new Vector3f(Math.round((this.width / 2) + (292 * t1.x / (-t1.z))),
-            Math.round((this.height / 2) - (t1.y * 292 / (-t1.z))),
-            t1.z);
-    }
-
     public clearDepthBuffer(): void {
         this.wBuffer.fill(-1 / 900);
     }
-
-    public drawBox2(x1: number, y1: number, width: number, height: number, color: number) {
-
-        let index = y1 * this.width + x1;
-        for (let i = 0; i < height; i++) {
-            this.framebuffer.fill(color, index, index + width);
-            index += this.width;
-        }
-    }
-
-    public wireFrameTerrain(elapsedTime: number, heightmap: Texture): void {
-
-        this.clearDepthBuffer();
-
-        const index: Array<number> = [
-        ];
-
-        const points: Array<Vector3f> = [];
-        for (let y = 0; y < 256; y++) {
-            for (let x = 0; x < 256; x++) {
-                points.push(new Vector3f((x - 128) * 20.0, (heightmap.texture[x + y * 256] & 0x000000ff) * 128 / 256 - 70, (y - 128) * 20.0));
-            }
-        }
-
-        for (let y = 0; y < 256; y += 1) {
-            for (let x = 0; x < 256 - 1; x += 1) {
-                index.push(0 + x + (y * 256));
-                index.push(1 + x + (y * 256));
-            }
-        }
-
-        for (let x = 0; x < 256; x += 1) {
-            for (let y = 0; y < 256 - 1; y += 1) {
-
-                index.push(x + ((y + 0) * 256));
-                index.push(x + ((y + 1) * 256));
-            }
-        }
-
-        const modelViewMartrix = Matrix3f.constructYRotationMatrix(elapsedTime * 0.003);
-
-        const points2: Array<Vector3f> = new Array<Vector3f>();
-
-        const xOff = + Math.cos(elapsedTime * 0.000001) * 128 * 20;
-        const zOff = Math.sin(elapsedTime * 0.000001) * 128 * 20;
-        points.forEach(element => {
-            const transformed = modelViewMartrix.multiply(element);
-
-            const x = transformed.x + xOff;
-            const y = transformed.y;
-            const z = transformed.z + zOff; // TODO: use translation matrix!
-
-            points2.push(new Vector3f(x, y, z));
-        });
-
-        for (let i = 0; i < index.length; i += 2) {
-            const scale = (1 - Math.min(255, -points2[index[i]].z * 0.9) / 255);
-            const color = (255 * scale) << 8 | 100 * scale | (this.height * scale) << 16 | 255 << 24;
-            this.nearPlaneClipping(points2[index[i]], points2[index[i + 1]], color);
-        }
-    }
-
-    public drawBoundingSphere(sphere: Sphere, matrix: Matrix4f, color: number): void {
-        const points: Array<Vector4f> = [];
-
-        const STEPS = 8;
-        const STEPS2 = 8;
-
-        // TODO: move into setup method
-        for (let i = 0; i <= STEPS; i++) {
-            for (let r = 0; r < STEPS2; r++) {
-
-                const pos = ComputationalGeometryUtils.spherePoint(-i * Math.PI / STEPS - Math.PI / 2, -r * 2 * Math.PI / STEPS2).mul(sphere.getRadius() + 0.01).add(sphere.getCenter());
-                pos.w = 1;
-
-                points.push(pos);
-            }
-        }
-
-        const index: Array<number> = [];
-
-        for (let j = 0; j < STEPS; j++) {
-            for (let i = 0; i < STEPS2; i++) {
-                index.push(((STEPS2 * j) + (1 + i) % STEPS2)); // 2
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 1
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); // 3
-
-                index.push(((STEPS2 * j) + STEPS2 + (0 + i) % STEPS2)); // 4
-                index.push(((STEPS2 * j) + STEPS2 + (1 + i) % STEPS2)); // 3
-                index.push(((STEPS2 * j) + (0 + i) % STEPS2)); // 5
-            }
-        }
-
-        const modelViewMartrix = matrix;
-
-        const points2: Array<Vector3f> = new Array<Vector3f>();
-
-        for (let p = 0; p < points.length; p++) {
-            const transformed = modelViewMartrix.multiplyHom(points[p]);
-            points2.push(new Vector3f(transformed.x, transformed.y, transformed.z));
-        }
-
-        for (let i = 0; i < index.length; i += 3) {
-
-            const v1 = points2[index[i]];
-            const v2 = points2[index[i + 1]];
-            const v3 = points2[index[i + 2]];
-
-            this.nearPlaneClipping(v1, v2, color);
-            this.nearPlaneClipping(v1, v3, color);
-            this.nearPlaneClipping(v3, v2, color);
-
-        }
-    }
-    // ------------------------------------------------------------------
-    // TEMPORARY compatibility wrappers. Callers should migrate to the
-    // new modules directly; remove these once all callers are updated.
-    // ------------------------------------------------------------------
-
-    /** @deprecated Use {@link ScaleClipBlitter.drawScaledTextureClipBi}. */
-    public drawScaledTextureClipBi(xp: number, yp: number, width: number, height: number, texture: Texture, alphaBlend: number): void {
-        this.scaleClipBlitter.drawScaledTextureClipBi(xp, yp, width, height, texture, alphaBlend);
-    }
-
-    /** @deprecated Use {@link ScaleClipBlitter.drawScaledTextureClipBiAdd}. */
-    public drawScaledTextureClipBiAdd(xp: number, yp: number, width: number, height: number, texture: Texture, alphaBlend: number): void {
-        this.scaleClipBlitter.drawScaledTextureClipBiAdd(xp, yp, width, height, texture, alphaBlend);
-    }
-
-    /** @deprecated Use {@link ScaleClipBlitter.drawScaledTextureClipAdd}. */
-    public drawScaledTextureClipAdd(xp: number, yp: number, width: number, height: number, texture: Texture, alpha: number = 1.0): void {
-        this.scaleClipBlitter.drawScaledTextureClipAdd(xp, yp, width, height, texture, alpha);
-    }
-
-    /** @deprecated Use a rendering pipeline's isTriangleCCW method. */
-    public isTriangleCCW(v1: { x: number, y: number, z: number },
-        v2: { x: number, y: number, z: number },
-        v3: { x: number, y: number, z: number }): boolean {
-        this.texturedRenderingPipeline.setCullFace(this.cullMode);
-        return this.texturedRenderingPipeline.isTriangleCCW(v1, v2, v3);
-    }
-
-    /** @deprecated Use {@link Color.blend}. */
-    public static blend(c1: number, c2: number, nAlpha: number): number {
-        return Color.blend(c1, c2, nAlpha);
-    }
-
-    /** @deprecated Use {@link Color.addColor}. */
-    public static addColor(c1: number, c2: number): number {
-        return Color.addColor(c1, c2);
-    }
-
-    /** @deprecated Use {@link Primitives2D.drawPixel}. */
-    public drawPixel(x: number, y: number, color: number): void {
-        Primitives2D.drawPixel(this, x, y, color);
-    }
-
-    /** @deprecated Use {@link Primitives2D.drawPixel4}. */
-    public drawPixel4(x: number, y: number, color: number, alpha: number): void {
-        Primitives2D.drawPixel4(this, x, y, color, alpha);
-    }
-
-    /** @deprecated Use {@link Primitives2D.drawPixelAntiAliasedSpacial}. */
-    public drawPixelAntiAliasedSpacial(x: number, y: number, color: number): void {
-        Primitives2D.drawPixelAntiAliasedSpacial(this, x, y, color);
-    }
-
-    /** @deprecated Use {@link Primitives2D.drawRect}. */
-    public drawRect(x: number, y: number, width: number, color: number): void {
-        Primitives2D.drawRect(this, x, y, width, color);
-    }
-
-    /** @deprecated Use {@link Primitives2D.drawRect2}. */
-    public drawRect2(x: number, y: number, width: number, height: number, color: number): void {
-        Primitives2D.drawRect2(this, x, y, width, height, color);
-    }
-
-    /** @deprecated Use {@link Primitives2D.drawLineDDA}. */
-    public drawLineDDA(start: Vector3f, end: Vector3f, color: number): void {
-        Primitives2D.drawLineDDA(this, start, end, color);
-    }
-
-    /** @deprecated Use {@link Primitives2D.drawLineDDANoZ}. */
-    public drawLineDDANoZ(start: Vector3f, end: Vector3f, color: number): void {
-        Primitives2D.drawLineDDANoZ(this, start, end, color);
-    }
-
-    /** @deprecated Use {@link ComputationalGeometryUtils.circlePoint}. */
-    public torusFunction(alpha: number): Vector3f {
-        return ComputationalGeometryUtils.circlePoint(alpha);
-    }
-
-    /** @deprecated Use {@link Noise.noise}. */
-    public noise(elapsedTime: number, texture: Texture, scale: number = 0.07): void {
-        Noise.noise(this, elapsedTime, texture, scale);
-    }
-
-    /** @deprecated Use {@link Fog.drawFog}. */
-    public drawFog(color: Color, fogScale: number, fogOffset: number): void {
-        Fog.drawFog(this, color, fogScale, fogOffset);
-    }
-
-    /** @deprecated Use {@link Particle.drawParticle}. */
-    public drawParticle(xp: number, yp: number, width: number, height: number, texture: Texture, z: number, alphaBlend: number): void {
-        Particle.drawParticle(this, xp, yp, width, height, texture, z, alphaBlend);
-    }
-
-    /** @deprecated Use {@link ParticleSprite.drawParticle2}. */
-    public drawParticle2(
-        xp: number, yp: number, width: number, height: number, texture: Texture, z: number, alphaBlend: number,
-        imgNum: number = 0, spritH: number): void {
-        ParticleSprite.drawParticle2(this, xp, yp, width, height, texture, z, alphaBlend, imgNum, spritH);
-    }
-
-    /** @deprecated Use {@link ParticleSpriteSubpixel.drawParticle2Sub}. */
-    public drawParticle2Sub(
-        xp: number, yp: number, width: number, height: number, texture: Texture, z: number, alphaBlend: number,
-        imgNum: number = 0, spritH: number, rr: number = 1, gg: number = 1, bb: number = 1): void {
-        ParticleSpriteSubpixel.drawParticle2Sub(this, xp, yp, width, height, texture, z, alphaBlend, imgNum, spritH, rr, gg, bb);
-    }
-
-    /** @deprecated Use {@link ParticleNoDepth.drawParticleNoDepth}. */
-    public drawParticleNoDepth(xp: number, yp: number, width: number, height: number, texture: Texture, alphaBlend: number): void {
-        ParticleNoDepth.drawParticleNoDepth(this, xp, yp, width, height, texture, alphaBlend);
-    }
-
-    /** @deprecated Use {@link SoftParticle.drawSoftParticle}. */
-    public drawSoftParticle(xp: number, yp: number, width: number, height: number, texture: Texture, z: number, alphaBlend: number): void {
-        SoftParticle.drawSoftParticle(this, xp, yp, width, height, texture, z, alphaBlend);
-    }
-
-    /** @deprecated Use {@link PlaneDeformationTunnelAnim.drawPlanedeformationTunnelAnim}. */
-    public drawPlanedeformationTunnelAnim(elapsedTime: number, texture: Texture): void {
-        PlaneDeformationTunnelAnim.drawPlanedeformationTunnelAnim(this, elapsedTime, texture);
-    }
-
-    /** @deprecated Use {@link PlaneDeformNoCalc.drawPlaneDeformation}. */
-    public drawPlaneDeformation(elapsedTime: number, texture: Texture): void {
-        PlaneDeformNoCalc.drawPlaneDeformation(this, elapsedTime, texture);
-    }
-
-    /** @deprecated Use {@link Pixelate.pixelate}. */
-    public pixelate(): void {
-        Pixelate.pixelate(this);
-    }
-
-    /** @deprecated Use {@link Reflections.addReflections}. */
-    public addReflections(): void {
-        Reflections.addReflections(this);
-    }
-
 }

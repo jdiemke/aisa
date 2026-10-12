@@ -26,7 +26,7 @@ export class CinematicScroller extends AbstractScene {
     public render(framebuffer: Framebuffer): void {
         const time: number = Date.now();
         // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.ledTexture.texture);
-        framebuffer.drawScaledTextureClipBi(
+        framebuffer.scaleClipBlitter.drawScaledTextureClipBi(
             0,
             0,
             framebuffer.width, framebuffer.height, this.ledTexture, 1.0);

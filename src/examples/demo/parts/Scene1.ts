@@ -1,3 +1,4 @@
+import { Noise } from '../../../effects/noise/Noise';
 import { Framebuffer } from '../../../Framebuffer';
 import { Interpolator } from '../../../math/Interpolator';
 import { sceneData } from '../../../sound/MusicProperties';
@@ -41,17 +42,17 @@ export class Scene1 {
             const w = framebuffer.width;
             const h = framebuffer.height;
 
-            framebuffer.drawScaledTextureClipBi(0, 0, w, h, this.blurred, 1.0);
+            framebuffer.scaleClipBlitter.drawScaledTextureClipBi(0, 0, w, h, this.blurred, 1.0);
 
            // framebuffer.setCullFace(CullFace.BACK);
             //framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
 
-            framebuffer.drawScaledTextureClipAdd(
+            framebuffer.scaleClipBlitter.drawScaledTextureClipAdd(
                 w - (((time * 0.09) | 0) % (this.micro.width * 2 + w)),
                 h / 2 - 20,
                 this.micro.width * 2, this.micro.height * 2, this.micro);
 
-            framebuffer.drawScaledTextureClipAdd(
+            framebuffer.scaleClipBlitter.drawScaledTextureClipAdd(
                 w - (((time * 0.05) | 0) % (this.micro.width + w)),
                 h / 2 - 60,
                 this.micro.width, this.micro.height, this.micro);
@@ -70,12 +71,12 @@ export class Scene1 {
             const height = Math.round(h + smash * h / 50);
 
             // slow
-            framebuffer.drawScaledTextureClipBi(
+            framebuffer.scaleClipBlitter.drawScaledTextureClipBi(
                 Math.round(w / 2 - width / 2),
                 Math.round(h / 2 - height / 2),
                 width, height, texture, 1.0);
 
-            framebuffer.noise(time, this.noise);
+            Noise.noise(framebuffer, time, this.noise);
 
     }
 

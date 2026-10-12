@@ -1,3 +1,4 @@
+import { Primitives2D } from '../../primitives/Primitives2D';
 import { ControllableCamera } from '../../camera';
 import { FrustumCuller } from '../../clustered-culling/FrustumCuller';
 import { Color } from '../../core/Color';
@@ -109,25 +110,25 @@ export class PortalScene extends AbstractScene {
         const width: number = framebuffer.width / 2;
         const height: number = framebuffer.height / 2;
 
-        framebuffer.drawLineDDANoZ(
+        Primitives2D.drawLineDDANoZ(framebuffer,
             new Vector3f(width / 2, height / 2, 0),
             new Vector3f(width / 2 + width, height / 2, -100),
             color
         );
 
-        framebuffer.drawLineDDANoZ(
+        Primitives2D.drawLineDDANoZ(framebuffer,
             new Vector3f(width / 2, height / 2, 0),
             new Vector3f(width / 2, height / 2 + height, -100),
             color
         );
 
-        framebuffer.drawLineDDANoZ(
+        Primitives2D.drawLineDDANoZ(framebuffer,
             new Vector3f(width / 2 + width, height / 2, 0),
             new Vector3f(width / 2 + width, height / 2 + height, -100),
             color
         );
 
-        framebuffer.drawLineDDANoZ(
+        Primitives2D.drawLineDDANoZ(framebuffer,
             new Vector3f(width / 2, height / 2 + height, 0),
             new Vector3f(width / 2 + width, height / 2 + height, -100),
             color

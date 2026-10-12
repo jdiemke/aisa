@@ -1,3 +1,4 @@
+import { Noise } from '../../effects/noise/Noise';
 import { Color } from '../../core/Color';
 import { Framebuffer } from '../../Framebuffer';
 import { Interpolator } from '../../math/Interpolator';
@@ -24,7 +25,7 @@ export class TextZoomerScene extends AbstractScene {
         this.effect(framebuffer, time, 0.3);
     }
     public effect(framebuffer: Framebuffer, time: number, noise: number) {
-        framebuffer.noise(time, this.noise, noise);
+        Noise.noise(framebuffer, time, this.noise, noise);
         time *= .3;
         const count = (time * 0.0018);
         const index = (count | 0) % 100;
@@ -42,7 +43,7 @@ export class TextZoomerScene extends AbstractScene {
 
         const xpos = 20 + (320 - 40) * pos[index].x;
         const ypos = 20 + (200 - 40) * pos[index].y;
-        framebuffer.drawScaledTextureClipBiAdd(
+        framebuffer.scaleClipBlitter.drawScaledTextureClipBiAdd(
             Math.round(xpos - width / 2),
             Math.round(ypos - height / 2),
             width, height, this.micro, alpha);

@@ -269,7 +269,8 @@ export class DistortedSphereScene extends AbstractScene {
             const v3 = points2[index[i + 2]];
             const n3 = normals2[index[i + 2]];
 
-            if (framebuffer.isTriangleCCW(v1, v2, v3)) {
+            this.texturedRenderingPipeline.setCullFace(framebuffer.cullMode);
+            if (this.texturedRenderingPipeline.isTriangleCCW(v1, v2, v3)) {
 
                 vertexArray[0].projection = v1;
                 const uv1 = ComputationalGeometryUtils.normalMapCoords(n1);

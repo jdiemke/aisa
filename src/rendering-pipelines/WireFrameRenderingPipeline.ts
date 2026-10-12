@@ -4,6 +4,7 @@ import { Matrix4f } from '../math/Matrix4f';
 import { Vector3f } from '../math/Vector3f';
 import { Vector4f } from '../math/Vector4f';
 import { AbstractRenderingPipeline } from './AbstractRenderingPipeline';
+import { LineRenderingPipeline } from './LineRenderingPipeline';
 
 /**
  * A rendering pipeline that produces wireframe outlines using the surface-ID
@@ -737,15 +738,16 @@ export class WireFrameRenderingPipeline extends AbstractRenderingPipeline {
             this.transformVertices(mesh, modelViewMatrix);
         }
         const c = color !== undefined ? color : this.outlineColor;
+        const lines = new LineRenderingPipeline(framebuffer);
         const tp = mesh.transformedPoints;
         for (let fi = 0; fi < mesh.faces.length; fi++) {
             const face = mesh.faces[fi];
             const a = new Vector3f(tp[face.v1].x, tp[face.v1].y, tp[face.v1].z);
             const b = new Vector3f(tp[face.v2].x, tp[face.v2].y, tp[face.v2].z);
             const c2 = new Vector3f(tp[face.v3].x, tp[face.v3].y, tp[face.v3].z);
-            framebuffer.nearPlaneClipping(a, b, c);
-            framebuffer.nearPlaneClipping(b, c2, c);
-            framebuffer.nearPlaneClipping(c2, a, c);
+            lines.nearPlaneClipping(a, b, c);
+            lines.nearPlaneClipping(b, c2, c);
+            lines.nearPlaneClipping(c2, a, c);
         }
     }
 

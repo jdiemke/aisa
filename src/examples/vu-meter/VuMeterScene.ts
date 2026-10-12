@@ -1,3 +1,4 @@
+import { Primitives2D } from '../../primitives/Primitives2D';
 import { Color } from '../../core/Color';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
@@ -71,7 +72,7 @@ export class VuMeterScene extends AbstractScene {
             const y = barBottom - filledHeight;
 
             if (filledHeight > 0) {
-                framebuffer.drawRect2(x, y, VuMeterScene.BAR_WIDTH, filledHeight, VuMeterScene.BAR_COLOR);
+                Primitives2D.drawRect2(framebuffer, x, y, VuMeterScene.BAR_WIDTH, filledHeight, VuMeterScene.BAR_COLOR);
             }
         }
     }

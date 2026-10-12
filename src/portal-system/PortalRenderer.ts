@@ -7,6 +7,7 @@ import { SutherlandHodgmanClipper } from './SutherlandHodgmanClipper';
 import { Color } from '../core/Color';
 import { ControllableCamera } from '../camera';
 import { Polygon } from './Polygon';
+import { LineRenderingPipeline } from '../rendering-pipelines/LineRenderingPipeline';
 
 export class PortalRenderer {
 
@@ -48,6 +49,7 @@ export class PortalRenderer {
 
     public drawPolygon(framebuffer: Framebuffer, elapsedTime: number, polygon: Polygon, matrix: Matrix4f, color: Color): void {
         framebuffer.clearDepthBuffer();
+        const lines = new LineRenderingPipeline(framebuffer);
         const points: Array<Vector4f> = polygon.vertices;
 
         const modelViewMartrix = matrix;
@@ -65,7 +67,7 @@ export class PortalRenderer {
 
         // TODO: draw without depth buffer DDA line
         for (let i = 0; i < points2.length; i++) {
-            framebuffer.nearPlaneClipping(points2[i], points2[(i + 1) % points2.length], color.toPackedFormat());
+            lines.nearPlaneClipping(points2[i], points2[(i + 1) % points2.length], color.toPackedFormat());
         }
     }
 
