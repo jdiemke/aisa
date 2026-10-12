@@ -6,7 +6,7 @@ import { SkyBox } from '../../SkyBox';
 import { Texture, TextureUtils } from '../../texture';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 import { EnvironmentMappingScene } from '../environment-mapping-torus/EnvironmentMappingTorusScene';
-import { LensFlare } from '../../effects/lens-flare/LensFlare';
+import { LensFlare } from '@effects/lens-flare/LensFlare';
 
 export class SkyBoxScene extends AbstractScene {
 

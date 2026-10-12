@@ -62,7 +62,13 @@ module.exports = {
             },
             {
                 test: /\.(png|jpg|mp3|ogg|md2|mdl|tga|xm|obj|mtl|rocket|jsx|mod|s3m|it|mptm|glb)$/,
-                type: 'asset/resource'
+                type: 'asset/resource',
+                generator: {
+                    filename: ({ filename }) => {
+                        const sourcePath = path.relative(path.resolve(__dirname, './src'), path.resolve(__dirname, filename));
+                        return `assets/${sourcePath.split(path.sep).join('/').replace(/^assets\//, '')}`;
+                    }
+                }
             }
         ]
     },

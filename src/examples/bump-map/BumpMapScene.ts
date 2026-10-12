@@ -1,5 +1,5 @@
 import { Framebuffer } from '../../Framebuffer';
-import { BumpMap } from '../../effects/bump-map/BumpMap';
+import { BumpMap } from '@effects/bump-map/BumpMap';
 import { AbstractScene } from '../../scenes/AbstractScene';
 
 export class BumpMapScene extends AbstractScene {

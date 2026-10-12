@@ -1,6 +1,6 @@
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '../../scenes/AbstractScene';
-import { Plasma } from '../../effects/plasma/Plasma';
+import { Plasma } from '@effects/plasma/Plasma';
 
 export class PlasmaScene extends AbstractScene {
 
