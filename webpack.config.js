@@ -4,7 +4,7 @@ const webpackUtils = require('./webpack-utils/webpack.utils');
 module.exports = {
     mode: webpackUtils.getMode(),
     entry: webpackUtils.getEntryPoints(),
-    devtool: "source-map",
+    devtool: webpackUtils.getMode() === 'production' ? false : 'source-map',
     devServer: {
         static: {
             directory: path.join(__dirname, './dist'),
