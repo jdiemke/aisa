@@ -16,7 +16,17 @@ export class SutherlandHodgman2DClipper {
     private bufferA: Array<Vertex> = [];
     private bufferB: Array<Vertex> = [];
 
-    constructor(private framebuffer: Framebuffer) {
+    private framebuffer: Framebuffer;
+
+    constructor(framebuffer: Framebuffer) {
+        this.setFramebuffer(framebuffer);
+    }
+
+    public setFramebuffer(framebuffer: Framebuffer): void {
+        if (this.framebuffer === framebuffer) {
+            return;
+        }
+        this.framebuffer = framebuffer;
         this.clipRegion = new Array<AbstractClipEdge>(
             new RightClipEdge(framebuffer),
             new LeftClipEdge(framebuffer),
@@ -29,9 +39,9 @@ export class SutherlandHodgman2DClipper {
      * Clips a convex polygon against the clip region using the
      * Sutherland-Hodgman algorithm.
      *
-     * Uses double-buffered arrays to avoid allocating new arrays on each
-     * clip-edge iteration and caches isInside results to halve the number
-     * of inside/outside tests.
+     * Reads the subject directly and skips edges containing the entire polygon.
+     * Partially clipped polygons use reusable double buffers. The returned
+     * array is independent of the subject and subsequent calls.
      *
      * @param {Array<Vertex>} subject       The polygon vertices to clip
      * @param {ClipMode}      [mode]        Intersection mode (default: GOURAUD)
@@ -46,28 +56,34 @@ export class SutherlandHodgman2DClipper {
 
         const edges = region || this.clipRegion;
 
-        // Seed bufferA with the subject polygon
-        let input = this.bufferA;
-        let output = this.bufferB;
-        input.length = subject.length;
-        for (let k = 0; k < subject.length; k++) {
-            input[k] = subject[k];
-        }
+        let input = subject;
+        let output = this.bufferA;
 
         for (let j = 0; j < edges.length; j++) {
             const edge: AbstractClipEdge = edges[j];
-            output.length = 0;
+            const count = input.length;
 
-            if (input.length === 0) {
+            if (count === 0) {
                 break;
             }
 
-            let S = input[input.length - 1];
-            let sInside = edge.isInside(S);
+            let firstOutside = 0;
+            while (firstOutside < count && edge.isInside(input[firstOutside])) {
+                firstOutside++;
+            }
+            if (firstOutside === count) {
+                continue;
+            }
 
-            for (let i = 0; i < input.length; i++) {
+            output.length = 0;
+            let S = input[count - 1];
+            const lastInside = firstOutside < count - 1 && edge.isInside(S);
+            let sInside = lastInside;
+
+            for (let i = 0; i < count; i++) {
                 const point = input[i];
-                const pInside = edge.isInside(point);
+                const pInside = i < firstOutside ||
+                    (i > firstOutside && (i === count - 1 ? lastInside : edge.isInside(point)));
 
                 if (pInside) {
                     if (!sInside) {
@@ -83,9 +99,8 @@ export class SutherlandHodgman2DClipper {
             }
 
             // Swap buffers for the next edge
-            const temp = input;
             input = output;
-            output = temp;
+            output = output === this.bufferA ? this.bufferB : this.bufferA;
         }
 
         // Return a copy — the internal buffers are reused on the next call

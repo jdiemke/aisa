@@ -53,7 +53,7 @@ export class EnvironmentMappingCylinderScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        framebuffer.setCullFace(CullFace.FRONT);
+        this.texturedRenderingPipeline.setCullFace(CullFace.FRONT);
         framebuffer.setTexture(this.env);
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         this.shadingCylinderEnvDisp(framebuffer, time * 0.002, this.plane);
@@ -156,7 +156,6 @@ export class EnvironmentMappingCylinderScene extends AbstractScene {
             const v3 = points2[index[i + 2]];
             const n3 = normals2[index[i + 2]];
 
-            this.texturedRenderingPipeline.setCullFace(framebuffer.cullMode);
             if (this.texturedRenderingPipeline.isTriangleCCW(v1, v2, v3)) {
 
                 // const color = 255 << 24 | 255 << 16 | 255 << 8 | 255;

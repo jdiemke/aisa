@@ -59,7 +59,7 @@ export class EnvironmentMappingScene extends AbstractScene {
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
 
         //this.texturedRenderingPipeline.setAlpha(Math.abs(Math.sin(Date.now()*0.00012)));
-        framebuffer.setCullFace(CullFace.BACK);
+        this.texturedRenderingPipeline.setCullFace(CullFace.BACK);
         framebuffer.setTexture(this.env);
         this.shadingPlaneEnv(framebuffer, time * 0.001, this.plane);
     }
@@ -177,7 +177,6 @@ export class EnvironmentMappingScene extends AbstractScene {
             const e3 = transformedPoints[index[i + 2]];
             const n3 = normals2[index[i + 2]];
 
-            this.texturedRenderingPipeline.setCullFace(framebuffer.cullMode);
             if (this.texturedRenderingPipeline.isTriangleCCW(v1, v2, v3)) {
 
                 // const color = 255 << 24 | 255 << 16 | 255 << 8 | 255;

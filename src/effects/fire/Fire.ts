@@ -88,7 +88,6 @@ export class Fire {
         const pn = Utils.PerlinNoise;
 
         for (let x = 0; x < w; x++) {
-            let counterr = 0;
             for (let y = 0; y < h; y++) {
                 const u = x / w;
                 const v = y / h;
@@ -100,21 +99,8 @@ export class Fire {
 
                 const noisea = u * v * noise00 + u * (1 - v) * noise01 + (1 - u) * v * noise10 + (1 - u) * (1 - v) * noise11;
 
-                let value = Math.round((255 * noisea) & 0xFF);
-                value = Math.round((255 * pn.noise(x * ns, counterr++ * ns, 0)));
+                const value = Math.round((255 * noisea) & 0xFF);
 
-                let r = value;
-                let g = value;
-                let b = value;
-
-                if (r > 255) r = 255;
-                if (r < 0) r = 0;
-
-                if (g > 255) g = 255;
-                if (g < 0) g = 0;
-
-                if (b > 255) b = 255;
-                if (b < 0) b = 0;
                 this.tile[x + y * w] = value;
             }
         }

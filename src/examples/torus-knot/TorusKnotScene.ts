@@ -57,7 +57,6 @@ export class TorusKnotScene extends AbstractScene {
             framebuffer.height / 2 - 60,
             this.micro.width, this.micro.height, this.micro, 0.5);
 
-        framebuffer.setCullFace(CullFace.BACK);
         this.shadingTorus5(framebuffer, time * 0.03);
         /*
                 framebuffer.scaleClipBlitter.drawScaledTextureClipAdd(

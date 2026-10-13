@@ -178,7 +178,6 @@ export class GLBScene extends AbstractScene {
     private renderScreen(framebuffer: Framebuffer, time: number, modelViewMatrix: Matrix4f): void {
         this.cubeScene.render(this.screenFramebuffer, time);
         framebuffer.setTexture(this.screenTexture);
-        framebuffer.setCullFace(CullFace.BACK);
         this.screenPipeline.setFramebuffer(framebuffer);
         this.screenPipeline.setModelViewMatrix(modelViewMatrix);
         this.screenPipeline.draw(framebuffer, this.screenMesh);

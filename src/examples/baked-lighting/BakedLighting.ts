@@ -29,7 +29,6 @@ export class BakedLighting extends AbstractScene {
     public init(framebuffer: Framebuffer): Promise<any> {
         this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
-        framebuffer.setCullFace(CullFace.BACK);
         this.skyBox = new SkyBox();
 
         return Promise.all([

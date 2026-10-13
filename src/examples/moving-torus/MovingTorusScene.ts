@@ -1,4 +1,3 @@
-import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Torus } from '../../geometrical-objects/Torus';
 import { Matrix4f } from '../../math/index';
@@ -14,7 +13,6 @@ export class MovingTorusScene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
-        framebuffer.setCullFace(CullFace.BACK);
 
         return Promise.all([
             TextureUtils.load(require('@assets/atlantis.png'), true).then(
@@ -24,7 +22,6 @@ export class MovingTorusScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        framebuffer.setCullFace(CullFace.BACK);
         // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.background.texture);
         framebuffer.scaleClipBlitter.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.background, 1.0);
 

@@ -33,7 +33,7 @@ export class AbstractRenderingPipeline {
      * @param {{ x: number, y: number, z: number }} v2
      * @param {{ x: number, y: number, z: number }} v3
      * @returns {boolean}
-     * @memberof Framebuffer
+     * @memberof AbstractRenderingPipeline
      *
      */
     public isTriangleCCW(v1: { x: number, y: number, z: number },

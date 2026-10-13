@@ -1,5 +1,4 @@
 import { Noise } from '../../effects/noise/Noise';
-import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { AbstractScene } from '@core/AbstractScene';
 import { Texture } from '../../texture/Texture';
@@ -44,7 +43,6 @@ export class MirrorScene extends AbstractScene {
 
         
             framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
-            framebuffer.setCullFace(CullFace.BACK);
 
             
             this.scene.render(framebuffer, time);

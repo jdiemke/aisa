@@ -1,5 +1,4 @@
 import { WireframeTerrain } from '../../effects/wireframe-terrain/WireframeTerrain';
-import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
 import { AbstractScene } from '@core/AbstractScene';
@@ -141,7 +140,6 @@ export class MiscScene extends AbstractScene {
         const time: number = (Date.now() - this.start);
 
 
-        // framebuffer.setCullFace(CullFace.FRONT);
         // framebuffer.wireFrameSphereClipping(time * 0.00009);
         // framebuffer.shadingSphere(time * 0.01);
 
@@ -187,14 +185,12 @@ export class MiscScene extends AbstractScene {
         ]);
     }
     } else if (time < 260000) {
-        this.framebuffer.setCullFace(CullFace.BACK);
         this.framebuffer.setBob(this.spheremap);
         this.framebuffer.led(time, this.texture14);
         this.framebuffer.reflectionBunny(time * 0.002);
     } else if (time < 280000) {
         this.framebuffer.drawStarField(time * 0.9);
         this.framebuffer.setBob(this.spheremap);
-        this.framebuffer.setCullFace(CullFace.BACK);
         this.framebuffer.reflectionBunny(time * 0.002);
         this.framebuffer.scene7(time * 0.2, this.texture7);
     } else if (time < 290000) {
@@ -202,7 +198,6 @@ export class MiscScene extends AbstractScene {
         this.framebuffer.drawTexture(32, 69, this.texture2, 1.0);
     } else if (time < 330000) {
         this.framebuffer.drawLedTunnel(time, this.texture14);
-        this.framebuffer.setCullFace(CullFace.BACK);
         this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
         this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
     } else if (time < 360000) {
@@ -213,13 +208,11 @@ export class MiscScene extends AbstractScene {
         this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
         this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
     } else if (time < 420000) {
-        this.framebuffer.setCullFace(CullFace.BACK);
         this.framebuffer.setBob(this.spheremap);
         this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.texture5.texture);
         this.framebuffer.shadingSphereEnv(time * 0.0002);
     } else if (time < 440000) {
         this.framebuffer.raveMoview(time, this.rave);
-        this.framebuffer.setCullFace(CullFace.BACK);
         this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
         this.framebuffer.glitchScreen(time, this.noise);
         this.framebuffer.drawTexture(0, 75, this.hoodlumLogo, (Math.sin(time * 0.0003) + 1) * 0.5);
@@ -254,7 +247,6 @@ export class MiscScene extends AbstractScene {
     } else if (time < 550000) {
         this.framebuffer.raveMoview(time, this.rave);
         this.framebuffer.glitchScreen(time, this.noise);
-        this.framebuffer.setCullFace(CullFace.BACK);
         this.framebuffer.setBob(this.spheremap);
         this.framebuffer.shadingPlaneEnv(time * 0.0002);
     } else if (time < 570000) {
@@ -317,7 +309,6 @@ export class MiscScene extends AbstractScene {
     } else if (time < 650000) {
         this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
 
-        this.framebuffer.setCullFace(CullFace.BACK);
         this.framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
 
         this.framebuffer.scaleClipBlitter.drawScaledTextureClipAdd(
@@ -355,7 +346,6 @@ export class MiscScene extends AbstractScene {
         Noise.noise(this.framebuffer, time, this.noise);
     } else if (time < 670000) {
         this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-        this.framebuffer.setCullFace(CullFace.BACK);
         this.framebuffer.setBob(this.spheremap);
         this.framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
 
@@ -412,7 +402,6 @@ export class MiscScene extends AbstractScene {
     } else if (time < 690000) {
 
         this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-        this.framebuffer.setCullFace(CullFace.BACK);
         this.framebuffer.setBob(this.spheremap);
 
         this.framebuffer.shadingSphereEnv(time * 0.0002);
@@ -482,7 +471,6 @@ export class MiscScene extends AbstractScene {
     } else if (time < 720000) {
         // Rave video & Wobblin Cylinder
         this.framebuffer.raveMoview(time, this.rave);
-        this.framebuffer.setCullFace(CullFace.FRONT);
         this.framebuffer.setBob(this.spheremap);
         this.framebuffer.shadingCylinderEnv(time * 0.0002);
 
@@ -576,7 +564,6 @@ export class MiscScene extends AbstractScene {
             0, 0,
             320, 200, texture2, 0.75);
 
-        this.framebuffer.setCullFace(CullFace.BACK);
         this.framebuffer.setBob(this.spheremap);
         this.framebuffer.reflectionBunny(time * 0.002);
         // Motion Blur
@@ -586,7 +573,6 @@ export class MiscScene extends AbstractScene {
         Noise.noise(this.framebuffer, time, this.noise);
     } else {
         this.framebuffer.raveMoview(time, this.rave);
-        this.framebuffer.setCullFace(CullFace.FRONT);
         this.framebuffer.setBob(this.spheremap);
         this.framebuffer.shadingCylinderEnvDisp(time * 0.0002);
         this.framebuffer.drawTexture((320 / 2 - 256 / 2) | 0, (200 / 2 - 122 / 2) | 0, this.meth, Math.max(0, Math.sin(time * 0.0002)));
@@ -625,7 +611,6 @@ export class MiscScene extends AbstractScene {
         /*
                 if (time < 50000) {
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-                    this.framebuffer.setCullFace(CullFace.BACK);
                     this.framebuffer.setBob(this.spheremap);
                     this.framebuffer.shadingSphereEnvDisp(time * 0.0002);
 
@@ -659,7 +644,6 @@ export class MiscScene extends AbstractScene {
                     Noise.noise(this.framebuffer, time, this.noise);
                 } else if (time < 200000) {
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-                    this.framebuffer.setCullFace(CullFace.BACK);
                     this.framebuffer.setBob(this.spheremap);
                     this.framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
 
@@ -692,7 +676,6 @@ export class MiscScene extends AbstractScene {
                 } else if (time < 250000) {
                     this.framebuffer.raveMoview(time, this.rave);
                     this.framebuffer.glitchScreen(time, this.noise, false);
-                    this.framebuffer.setCullFace(CullFace.BACK);
                     this.framebuffer.setBob(this.spheremap);
                     this.framebuffer.shadingPlaneEnv(time * 0.0002);
 
@@ -722,7 +705,6 @@ export class MiscScene extends AbstractScene {
                     Noise.noise(this.framebuffer, time, this.noise);
                 } else if (time < 350000) {
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-                    this.framebuffer.setCullFace(CullFace.FRONT);
                     this.framebuffer.setBob(this.spheremap);
                     this.framebuffer.shadingCylinderEnvDisp(time * 0.0002);
 
@@ -733,7 +715,6 @@ export class MiscScene extends AbstractScene {
                     Noise.noise(this.framebuffer, time, this.noise);
                 } else if (time < 400000) {
                     this.framebuffer.raveMoview(time, this.rave);
-                    this.framebuffer.setCullFace(CullFace.BACK);
                     this.framebuffer.shadingTorus5(time * 0.007, (Date.now() - this.start));
                     this.framebuffer.glitchScreen(time, this.noise);
                 } else if (time < 450000) {
@@ -765,7 +746,6 @@ export class MiscScene extends AbstractScene {
                     Noise.noise(this.framebuffer, time, this.noise);
                 } else if (time < 750000) {
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-                    this.framebuffer.setCullFace(CullFace.BACK);
                     this.framebuffer.setBob(this.envmap);
 
                     this.framebuffer.drawBlenderScene5(time, this.texture4,
@@ -784,7 +764,6 @@ export class MiscScene extends AbstractScene {
                 } else if (time < 950000) {
 
                     this.framebuffer.fastFramebufferCopy(this.framebuffer.framebuffer, this.blurred.texture);
-                    this.framebuffer.setCullFace(CullFace.BACK);
                     this.framebuffer.setBob(this.baked);
 
                     this.framebuffer.drawBlenderScene7(time, this.particleTexture2,
@@ -847,7 +826,6 @@ export class MiscScene extends AbstractScene {
         // framebuffer.scene8(time*0.02);
         // framebuffer.debug(time*0.003);
         /*
-          framebuffer.setCullFace(CullFace.BACK);
           framebuffer.setTexture(this.envmap);
 
           framebuffer.drawBlenderScene6(time, this.particleTexture2,
@@ -888,7 +866,6 @@ export class MiscScene extends AbstractScene {
         // this.framebuffer.drawTexture(0, 0, this.displacementMap, 0.8);
         /*
         this.framebuffer.drawPolarDistotion3(time, this.revision);
-        this.framebuffer.setCullFace(CullFace.FRONT);
         this.framebuffer.shadingSphere(time * 0.004);
         // Motion Blur
         let texture = new Texture(this.accumulationBuffer, 320, 200);
@@ -1005,7 +982,6 @@ export class MiscScene extends AbstractScene {
 
 
         /*
-        this.framebuffer.setCullFace(CullFace.BACK);
         //this.framebuffer.drawBlenderScene(time, this.texture4, this.particleTexture2);
         this.framebuffer.setBob(this.spheremap);
         this.framebuffer.drawPlanedeformationTunnelV2(time, this.abstract, this.metal);
@@ -1108,7 +1084,6 @@ export class MiscScene extends AbstractScene {
 
         // this.framebuffer.drawRaster();
         // this.framebuffer.enableBackfaceCulling();
-        // this.framebuffer.setCullFace(FRONT);
 
         // TODO: text
         // 3d line clipping for fly by :)

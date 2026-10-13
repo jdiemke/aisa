@@ -44,7 +44,6 @@ export class Scene1 {
 
             framebuffer.scaleClipBlitter.drawScaledTextureClipBi(0, 0, w, h, this.blurred, 1.0);
 
-           // framebuffer.setCullFace(CullFace.BACK);
             //framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
 
             framebuffer.scaleClipBlitter.drawScaledTextureClipAdd(
