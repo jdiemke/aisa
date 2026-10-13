@@ -1,4 +1,4 @@
-import RandomNumberGenerator from '../RandomNumberGenerator';
+import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
 import { Texture } from './Texture';
 
 export class TextureUtils {

@@ -1,5 +1,5 @@
 import { Framebuffer } from '../Framebuffer';
-import { Vertex } from '../Vertex';
+import { Vertex } from '@primitives/Vertex';
 
 export abstract class AbstractTriangleRasterizer {
 

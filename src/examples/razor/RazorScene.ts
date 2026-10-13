@@ -1,13 +1,13 @@
 import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
 import { Noise } from '../../effects/noise/Noise';
-import { CullFace } from '../../CullFace';
+import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Cube } from '../../geometrical-objects/Cube';
 import { Dodecahedron } from '../../geometrical-objects/Dodecahedron';
 import { Pyramid } from '../../geometrical-objects/Pyramid';
 import { Sphere } from '../../geometrical-objects/Sphere';
 import { Matrix4f, Vector3f } from '../../math';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { Color } from '../../core/Color';
 import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';

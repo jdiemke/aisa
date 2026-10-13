@@ -1,6 +1,6 @@
 import { Framebuffer } from '../Framebuffer';
-import { TextureCoordinate } from '../TextureCoordinate';
-import { Vertex } from '../Vertex';
+import { TextureCoordinate } from '@primitives/TextureCoordinate';
+import { Vertex } from '@primitives/Vertex';
 import { AbstractClipEdge } from './AbstractClipEdge';
 import { Vector4f } from '../math/Vector4f';
 

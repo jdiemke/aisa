@@ -1,7 +1,7 @@
 import { Framebuffer } from '../../Framebuffer';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
-import { ScaleClipBlitter } from '../../blitter/ScaleClipBlitter';
+import { ScaleClipBlitter } from '@primitives/ScaleClipBlitter';
 import { PlaneDeformationScene } from '../plane-deformation/PlaneDeformationScene';
 import { Interpolator } from '../../math/Interpolator';
 

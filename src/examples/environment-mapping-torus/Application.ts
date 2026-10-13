@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { EnvironmentMappingScene } from './EnvironmentMappingTorusScene';
 
 import './../../default-style.css';

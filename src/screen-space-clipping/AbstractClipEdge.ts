@@ -1,4 +1,4 @@
-import { Vertex } from '../Vertex';
+import { Vertex } from '@primitives/Vertex';
 import { ClipMode } from './ClipMode';
 
 // TODO:

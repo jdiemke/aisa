@@ -15,6 +15,11 @@
     - http://www.luki.webzdarma.cz/eng_06_en.htm
     - https://www.bluesnews.com/abrash/chap64.shtml
     - https://bwravencl.de/Bachelorarbeit.pdf
+- Collision Detection
+    - https://www.gamasutra.com/view/feature/131508/bsp_collision_detection_as_used_in_.php?print=1
+    - http://www.peroxide.dk/download/tutorials/tut10/pxdtut10.html
+    - https://wildbunny.co.uk/blog/2011/03/25/speculative-contacts-an-continuous-collision-engine-approach-part-1/
+    - https://www.gamedev.net/articles/programming/general-and-gameplay-programming/general-collision-detection-for-games-using-ell-r1026/
 - https://www.gamedev.net/articles/programming/general-and-gameplay-programming/frustum-culling-r4613/
 - http://archive.gamedev.net/archive/reference/programming/features/bsptree/bsp.pdf
 - http://www.cs.virginia.edu/%7Eluebke/publications/portals.html

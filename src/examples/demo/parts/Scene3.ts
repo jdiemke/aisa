@@ -1,6 +1,6 @@
-import { CullFace } from '../../../CullFace';
+import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../../Framebuffer';
-import { TextureCoordinate } from '../../../TextureCoordinate';
+import { TextureCoordinate } from '@primitives/TextureCoordinate';
 import { Vector4f } from '../../../math';
 import { TexturedMesh } from '../../../rendering-pipelines/TexturedMesh';
 import { TexturingRenderingPipeline } from '../../../rendering-pipelines/TexturingRenderingPipeline';

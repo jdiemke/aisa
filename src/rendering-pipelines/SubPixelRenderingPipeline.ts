@@ -3,7 +3,7 @@ import { FlatshadedMesh } from '../geometrical-objects/FlatshadedMesh';
 import { Vector4f } from '../math/index';
 import { Matrix4f } from '../math/Matrix4f';
 import { SubPixelTriangleRasterizer } from '../rasterizer/SubPixelTriangleRasterizer';
-import { Vertex } from '../Vertex';
+import { Vertex } from '@primitives/Vertex';
 import { LitRenderingPipeline } from './LitRenderingPipeline';
 
 /**

@@ -2,10 +2,10 @@ import { WireframeTerrain } from '../../effects/wireframe-terrain/WireframeTerra
 import { Pixelate } from '../../effects/pixelate/Pixelate';
 import { PlaneDeformNoCalc } from '../../effects/plane-deform-no-calc/PlaneDeformNoCalc';
 import { Reflections } from '../../effects/reflections/Reflections';
-// import { CullFace } from '../../CullFace';
+// import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import RandomNumberGenerator from '../../RandomNumberGenerator';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
+import { AbstractScene } from '@core/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 // import { Color } from '../../core/Color';
 // import { BunnyScene } from '../bunny/BunnyScene';

@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { Bobs } from './Bobs';
 
 import './../../default-style.css';

@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { BunnyScene } from './BunnyScene';
 
 import './../../default-style.css';

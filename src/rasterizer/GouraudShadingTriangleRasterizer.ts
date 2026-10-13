@@ -1,5 +1,5 @@
 import { Framebuffer } from '../Framebuffer';
-import { Vertex } from '../Vertex';
+import { Vertex } from '@primitives/Vertex';
 import { AbstractScannlineTriangleRasterizer } from './AbstractScanlineTriangleRasterizer';
 import { ColorInterpolator } from './ColorInterpolator';
 import { SlopeInterpolator } from './SlopeInterpolator';

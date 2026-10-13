@@ -1,4 +1,4 @@
-export default class RandomNumberGenerator {
+export class RandomNumberGenerator {
 
     private seed: number;
 
@@ -16,3 +16,5 @@ export default class RandomNumberGenerator {
     }
 
 }
+
+export default RandomNumberGenerator;

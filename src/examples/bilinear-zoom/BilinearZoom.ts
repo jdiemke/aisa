@@ -1,5 +1,5 @@
 import { Framebuffer } from '../../Framebuffer';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
 
 export class BilinearZoom extends AbstractScene {

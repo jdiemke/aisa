@@ -2,8 +2,8 @@ import { Noise } from '../../effects/noise/Noise';
 import { Color } from '../../core/Color';
 import { Framebuffer } from '../../Framebuffer';
 import { Interpolator } from '../../math/Interpolator';
-import RandomNumberGenerator from '../../RandomNumberGenerator';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
+import { AbstractScene } from '@core/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 
 export class TextZoomerScene extends AbstractScene {

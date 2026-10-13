@@ -6,7 +6,7 @@ import { Face } from './face';
 import { Mesh } from './mesh';
 import { Vector } from './vector';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
-import { TextureCoordinate } from '../../TextureCoordinate';
+import { TextureCoordinate } from '@primitives/TextureCoordinate';
 import { ComputationalGeometryUtils } from '../../math/Geometry';
 import { TexCoord } from './tex-coord';
 

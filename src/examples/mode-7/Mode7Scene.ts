@@ -1,13 +1,13 @@
 import { Primitives2D } from '../../primitives/Primitives2D';
 import { Framebuffer } from '../../Framebuffer';
 import { Vector2f, Vector3f } from '../../math/index';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { Texture, TextureUtils } from '../../texture/index';
 import { FontRenderer } from '../sine-scroller/FontRenderer';
 import { NpcEntity } from './entities/NpcEntity';
 import { Pipe } from './entities/Pipe';
 import { KartAnimator } from './KartAnimator';
-import { Keyboard } from './Keyboard';
+import { Keyboard } from '@platform/input';
 import { Mode7Entity } from './Mode7Entity';
 import { Camera, Mode7Renderer } from './Mode7Renderer';
 import { NpcTrack } from './NpcTrack';

@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { PlatonianScene } from './PlatonianScene';
 
 import './../../default-style.css';

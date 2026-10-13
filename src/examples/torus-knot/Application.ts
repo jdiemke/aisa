@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { TorusKnotScene } from './TorusKnotScene';
 
 class Application {

@@ -1,12 +1,12 @@
 import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
 import { Noise } from '../../effects/noise/Noise';
 import { SoftParticle } from '../../effects/soft-particle/SoftParticle';
-import { CullFace } from '../../CullFace';
+import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f, Vector3f } from '../../math';
-import RandomNumberGenerator from '../../RandomNumberGenerator';
+import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { BlenderLoader } from './../../model/blender/BlenderLoader';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';

@@ -1,11 +1,11 @@
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f, Vector2f, Vector3f, Vector4f } from '../../math';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
-import { TextureCoordinate } from '../../TextureCoordinate';
+import { TextureCoordinate } from '@primitives/TextureCoordinate';
 import { Color } from '../../core/Color';
-import { CullFace } from '../../CullFace';
+import { CullFace } from '@primitives/CullFace';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 

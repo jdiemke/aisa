@@ -1,8 +1,8 @@
 
-import { ScaleClipBlitter } from './blitter/ScaleClipBlitter';
+import { ScaleClipBlitter } from '@primitives/ScaleClipBlitter';
 import { ControllableCamera } from './camera';
 import { Color } from '@core/Color';
-import { CullFace } from './CullFace';
+import { CullFace } from '@primitives/CullFace';
 import { Vector2f } from './math/Vector2f';
 import { AbstractClipEdge } from './screen-space-clipping/AbstractClipEdge';
 import { BottomClipEdge } from './screen-space-clipping/BottomClipEdge';

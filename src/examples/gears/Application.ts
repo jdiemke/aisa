@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { GearsScene } from './GearsScene';
 
 import './../../default-style.css';

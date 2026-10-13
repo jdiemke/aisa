@@ -1,7 +1,7 @@
 import { Primitives2D } from '../../primitives/Primitives2D';
 import { Color } from '../../core/Color';
 import { Framebuffer } from '../../Framebuffer';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { SoundManager } from '../../sound/SoundManager';
 
 import './style.css';

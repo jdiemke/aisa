@@ -1,5 +1,5 @@
 import { Framebuffer } from '../../Framebuffer';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { LedPlasma } from '@effects/led-plasma/LedPlasma';
 
 export class LedPlasmaScene extends AbstractScene {

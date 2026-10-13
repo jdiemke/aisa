@@ -1,11 +1,11 @@
 import * as Matter from 'matter-js';
 import { Framebuffer } from '../../Framebuffer';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { Vector3f, Vector4f } from '../../math';
 import { Color } from '../../core/Color';
 import { TexturedTriangleRasterizer } from '../../rasterizer/TexturedTriangleRasterizer';
-import { Vertex } from '../../Vertex';
-import { TextureCoordinate } from '../../TextureCoordinate';
+import { Vertex } from '@primitives/Vertex';
+import { TextureCoordinate } from '@primitives/TextureCoordinate';
 import { Texture, TextureUtils } from '../../texture';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 import { SutherlandHodgmanClipper } from '../../portal-system';

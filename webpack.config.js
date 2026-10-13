@@ -38,6 +38,8 @@ module.exports = {
             '@core': path.resolve(__dirname, './src/core'),
             '@effects': path.resolve(__dirname, './src/effects'),
             '@examples': path.resolve(__dirname, './src/examples'),
+            '@platform': path.resolve(__dirname, './src/platform'),
+            '@primitives': path.resolve(__dirname, './src/primitives'),
         },
     },
     performance: {

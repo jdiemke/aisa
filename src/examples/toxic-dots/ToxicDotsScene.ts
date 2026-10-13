@@ -2,7 +2,7 @@ import { ComputationalGeometryUtils } from '../../math/Geometry';
 import { Primitives2D } from '../../primitives/Primitives2D';
 import { Framebuffer } from '../../Framebuffer';
 import { Vector3f, Matrix4f } from '../../math';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 
 export class ToxicDotsScene extends AbstractScene {
 

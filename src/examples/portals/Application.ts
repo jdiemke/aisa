@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { PortalScene } from './PortalScene';
 
 import './../../default-style.css';

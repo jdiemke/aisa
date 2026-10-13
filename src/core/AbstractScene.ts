@@ -1,4 +1,4 @@
-import { Framebuffer } from './../Framebuffer';
+import { Framebuffer } from '../Framebuffer';
 import { sceneData } from '../sound/MusicProperties';
 
 export abstract class AbstractScene {

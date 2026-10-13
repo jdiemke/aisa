@@ -1,4 +1,4 @@
-import { CullFace } from '../CullFace';
+import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../Framebuffer';
 
 export class AbstractRenderingPipeline {

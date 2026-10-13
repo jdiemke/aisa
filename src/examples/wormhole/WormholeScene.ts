@@ -1,30 +1,40 @@
 import { Wormhole } from '@effects/wormhole/Wormhole';
+import { Keyboard } from '@platform/input';
 import { Framebuffer } from '../../Framebuffer';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 
 export class WormholeScene extends AbstractScene {
 
     private wormhole = new Wormhole();
+    private keyboard = new Keyboard();
 
     public init(framebuffer: Framebuffer): Promise<void> {
         return this.wormhole.init(framebuffer);
     }
 
     public onInit(): void {
-        document.addEventListener('keydown', (event: KeyboardEvent) => {
+        this.keyboard.addKeyDownListener((event: KeyboardEvent) => {
             let spin = this.wormhole.directionX;
             let pull = this.wormhole.directionY;
-            switch (event.key) {
-                case 'ArrowLeft': spin--; break;
-                case 'ArrowRight': spin++; break;
-                case 'ArrowUp': pull++; break;
-                case 'ArrowDown': pull--; break;
-                case 's':
-                case 'S':
+            switch (event.keyCode) {
+                case Keyboard.LEFT:
+                    spin--;
+                    break;
+                case Keyboard.RIGHT:
+                    spin++;
+                    break;
+                case Keyboard.UP:
+                    pull++;
+                    break;
+                case Keyboard.DOWN:
+                    pull--;
+                    break;
+                case Keyboard.KEY_S:
                     spin = 0;
                     pull = 0;
                     break;
-                default: return;
+                default:
+                    return;
             }
             event.preventDefault();
             this.wormhole.directionX = Math.max(-5, Math.min(5, spin));
@@ -35,4 +45,5 @@ export class WormholeScene extends AbstractScene {
     public render(framebuffer: Framebuffer, time: number): void {
         this.wormhole.render(framebuffer, time);
     }
+
 }

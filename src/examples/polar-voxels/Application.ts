@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { PolarVoxelsScene } from './PolarVoxelsScene';
 
 import './../../default-style.css';

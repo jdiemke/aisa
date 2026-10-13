@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { PixelEffectScene } from './PixelEffectScene';
 
 import './../../default-style.css';

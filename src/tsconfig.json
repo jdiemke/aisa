@@ -6,9 +6,14 @@
         "noImplicitAny": false,
         "moduleResolution": "bundler",
         "paths": {
+            "@core": ["./core/index"],
             "@core/*": ["./core/*"],
             "@effects/*": ["./effects/*"],
-            "@examples/*": ["./examples/*"]
+            "@examples/*": ["./examples/*"],
+            "@platform": ["./platform/index"],
+            "@platform/*": ["./platform/*"],
+            "@primitives": ["./primitives/index"],
+            "@primitives/*": ["./primitives/*"]
         },
         "esModuleInterop": true,
         "sourceMap": true,

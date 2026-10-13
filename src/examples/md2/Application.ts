@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { Md2ModelScene } from './Md2ModelScene';
 
 import './../../default-style.css';

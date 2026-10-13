@@ -1,10 +1,10 @@
-import { CullFace } from '../../CullFace';
+import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import { TextureCoordinate } from '../../TextureCoordinate';
+import { TextureCoordinate } from '@primitives/TextureCoordinate';
 import { Vector4f } from '../../math';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { FeedbackRadialBlur } from '../feedback-radial-blur/FeedbackRadialBlur';
 import { ModelViewMatrix } from '../md2/ModelViewMatrix';
