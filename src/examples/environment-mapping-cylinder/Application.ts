@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { EnvironmentMappingCylinderScene } from './EnvironmentMappingCylinderScene';
 
 import './../../default-style.css';

@@ -1,5 +1,5 @@
 import { Color } from '../../core/Color';
-import { CullFace } from '../../CullFace';
+import { CullFace } from '@primitives/CullFace';
 import { Starfield } from '@effects/starfield/Starfield';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
@@ -9,11 +9,11 @@ import { GLBModel } from '../../model/glb/GLBModel';
 import { SubPixelRenderingPipeline } from '../../rendering-pipelines/SubPixelRenderingPipeline';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { Material } from '../../shading/material/Material';
 import { PointLight } from '../../shading/light/PointLight';
 import { Texture } from '../../texture/Texture';
-import { TextureCoordinate } from '../../TextureCoordinate';
+import { TextureCoordinate } from '@primitives/TextureCoordinate';
 import { CubeScene } from '../cube/CubeScene';
 
 /**

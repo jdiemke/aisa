@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { ParticleWavesScene } from './ParticleWavesScene';
 
 import './../../default-style.css';

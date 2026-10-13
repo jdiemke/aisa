@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { Mode7Scene } from './Mode7Scene';
 
 import './../../default-style.css';

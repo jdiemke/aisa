@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { FeedbackRadialBlur } from './FeedbackRadialBlur';
 
 import './../../default-style.css';

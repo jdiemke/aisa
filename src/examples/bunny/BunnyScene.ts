@@ -1,11 +1,11 @@
 import { Noise } from '../../effects/noise/Noise';
-import { CullFace } from '../../CullFace';
+import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { Vector4f } from '../../math';
 import { Matrix4f } from '../../math/Matrix4f';
 import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { PointLight } from '../../shading/light/PointLight';
 import { Material } from '../../shading/material/Material';
 import { Texture } from '../../texture/Texture';

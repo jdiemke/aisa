@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { BumpMapScene } from './BumpMapScene';
 
 import './../../default-style.css';

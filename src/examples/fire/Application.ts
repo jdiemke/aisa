@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { FireScene } from './FireScene';
 
 import './../../default-style.css';

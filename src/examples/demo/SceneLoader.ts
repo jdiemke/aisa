@@ -1,5 +1,5 @@
 import { Framebuffer } from '../../Framebuffer';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { DoublyLinkedList } from '../../core/LinkedList';
 
 /**

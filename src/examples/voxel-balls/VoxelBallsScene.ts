@@ -1,10 +1,10 @@
 import { Color } from '../../core/Color';
-import { CullFace } from '../../CullFace';
+import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Cube } from '../../geometrical-objects/Cube';
 import { Matrix4f } from '../../math';
 import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { TextureUtils, Texture } from '../../texture/index';
 
 /**

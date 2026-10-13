@@ -5,7 +5,7 @@ import { RightClipEdge } from './RightClipEdge';
 import { LeftClipEdge } from './LeftClipEdge';
 import { BottomClipEdge } from './BottomClipEdge';
 import { TopClipEdge } from './TopClipEdge';
-import { Vertex } from '../Vertex';
+import { Vertex } from '@primitives/Vertex';
 import { Framebuffer } from '../Framebuffer';
 
 export class SutherlandHodgman2DClipper {

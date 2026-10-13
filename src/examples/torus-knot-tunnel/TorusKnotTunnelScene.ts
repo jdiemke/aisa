@@ -1,14 +1,14 @@
-import { CullFace } from '../../CullFace';
+import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { TorusKnot } from '../../geometrical-objects/TorusKnot';
 import { Matrix4f } from '../../math/Matrix4f';
 import { Vector4f } from '../../math/Vector4f';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { Fog } from '../../shading/fog/Fog';
 import { LinearFog } from '../../shading/fog/LinearFog';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
-import RandomNumberGenerator from '../../RandomNumberGenerator';
+import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
 import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
 
 export class TorusKnotTunnelScene extends AbstractScene {

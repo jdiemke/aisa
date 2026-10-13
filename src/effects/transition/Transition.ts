@@ -3,8 +3,8 @@ import { Color } from '../../core/Color';
 import { Utils } from '../../core/Utils';
 import { Framebuffer } from '../../Framebuffer';
 import { Interpolator } from '../../math/Interpolator';
-import RandomNumberGenerator from '../../RandomNumberGenerator';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
+import { AbstractScene } from '@core/AbstractScene';
 import { TransitionMethods } from './TransitionMethods';
 import { Particle } from './Particle';
 

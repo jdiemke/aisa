@@ -2,10 +2,10 @@ import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPi
 import { Noise } from '../../effects/noise/Noise';
 import { ParticleSpriteSubpixel } from '../../effects/particle-sprite-subpixel/ParticleSpriteSubpixel';
 import { Framebuffer } from '../../Framebuffer';
-import RandomNumberGenerator from '../../RandomNumberGenerator';
+import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
 import { Matrix4f } from '../../math/Matrix4f';
 import { Vector3f } from '../../math/Vector3f';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { FontRenderer } from '../sine-scroller/FontRenderer';

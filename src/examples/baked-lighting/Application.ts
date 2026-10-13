@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { BakedLighting } from './BakedLighting';
 
 import './../../default-style.css';

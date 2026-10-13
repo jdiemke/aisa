@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { BouncingTextScene } from './BouncingTextScene';
 
 import './../../default-style.css';

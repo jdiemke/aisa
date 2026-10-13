@@ -7,7 +7,7 @@ import { Fog } from '../shading/fog/Fog';
 import { PhongLighting } from '../shading/illumination-models/PhongLighting';
 import { PointLight } from '../shading/light/PointLight';
 import { Material } from '../shading/material/Material';
-import { Vertex } from '../Vertex';
+import { Vertex } from '@primitives/Vertex';
 import { AbstractRenderingPipeline } from './AbstractRenderingPipeline';
 
 /**

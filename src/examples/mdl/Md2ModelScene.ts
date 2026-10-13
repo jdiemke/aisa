@@ -1,9 +1,9 @@
 import { Color } from '../../core/Color';
-import { CullFace } from '../../CullFace';
+import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { MDLLoader } from '../../model/mdl/MDLLoader';
 import { MDLModel } from '../../model/mdl/MDLModel';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { ModelViewMatrix } from './ModelViewMatrix';

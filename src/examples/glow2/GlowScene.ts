@@ -1,14 +1,14 @@
 import { PlaneDeformationTunnelAnim } from '../../effects/plane-deformation-tunnel-anim/PlaneDeformationTunnelAnim';
 import { Noise } from '../../effects/noise/Noise';
-import { CullFace } from '../../CullFace';
+import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { ModelViewMatrix, Vector4f } from '../../math';
 import { GLBAnimatedModel } from '../../model/glb/GLBAnimatedModel';
 import { GLBLoader } from '../../model/glb/GLBLoader';
-import RandomNumberGenerator from '../../RandomNumberGenerator';
+import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
 import { SubPixelRenderingPipeline } from '../../rendering-pipelines/SubPixelRenderingPipeline';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { PointLight } from '../../shading/light/PointLight';
 import { Material } from '../../shading/material/Material';
 import { Texture } from '../../texture/Texture';

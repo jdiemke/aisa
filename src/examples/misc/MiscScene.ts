@@ -1,8 +1,8 @@
 import { WireframeTerrain } from '../../effects/wireframe-terrain/WireframeTerrain';
-import { CullFace } from '../../CullFace';
+import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
-import RandomNumberGenerator from '../../RandomNumberGenerator';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
+import { AbstractScene } from '@core/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { SoundManager } from '../../sound/SoundManager';
 

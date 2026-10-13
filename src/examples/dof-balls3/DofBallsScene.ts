@@ -5,8 +5,8 @@ import { Framebuffer } from '../../Framebuffer';
 import { Interpolator } from '../../math/Interpolator';
 import { Matrix4f } from '../../math/Matrix4f';
 import { Vector3f } from '../../math/Vector3f';
-import RandomNumberGenerator from '../../RandomNumberGenerator';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
+import { AbstractScene } from '@core/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 

@@ -1,8 +1,8 @@
 import { PlaneDeformationTunnelAnim } from '../../effects/plane-deformation-tunnel-anim/PlaneDeformationTunnelAnim';
 import { Noise } from '../../effects/noise/Noise';
 import { Framebuffer } from '../../Framebuffer';
-import RandomNumberGenerator from '../../RandomNumberGenerator';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
+import { AbstractScene } from '@core/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { CubeScene } from '../cube/CubeScene';

@@ -1,11 +1,11 @@
 import { Color } from '../../core/Color';
-import { CullFace } from '../../CullFace';
+import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
 import { Icosahedron } from '../../geometrical-objects/Icosahedron';
 import { ModelViewMatrix } from '../../math';
 import { WireFrameRenderingPipeline } from '../../rendering-pipelines/WireFrameRenderingPipeline';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 
 /**
  * Wireframe outline rendering of a cube using the surface-ID

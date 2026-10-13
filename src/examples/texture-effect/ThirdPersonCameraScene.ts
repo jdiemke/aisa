@@ -1,14 +1,14 @@
 import { Color } from '../../core/Color';
-import { CullFace } from '../../CullFace';
+import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Vector4f } from '../../math/index';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { SoundManager } from '../../sound/SoundManager';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
-import { TextureCoordinate } from '../../TextureCoordinate';
+import { TextureCoordinate } from '@primitives/TextureCoordinate';
 import { ModelViewMatrix } from '../md2/ModelViewMatrix';
 
 import './style.css';

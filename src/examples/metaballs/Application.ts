@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { MetaballsScene } from './MetaballsScene';
 
 import './../../default-style.css';

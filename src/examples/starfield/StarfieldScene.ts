@@ -1,6 +1,6 @@
 import { Framebuffer } from '../../Framebuffer';
 import { Starfield } from '@effects/starfield/Starfield';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 
 export class StarfieldScene extends AbstractScene {
 

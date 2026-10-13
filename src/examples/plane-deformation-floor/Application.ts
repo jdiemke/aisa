@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { PlaneDeformationFloorScene } from './PlaneDeformationFloorScene';
 
 import './../../default-style.css';

@@ -1,7 +1,7 @@
 import { Framebuffer } from '../../Framebuffer';
 import { Transition } from '@effects/transition/Transition';
 import { TransitionMethods } from '@effects/transition/TransitionMethods';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 
 const TRANSITION_DURATION_MS = 2400;

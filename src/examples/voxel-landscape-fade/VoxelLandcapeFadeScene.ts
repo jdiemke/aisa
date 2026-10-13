@@ -1,6 +1,6 @@
 import { Color } from '../../core/Color';
 import { Framebuffer } from '../../Framebuffer';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import './../../default-style.css';
 

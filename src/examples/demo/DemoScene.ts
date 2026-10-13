@@ -7,7 +7,7 @@ Notes         : Software rendered demoscene effects written in Typescript
 */
 
 import { Framebuffer } from '../../Framebuffer';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { SoundManager } from '../../sound/SoundManager';
 import { Transition } from '@effects/transition/Transition';
 import { DoublyLinkedList } from '../../core/LinkedList';

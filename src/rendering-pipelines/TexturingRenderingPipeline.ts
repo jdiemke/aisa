@@ -9,8 +9,8 @@ import { TexturedTriangleRasterizer } from '../rasterizer/TexturedTriangleRaster
 import { TexturedTriangleRasterizer2D } from '../rasterizer/TexturedTriangleRasterizer2D';
 import { ClipMode } from '../screen-space-clipping/ClipMode';
 import { SutherlandHodgman2DClipper } from '../screen-space-clipping/SutherlandHodgman2DClipper';
-import { TextureCoordinate } from '../TextureCoordinate';
-import { Vertex } from '../Vertex';
+import { TextureCoordinate } from '@primitives/TextureCoordinate';
+import { Vertex } from '@primitives/Vertex';
 import { AbstractRenderingPipeline } from './AbstractRenderingPipeline';
 import { TexturedMesh } from './TexturedMesh';
 

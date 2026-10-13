@@ -1,10 +1,10 @@
 import { Noise } from '../../effects/noise/Noise';
-import { CullFace } from '../../CullFace';
+import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f } from '../../math/Matrix4f';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
-import { AbstractScene } from '../../scenes/AbstractScene';
-import { SkyBox } from '../../SkyBox';
+import { AbstractScene } from '@core/AbstractScene';
+import { SkyBox } from '../../geometrical-objects/SkyBox';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { BlenderLoader } from '../../model/blender/BlenderLoader';

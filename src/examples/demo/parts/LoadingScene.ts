@@ -1,7 +1,7 @@
 import { Primitives2D } from '../../../primitives/Primitives2D';
 import { Framebuffer } from '../../../Framebuffer';
 import { Color } from '../../../core/Color';
-import { AbstractScene } from '../../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 
 export class LoadingScene extends AbstractScene {
 

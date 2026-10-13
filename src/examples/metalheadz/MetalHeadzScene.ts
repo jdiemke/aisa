@@ -1,10 +1,10 @@
 import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
 import { Noise } from '../../effects/noise/Noise';
-import { CullFace } from '../../CullFace';
+import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f, Vector3f } from '../../math';
-import { AbstractScene } from '../../scenes/AbstractScene';
-import { SkyBox } from '../../SkyBox';
+import { AbstractScene } from '@core/AbstractScene';
+import { SkyBox } from '../../geometrical-objects/SkyBox';
 import { Texture, TextureUtils } from '../../texture';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 import { BlenderLoader } from '../../model/blender/BlenderLoader';

@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { GlowScene } from './GlowScene';
 
 import './../../default-style.css';

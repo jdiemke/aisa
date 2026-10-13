@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { VoxelLandscapeScene } from './VoxelLandscapeScene';
 
 class Application {

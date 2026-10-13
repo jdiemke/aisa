@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { RoomScene } from './RoomScene';
 
 import './../../default-style.css';

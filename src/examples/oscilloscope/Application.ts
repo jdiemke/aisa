@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { Color } from '../../core/Color';
 import { Framebuffer } from '../../Framebuffer';
 import { OscilloscopeScene } from './OscilloscopeScene';

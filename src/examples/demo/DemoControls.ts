@@ -1,5 +1,6 @@
 import { SoundManager } from '../../sound/SoundManager';
 import { TransitionMethods } from '@effects/transition/TransitionMethods';
+import { Keyboard, Mouse } from '@platform/input';
 import { CanvasRecorder } from './canvas-record';
 
 /**
@@ -13,6 +14,8 @@ export class DemoControls {
     private canvasRecorder: CanvasRecorder;
     private canvasRef: HTMLCanvasElement;
     private getSceneCount: () => number;
+    private keyboard: Keyboard;
+    private mouse: Mouse;
 
     // HUD display refs
     private timelineRef: HTMLInputElement;
@@ -180,15 +183,17 @@ export class DemoControls {
         });
 
         // Fine seek via scroll wheel
-        document.addEventListener('wheel', (e) => {
+        this.mouse = new Mouse();
+        this.mouse.addWheelListener((e: WheelEvent) => {
             const delta = (e.deltaY < 0) ? -0.06 : 0.06;
             this.soundManager.seek(this.soundManager.audioElement.currentTime + delta);
             e.preventDefault();
             e.stopPropagation();
-        }, { passive: false });
+        });
 
         // Keyboard navigation
-        document.addEventListener('keydown', (e: KeyboardEvent) => {
+        this.keyboard = new Keyboard();
+        this.keyboard.addKeyDownListener((e: KeyboardEvent) => {
             switch (e.key) {
                 case 'MediaStop':
                     tickerStopRef.click();

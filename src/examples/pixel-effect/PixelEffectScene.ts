@@ -1,6 +1,6 @@
 import { Primitives2D } from '../../primitives/Primitives2D';
 import { Framebuffer } from '../../Framebuffer';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { Texture } from '../../texture/Texture';
 import { FontRenderer } from '../sine-scroller/FontRenderer';

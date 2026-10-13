@@ -1,5 +1,5 @@
 import { Framebuffer } from '../Framebuffer';
-import { Vertex } from '../Vertex';
+import { Vertex } from '@primitives/Vertex';
 import { AbstractScannlineTriangleRasterizer } from './AbstractScanlineTriangleRasterizer';
 
 export class TexturedTriangleRasterizer extends AbstractScannlineTriangleRasterizer{

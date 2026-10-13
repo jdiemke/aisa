@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { ParticleTorusScene } from './ParticleTorusScene';
 
 import './../../default-style.css';

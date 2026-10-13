@@ -1,4 +1,4 @@
-import { Vertex } from '../Vertex';
+import { Vertex } from '@primitives/Vertex';
 
 export class SlopeInterpolator {
 

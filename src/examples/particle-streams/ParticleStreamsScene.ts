@@ -2,7 +2,7 @@ import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPi
 import { Noise } from '../../effects/noise/Noise';
 import { ParticleNoDepth } from '../../effects/particle-no-depth/ParticleNoDepth';
 import { Framebuffer } from '../../Framebuffer';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { Vector3f, Matrix4f, Matrix3f } from '../../math';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture';

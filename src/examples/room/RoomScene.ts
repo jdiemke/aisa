@@ -3,7 +3,7 @@ import { Noise } from '../../effects/noise/Noise';
 import { ParticleSprite } from '../../effects/particle-sprite/ParticleSprite';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f, Vector3f, Vector4f } from '../../math';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { Material } from '../../shading/material/Material';
 import { BlenderLoader } from './../../model/blender/BlenderLoader';

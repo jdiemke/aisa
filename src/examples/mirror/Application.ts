@@ -1,4 +1,4 @@
-import { Canvas } from '../../Canvas';
+import { Canvas } from '@platform/browser';
 import { MirrorScene } from './MirrorScene';
 
 import './../../default-style.css';

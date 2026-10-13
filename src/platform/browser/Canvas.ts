@@ -1,6 +1,6 @@
-import { Framebuffer } from './Framebuffer';
-import { FullscreenUtils } from './fullscreen/FullscreenUtils';
-import { AbstractScene } from './scenes/AbstractScene';
+import { Framebuffer } from '../../Framebuffer';
+import { AbstractScene } from '@core/AbstractScene';
+import { FullscreenUtils } from './FullscreenUtils';
 
 export class Canvas {
 

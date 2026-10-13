@@ -1,7 +1,7 @@
 import { Noise } from '../../effects/noise/Noise';
 import { Framebuffer } from '../../Framebuffer';
 import { Interpolator } from '../../math/Interpolator';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 

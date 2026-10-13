@@ -1,8 +1,8 @@
 import { Noise } from '../../effects/noise/Noise';
-import { CullFace } from '../../CullFace';
+import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f } from '../../math';
-import { AbstractScene } from '../../scenes/AbstractScene';
+import { AbstractScene } from '@core/AbstractScene';
 import { Texture, TextureUtils } from '../../texture';
 import { BlenderLoader } from '../../model/blender/BlenderLoader';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
