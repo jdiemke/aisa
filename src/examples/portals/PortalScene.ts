@@ -2,7 +2,6 @@ import { Primitives2D } from '../../primitives/Primitives2D';
 import { ControllableCamera } from '../../camera';
 import { FrustumCuller } from '../../clustered-culling/FrustumCuller';
 import { Color } from '../../core/Color';
-import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f, Vector3f, Vector4f } from '../../math';
 import { Area, Polygon, Portal, PortalRenderer } from '../../portal-system';
@@ -18,7 +17,6 @@ export class PortalScene extends AbstractScene {
     private portalRenderer: PortalRenderer;
 
     public init(framebuffer: Framebuffer): Promise<any> {
-        framebuffer.setCullFace(CullFace.BACK);
 
         this.controllableCamera = new ControllableCamera(new Vector3f(14.84, 0, -19.25), -3.54, 0, 0);
         this.area = this.generateAreaPortalNetwork();

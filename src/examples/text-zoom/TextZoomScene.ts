@@ -42,7 +42,6 @@ export class TextZoomScene extends AbstractScene {
 
             framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
 
-           // framebuffer.setCullFace(CullFace.BACK);
             //framebuffer.shadingTorusDamp(time * 0.02, time * 0.00000002);
 
             framebuffer.scaleClipBlitter.drawScaledTextureClipAdd(

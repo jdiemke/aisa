@@ -1,5 +1,4 @@
 import { Noise } from '../../effects/noise/Noise';
-import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Matrix4f } from '../../math';
 import { AbstractScene } from '@core/AbstractScene';
@@ -23,7 +22,6 @@ export class PlatonianScene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
-        framebuffer.setCullFace(CullFace.BACK);
         this.texturedRenderingPipeline = new TexturingRenderingPipeline(framebuffer);
 
         return Promise.all([
@@ -43,7 +41,6 @@ export class PlatonianScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        framebuffer.setCullFace(CullFace.BACK);
 
         // framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.blurred.texture);
         framebuffer.scaleClipBlitter.drawScaledTextureClipBi(0,0,framebuffer.width, framebuffer.height, this.blurred, 1.0);

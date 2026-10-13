@@ -5,7 +5,6 @@ import { Texture } from '../../texture/Texture';
 import { TextureUtils } from '../../texture/TextureUtils';
 import { TextureCoordinate } from '@primitives/TextureCoordinate';
 import { Color } from '../../core/Color';
-import { CullFace } from '@primitives/CullFace';
 import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
 import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
 
@@ -37,7 +36,6 @@ export class EnvironmentMappingScene extends AbstractScene {
     }
 
     public render(framebuffer: Framebuffer, time: number): void {
-        framebuffer.setCullFace(CullFace.FRONT);
         framebuffer.clearColorBuffer(Color.BLACK.toPackedFormat());
         framebuffer.fastFramebufferCopy(framebuffer.framebuffer, this.flood.texture);
         framebuffer.setTexture(this.env);
@@ -132,7 +130,6 @@ export class EnvironmentMappingScene extends AbstractScene {
 
     public shadingTorusENvironment(framebuffer: Framebuffer, modelViewMartrix: Matrix4f): void {
         this.texturedRenderingPipeline.setSphereMapping(true);
-        framebuffer.setCullFace(CullFace.BACK);
         this.texturedRenderingPipeline.setModelViewMatrix(modelViewMartrix);
 
         this.env.setClamp(false);

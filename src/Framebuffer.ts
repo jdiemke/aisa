@@ -1,14 +1,7 @@
 
 import { ScaleClipBlitter } from '@primitives/ScaleClipBlitter';
-import { ControllableCamera } from './camera';
 import { Color } from '@core/Color';
-import { CullFace } from '@primitives/CullFace';
 import { Vector2f } from './math/Vector2f';
-import { AbstractClipEdge } from './screen-space-clipping/AbstractClipEdge';
-import { BottomClipEdge } from './screen-space-clipping/BottomClipEdge';
-import { LeftClipEdge } from './screen-space-clipping/LeftClipEdge';
-import { RightClipEdge } from './screen-space-clipping/RightClipEdge';
-import { TopClipEdge } from './screen-space-clipping/TopClipEdge';
 import { Texture } from './texture/Texture';
 
 export class Framebuffer {
@@ -18,13 +11,10 @@ export class Framebuffer {
     public maxWindow: Vector2f;
     public framebuffer: Uint32Array;
     public wBuffer: Float32Array;
-    public cullMode: CullFace = CullFace.BACK;
-    public camera: ControllableCamera;
     public bob: Texture;
     public scaleClipBlitter = new ScaleClipBlitter(this);
     public width: number;
     public height: number;
-    public clipRegion = Array<AbstractClipEdge>();
 
     private imageData: ImageData;
     private unsignedIntArray: Uint8ClampedArray;
@@ -39,17 +29,6 @@ export class Framebuffer {
         this.framebuffer = new Uint32Array(arrayBuffer);
         this.minWindow = new Vector2f(0, 0);
         this.maxWindow = new Vector2f(width - 1, height - 1);
-
-        this.clipRegion = new Array<AbstractClipEdge>(
-            new RightClipEdge(this),
-            new LeftClipEdge(this),
-            new BottomClipEdge(this),
-            new TopClipEdge(this)
-        );
-    }
-
-    public setCullFace(face: CullFace): void {
-        this.cullMode = face;
     }
 
     public setTexture(texture: Texture): void {

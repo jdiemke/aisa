@@ -126,10 +126,10 @@ export class MatterScene extends AbstractScene {
     }
 
     public clipConvexPolygon(framebuffer: Framebuffer, subject: Array<Vertex>): void {
+        this.clipper.setFramebuffer(framebuffer);
         const output = this.clipper.clipConvexPolygon(
             subject,
             ClipMode.AFFINE_TEXTURE,
-            framebuffer.clipRegion,
         );
 
         if (output.length < 3) {

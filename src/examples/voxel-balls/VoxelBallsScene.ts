@@ -1,5 +1,4 @@
 import { Color } from '../../core/Color';
-import { CullFace } from '@primitives/CullFace';
 import { Framebuffer } from '../../Framebuffer';
 import { Cube } from '../../geometrical-objects/Cube';
 import { Matrix4f } from '../../math';
@@ -20,7 +19,6 @@ export class VoxelBallsScene extends AbstractScene {
 
     public init(framebuffer: Framebuffer): Promise<any> {
         this.accumulationBuffer = new Uint32Array(framebuffer.width * framebuffer.height);
-        framebuffer.setCullFace(CullFace.BACK);
         this.renderingPipeline = new GouraudShadingRenderingPipeline(framebuffer);
         return Promise.all([
             TextureUtils.load(require('@assets/blurredBackground.png'), false).then(

@@ -47,7 +47,7 @@ export class DistortedSphereScene extends AbstractScene {
     }
 
     public renderTransparent(framebuffer: Framebuffer, time: number): void {
-        framebuffer.setCullFace(CullFace.BACK);
+        this.texturedRenderingPipeline.setCullFace(CullFace.BACK);
         framebuffer.setTexture(this.env);
         const scale: number = 3.7;
 
@@ -269,7 +269,6 @@ export class DistortedSphereScene extends AbstractScene {
             const v3 = points2[index[i + 2]];
             const n3 = normals2[index[i + 2]];
 
-            this.texturedRenderingPipeline.setCullFace(framebuffer.cullMode);
             if (this.texturedRenderingPipeline.isTriangleCCW(v1, v2, v3)) {
 
                 vertexArray[0].projection = v1;
