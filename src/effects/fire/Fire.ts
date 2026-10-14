@@ -1,6 +1,6 @@
-import { Color } from '../../core/Color';
-import { Framebuffer } from '../../Framebuffer';
-import { Utils } from '../../core/Utils';
+import { Color } from '@core/Color';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Utils } from '@core/Utils';
 
 /**
  * Fire effect

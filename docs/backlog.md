@@ -6,6 +6,9 @@
 - Transparency
 - Fog
 - Material
+- Refactoring
+    - Split Framebuffer.ts into multiple classes
+    - Scenes / Effects / Core 3D Engine
 
 ## Partial
 
@@ -18,9 +21,6 @@
 - Render To Texture
     - Compositing
     - Flashing
-- Refactoring
-    - Split Framebuffer.ts into multiple classes
-    - Scenes / Effects / Core 3D Engine
 - Bounding Volumes
     - Axis-Aligned Bounding Boxes (AABB)
     - Oriented Bounding Boxes (OBB)

@@ -1,7 +1,7 @@
 import { Canvas } from '@platform/browser';
 import { DifferentMd2ModelScene } from './DifferentMd2ModelScene';
 
-import './../../default-style.css';
+import '../../default-style.css';
 
 class Application {
 

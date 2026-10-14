@@ -1,7 +1,7 @@
-import { Framebuffer } from '../../Framebuffer';
-import { Vector3f } from '../../math/Vector3f';
-import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture/TextureUtils';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Vector3f } from '@engine/math/Vector3f';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
 
 export class LedPlasma {
 

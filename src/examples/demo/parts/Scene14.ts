@@ -1,5 +1,5 @@
-import { Framebuffer } from '../../../Framebuffer';
-import { GearsScene } from '../../gears/GearsScene';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { GearsScene } from '@examples/gears/GearsScene';
 
 export class Scene14 {
     private GearsScene: GearsScene;

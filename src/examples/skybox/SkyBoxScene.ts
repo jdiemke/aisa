@@ -1,12 +1,12 @@
-import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
-import { CullFace } from '@primitives/CullFace';
-import { Framebuffer } from '../../Framebuffer';
-import { Matrix4f, Vector3f } from '../../math';
+import { LineRenderingPipeline } from '@engine/rendering/pipelines/LineRenderingPipeline';
+import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Matrix4f, Vector3f } from '@engine/math';
 import { AbstractScene } from '@core/AbstractScene';
-import { SkyBox } from '../../geometrical-objects/SkyBox';
-import { Texture, TextureUtils } from '../../texture';
-import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
-import { EnvironmentMappingScene } from '../environment-mapping-torus/EnvironmentMappingTorusScene';
+import { SkyBox } from '@engine/geometry/objects/SkyBox';
+import { Texture, TextureUtils } from '@engine/texture';
+import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
+import { EnvironmentMappingScene } from '@examples/environment-mapping-torus/EnvironmentMappingTorusScene';
 import { LensFlare } from '@effects/lens-flare/LensFlare';
 
 export class SkyBoxScene extends AbstractScene {

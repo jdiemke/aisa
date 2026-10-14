@@ -1,4 +1,4 @@
-import { Framebuffer } from '../../Framebuffer';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { Color } from '@core/Color';
 
 export class Plasma {

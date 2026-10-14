@@ -1,6 +1,6 @@
 import { Canvas } from '@platform/browser';
 import { DemoScene } from './DemoScene';
-import './../../demo-style.css';
+import '../../demo-style.css';
 
 class Application {
 

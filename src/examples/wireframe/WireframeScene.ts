@@ -1,10 +1,10 @@
-import { Color } from '../../core/Color';
-import { CullFace } from '@primitives/CullFace';
-import { Framebuffer } from '../../Framebuffer';
-import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
-import { Icosahedron } from '../../geometrical-objects/Icosahedron';
-import { ModelViewMatrix } from '../../math';
-import { WireFrameRenderingPipeline } from '../../rendering-pipelines/WireFrameRenderingPipeline';
+import { Color } from '@core/Color';
+import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
+import { Icosahedron } from '@engine/geometry/objects/Icosahedron';
+import { ModelViewMatrix } from '@engine/math';
+import { WireFrameRenderingPipeline } from '@engine/rendering/pipelines/WireFrameRenderingPipeline';
 import { AbstractScene } from '@core/AbstractScene';
 
 /**

@@ -1,18 +1,18 @@
 import * as Matter from 'matter-js';
-import { Framebuffer } from '../../Framebuffer';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { AbstractScene } from '@core/AbstractScene';
-import { Vector3f, Vector4f } from '../../math';
-import { Color } from '../../core/Color';
-import { TexturedTriangleRasterizer } from '../../rasterizer/TexturedTriangleRasterizer';
-import { Vertex } from '@primitives/Vertex';
-import { TextureCoordinate } from '@primitives/TextureCoordinate';
-import { Texture, TextureUtils } from '../../texture';
-import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
-import { SutherlandHodgmanClipper } from '../../portal-system';
-import { ClipMode } from '../../screen-space-clipping/ClipMode';
-import { SutherlandHodgman2DClipper } from '../../screen-space-clipping/SutherlandHodgman2DClipper';
-import { TexturedTriangleRasterizer2D } from '../../rasterizer/TexturedTriangleRasterizer2D';
-import { ParallaxScrollingScene } from '../xenusion/ParallaxScrollingScene';
+import { Vector3f, Vector4f } from '@engine/math';
+import { Color } from '@core/Color';
+import { TexturedTriangleRasterizer } from '@engine/rendering/rasterizer/TexturedTriangleRasterizer';
+import { Vertex } from '@engine/geometry/primitives/Vertex';
+import { TextureCoordinate } from '@engine/geometry/primitives/TextureCoordinate';
+import { Texture, TextureUtils } from '@engine/texture';
+import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
+import { SutherlandHodgmanClipper } from '@engine/portals';
+import { ClipMode } from '@engine/rendering/clipping/ClipMode';
+import { SutherlandHodgman2DClipper } from '@engine/rendering/clipping/SutherlandHodgman2DClipper';
+import { TexturedTriangleRasterizer2D } from '@engine/rendering/rasterizer/TexturedTriangleRasterizer2D';
+import { ParallaxScrollingScene } from '@examples/xenusion/ParallaxScrollingScene';
 
 // TODO:
 // * write custom triangle rasterizer without bilinear filter, zbuffer support and perspective correct interpolation

@@ -1,7 +1,7 @@
 import { Canvas } from '@platform/browser';
 import { MatterScene } from './MatterScene';
 
-import './../../default-style.css';
+import '../../default-style.css';
 
 class Application {
 

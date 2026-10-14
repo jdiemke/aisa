@@ -1,8 +1,8 @@
-import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
-import { SoftParticle } from '../../effects/soft-particle/SoftParticle';
-import { Framebuffer } from '../../Framebuffer';
-import { Matrix4f } from '../../math/index';
-import { Texture } from '../../texture/index';
+import { LineRenderingPipeline } from '@engine/rendering/pipelines/LineRenderingPipeline';
+import { SoftParticle } from '@effects/soft-particle/SoftParticle';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Matrix4f } from '@engine/math/index';
+import { Texture } from '@engine/texture/index';
 import { Particle } from './Particle';
 
 /**

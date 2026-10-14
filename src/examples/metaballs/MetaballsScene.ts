@@ -1,5 +1,5 @@
-import { Framebuffer } from '../../Framebuffer';
-import { Vector3f } from '../../math';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Vector3f } from '@engine/math';
 import { AbstractScene } from '@core/AbstractScene';
 
 export class MetaballsScene extends AbstractScene {

@@ -1,5 +1,5 @@
-import { Framebuffer } from '../../../Framebuffer';
-import { SineScrollerScene } from '../../sine-scroller/SineScrollerScene';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { SineScrollerScene } from '@examples/sine-scroller/SineScrollerScene';
 
 export class Scene20 {
     private SineScrollerScene: SineScrollerScene;

@@ -1,7 +1,7 @@
 import { Canvas } from '@platform/browser';
 import { SubPixelScene } from './SubPixelScene';
 
-import './../../default-style.css';
+import '../../default-style.css';
 
 class Application {
 

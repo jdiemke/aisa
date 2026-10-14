@@ -1,5 +1,5 @@
-import { Framebuffer } from '../../../Framebuffer';
-import { MetalHeadzScene } from '../../metalheadz/MetalHeadzScene';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { MetalHeadzScene } from '@examples/metalheadz/MetalHeadzScene';
 
 export class Scene10 {
     private MetalHeadzScene: MetalHeadzScene;

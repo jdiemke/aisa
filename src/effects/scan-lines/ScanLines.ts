@@ -1,6 +1,6 @@
-import { Color } from '../../core/Color';
-import { Utils } from '../../core/Utils';
-import { Framebuffer } from '../../Framebuffer';
+import { Color } from '@core/Color';
+import { Utils } from '@core/Utils';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 
 export class ScanLines {
 

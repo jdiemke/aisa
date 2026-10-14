@@ -1,8 +1,8 @@
 import './JSRocket';
-import './cowbell/cowbell'
-import './cowbell/audio_player'
-import './cowbell/web_audio_player'
-import './cowbell/openmpt/openmpt_player'
+import '@sound/cowbell/cowbell'
+import '@sound/cowbell/audio_player'
+import '@sound/cowbell/web_audio_player'
+import '@sound/cowbell/openmpt/openmpt_player'
 import { OpenMptVuMeter } from './OpenMptVuMeter';
 import {
     musicProperties,

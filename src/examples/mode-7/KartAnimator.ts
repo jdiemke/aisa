@@ -1,4 +1,4 @@
-import { Vector2f } from '../../math/Vector2f';
+import { Vector2f } from '@engine/math/Vector2f';
 
 export class KartAnimator {
 

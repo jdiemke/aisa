@@ -1,5 +1,5 @@
-import { Framebuffer } from '../../../Framebuffer';
-import { AbstractCube } from '../../abstract-cube/AbstractCube';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { AbstractCube } from '@examples/abstract-cube/AbstractCube';
 
 export class Scene11 {
     private AbstractCube: AbstractCube;

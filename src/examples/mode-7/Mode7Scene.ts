@@ -1,11 +1,11 @@
-import { Primitives2D } from '../../primitives/Primitives2D';
-import { Framebuffer } from '../../Framebuffer';
-import { Vector2f, Vector3f } from '../../math/index';
+import { Primitives2D } from '@engine/geometry/primitives/Primitives2D';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Vector2f, Vector3f } from '@engine/math/index';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture, TextureUtils } from '../../texture/index';
-import { FontRenderer } from '../sine-scroller/FontRenderer';
-import { NpcEntity } from './entities/NpcEntity';
-import { Pipe } from './entities/Pipe';
+import { Texture, TextureUtils } from '@engine/texture/index';
+import { FontRenderer } from '@examples/sine-scroller/FontRenderer';
+import { NpcEntity } from '@examples/mode-7/entities/NpcEntity';
+import { Pipe } from '@examples/mode-7/entities/Pipe';
 import { KartAnimator } from './KartAnimator';
 import { Keyboard } from '@platform/input';
 import { Mode7Entity } from './Mode7Entity';

@@ -1,4 +1,4 @@
-import { Vector2f } from '../../math/index';
+import { Vector2f } from '@engine/math/index';
 
 export class NpcTrack {
 

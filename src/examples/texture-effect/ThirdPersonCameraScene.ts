@@ -1,15 +1,15 @@
-import { Color } from '../../core/Color';
-import { CullFace } from '@primitives/CullFace';
-import { Framebuffer } from '../../Framebuffer';
-import { Vector4f } from '../../math/index';
-import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
-import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
+import { Color } from '@core/Color';
+import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Vector4f } from '@engine/math/index';
+import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
+import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
 import { AbstractScene } from '@core/AbstractScene';
-import { SoundManager } from '../../sound/SoundManager';
-import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture/TextureUtils';
-import { TextureCoordinate } from '@primitives/TextureCoordinate';
-import { ModelViewMatrix } from '../md2/ModelViewMatrix';
+import { SoundManager } from '@sound/SoundManager';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
+import { TextureCoordinate } from '@engine/geometry/primitives/TextureCoordinate';
+import { ModelViewMatrix } from '@examples/md2/ModelViewMatrix';
 
 import './style.css';
 

@@ -1,12 +1,12 @@
-import { Framebuffer } from '../../Framebuffer';
-import { Matrix4f, Vector2f, Vector3f, Vector4f } from '../../math';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Matrix4f, Vector2f, Vector3f, Vector4f } from '@engine/math';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture/TextureUtils';
-import { TextureCoordinate } from '@primitives/TextureCoordinate';
-import { Color } from '../../core/Color';
-import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
-import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
+import { TextureCoordinate } from '@engine/geometry/primitives/TextureCoordinate';
+import { Color } from '@core/Color';
+import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
+import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
 
 
 

@@ -1,12 +1,12 @@
-import { LineRenderingPipeline } from '../../../rendering-pipelines/LineRenderingPipeline';
-import { Noise } from '../../../effects/noise/Noise';
-import { ParticleSpriteSubpixel } from '../../../effects/particle-sprite-subpixel/ParticleSpriteSubpixel';
-import { Framebuffer } from '../../../Framebuffer';
-import { Interpolator } from '../../../math/Interpolator';
-import { Matrix4f } from '../../../math/Matrix4f';
-import { Vector3f } from '../../../math/Vector3f';
-import { Texture } from '../../../texture/Texture';
-import { TextureUtils } from '../../../texture/TextureUtils';
+import { LineRenderingPipeline } from '@engine/rendering/pipelines/LineRenderingPipeline';
+import { Noise } from '@effects/noise/Noise';
+import { ParticleSpriteSubpixel } from '@effects/particle-sprite-subpixel/ParticleSpriteSubpixel';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Interpolator } from '@engine/math/Interpolator';
+import { Matrix4f } from '@engine/math/Matrix4f';
+import { Vector3f } from '@engine/math/Vector3f';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
 
 export class Scene2 {
 

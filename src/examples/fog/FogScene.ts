@@ -1,8 +1,8 @@
-import { Fog } from '../../effects/fog/Fog';
-import { Color } from '../../core/Color';
-import { Framebuffer } from '../../Framebuffer';
+import { Fog } from '@effects/fog/Fog';
+import { Color } from '@core/Color';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { AbstractScene } from '@core/AbstractScene';
-import { ThirdPersonCameraScene } from '../third-person-camera/ThirdPersonCameraScene';
+import { ThirdPersonCameraScene } from '@examples/third-person-camera/ThirdPersonCameraScene';
 
 export class FogScene extends AbstractScene {
 

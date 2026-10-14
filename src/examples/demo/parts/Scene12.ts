@@ -1,5 +1,5 @@
-import { Framebuffer } from '../../../Framebuffer';
-import { DofBallsScene } from '../../dof-balls/DofBallsScene';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { DofBallsScene } from '@examples/dof-balls/DofBallsScene';
 
 export class Scene12 {
     private DofBallsScene: DofBallsScene;

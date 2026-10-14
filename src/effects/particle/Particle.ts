@@ -1,5 +1,5 @@
-import { Framebuffer } from '../../Framebuffer';
-import { Texture } from '../../texture/Texture';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Texture } from '@engine/texture/Texture';
 
 export class Particle {
 

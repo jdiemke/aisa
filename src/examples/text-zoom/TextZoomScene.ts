@@ -1,9 +1,9 @@
-import { Noise } from '../../effects/noise/Noise';
-import { Framebuffer } from '../../Framebuffer';
-import { Interpolator } from '../../math/Interpolator';
+import { Noise } from '@effects/noise/Noise';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Interpolator } from '@engine/math/Interpolator';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture/TextureUtils';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
 
 export class TextZoomScene extends AbstractScene {
 

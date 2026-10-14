@@ -1,5 +1,5 @@
-import { Framebuffer } from '../../../Framebuffer';
-import { BakedLighting } from '../../baked-lighting/BakedLighting';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { BakedLighting } from '@examples/baked-lighting/BakedLighting';
 
 export class Scene15 {
     private BakedLighting: BakedLighting;

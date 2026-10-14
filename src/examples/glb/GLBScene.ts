@@ -1,20 +1,20 @@
-import { Color } from '../../core/Color';
-import { CullFace } from '@primitives/CullFace';
+import { Color } from '@core/Color';
+import { CullFace } from '@engine/geometry/primitives/CullFace';
 import { Starfield } from '@effects/starfield/Starfield';
-import { Framebuffer } from '../../Framebuffer';
-import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
-import { Matrix4f, ModelViewMatrix, Vector4f } from '../../math';
-import { GLBLoader } from '../../model/glb/GLBLoader';
-import { GLBModel } from '../../model/glb/GLBModel';
-import { SubPixelRenderingPipeline } from '../../rendering-pipelines/SubPixelRenderingPipeline';
-import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
-import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
+import { Matrix4f, ModelViewMatrix, Vector4f } from '@engine/math';
+import { GLBLoader } from '@engine/model/formats/glb/GLBLoader';
+import { GLBModel } from '@engine/model/formats/glb/GLBModel';
+import { SubPixelRenderingPipeline } from '@engine/rendering/pipelines/SubPixelRenderingPipeline';
+import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
+import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
 import { AbstractScene } from '@core/AbstractScene';
-import { Material } from '../../shading/material/Material';
-import { PointLight } from '../../shading/light/PointLight';
-import { Texture } from '../../texture/Texture';
-import { TextureCoordinate } from '@primitives/TextureCoordinate';
-import { CubeScene } from '../cube/CubeScene';
+import { Material } from '@engine/rendering/shading/material/Material';
+import { PointLight } from '@engine/rendering/shading/light/PointLight';
+import { Texture } from '@engine/texture/Texture';
+import { TextureCoordinate } from '@engine/geometry/primitives/TextureCoordinate';
+import { CubeScene } from '@examples/cube/CubeScene';
 
 /**
  * A software-rendered, flat-shaded, sub-pixel-accurate, depth-sorted,

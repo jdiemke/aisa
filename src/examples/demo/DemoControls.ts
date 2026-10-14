@@ -1,4 +1,4 @@
-import { SoundManager } from '../../sound/SoundManager';
+import { SoundManager } from '@sound/SoundManager';
 import { TransitionMethods } from '@effects/transition/TransitionMethods';
 import { Keyboard, Mouse } from '@platform/input';
 import { CanvasRecorder } from './canvas-record';

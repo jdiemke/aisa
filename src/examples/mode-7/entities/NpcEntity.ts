@@ -1,7 +1,7 @@
-import { Vector2f } from '../../../math/index';
-import { Texture } from '../../../texture/Texture';
-import { Mode7Entity } from '../Mode7Entity';
-import { Camera } from '../Mode7Renderer';
+import { Vector2f } from '@engine/math/index';
+import { Texture } from '@engine/texture/Texture';
+import { Mode7Entity } from '@examples/mode-7/Mode7Entity';
+import { Camera } from '@examples/mode-7/Mode7Renderer';
 
 export class NpcEntity extends Mode7Entity {
 

@@ -1,18 +1,18 @@
-import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
-import { Noise } from '../../effects/noise/Noise';
-import { SoftParticle } from '../../effects/soft-particle/SoftParticle';
-import { CullFace } from '@primitives/CullFace';
-import { Framebuffer } from '../../Framebuffer';
-import { Matrix4f, Vector3f } from '../../math';
+import { LineRenderingPipeline } from '@engine/rendering/pipelines/LineRenderingPipeline';
+import { Noise } from '@effects/noise/Noise';
+import { SoftParticle } from '@effects/soft-particle/SoftParticle';
+import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Matrix4f, Vector3f } from '@engine/math';
 import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
-import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
+import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
-import { BlenderLoader } from './../../model/blender/BlenderLoader';
-import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
-import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
-import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
-import { Interpolator } from '../../math/Interpolator';
+import { Texture, TextureUtils } from '@engine/texture';
+import { BlenderLoader } from '@engine/model/formats/blender/BlenderLoader';
+import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
+import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
+import { Interpolator } from '@engine/math/Interpolator';
 
 export class HoodlumScene extends AbstractScene {
 

@@ -1,5 +1,5 @@
-import { Framebuffer } from '../../../Framebuffer';
-import { RazorScene } from '../../razor/RazorScene';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { RazorScene } from '@examples/razor/RazorScene';
 
 export class Scene19 {
     private RazorScene: RazorScene;

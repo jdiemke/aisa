@@ -6,14 +6,15 @@
         "noImplicitAny": false,
         "moduleResolution": "bundler",
         "paths": {
+            "@assets/*": ["./assets/*"],
             "@core": ["./core/index"],
             "@core/*": ["./core/*"],
             "@effects/*": ["./effects/*"],
             "@examples/*": ["./examples/*"],
+            "@sound/*": ["./sound/*"],
             "@platform": ["./platform/index"],
             "@platform/*": ["./platform/*"],
-            "@primitives": ["./primitives/index"],
-            "@primitives/*": ["./primitives/*"]
+            "@engine/*": ["./engine/*"]
         },
         "esModuleInterop": true,
         "sourceMap": true,

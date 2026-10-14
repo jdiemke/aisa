@@ -1,8 +1,8 @@
-import { Framebuffer } from '../../../Framebuffer';
-import { VoxelBallsScene } from '../../voxel-balls/VoxelBallsScene';
-import { LedPlasmaScene } from '../../led-plasma/LedPlasmaScene';
-import { Texture } from '../../../texture/Texture';
-import { TextureUtils } from '../../../texture/TextureUtils';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { VoxelBallsScene } from '@examples/voxel-balls/VoxelBallsScene';
+import { LedPlasmaScene } from '@examples/led-plasma/LedPlasmaScene';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
 
 export class Scene8 {
     private VoxelBallsScene: VoxelBallsScene;

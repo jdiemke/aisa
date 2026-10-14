@@ -1,8 +1,8 @@
-import { Primitives2D } from '../../primitives/Primitives2D';
-import { Color } from '../../core/Color';
-import { Utils } from '../../core/Utils';
-import { Framebuffer } from '../../Framebuffer';
-import { Interpolator } from '../../math/Interpolator';
+import { Primitives2D } from '@engine/geometry/primitives/Primitives2D';
+import { Color } from '@core/Color';
+import { Utils } from '@core/Utils';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Interpolator } from '@engine/math/Interpolator';
 import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
 import { AbstractScene } from '@core/AbstractScene';
 import { TransitionMethods } from './TransitionMethods';

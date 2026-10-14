@@ -1,9 +1,9 @@
-import { Noise } from '../../effects/noise/Noise';
-import { Framebuffer } from '../../Framebuffer';
-import { Matrix4f } from '../../math/Matrix4f';
+import { Noise } from '@effects/noise/Noise';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Matrix4f } from '@engine/math/Matrix4f';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture/TextureUtils';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
 import { ParticleSystem } from './ParticleSystem';
 
 export class ParticleSystemScene extends AbstractScene {

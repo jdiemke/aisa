@@ -1,12 +1,12 @@
-import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
-import { Noise } from '../../effects/noise/Noise';
-import { ParticleNoDepth } from '../../effects/particle-no-depth/ParticleNoDepth';
-import { Framebuffer } from '../../Framebuffer';
+import { LineRenderingPipeline } from '@engine/rendering/pipelines/LineRenderingPipeline';
+import { Noise } from '@effects/noise/Noise';
+import { ParticleNoDepth } from '@effects/particle-no-depth/ParticleNoDepth';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { AbstractScene } from '@core/AbstractScene';
-import { Vector3f, Matrix4f, Matrix3f } from '../../math';
-import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture';
-import { Interpolator } from '../../math/Interpolator';
+import { Vector3f, Matrix4f, Matrix3f } from '@engine/math';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture';
+import { Interpolator } from '@engine/math/Interpolator';
 
 export class ParticleStreamsScene extends AbstractScene {
 

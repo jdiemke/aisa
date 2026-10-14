@@ -1,8 +1,8 @@
-import { Primitives2D } from '../../primitives/Primitives2D';
-import { Color } from '../../core/Color';
-import { Framebuffer } from '../../Framebuffer';
+import { Primitives2D } from '@engine/geometry/primitives/Primitives2D';
+import { Color } from '@core/Color';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { AbstractScene } from '@core/AbstractScene';
-import { SoundManager } from '../../sound/SoundManager';
+import { SoundManager } from '@sound/SoundManager';
 
 import './style.css';
 

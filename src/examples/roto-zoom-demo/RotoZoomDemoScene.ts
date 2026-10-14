@@ -1,10 +1,10 @@
-import { Framebuffer } from '../../Framebuffer';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '../../texture';
-import { RotoZoomerScene } from '../roto-zoomer/RotoZoomerScene';
-import { Color } from '../../core/Color';
-import { CubeScene } from '../cube/CubeScene';
-import { Interpolator } from '../../math/Interpolator';
+import { Texture } from '@engine/texture';
+import { RotoZoomerScene } from '@examples/roto-zoomer/RotoZoomerScene';
+import { Color } from '@core/Color';
+import { CubeScene } from '@examples/cube/CubeScene';
+import { Interpolator } from '@engine/math/Interpolator';
 
 export class RotoZoomDemoScene extends AbstractScene {
 

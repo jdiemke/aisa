@@ -1,20 +1,20 @@
-import { PlaneDeformationTunnelAnim } from '../../effects/plane-deformation-tunnel-anim/PlaneDeformationTunnelAnim';
-import { Noise } from '../../effects/noise/Noise';
-import { CullFace } from '@primitives/CullFace';
-import { Framebuffer } from '../../Framebuffer';
-import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
-import { ModelViewMatrix, Vector4f } from '../../math';
-import { GLBAnimatedModel } from '../../model/glb/GLBAnimatedModel';
-import { GLBLoader } from '../../model/glb/GLBLoader';
+import { PlaneDeformationTunnelAnim } from '@effects/plane-deformation-tunnel-anim/PlaneDeformationTunnelAnim';
+import { Noise } from '@effects/noise/Noise';
+import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
+import { ModelViewMatrix, Vector4f } from '@engine/math';
+import { GLBAnimatedModel } from '@engine/model/formats/glb/GLBAnimatedModel';
+import { GLBLoader } from '@engine/model/formats/glb/GLBLoader';
 import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
-import { SubPixelRenderingPipeline } from '../../rendering-pipelines/SubPixelRenderingPipeline';
+import { SubPixelRenderingPipeline } from '@engine/rendering/pipelines/SubPixelRenderingPipeline';
 import { AbstractScene } from '@core/AbstractScene';
-import { PointLight } from '../../shading/light/PointLight';
-import { Material } from '../../shading/material/Material';
-import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture/TextureUtils';
-import { CubeScene } from '../cube/CubeScene';
-import { PlatonianScene } from '../platonian/PlatonianScene';
+import { PointLight } from '@engine/rendering/shading/light/PointLight';
+import { Material } from '@engine/rendering/shading/material/Material';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
+import { CubeScene } from '@examples/cube/CubeScene';
+import { PlatonianScene } from '@examples/platonian/PlatonianScene';
 
 export class GlowScene extends AbstractScene {
 

@@ -1,16 +1,16 @@
-import { Noise } from '../../effects/noise/Noise';
-import { CullFace } from '@primitives/CullFace';
-import { Framebuffer } from '../../Framebuffer';
-import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
-import { Vector4f } from '../../math';
-import { Matrix4f } from '../../math/Matrix4f';
-import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
+import { Noise } from '@effects/noise/Noise';
+import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
+import { Vector4f } from '@engine/math';
+import { Matrix4f } from '@engine/math/Matrix4f';
+import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
 import { AbstractScene } from '@core/AbstractScene';
-import { PointLight } from '../../shading/light/PointLight';
-import { Material } from '../../shading/material/Material';
-import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture/TextureUtils';
-import { BlenderLoader } from '../../model/blender/BlenderLoader';
+import { PointLight } from '@engine/rendering/shading/light/PointLight';
+import { Material } from '@engine/rendering/shading/material/Material';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
+import { BlenderLoader } from '@engine/model/formats/blender/BlenderLoader';
 
 /**
  * TODO: use cube mesh and draw using drawObject2

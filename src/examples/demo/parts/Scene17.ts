@@ -1,5 +1,5 @@
-import { Framebuffer } from '../../../Framebuffer';
-import { HoodlumScene } from '../../hoodlum/HoodlumScene';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { HoodlumScene } from '@examples/hoodlum/HoodlumScene';
 
 export class Scene17 {
     private HoodlumScene: HoodlumScene;

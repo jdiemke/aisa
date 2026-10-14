@@ -1,20 +1,20 @@
-import { ThirdPersonCamera } from '../../camera/ThirdPersonCamera';
-import { Color } from '../../core/Color';
-import { CullFace } from '@primitives/CullFace';
-import { Framebuffer } from '../../Framebuffer';
+import { ThirdPersonCamera } from '@engine/camera/ThirdPersonCamera';
+import { Color } from '@core/Color';
+import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { AisaGamepad, Keyboard } from '@platform/input';
-import { Matrix4f, Vector3f, Vector4f } from '../../math/index';
-import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
-import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
+import { Matrix4f, Vector3f, Vector4f } from '@engine/math/index';
+import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
+import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture/TextureUtils';
-import { TextureCoordinate } from '@primitives/TextureCoordinate';
-import { MD2Loader } from '../../model/md2/MD2Loader';
-import { MD2Model } from '../../model/md2/MD2Model';
-import { ModelViewMatrix } from '../md2/ModelViewMatrix';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
+import { TextureCoordinate } from '@engine/geometry/primitives/TextureCoordinate';
+import { MD2Loader } from '@engine/model/formats/md2/MD2Loader';
+import { MD2Model } from '@engine/model/formats/md2/MD2Model';
+import { ModelViewMatrix } from '@examples/md2/ModelViewMatrix';
 import { Player } from './Player';
-import { PlayerStateMachine } from './state-machine/PlayerStateMachine';
+import { PlayerStateMachine } from '@examples/third-person-camera/state-machine/PlayerStateMachine';
 
 /**
  * http://tfc.duke.free.fr/coding/mdl-specs-en.html

@@ -11,8 +11,8 @@
  */
 /// <reference types="node" />
 import { readFile, writeFile } from 'node:fs/promises';
-import type { Mesh } from '../src/model/blender/mesh';
-import { convertToMeshArray } from '../src/model/blender/parseUtils';
+import type { Mesh } from '../src/engine/model/formats/blender/mesh';
+import { convertToMeshArray } from '../src/engine/model/formats/blender/parseUtils';
 
 const args: Array<string> = process.argv.slice(2);
 
@@ -39,4 +39,3 @@ async function main(): Promise<void> {
 }
 
 void main();
-

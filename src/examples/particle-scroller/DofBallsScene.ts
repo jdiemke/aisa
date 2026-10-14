@@ -1,14 +1,14 @@
-import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
-import { Noise } from '../../effects/noise/Noise';
-import { ParticleSpriteSubpixel } from '../../effects/particle-sprite-subpixel/ParticleSpriteSubpixel';
-import { Framebuffer } from '../../Framebuffer';
+import { LineRenderingPipeline } from '@engine/rendering/pipelines/LineRenderingPipeline';
+import { Noise } from '@effects/noise/Noise';
+import { ParticleSpriteSubpixel } from '@effects/particle-sprite-subpixel/ParticleSpriteSubpixel';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
-import { Matrix4f } from '../../math/Matrix4f';
-import { Vector3f } from '../../math/Vector3f';
+import { Matrix4f } from '@engine/math/Matrix4f';
+import { Vector3f } from '@engine/math/Vector3f';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture/TextureUtils';
-import { FontRenderer } from '../sine-scroller/FontRenderer';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
+import { FontRenderer } from '@examples/sine-scroller/FontRenderer';
 
 export class DofBallsScene extends AbstractScene {
 
