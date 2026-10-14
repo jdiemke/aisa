@@ -1,12 +1,12 @@
-import { CullFace } from '@primitives/CullFace';
-import { Framebuffer } from '../../../Framebuffer';
-import { TextureCoordinate } from '@primitives/TextureCoordinate';
-import { Vector4f } from '../../../math';
-import { TexturedMesh } from '../../../rendering-pipelines/TexturedMesh';
-import { TexturingRenderingPipeline } from '../../../rendering-pipelines/TexturingRenderingPipeline';
-import { Texture, TextureUtils } from '../../../texture';
-import { FeedbackRadialBlur } from '../../feedback-radial-blur/FeedbackRadialBlur';
-import { ModelViewMatrix } from '../../md2/ModelViewMatrix';
+import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { TextureCoordinate } from '@engine/geometry/primitives/TextureCoordinate';
+import { Vector4f } from '@engine/math';
+import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
+import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
+import { Texture, TextureUtils } from '@engine/texture';
+import { FeedbackRadialBlur } from '@examples/feedback-radial-blur/FeedbackRadialBlur';
+import { ModelViewMatrix } from '@examples/md2/ModelViewMatrix';
 
 
 export class Scene3 {

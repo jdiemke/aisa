@@ -1,10 +1,10 @@
-import { CullFace } from '@primitives/CullFace';
-import { Framebuffer } from '../../Framebuffer';
-import { Cube } from '../../geometrical-objects/Cube';
-import { Matrix4f } from '../../math';
-import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
+import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Cube } from '@engine/geometry/objects/Cube';
+import { Matrix4f } from '@engine/math';
+import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
+import { Texture, TextureUtils } from '@engine/texture';
 
 export class CubeScene extends AbstractScene {
 

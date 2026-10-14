@@ -1,6 +1,6 @@
-import { Framebuffer } from '../../Framebuffer';
-import { Vector3f } from '../../math';
-import { Texture, TextureUtils } from '../../texture';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Vector3f } from '@engine/math';
+import { Texture, TextureUtils } from '@engine/texture';
 
 export class FontRenderer {
 

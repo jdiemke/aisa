@@ -1,5 +1,5 @@
-import { Framebuffer } from '../../../Framebuffer';
-import { TorusScene } from '../../torus/TorusScene';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { TorusScene } from '@examples/torus/TorusScene';
 
 export class Scene5 {
     private TorusScene: TorusScene;

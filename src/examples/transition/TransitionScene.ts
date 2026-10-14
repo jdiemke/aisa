@@ -1,8 +1,8 @@
-import { Framebuffer } from '../../Framebuffer';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { Transition } from '@effects/transition/Transition';
 import { TransitionMethods } from '@effects/transition/TransitionMethods';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
+import { Texture, TextureUtils } from '@engine/texture';
 
 const TRANSITION_DURATION_MS = 2400;
 const TRANSITION_HOLD_MS = 500;

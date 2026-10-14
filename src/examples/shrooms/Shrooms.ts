@@ -1,8 +1,8 @@
-import { Framebuffer } from '../../Framebuffer';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture/TextureUtils';
-import { PlaneDeformationTunnelScene } from '../plane-deformation-tunnel/PlaneDeformationTunnelScene';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
+import { PlaneDeformationTunnelScene } from '@examples/plane-deformation-tunnel/PlaneDeformationTunnelScene';
 
 /**
  * TODO: extract lens into effect class

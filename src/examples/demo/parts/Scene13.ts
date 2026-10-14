@@ -1,5 +1,5 @@
-import { Framebuffer } from '../../../Framebuffer';
-import { TorusKnotTunnelScene } from '../../torus-knot-tunnel/TorusKnotTunnelScene';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { TorusKnotTunnelScene } from '@examples/torus-knot-tunnel/TorusKnotTunnelScene';
 
 export class Scene13 {
     private TorusKnotTunnelScene: TorusKnotTunnelScene;

@@ -1,6 +1,6 @@
-import type { Framebuffer } from '../../Framebuffer';
-import type { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture/TextureUtils';
+import type { Framebuffer } from '@engine/rendering/Framebuffer';
+import type { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
 
 export class Wormhole {
 

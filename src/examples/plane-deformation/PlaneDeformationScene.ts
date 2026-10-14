@@ -1,7 +1,7 @@
-import { Framebuffer } from '../../Framebuffer';
-import { Texture, TextureUtils } from '../../texture';
-import { Color } from '../../core/Color';
-import { Utils } from '../../core/Utils';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Texture, TextureUtils } from '@engine/texture';
+import { Color } from '@core/Color';
+import { Utils } from '@core/Utils';
 
 /**
  * Plane deformation

@@ -1,21 +1,21 @@
-import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
-import { SoftParticle } from '../../effects/soft-particle/SoftParticle';
-import { Primitives2D } from '../../primitives/Primitives2D';
-import { CameraAnimator } from '../../animation/CameraAnimator';
-import { CameraKeyFrame } from '../../animation/CameraKeyFrame';
-import { BoundingVolumeExpander } from '../../clustered-culling/BoundingVolumeExpander';
-import { FrustumCuller } from '../../clustered-culling/FrustumCuller';
-import { CullFace } from '@primitives/CullFace';
-import { Framebuffer } from '../../Framebuffer';
-import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
-import { Matrix4f, Vector3f } from '../../math';
-import { Sphere } from '../../math/Sphere';
+import { LineRenderingPipeline } from '@engine/rendering/pipelines/LineRenderingPipeline';
+import { SoftParticle } from '@effects/soft-particle/SoftParticle';
+import { Primitives2D } from '@engine/geometry/primitives/Primitives2D';
+import { CameraAnimator } from '@engine/animation/CameraAnimator';
+import { CameraKeyFrame } from '@engine/animation/CameraKeyFrame';
+import { BoundingVolumeExpander } from '@engine/culling/BoundingVolumeExpander';
+import { FrustumCuller } from '@engine/culling/FrustumCuller';
+import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
+import { Matrix4f, Vector3f } from '@engine/math';
+import { Sphere } from '@engine/math/Sphere';
 import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
-import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '../../texture';
-import { BlenderLoader } from '../../model/blender/BlenderLoader';
-import { Color } from '../../core/Color';
+import { Texture } from '@engine/texture';
+import { BlenderLoader } from '@engine/model/formats/blender/BlenderLoader';
+import { Color } from '@core/Color';
 
 export class FrustumCullingScene extends AbstractScene {
 

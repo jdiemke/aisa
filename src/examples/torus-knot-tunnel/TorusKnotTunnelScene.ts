@@ -1,15 +1,15 @@
-import { CullFace } from '@primitives/CullFace';
-import { Framebuffer } from '../../Framebuffer';
-import { TorusKnot } from '../../geometrical-objects/TorusKnot';
-import { Matrix4f } from '../../math/Matrix4f';
-import { Vector4f } from '../../math/Vector4f';
+import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { TorusKnot } from '@engine/geometry/objects/TorusKnot';
+import { Matrix4f } from '@engine/math/Matrix4f';
+import { Vector4f } from '@engine/math/Vector4f';
 import { AbstractScene } from '@core/AbstractScene';
-import { Fog } from '../../shading/fog/Fog';
-import { LinearFog } from '../../shading/fog/LinearFog';
-import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture/TextureUtils';
+import { Fog } from '@engine/rendering/shading/fog/Fog';
+import { LinearFog } from '@engine/rendering/shading/fog/LinearFog';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
 import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
-import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
 
 export class TorusKnotTunnelScene extends AbstractScene {
     private tmpGlitch: Uint32Array;

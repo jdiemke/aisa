@@ -6,13 +6,13 @@ Category      : Demo
 Notes         : Software rendered demoscene effects written in Typescript
 */
 
-import { Framebuffer } from '../../Framebuffer';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { AbstractScene } from '@core/AbstractScene';
-import { SoundManager } from '../../sound/SoundManager';
+import { SoundManager } from '@sound/SoundManager';
 import { Transition } from '@effects/transition/Transition';
-import { DoublyLinkedList } from '../../core/LinkedList';
-import { DLNode } from '../../core/Node';
-import { LoadingScene } from './parts/LoadingScene';
+import { DoublyLinkedList } from '@core/LinkedList';
+import { DLNode } from '@core/Node';
+import { LoadingScene } from '@examples/demo/parts/LoadingScene';
 import { CanvasRecorder } from './canvas-record';
 import { DemoControls } from './DemoControls';
 import { DemoStats } from './DemoStats';

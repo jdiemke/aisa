@@ -1,4 +1,4 @@
-import { Framebuffer } from '../../Framebuffer';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { Starfield } from '@effects/starfield/Starfield';
 import { AbstractScene } from '@core/AbstractScene';
 

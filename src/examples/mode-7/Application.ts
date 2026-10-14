@@ -1,7 +1,7 @@
 import { Canvas } from '@platform/browser';
 import { Mode7Scene } from './Mode7Scene';
 
-import './../../default-style.css';
+import '../../default-style.css';
 
 class Application {
 

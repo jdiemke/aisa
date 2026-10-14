@@ -1,6 +1,6 @@
 import { Canvas } from '@platform/browser';
 import { WireframeScene } from './WireframeScene';
-import './../../default-style.css';
+import '../../default-style.css';
 
 class Application {
 

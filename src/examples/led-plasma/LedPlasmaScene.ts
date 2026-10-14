@@ -1,4 +1,4 @@
-import { Framebuffer } from '../../Framebuffer';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { AbstractScene } from '@core/AbstractScene';
 import { LedPlasma } from '@effects/led-plasma/LedPlasma';
 

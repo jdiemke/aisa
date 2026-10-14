@@ -1,11 +1,11 @@
-import { CullFace } from '@primitives/CullFace';
-import { Framebuffer } from '../../Framebuffer';
-import { Matrix4f } from '../../math';
-import { WavefrontLoader } from '../../model/wavefront-obj/WavefrontLoader';
-import { TexturedMesh } from '../../rendering-pipelines/TexturedMesh';
+import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Matrix4f } from '@engine/math';
+import { WavefrontLoader } from '@engine/model/formats/wavefront-obj/WavefrontLoader';
+import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
-import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
+import { Texture, TextureUtils } from '@engine/texture';
+import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
 
 export class WaveFrontTextureScene extends AbstractScene {
 

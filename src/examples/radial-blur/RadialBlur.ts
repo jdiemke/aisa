@@ -1,7 +1,7 @@
-import { Framebuffer } from '../../Framebuffer';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '../../texture';
-import { TorusKnotScene } from '../torus-knot/TorusKnotScene';
+import { Texture } from '@engine/texture';
+import { TorusKnotScene } from '@examples/torus-knot/TorusKnotScene';
 
 export class RadialBlur extends AbstractScene {
 

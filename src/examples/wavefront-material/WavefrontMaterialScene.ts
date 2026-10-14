@@ -1,14 +1,14 @@
-import { Color } from '../../core/Color';
-import { CullFace } from '@primitives/CullFace';
-import { Framebuffer } from '../../Framebuffer';
-import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
-import { Matrix4f, Vector4f } from '../../math';
-import { WavefrontLoader } from '../../model/wavefront-obj/WavefrontLoader';
-import { WavefrontMaterialModel } from '../../model/wavefront-obj/WavefrontMaterialModel';
-import { SubPixelRenderingPipeline } from '../../rendering-pipelines/SubPixelRenderingPipeline';
+import { Color } from '@core/Color';
+import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
+import { Matrix4f, Vector4f } from '@engine/math';
+import { WavefrontLoader } from '@engine/model/formats/wavefront-obj/WavefrontLoader';
+import { WavefrontMaterialModel } from '@engine/model/formats/wavefront-obj/WavefrontMaterialModel';
+import { SubPixelRenderingPipeline } from '@engine/rendering/pipelines/SubPixelRenderingPipeline';
 import { AbstractScene } from '@core/AbstractScene';
-import { Material } from '../../shading/material/Material';
-import { PointLight } from '../../shading/light/PointLight';
+import { Material } from '@engine/rendering/shading/material/Material';
+import { PointLight } from '@engine/rendering/shading/light/PointLight';
 
 /**
  * Demonstrates loading a Wavefront OBJ file with its companion MTL

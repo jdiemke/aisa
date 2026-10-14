@@ -1,11 +1,11 @@
-import { Primitives2D } from '../../primitives/Primitives2D';
-import { Color } from '../../core/Color';
-import { Framebuffer } from '../../Framebuffer';
-import { Vector2f } from '../../math/Vector2f';
+import { Primitives2D } from '@engine/geometry/primitives/Primitives2D';
+import { Color } from '@core/Color';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Vector2f } from '@engine/math/Vector2f';
 import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture/TextureUtils';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
 import { FontRenderer } from './FontRenderer';
 
 export class SineScrollerScene extends AbstractScene {

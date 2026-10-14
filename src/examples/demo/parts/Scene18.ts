@@ -1,5 +1,5 @@
-import { Framebuffer } from '../../../Framebuffer';
-import { TwisterScene } from '../../twister/TwisterScene';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { TwisterScene } from '@examples/twister/TwisterScene';
 
 export class Scene18 {
     private TwisterScene: TwisterScene;

@@ -1,6 +1,6 @@
 import { Wormhole } from '@effects/wormhole/Wormhole';
 import { Keyboard } from '@platform/input';
-import { Framebuffer } from '../../Framebuffer';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { AbstractScene } from '@core/AbstractScene';
 
 export class WormholeScene extends AbstractScene {

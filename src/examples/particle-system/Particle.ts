@@ -1,4 +1,4 @@
-import { Vector3f } from '../../math/index';
+import { Vector3f } from '@engine/math/index';
 
 export class Particle {
 

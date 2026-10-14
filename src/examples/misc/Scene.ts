@@ -1,15 +1,15 @@
-import { WireframeTerrain } from '../../effects/wireframe-terrain/WireframeTerrain';
-import { Pixelate } from '../../effects/pixelate/Pixelate';
-import { PlaneDeformNoCalc } from '../../effects/plane-deform-no-calc/PlaneDeformNoCalc';
-import { Reflections } from '../../effects/reflections/Reflections';
-// import { CullFace } from '@primitives/CullFace';
-import { Framebuffer } from '../../Framebuffer';
+import { WireframeTerrain } from '@effects/wireframe-terrain/WireframeTerrain';
+import { Pixelate } from '@effects/pixelate/Pixelate';
+import { PlaneDeformNoCalc } from '@effects/plane-deform-no-calc/PlaneDeformNoCalc';
+import { Reflections } from '@effects/reflections/Reflections';
+// import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
-// import { Color } from '../../core/Color';
-// import { BunnyScene } from '../bunny/BunnyScene';
-import { CubeScene } from '../cube/CubeScene';
+import { Texture, TextureUtils } from '@engine/texture';
+// import { Color } from '@core/Color';
+// import { BunnyScene } from '@examples/bunny/BunnyScene';
+import { CubeScene } from '@examples/cube/CubeScene';
 // import { time } from 'console';
 
 export class Scene extends AbstractScene {
@@ -139,7 +139,7 @@ export class Scene extends AbstractScene {
 
             const audioContext = new AudioContext();
             const request = new XMLHttpRequest();
-            request.open('GET', 'assets/sound/xmix_q2_final.ogg', true);
+            request.open('GET', require('@assets/sound/xmix_q2_final.ogg'), true);
             request.responseType = 'arraybuffer';
             request.onload = () => {
                 const undecodedAudio = request.response;

@@ -1,7 +1,7 @@
 import { Canvas } from '@platform/browser';
 import { ParticleSystemScene } from './ParticleSystemScene';
 
-import './../../default-style.css';
+import '../../default-style.css';
 
 class Application {
 

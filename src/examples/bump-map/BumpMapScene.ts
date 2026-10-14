@@ -1,4 +1,4 @@
-import { Framebuffer } from '../../Framebuffer';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { BumpMap } from '@effects/bump-map/BumpMap';
 import { AbstractScene } from '@core/AbstractScene';
 

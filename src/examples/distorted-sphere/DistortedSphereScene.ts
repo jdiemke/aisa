@@ -1,14 +1,14 @@
-import { Framebuffer } from '../../Framebuffer';
-import { Matrix4f, Vector4f } from '../../math';
-import { ComputationalGeometryUtils } from '../../math/Geometry';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Matrix4f, Vector4f } from '@engine/math';
+import { ComputationalGeometryUtils } from '@engine/math/Geometry';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture/TextureUtils';
-import { Vertex } from '@primitives/Vertex';
-import { TextureCoordinate } from '@primitives/TextureCoordinate';
-import { Color } from '../../core/Color';
-import { CullFace } from '@primitives/CullFace';
-import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
+import { Vertex } from '@engine/geometry/primitives/Vertex';
+import { TextureCoordinate } from '@engine/geometry/primitives/TextureCoordinate';
+import { Color } from '@core/Color';
+import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
 
 interface IndexMesh {
     points: Array<Vector4f>,

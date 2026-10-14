@@ -1,9 +1,9 @@
-import { Framebuffer } from '../../Framebuffer';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture/TextureUtils';
-import { PlaneDeformationScene } from '../plane-deformation/PlaneDeformationScene';
-import { FontRenderer } from '../sine-scroller/FontRenderer';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
+import { PlaneDeformationScene } from '@examples/plane-deformation/PlaneDeformationScene';
+import { FontRenderer } from '@examples/sine-scroller/FontRenderer';
 
 export class PlaneDeformationFloorScene extends AbstractScene {
 

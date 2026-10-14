@@ -1,13 +1,13 @@
-import { Color } from '../../core/Color';
-import { Framebuffer } from '../../Framebuffer';
-import { Cube } from '../../geometrical-objects/Cube';
-import { Matrix4f } from '../../math/Matrix4f';
+import { Color } from '@core/Color';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Cube } from '@engine/geometry/objects/Cube';
+import { Matrix4f } from '@engine/math/Matrix4f';
 import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
-import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
 import { AbstractScene } from '@core/AbstractScene';
-import { Vector4f } from '../../math';
-import { Material } from '../../shading/material/Material';
-import { PointLight } from '../../shading/light/PointLight';
+import { Vector4f } from '@engine/math';
+import { Material } from '@engine/rendering/shading/material/Material';
+import { PointLight } from '@engine/rendering/shading/light/PointLight';
 
 /**
  * TODO: use cube mesh and draw using drawObject2

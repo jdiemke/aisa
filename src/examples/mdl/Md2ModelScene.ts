@@ -1,15 +1,15 @@
-import { Color } from '../../core/Color';
-import { CullFace } from '@primitives/CullFace';
-import { Framebuffer } from '../../Framebuffer';
-import { MDLLoader } from '../../model/mdl/MDLLoader';
-import { MDLModel } from '../../model/mdl/MDLModel';
+import { Color } from '@core/Color';
+import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { MDLLoader } from '@engine/model/formats/mdl/MDLLoader';
+import { MDLModel } from '@engine/model/formats/mdl/MDLModel';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture/TextureUtils';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
 import { ModelViewMatrix } from './ModelViewMatrix';
-import { WavefrontLoader } from '../../model/wavefront-obj/WavefrontLoader';
-import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
-import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
+import { WavefrontLoader } from '@engine/model/formats/wavefront-obj/WavefrontLoader';
+import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
+import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
 
 /**
  * http://tfc.duke.free.fr/coding/mdl-specs-en.html

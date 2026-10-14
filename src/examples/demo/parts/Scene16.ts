@@ -1,5 +1,5 @@
-import { Framebuffer } from '../../../Framebuffer';
-import { ParticleStreamsScene } from '../../particle-streams/ParticleStreamsScene';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { ParticleStreamsScene } from '@examples/particle-streams/ParticleStreamsScene';
 
 export class Scene16 {
     private ParticleStreamsScene: ParticleStreamsScene;

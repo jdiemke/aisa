@@ -1,8 +1,8 @@
-import type { Framebuffer } from '../../Framebuffer';
-import { Matrix3f } from '../../math/Matrix3';
-import { Vector3f } from '../../math/Vector3f';
-import { LineRenderingPipeline } from '../../rendering-pipelines/LineRenderingPipeline';
-import type { Texture } from '../../texture/Texture';
+import type { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Matrix3f } from '@engine/math/Matrix3';
+import { Vector3f } from '@engine/math/Vector3f';
+import { LineRenderingPipeline } from '@engine/rendering/pipelines/LineRenderingPipeline';
+import type { Texture } from '@engine/texture/Texture';
 
 export class WireframeTerrain {
 

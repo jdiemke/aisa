@@ -1,7 +1,7 @@
-import { Framebuffer } from '../../Framebuffer';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '../../texture';
-import { TorusKnotTunnelScene } from '../torus-knot-tunnel/TorusKnotTunnelScene';
+import { Texture } from '@engine/texture';
+import { TorusKnotTunnelScene } from '@examples/torus-knot-tunnel/TorusKnotTunnelScene';
 
 export class FeedbackRadialBlur extends AbstractScene {
 

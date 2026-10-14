@@ -1,10 +1,10 @@
-import { Primitives2D } from '../../primitives/Primitives2D';
-import { ControllableCamera } from '../../camera';
-import { FrustumCuller } from '../../clustered-culling/FrustumCuller';
-import { Color } from '../../core/Color';
-import { Framebuffer } from '../../Framebuffer';
-import { Matrix4f, Vector3f, Vector4f } from '../../math';
-import { Area, Polygon, Portal, PortalRenderer } from '../../portal-system';
+import { Primitives2D } from '@engine/geometry/primitives/Primitives2D';
+import { ControllableCamera } from '@engine/camera';
+import { FrustumCuller } from '@engine/culling/FrustumCuller';
+import { Color } from '@core/Color';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Matrix4f, Vector3f, Vector4f } from '@engine/math';
+import { Area, Polygon, Portal, PortalRenderer } from '@engine/portals';
 import { AbstractScene } from '@core/AbstractScene';
 
 export class PortalScene extends AbstractScene {

@@ -1,11 +1,11 @@
-import { Color } from '../../core/Color';
-import { CullFace } from '@primitives/CullFace';
-import { Framebuffer } from '../../Framebuffer';
-import { FlatshadedMesh } from '../../geometrical-objects/FlatshadedMesh';
-import { Matrix4f } from '../../math';
-import { WavefrontLoader } from '../../model/wavefront-obj/WavefrontLoader';
-import { SubPixelRenderingPipeline } from '../../rendering-pipelines/SubPixelRenderingPipeline';
-import { GouraudShadingRenderingPipeline } from '../../rendering-pipelines/GouraudShadingRenderingPipeline';
+import { Color } from '@core/Color';
+import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
+import { Matrix4f } from '@engine/math';
+import { WavefrontLoader } from '@engine/model/formats/wavefront-obj/WavefrontLoader';
+import { SubPixelRenderingPipeline } from '@engine/rendering/pipelines/SubPixelRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
 import { AbstractScene } from '@core/AbstractScene';
 
 export class SubPixelScene extends AbstractScene {

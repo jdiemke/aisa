@@ -1,9 +1,9 @@
-import { Framebuffer } from '../../Framebuffer';
-import { Interpolator } from '../../math/Interpolator';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Interpolator } from '@engine/math/Interpolator';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture/TextureUtils';
-import { CubeScene } from '../cube/CubeScene';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
+import { CubeScene } from '@examples/cube/CubeScene';
 
 export class BouncingTextScene extends AbstractScene {
 

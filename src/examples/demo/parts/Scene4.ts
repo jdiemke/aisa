@@ -1,7 +1,7 @@
-import { Framebuffer } from '../../../Framebuffer';
-import { Texture } from '../../../texture/Texture';
-import { TextureUtils } from '../../../texture/TextureUtils';
-import { PlasmaScene } from '../../plasma/PlasmaScene';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
+import { PlasmaScene } from '@examples/plasma/PlasmaScene';
 
 // pizza being delivered
 export class Scene4 {

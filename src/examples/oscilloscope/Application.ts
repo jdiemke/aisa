@@ -1,9 +1,9 @@
 import { Canvas } from '@platform/browser';
-import { Color } from '../../core/Color';
-import { Framebuffer } from '../../Framebuffer';
+import { Color } from '@core/Color';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { OscilloscopeScene } from './OscilloscopeScene';
 import { OscilloscopeGenerator } from './OscilloscopeGenerator';
-import { WavEncoder } from '../../sound/WavEncoder';
+import { WavEncoder } from '@sound/WavEncoder';
 
 class Application {
 

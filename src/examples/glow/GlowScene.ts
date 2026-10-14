@@ -1,12 +1,12 @@
-import { PlaneDeformationTunnelAnim } from '../../effects/plane-deformation-tunnel-anim/PlaneDeformationTunnelAnim';
-import { Noise } from '../../effects/noise/Noise';
-import { Framebuffer } from '../../Framebuffer';
+import { PlaneDeformationTunnelAnim } from '@effects/plane-deformation-tunnel-anim/PlaneDeformationTunnelAnim';
+import { Noise } from '@effects/noise/Noise';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture/TextureUtils';
-import { CubeScene } from '../cube/CubeScene';
-import { PlatonianScene } from '../platonian/PlatonianScene';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
+import { CubeScene } from '@examples/cube/CubeScene';
+import { PlatonianScene } from '@examples/platonian/PlatonianScene';
 
 export class GlowScene extends AbstractScene {
 

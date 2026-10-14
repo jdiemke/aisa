@@ -1,7 +1,7 @@
 import { Canvas } from '@platform/browser';
 import { PsychadelicPlaneDeformationScene } from './PsychadelicPlaneDeformationScene';
 
-import './../../default-style.css';
+import '../../default-style.css';
 
 class Application {
 

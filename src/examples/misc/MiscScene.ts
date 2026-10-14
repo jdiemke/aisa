@@ -1,9 +1,9 @@
-import { WireframeTerrain } from '../../effects/wireframe-terrain/WireframeTerrain';
-import { Framebuffer } from '../../Framebuffer';
+import { WireframeTerrain } from '@effects/wireframe-terrain/WireframeTerrain';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture, TextureUtils } from '../../texture';
-import { SoundManager } from '../../sound/SoundManager';
+import { Texture, TextureUtils } from '@engine/texture';
+import { SoundManager } from '@sound/SoundManager';
 
 export class MiscScene extends AbstractScene {
 

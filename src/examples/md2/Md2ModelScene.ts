@@ -1,13 +1,13 @@
-import { Color } from '../../core/Color';
-import { CullFace } from '@primitives/CullFace';
-import { Framebuffer } from '../../Framebuffer';
+import { Color } from '@core/Color';
+import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '../../texture/Texture';
-import { TextureUtils } from '../../texture/TextureUtils';
-import { MD2Loader } from './../../model/md2/MD2Loader';
-import { MD2Model } from './../../model/md2/MD2Model';
+import { Texture } from '@engine/texture/Texture';
+import { TextureUtils } from '@engine/texture/TextureUtils';
+import { MD2Loader } from '@engine/model/formats/md2/MD2Loader';
+import { MD2Model } from '@engine/model/formats/md2/MD2Model';
 import { ModelViewMatrix } from './ModelViewMatrix';
-import { TexturingRenderingPipeline } from '../../rendering-pipelines/TexturingRenderingPipeline';
+import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
 
 /**
  * http://tfc.duke.free.fr/coding/mdl-specs-en.html

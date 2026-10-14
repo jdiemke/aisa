@@ -1,4 +1,4 @@
-import { Framebuffer } from '../../Framebuffer';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { Sprite } from './Sprite';
 
 export class SpriteRenderer {

@@ -1,12 +1,12 @@
-import { Primitives2D } from '../../primitives/Primitives2D';
-import { Framebuffer } from '../../Framebuffer';
+import { Primitives2D } from '@engine/geometry/primitives/Primitives2D';
+import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { AbstractScene } from '@core/AbstractScene';
-import { TextureUtils } from '../../texture/TextureUtils';
-import { Texture } from '../../texture/Texture';
-import { FontRenderer } from '../sine-scroller/FontRenderer';
+import { TextureUtils } from '@engine/texture/TextureUtils';
+import { Texture } from '@engine/texture/Texture';
+import { FontRenderer } from '@examples/sine-scroller/FontRenderer';
 import { PixelInterpolator } from './PixelInterpolator';
-import { Vector2f } from '../../math/index';
-import { PlaneDeformationScene } from '../plane-deformation/PlaneDeformationScene';
+import { Vector2f } from '@engine/math/index';
+import { PlaneDeformationScene } from '@examples/plane-deformation/PlaneDeformationScene';
 
 export class PixelEffectScene extends AbstractScene {
 
