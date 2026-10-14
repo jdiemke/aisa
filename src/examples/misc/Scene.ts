@@ -139,7 +139,7 @@ export class Scene extends AbstractScene {
 
             const audioContext = new AudioContext();
             const request = new XMLHttpRequest();
-            request.open('GET', 'assets/sound/xmix_q2_final.ogg', true);
+            request.open('GET', require('@assets/sound/xmix_q2_final.ogg'), true);
             request.responseType = 'arraybuffer';
             request.onload = () => {
                 const undecodedAudio = request.response;
