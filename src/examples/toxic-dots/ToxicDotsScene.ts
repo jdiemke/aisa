@@ -1,8 +1,7 @@
-import { ComputationalGeometryUtils } from '@engine/math/Geometry';
-import { Primitives2D } from '@engine/geometry/primitives/Primitives2D';
+import { ComputationalGeometryUtils, Vector3f, Matrix4f } from '@engine/math';
+import { Primitives2D } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Vector3f, Matrix4f } from '@engine/math';
-import { AbstractScene } from '@core/AbstractScene';
+import { AbstractScene } from '@core';
 
 export class ToxicDotsScene extends AbstractScene {
 

@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
     testDir: './helper-scripts',
+    tsconfig: './src/tsconfig.json',
     fullyParallel: true,
     workers: 4,
     timeout: 60_000,

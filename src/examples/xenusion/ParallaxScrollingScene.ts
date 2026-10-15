@@ -1,8 +1,6 @@
-import { Color } from '@core/Color';
+import { Color, AbstractScene } from '@core';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '@engine/texture/Texture';
-import { TextureUtils } from '@engine/texture/TextureUtils';
+import { Texture, TextureUtils } from '@engine/texture';
 
 interface ParallaxLayer {
     image: Texture;

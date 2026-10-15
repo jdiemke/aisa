@@ -1,6 +1,5 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Vector3f } from '@engine/math';
-import { Interpolator } from '@engine/math/Interpolator';
+import { Vector3f, Interpolator } from '@engine/math';
 import { Texture } from '@engine/texture';
 
 export class LensFlare {

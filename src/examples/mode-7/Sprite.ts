@@ -1,4 +1,4 @@
-import { Texture } from '@engine/texture/index';
+import { Texture } from '@engine/texture';
 
 export class Sprite {
 

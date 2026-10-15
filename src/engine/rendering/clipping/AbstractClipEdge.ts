@@ -1,4 +1,4 @@
-import { Vertex } from '@engine/geometry/primitives/Vertex';
+import { Vertex } from '@engine/geometry/primitives';
 import { ClipMode } from '@engine/rendering/clipping/ClipMode';
 
 // TODO:

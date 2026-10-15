@@ -1,4 +1,4 @@
-import { Vector4f } from '@engine/math/index';
+import { Vector4f } from '@engine/math';
 import { PointLight } from '@engine/rendering/shading/light/PointLight';
 import { Material } from '@engine/rendering/shading/material/Material';
 

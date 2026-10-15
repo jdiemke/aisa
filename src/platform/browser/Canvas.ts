@@ -1,5 +1,5 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { AbstractScene } from '@core/AbstractScene';
+import { AbstractScene } from '@core';
 import { FullscreenUtils } from './FullscreenUtils';
 
 export class Canvas {

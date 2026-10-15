@@ -1,6 +1,6 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Vector2f } from '@engine/math/index';
-import { Texture } from '@engine/texture/index';
+import { Vector2f } from '@engine/math';
+import { Texture } from '@engine/texture';
 
 export class Camera {
 

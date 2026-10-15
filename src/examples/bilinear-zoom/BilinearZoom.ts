@@ -1,6 +1,6 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { AbstractScene } from '@core/AbstractScene';
-import { Texture, TextureUtils } from '@engine/texture/index';
+import { AbstractScene } from '@core';
+import { Texture, TextureUtils } from '@engine/texture';
 
 export class BilinearZoom extends AbstractScene {
     private texture5: Texture;

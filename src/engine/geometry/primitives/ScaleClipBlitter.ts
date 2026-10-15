@@ -1,5 +1,5 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Texture } from '@engine/texture/Texture';
+import { Texture } from '@engine/texture';
 
 export class ScaleClipBlitter {
 

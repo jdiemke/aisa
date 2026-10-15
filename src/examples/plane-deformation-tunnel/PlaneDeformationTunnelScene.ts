@@ -1,9 +1,9 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { AbstractScene } from '@core/AbstractScene';
+import { AbstractScene } from '@core';
 import { Texture, TextureUtils } from '@engine/texture';
-import { ScaleClipBlitter } from '@engine/geometry/primitives/ScaleClipBlitter';
+import { ScaleClipBlitter } from '@engine/geometry/primitives';
 import { PlaneDeformationScene } from '@examples/plane-deformation/PlaneDeformationScene';
-import { Interpolator } from '@engine/math/Interpolator';
+import { Interpolator } from '@engine/math';
 
 export class PlaneDeformationTunnelScene extends AbstractScene {
 

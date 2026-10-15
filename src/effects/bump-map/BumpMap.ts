@@ -1,6 +1,5 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Texture } from '@engine/texture/Texture';
-import { TextureUtils } from '@engine/texture/TextureUtils';
+import { Texture, TextureUtils } from '@engine/texture';
 
 /**
  * http://pascal.sources.ru/demo/bumpmap.htm

@@ -1,14 +1,10 @@
 import { Fog } from '@effects/fog/Fog';
-import { Color } from '@core/Color';
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Color, AbstractScene } from '@core';
+import { CullFace, TextureCoordinate } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Vector4f } from '@engine/math/index';
-import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
-import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
-import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '@engine/texture/Texture';
-import { TextureUtils } from '@engine/texture/TextureUtils';
-import { TextureCoordinate } from '@engine/geometry/primitives/TextureCoordinate';
+import { Vector4f } from '@engine/math';
+import { TexturedMesh, TexturingRenderingPipeline } from '@engine/rendering/pipelines';
+import { Texture, TextureUtils } from '@engine/texture';
 import { ModelViewMatrix } from '@examples/md2/ModelViewMatrix';
 
 export class ThirdPersonCameraScene extends AbstractScene {

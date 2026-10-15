@@ -1,8 +1,7 @@
 import { Noise } from '@effects/noise/Noise';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '@engine/texture/Texture';
-import { TextureUtils } from '@engine/texture/TextureUtils';
+import { AbstractScene } from '@core';
+import { Texture, TextureUtils } from '@engine/texture';
 import { CubeScene } from '@examples/cube/CubeScene';
 
 export class MirrorScene extends AbstractScene {

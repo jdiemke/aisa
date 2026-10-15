@@ -1,8 +1,5 @@
-import { StreamReader } from '@engine/model/formats/md2/StreamReader';
-import { MDLHeader } from '@engine/model/formats/mdl/MDLHeader';
-import { MDLModel } from '@engine/model/formats/mdl/MDLModel';
-import { MDLSkin } from '@engine/model/formats/mdl/MDLSkin';
-import { MDLTexCoord } from '@engine/model/formats/mdl/MDLTexCoord';
+import { StreamReader } from '@engine/model/formats/md2';
+import { MDLHeader, MDLModel, MDLSkin, MDLTexCoord } from '@engine/model/formats/mdl';
 
 /**
  * http://tfc.duke.free.fr/coding/mdl-specs-en.html

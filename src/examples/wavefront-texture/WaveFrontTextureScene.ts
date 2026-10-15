@@ -1,12 +1,10 @@
-import { Color } from '@core/Color';
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Color, AbstractScene } from '@core';
+import { CullFace } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { Matrix4f } from '@engine/math';
-import { WavefrontLoader } from '@engine/model/formats/wavefront-obj/WavefrontLoader';
-import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
-import { AbstractScene } from '@core/AbstractScene';
+import { WavefrontLoader } from '@engine/model/formats/wavefront-obj';
+import { TexturedMesh, TexturingRenderingPipeline } from '@engine/rendering/pipelines';
 import { Texture, TextureUtils } from '@engine/texture';
-import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
 
 /**
  * TODO: extract lens into effect class

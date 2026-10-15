@@ -1,7 +1,5 @@
-import { FlatShadedFace } from '@engine/geometry/objects/FlatShadedFace';
-import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
-import { Matrix4f } from '@engine/math/Matrix4f';
-import { Vector4f } from '@engine/math/Vector4f';
+import { FlatShadedFace, FlatshadedMesh } from '@engine/geometry/objects';
+import { Matrix4f, Vector4f } from '@engine/math';
 import { Material } from '@engine/rendering/shading/material/Material';
 
 /**

@@ -1,12 +1,7 @@
-import { Vector4f } from '@engine/math/index';
-import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
-import { TextureCoordinate } from '@engine/geometry/primitives/TextureCoordinate';
-import { MD2Animation } from '@engine/model/formats/md2/MD2AnimationNames';
-import { MD2Frame } from '@engine/model/formats/md2/MD2Frame';
-import { MD2Header } from '@engine/model/formats/md2/MD2Header';
-import { MD2TexCoord } from '@engine/model/formats/md2/MD2TexCoord';
-import { MD2Triangle } from '@engine/model/formats/md2/MD2Triangle';
-import { MD2Vertex } from '@engine/model/formats/md2/MD2Vertex';
+import { Vector4f } from '@engine/math';
+import { TexturedMesh } from '@engine/rendering/pipelines';
+import { TextureCoordinate } from '@engine/geometry/primitives';
+import { MD2Animation, MD2Frame, MD2Header, MD2TexCoord, MD2Triangle, MD2Vertex } from '@engine/model/formats/md2';
 
 export class MD2Model {
 

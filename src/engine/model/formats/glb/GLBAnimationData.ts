@@ -1,4 +1,4 @@
-import { Matrix4f } from '@engine/math/Matrix4f';
+import { Matrix4f } from '@engine/math';
 
 /**
  * Raw keyframe data for a single animated property of a single joint.

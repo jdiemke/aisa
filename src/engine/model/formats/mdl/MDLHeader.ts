@@ -1,6 +1,5 @@
-import { Vector3f } from '@engine/math/index';
-import { InvalidFileFormatException } from '@engine/model/formats/md2/InvalidFileFormatException';
-import { StreamReader } from '@engine/model/formats/md2/StreamReader';
+import { Vector3f } from '@engine/math';
+import { InvalidFileFormatException, StreamReader } from '@engine/model/formats/md2';
 
 export class MDLHeader {
 

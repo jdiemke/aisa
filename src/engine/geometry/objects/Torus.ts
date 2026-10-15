@@ -1,6 +1,5 @@
-import { Vector4f } from '@engine/math/Vector4f';
+import { Vector4f, Vector3f } from '@engine/math';
 import { AbstractGeometricObject } from '@engine/geometry/objects/AbstractGeometricObject';
-import { Vector3f } from '@engine/math/Vector3f';
 
 export class Torus extends AbstractGeometricObject {
 

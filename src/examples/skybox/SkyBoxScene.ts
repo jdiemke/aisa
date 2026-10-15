@@ -1,11 +1,10 @@
-import { LineRenderingPipeline } from '@engine/rendering/pipelines/LineRenderingPipeline';
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { LineRenderingPipeline, TexturingRenderingPipeline } from '@engine/rendering/pipelines';
+import { CullFace } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { Matrix4f, Vector3f } from '@engine/math';
-import { AbstractScene } from '@core/AbstractScene';
-import { SkyBox } from '@engine/geometry/objects/SkyBox';
+import { AbstractScene } from '@core';
+import { SkyBox } from '@engine/geometry/objects';
 import { Texture, TextureUtils } from '@engine/texture';
-import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
 import { EnvironmentMappingScene } from '@examples/environment-mapping-torus/EnvironmentMappingTorusScene';
 import { LensFlare } from '@effects/lens-flare/LensFlare';
 

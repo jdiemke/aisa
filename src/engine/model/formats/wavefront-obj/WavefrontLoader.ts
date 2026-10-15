@@ -1,14 +1,8 @@
-import { BlenderJsonParser } from '@engine/model/formats/blender/BlenderJsonParser';
-import { Face } from '@engine/model/formats/blender/face';
-import { Mesh } from '@engine/model/formats/blender/mesh';
-import { convertToMeshArray } from '@engine/model/formats/blender/parseUtils';
-import { FlatShadedFace } from '@engine/geometry/objects/FlatShadedFace';
-import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
-import { Vector4f } from '@engine/math/Vector4f';
-import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
-import { MtlLoader } from '@engine/model/formats/wavefront-obj/MtlLoader';
-import { MtlMaterial } from '@engine/model/formats/wavefront-obj/MtlMaterial';
-import { MaterialMesh, WavefrontMaterialModel } from '@engine/model/formats/wavefront-obj/WavefrontMaterialModel';
+import { BlenderJsonParser, Face, Mesh, convertToMeshArray } from '@engine/model/formats/blender';
+import { FlatShadedFace, FlatshadedMesh } from '@engine/geometry/objects';
+import { Vector4f } from '@engine/math';
+import { TexturedMesh } from '@engine/rendering/pipelines';
+import { MtlLoader, MtlMaterial, MaterialMesh, WavefrontMaterialModel } from '@engine/model/formats/wavefront-obj';
 
 export class WavefrontLoader {
 

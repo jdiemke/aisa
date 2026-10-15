@@ -1,8 +1,7 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { PlaneDeformationScene } from '@examples/plane-deformation/PlaneDeformationScene';
 import { DistortedSphereScene } from '@examples/distorted-sphere/DistortedSphereScene';
-import { Texture } from '@engine/texture/Texture';
-import { TextureUtils } from '@engine/texture/TextureUtils';
+import { Texture, TextureUtils } from '@engine/texture';
 
 /**
  * TODO: extract lens into effect class

@@ -1,4 +1,4 @@
-import { Matrix4f } from '@engine/math/index';
+import { Matrix4f } from '@engine/math';
 
 /**
  * The primary purpose of the model view matrix class is to reduce

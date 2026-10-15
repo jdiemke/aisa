@@ -2,7 +2,7 @@
  * Defines a plane as used for primitive clipping against the
  * view frustum.
  */
-import { Vector4f } from './';
+import { Vector4f } from '@engine/math/Vector4f';
 
 export class Plane {
 

@@ -1,0 +1,10 @@
+export { GLBAnimatedModel } from './GLBAnimatedModel';
+export type { AnimationChannel } from './GLBAnimationData';
+export type { AnimationClip } from './GLBAnimationData';
+export type { SkinData } from './GLBAnimationData';
+export type { SkinningAttributes } from './GLBAnimationData';
+export type { NodeTRS } from './GLBAnimationData';
+export type { NodeHierarchy } from './GLBAnimationData';
+export { GLBAnimationLoader } from './GLBAnimationLoader';
+export { GLBLoader } from './GLBLoader';
+export { GLBModel } from './GLBModel';

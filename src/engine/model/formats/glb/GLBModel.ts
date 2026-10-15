@@ -1,8 +1,7 @@
-import { FlatShadedFace } from '@engine/geometry/objects/FlatShadedFace';
-import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
-import { Vector4f } from '@engine/math/Vector4f';
+import { FlatShadedFace, FlatshadedMesh } from '@engine/geometry/objects';
+import { Vector4f } from '@engine/math';
 import { Material } from '@engine/rendering/shading/material/Material';
-import { GLBLoader } from '@engine/model/formats/glb/GLBLoader';
+import { GLBLoader } from '@engine/model/formats/glb';
 
 /**
  * Represents a fully loaded GLB model.

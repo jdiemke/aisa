@@ -1,5 +1,5 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Interpolator } from '@engine/math/Interpolator';
+import { Interpolator } from '@engine/math';
 
 export class Reflections {
 

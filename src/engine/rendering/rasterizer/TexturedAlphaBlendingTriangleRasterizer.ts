@@ -1,6 +1,6 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { AbstractRenderingPipeline } from '@engine/rendering/pipelines/AbstractRenderingPipeline';
-import { Vertex } from '@engine/geometry/primitives/Vertex';
+import { AbstractRenderingPipeline } from '@engine/rendering/pipelines';
+import { Vertex } from '@engine/geometry/primitives';
 import { AbstractScannlineTriangleRasterizer } from '@engine/rendering/rasterizer/AbstractScanlineTriangleRasterizer';
 
 export class TexturedAlphaBlendingTriangleRasterizer extends AbstractScannlineTriangleRasterizer {

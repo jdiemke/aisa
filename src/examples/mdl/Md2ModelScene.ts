@@ -1,15 +1,12 @@
-import { Color } from '@core/Color';
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Color, AbstractScene } from '@core';
+import { CullFace } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { MDLLoader } from '@engine/model/formats/mdl/MDLLoader';
-import { MDLModel } from '@engine/model/formats/mdl/MDLModel';
-import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '@engine/texture/Texture';
-import { TextureUtils } from '@engine/texture/TextureUtils';
+import { MDLLoader, MDLModel } from '@engine/model/formats/mdl';
+import { WavefrontLoader } from '@engine/model/formats/wavefront-obj';
+import { Texture, TextureUtils } from '@engine/texture';
 import { ModelViewMatrix } from './ModelViewMatrix';
-import { WavefrontLoader } from '@engine/model/formats/wavefront-obj/WavefrontLoader';
-import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
-import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
+import { FlatshadedMesh } from '@engine/geometry/objects';
+import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines';
 
 /**
  * http://tfc.duke.free.fr/coding/mdl-specs-en.html

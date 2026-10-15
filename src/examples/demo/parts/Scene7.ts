@@ -1,8 +1,7 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { RotoZoomerScene } from '@examples/roto-zoomer/RotoZoomerScene';
 import { CubeScene } from '@examples/cube/CubeScene';
-import { Texture } from '@engine/texture/Texture';
-import { TextureUtils } from '@engine/texture/TextureUtils';
+import { Texture, TextureUtils } from '@engine/texture';
 
 export class Scene7 {
     private RotoZoomerScene: RotoZoomerScene;

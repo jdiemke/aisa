@@ -1,7 +1,6 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { Vector4f } from '@engine/math';
-import { TextureCoordinate } from '@engine/geometry/primitives/TextureCoordinate';
-import { Vertex } from '@engine/geometry/primitives/Vertex';
+import { TextureCoordinate, Vertex } from '@engine/geometry/primitives';
 import { AbstractClipEdge } from '@engine/rendering/clipping/AbstractClipEdge';
 
 export class BottomClipEdge extends AbstractClipEdge {

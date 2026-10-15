@@ -1,6 +1,5 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { AbstractScene } from '@core/AbstractScene';
-import { DoublyLinkedList } from '@core/LinkedList';
+import { AbstractScene, DoublyLinkedList } from '@core';
 
 /**
  * Ordered list of scene module paths for the demo.

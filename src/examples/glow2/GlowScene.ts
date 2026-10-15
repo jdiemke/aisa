@@ -1,18 +1,15 @@
 import { PlaneDeformationTunnelAnim } from '@effects/plane-deformation-tunnel-anim/PlaneDeformationTunnelAnim';
 import { Noise } from '@effects/noise/Noise';
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { CullFace } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
+import { FlatshadedMesh } from '@engine/geometry/objects';
 import { ModelViewMatrix, Vector4f } from '@engine/math';
-import { GLBAnimatedModel } from '@engine/model/formats/glb/GLBAnimatedModel';
-import { GLBLoader } from '@engine/model/formats/glb/GLBLoader';
-import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
-import { SubPixelRenderingPipeline } from '@engine/rendering/pipelines/SubPixelRenderingPipeline';
-import { AbstractScene } from '@core/AbstractScene';
+import { GLBAnimatedModel, GLBLoader } from '@engine/model/formats/glb';
+import { RandomNumberGenerator, AbstractScene } from '@core';
+import { SubPixelRenderingPipeline } from '@engine/rendering/pipelines';
 import { PointLight } from '@engine/rendering/shading/light/PointLight';
 import { Material } from '@engine/rendering/shading/material/Material';
-import { Texture } from '@engine/texture/Texture';
-import { TextureUtils } from '@engine/texture/TextureUtils';
+import { Texture, TextureUtils } from '@engine/texture';
 import { CubeScene } from '@examples/cube/CubeScene';
 import { PlatonianScene } from '@examples/platonian/PlatonianScene';
 

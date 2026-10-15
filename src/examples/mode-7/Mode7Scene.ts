@@ -1,8 +1,8 @@
-import { Primitives2D } from '@engine/geometry/primitives/Primitives2D';
+import { Primitives2D } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Vector2f, Vector3f } from '@engine/math/index';
-import { AbstractScene } from '@core/AbstractScene';
-import { Texture, TextureUtils } from '@engine/texture/index';
+import { Vector2f, Vector3f } from '@engine/math';
+import { AbstractScene } from '@core';
+import { Texture, TextureUtils } from '@engine/texture';
 import { FontRenderer } from '@examples/sine-scroller/FontRenderer';
 import { NpcEntity } from '@examples/mode-7/entities/NpcEntity';
 import { Pipe } from '@examples/mode-7/entities/Pipe';

@@ -1,5 +1,5 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Vertex } from '@engine/geometry/primitives/Vertex';
+import { Vertex } from '@engine/geometry/primitives';
 import { AbstractScannlineTriangleRasterizer } from '@engine/rendering/rasterizer/AbstractScanlineTriangleRasterizer';
 
 export class FlatShadingTriangleRasterizer extends AbstractScannlineTriangleRasterizer {

@@ -1,8 +1,7 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { AbstractScene } from '@core/AbstractScene';
+import { AbstractScene } from '@core';
 import { Fire } from '@effects/fire/Fire';
-import { Texture } from '@engine/texture/Texture';
-import { TextureUtils } from '@engine/texture/TextureUtils';
+import { Texture, TextureUtils } from '@engine/texture';
 
 export class FireScene extends AbstractScene {
 

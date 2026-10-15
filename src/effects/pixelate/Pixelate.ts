@@ -1,6 +1,6 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { Vector3f } from '@engine/math';
-import { Primitives2D } from '@engine/geometry/primitives/Primitives2D';
+import { Primitives2D } from '@engine/geometry/primitives';
 
 export class Pixelate {
 

@@ -1,5 +1,5 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { AbstractScene } from '@core/AbstractScene';
+import { AbstractScene } from '@core';
 import { Texture } from '@engine/texture';
 import { TorusKnotScene } from '@examples/torus-knot/TorusKnotScene';
 

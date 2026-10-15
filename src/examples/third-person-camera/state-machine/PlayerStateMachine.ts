@@ -1,4 +1,4 @@
-import { MD2Model } from '@engine/model/formats/md2/MD2Model';
+import { MD2Model } from '@engine/model/formats/md2';
 import { Player } from '@examples/third-person-camera/Player';
 import { PlayerStandingState } from './PlayerStandingState';
 import { PlayerState } from './PlayerState';

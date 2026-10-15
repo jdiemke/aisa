@@ -1,10 +1,9 @@
-import { Color } from '@core/Color';
+import { Color, AbstractScene } from '@core';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Cube } from '@engine/geometry/objects/Cube';
+import { Cube } from '@engine/geometry/objects';
 import { Matrix4f } from '@engine/math';
-import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
-import { AbstractScene } from '@core/AbstractScene';
-import { TextureUtils, Texture } from '@engine/texture/index';
+import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines';
+import { TextureUtils, Texture } from '@engine/texture';
 
 /**
  * TODO: use cube mesh and draw using drawObject2

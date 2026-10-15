@@ -1,6 +1,5 @@
-import { Primitives2D } from '@engine/geometry/primitives/Primitives2D';
+import { Primitives2D, Vertex } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Vertex } from '@engine/geometry/primitives/Vertex';
 import { AbstractTriangleRasterizer } from '@engine/rendering/rasterizer/AbstractTriangleRasterizer';
 
 export class SubPixelTriangleRasterizer extends AbstractTriangleRasterizer {

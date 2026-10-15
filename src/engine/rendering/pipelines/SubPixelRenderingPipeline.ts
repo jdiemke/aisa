@@ -1,10 +1,10 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
-import { Vector4f } from '@engine/math/index';
-import { Matrix4f } from '@engine/math/Matrix4f';
-import { SubPixelTriangleRasterizer } from '@engine/rendering/rasterizer/SubPixelTriangleRasterizer';
-import { Vertex } from '@engine/geometry/primitives/Vertex';
+import { FlatshadedMesh } from '@engine/geometry/objects';
+import { Vector4f, Matrix4f } from '@engine/math';
+import { SubPixelTriangleRasterizer } from '@engine/rendering/rasterizer';
+import { Vertex } from '@engine/geometry/primitives';
 import { LitRenderingPipeline } from '@engine/rendering/pipelines/LitRenderingPipeline';
+import { projectToScreen } from '@engine/rendering/Projection';
 
 /**
  * TODO:
@@ -68,9 +68,9 @@ export class SubPixelRenderingPipeline extends LitRenderingPipeline {
         const v3Front: boolean = this.isInFrontOfNearPlane(v3);
 
         if (v1Front && v2Front && v3Front) {
-            this.project2(v1, this.projectedVertices[0]);
-            this.project2(v2, this.projectedVertices[1]);
-            this.project2(v3, this.projectedVertices[2]);
+            projectToScreen(this.framebuffer, v1, this.projectedVertices[0]);
+            projectToScreen(this.framebuffer, v2, this.projectedVertices[1]);
+            projectToScreen(this.framebuffer, v3, this.projectedVertices[2]);
 
             this.vertexArray[0].position = v1;
             this.vertexArray[0].projection = this.projectedVertices[0];
@@ -109,7 +109,7 @@ export class SubPixelRenderingPipeline extends LitRenderingPipeline {
             }
 
             for (let j: number = 0; j < output.length; j++) {
-                this.project2(output[j].position, output[j].projection);
+                projectToScreen(this.framebuffer, output[j].position, output[j].projection);
             }
 
             this.renderConvexPolygon(framebuffer, output, false);

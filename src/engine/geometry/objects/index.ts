@@ -1,0 +1,15 @@
+export { AbstractGeometricObject } from './AbstractGeometricObject';
+export { Cube } from './Cube';
+export { Dodecahedron } from './Dodecahedron';
+export { Face } from './Face';
+export { FlatShadedFace } from './FlatShadedFace';
+export { FlatshadedMesh } from './FlatshadedMesh';
+export { Icosahedron } from './Icosahedron';
+export { Mesh } from './Mesh';
+export { Plane } from './Plane';
+export { Pyramid } from './Pyramid';
+export { SkyBox } from './SkyBox';
+export { Sphere } from './Sphere';
+export { Torus } from './Torus';
+export { TorusKnot } from './TorusKnot';
+export { Trapezoid } from './Trapezoid';

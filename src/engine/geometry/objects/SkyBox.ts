@@ -1,9 +1,8 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { Matrix4f, Vector4f } from '@engine/math';
 import { Texture, TextureUtils } from '@engine/texture';
-import { TextureCoordinate } from '@engine/geometry/primitives/TextureCoordinate';
-import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
-import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
+import { TextureCoordinate } from '@engine/geometry/primitives';
+import { TexturingRenderingPipeline, TexturedMesh } from '@engine/rendering/pipelines';
 
 export class SkyBox {
 

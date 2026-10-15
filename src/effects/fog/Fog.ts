@@ -1,4 +1,4 @@
-import { Color } from '@core/Color';
+import { Color } from '@core';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
 
 export class Fog {

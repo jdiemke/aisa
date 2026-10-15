@@ -1,15 +1,11 @@
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { CullFace } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { TorusKnot } from '@engine/geometry/objects/TorusKnot';
-import { Vector4f } from '@engine/math/index';
-import { Matrix4f } from '@engine/math/Matrix4f';
-import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
-import { AbstractScene } from '@core/AbstractScene';
+import { TorusKnot } from '@engine/geometry/objects';
+import { Vector4f, Matrix4f, Interpolator } from '@engine/math';
+import { RandomNumberGenerator, AbstractScene } from '@core';
 import { LinearFog } from '@engine/rendering/shading/fog/LinearFog';
-import { Texture } from '@engine/texture/Texture';
-import { TextureUtils } from '@engine/texture/TextureUtils';
-import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
-import { Interpolator } from '@engine/math/Interpolator';
+import { Texture, TextureUtils } from '@engine/texture';
+import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines';
 
 export class TorusKnotScene extends AbstractScene {
     private tmpGlitch: Uint32Array;

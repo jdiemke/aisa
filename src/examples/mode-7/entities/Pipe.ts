@@ -1,5 +1,5 @@
-import { Vector2f } from '@engine/math/index';
-import { Texture } from '@engine/texture/index';
+import { Vector2f } from '@engine/math';
+import { Texture } from '@engine/texture';
 import { Mode7Entity } from '@examples/mode-7/Mode7Entity';
 
 export class Pipe extends Mode7Entity {

@@ -1,3 +1,3 @@
-import { Mesh } from '@engine/model/formats/blender/mesh';
+import { Mesh } from '@engine/model/formats/blender';
 
 export type BlenderScene = Array<Mesh>;

@@ -1,6 +1,6 @@
-import { Primitives2D } from '@engine/geometry/primitives/Primitives2D';
+import { Primitives2D } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Vector3f } from '@engine/math/Vector3f';
+import { Vector3f } from '@engine/math';
 
 export class CohenSutherlandLineClipper {
 

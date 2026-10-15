@@ -1,20 +1,14 @@
 import { Fog } from '@effects/fog/Fog';
-import { Color } from '@core/Color';
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Color, AbstractScene } from '@core';
+import { CullFace, TextureCoordinate } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
-import { ModelViewMatrix as GlbModelViewMatrix, Matrix4f, Vector4f } from '@engine/math/index';
-import { GLBLoader } from '@engine/model/formats/glb/GLBLoader';
-import { GLBModel } from '@engine/model/formats/glb/GLBModel';
-import { SubPixelRenderingPipeline } from '@engine/rendering/pipelines/SubPixelRenderingPipeline';
-import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
-import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
-import { AbstractScene } from '@core/AbstractScene';
+import { FlatshadedMesh } from '@engine/geometry/objects';
+import { ModelViewMatrix as GlbModelViewMatrix, Matrix4f, Vector4f } from '@engine/math';
+import { GLBLoader, GLBModel } from '@engine/model/formats/glb';
+import { SubPixelRenderingPipeline, TexturedMesh, TexturingRenderingPipeline } from '@engine/rendering/pipelines';
 import { PointLight } from '@engine/rendering/shading/light/PointLight';
 import { Material } from '@engine/rendering/shading/material/Material';
-import { Texture } from '@engine/texture/Texture';
-import { TextureUtils } from '@engine/texture/TextureUtils';
-import { TextureCoordinate } from '@engine/geometry/primitives/TextureCoordinate';
+import { Texture, TextureUtils } from '@engine/texture';
 import { ModelViewMatrix } from '@examples/md2/ModelViewMatrix';
 
 

@@ -1,4 +1,4 @@
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { CullFace } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
 
 export class AbstractRenderingPipeline {

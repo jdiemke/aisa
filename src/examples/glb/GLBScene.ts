@@ -1,19 +1,14 @@
-import { Color } from '@core/Color';
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Color, AbstractScene } from '@core';
+import { CullFace, TextureCoordinate } from '@engine/geometry/primitives';
 import { Starfield } from '@effects/starfield/Starfield';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
+import { FlatshadedMesh } from '@engine/geometry/objects';
 import { Matrix4f, ModelViewMatrix, Vector4f } from '@engine/math';
-import { GLBLoader } from '@engine/model/formats/glb/GLBLoader';
-import { GLBModel } from '@engine/model/formats/glb/GLBModel';
-import { SubPixelRenderingPipeline } from '@engine/rendering/pipelines/SubPixelRenderingPipeline';
-import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
-import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
-import { AbstractScene } from '@core/AbstractScene';
+import { GLBLoader, GLBModel } from '@engine/model/formats/glb';
+import { SubPixelRenderingPipeline, TexturedMesh, TexturingRenderingPipeline } from '@engine/rendering/pipelines';
 import { Material } from '@engine/rendering/shading/material/Material';
 import { PointLight } from '@engine/rendering/shading/light/PointLight';
-import { Texture } from '@engine/texture/Texture';
-import { TextureCoordinate } from '@engine/geometry/primitives/TextureCoordinate';
+import { Texture } from '@engine/texture';
 import { CubeScene } from '@examples/cube/CubeScene';
 
 /**

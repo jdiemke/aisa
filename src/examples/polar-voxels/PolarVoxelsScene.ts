@@ -1,6 +1,6 @@
 import { Noise } from '@effects/noise/Noise';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { AbstractScene } from '@core/AbstractScene';
+import { AbstractScene } from '@core';
 import { Texture, TextureUtils } from '@engine/texture';
 
 export class PolarVoxelsScene extends AbstractScene {

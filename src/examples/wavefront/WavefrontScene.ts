@@ -1,15 +1,13 @@
-import { Color } from '@core/Color';
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Color, AbstractScene } from '@core';
+import { CullFace } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
+import { FlatshadedMesh } from '@engine/geometry/objects';
 import { Vector4f } from '@engine/math';
-import { WavefrontLoader } from '@engine/model/formats/wavefront-obj/WavefrontLoader';
-import { AbstractScene } from '@core/AbstractScene';
+import { WavefrontLoader } from '@engine/model/formats/wavefront-obj';
 import { PointLight } from '@engine/rendering/shading/light/PointLight';
-import { Texture } from '@engine/texture/Texture';
-import { TextureUtils } from '@engine/texture/TextureUtils';
+import { Texture, TextureUtils } from '@engine/texture';
 import { ModelViewMatrix } from '@examples/md2/ModelViewMatrix';
-import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines';
 
 export class WavefrontScene extends AbstractScene {
 

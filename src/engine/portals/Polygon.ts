@@ -1,5 +1,4 @@
-import { Vector3f, Vector4f } from '@engine/math';
-import { Plane } from '@engine/math/Plane';
+import { Vector3f, Vector4f, Plane } from '@engine/math';
 
 export class Polygon {
 

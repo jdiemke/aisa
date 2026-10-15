@@ -1,12 +1,9 @@
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { CullFace, TextureCoordinate } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Matrix4f, Vector3f, Vector4f } from '@engine/math';
-import { AbstractScene } from '@core/AbstractScene';
+import { Matrix4f, Vector3f, Vector4f, Interpolator } from '@engine/math';
+import { AbstractScene } from '@core';
 import { Texture, TextureUtils } from '@engine/texture';
-import { TextureCoordinate } from '@engine/geometry/primitives/TextureCoordinate';
-import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
-import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
-import { Interpolator } from '@engine/math/Interpolator';
+import { TexturingRenderingPipeline, TexturedMesh } from '@engine/rendering/pipelines';
 
 export class TexturedTorusScene extends AbstractScene {
 

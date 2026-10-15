@@ -1,6 +1,6 @@
-import { Texture } from '@engine/texture/index';
-import { StreamReader } from '@engine/model/formats/md2/StreamReader';
-import { MDLHeader } from '@engine/model/formats/mdl/MDLHeader';
+import { Texture } from '@engine/texture';
+import { StreamReader } from '@engine/model/formats/md2';
+import { MDLHeader } from '@engine/model/formats/mdl';
 
 export class MDLSkin {
 

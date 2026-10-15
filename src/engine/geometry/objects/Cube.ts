@@ -1,4 +1,4 @@
-import { Vector4f } from '@engine/math/Vector4f';
+import { Vector4f } from '@engine/math';
 import { AbstractGeometricObject } from '@engine/geometry/objects/AbstractGeometricObject';
 
 export class Cube extends AbstractGeometricObject {

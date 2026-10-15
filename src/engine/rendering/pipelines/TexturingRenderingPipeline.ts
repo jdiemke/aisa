@@ -1,18 +1,12 @@
 
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Matrix4f } from '@engine/math/Matrix4f';
-import { Vector4f } from '@engine/math/Vector4f';
-import { ComputationalGeometryUtils } from '@engine/math/Geometry';
-import { AbstractTriangleRasterizer } from '@engine/rendering/rasterizer/AbstractTriangleRasterizer';
-import { TexturedAlphaBlendingTriangleRasterizer } from '@engine/rendering/rasterizer/TexturedAlphaBlendingTriangleRasterizer';
-import { TexturedTriangleRasterizer } from '@engine/rendering/rasterizer/TexturedTriangleRasterizer';
-import { TexturedTriangleRasterizer2D } from '@engine/rendering/rasterizer/TexturedTriangleRasterizer2D';
-import { ClipMode } from '@engine/rendering/clipping/ClipMode';
-import { SutherlandHodgman2DClipper } from '@engine/rendering/clipping/SutherlandHodgman2DClipper';
-import { TextureCoordinate } from '@engine/geometry/primitives/TextureCoordinate';
-import { Vertex } from '@engine/geometry/primitives/Vertex';
+import { Matrix4f, Vector4f, ComputationalGeometryUtils } from '@engine/math';
+import { AbstractTriangleRasterizer, TexturedAlphaBlendingTriangleRasterizer, TexturedTriangleRasterizer, TexturedTriangleRasterizer2D } from '@engine/rendering/rasterizer';
+import { ClipMode, SutherlandHodgman2DClipper } from '@engine/rendering/clipping';
+import { TextureCoordinate, Vertex } from '@engine/geometry/primitives';
 import { AbstractRenderingPipeline } from '@engine/rendering/pipelines/AbstractRenderingPipeline';
 import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
+import { projectToScreen } from '@engine/rendering/Projection';
 
 export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
 
@@ -90,9 +84,9 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
                 this.isInFrontOfNearPlane(v2) &&
                 this.isInFrontOfNearPlane(v3)) {
 
-                this.project2(v1, this.projectedVertices[0]);
-                this.project2(v2, this.projectedVertices[1]);
-                this.project2(v3, this.projectedVertices[2]);
+                projectToScreen(this.framebuffer, v1, this.projectedVertices[0], true);
+                projectToScreen(this.framebuffer, v2, this.projectedVertices[1], true);
+                projectToScreen(this.framebuffer, v3, this.projectedVertices[2], true);
 
                 if (this.isTriangleCCW(
                     this.projectedVertices[0],
@@ -163,12 +157,6 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
         vertex.textureCoordinate.v = Math.min(Math.max(Math.round(vertex.projection.y + reflection.y * 35) / 199, 0), 1);
     }
 
-    public project2(t1: { x: number, y: number, z: number }, result: Vector4f): void {
-        result.x = Math.round((this.framebuffer.width / 2) + (292 * t1.x / (-t1.z)));
-        result.y = Math.round((this.framebuffer.height / 2) - (t1.y * 292 / (-t1.z)));
-        result.z = t1.z;
-    }
-
     public computeNearPlaneIntersection(p1: Vertex, p2: Vertex): Vertex {
         const ratio: number = (this.NEAR_PLANE_Z - p1.position.z) / (p2.position.z - p1.position.z);
         const vertex: Vertex = new Vertex();
@@ -210,7 +198,7 @@ export class TexturingRenderingPipeline extends AbstractRenderingPipeline {
         }
 
         for (let j: number = 0; j < output.length; j++) {
-            this.project2(output[j].position, output[j].projection);
+            projectToScreen(this.framebuffer, output[j].position, output[j].projection, true);
         }
 
         if (output.length === 3 &&

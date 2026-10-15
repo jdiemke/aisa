@@ -1,4 +1,4 @@
-import { MtlMaterial } from '@engine/model/formats/wavefront-obj/MtlMaterial';
+import { MtlMaterial } from '@engine/model/formats/wavefront-obj';
 
 /**
  * Parser for Wavefront MTL (Material Template Library) files.

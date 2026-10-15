@@ -1,6 +1,6 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Interpolator } from '@engine/math/Interpolator';
-import { Texture } from '@engine/texture/Texture';
+import { Interpolator } from '@engine/math';
+import { Texture } from '@engine/texture';
 
 export class PlaneDeformationTunnelAnim {
 

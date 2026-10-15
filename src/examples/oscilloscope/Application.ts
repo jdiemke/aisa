@@ -1,5 +1,5 @@
 import { Canvas } from '@platform/browser';
-import { Color } from '@core/Color';
+import { Color } from '@core';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { OscilloscopeScene } from './OscilloscopeScene';
 import { OscilloscopeGenerator } from './OscilloscopeGenerator';

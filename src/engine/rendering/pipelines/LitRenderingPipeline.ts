@@ -1,18 +1,18 @@
-import { Color } from '@core/Color';
+import { Color } from '@core';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Vector4f } from '@engine/math/index';
-import { AbstractTriangleRasterizer } from '@engine/rendering/rasterizer/AbstractTriangleRasterizer';
-import { SutherlandHodgman2DClipper } from '@engine/rendering/clipping/SutherlandHodgman2DClipper';
+import { Vector4f } from '@engine/math';
+import { AbstractTriangleRasterizer } from '@engine/rendering/rasterizer';
+import { SutherlandHodgman2DClipper } from '@engine/rendering/clipping';
 import { Fog } from '@engine/rendering/shading/fog/Fog';
 import { PhongLighting } from '@engine/rendering/shading/illumination-models/PhongLighting';
 import { PointLight } from '@engine/rendering/shading/light/PointLight';
 import { Material } from '@engine/rendering/shading/material/Material';
-import { Vertex } from '@engine/geometry/primitives/Vertex';
+import { Vertex } from '@engine/geometry/primitives';
 import { AbstractRenderingPipeline } from '@engine/rendering/pipelines/AbstractRenderingPipeline';
 
 /**
  * Intermediate base class for lit (Gouraud / flat / sub-pixel) rendering
- * pipelines.  Holds the shared fields, setters, projection helpers,
+ * pipelines.  Holds the shared fields, setters,
  * z-clipping, 2-D screen-space clipping and triangulation that were
  * previously duplicated across FlatShadingRenderingPipeline,
  * GouraudShadingRenderingPipeline and SubPixelRenderingPipeline.
@@ -92,24 +92,6 @@ export abstract class LitRenderingPipeline extends AbstractRenderingPipeline {
 
     public setColor(color: Color): void {
         this.color = color;
-    }
-
-    // ── Projection ─────────────────────────────────────────────────────
-    // Default implementation WITHOUT Math.round (sub-pixel precision).
-    // FlatShading / Gouraud override with Math.round for snapped pixels.
-
-    public project(t1: { x: number, y: number, z: number }): Vector4f {
-        return new Vector4f(
-            ((this.framebuffer.width / 2) + (292 * t1.x / (-t1.z))),
-            ((this.framebuffer.height / 2) - (t1.y * 292 / (-t1.z))),
-            t1.z
-        );
-    }
-
-    public project2(t1: { x: number, y: number, z: number }, result: Vector4f): void {
-        result.x = ((this.framebuffer.width / 2) + (292 * t1.x / (-t1.z)));
-        result.y = ((this.framebuffer.height / 2) - (t1.y * 292 / (-t1.z)));
-        result.z = t1.z;
     }
 
     // ── Near-plane (z) clipping ────────────────────────────────────────

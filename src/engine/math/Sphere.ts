@@ -1,5 +1,5 @@
 import { BoundingVolume } from '@engine/math/BoundingVolume';
-import { Vector4f } from '@engine/math/index';
+import { Vector4f } from '@engine/math/Vector4f';
 import { Matrix4f } from '@engine/math/Matrix4f';
 import { Plane } from '@engine/math/Plane';
 

@@ -1,5 +1,5 @@
 import { AbstractGeometricObject } from '@engine/geometry/objects/AbstractGeometricObject';
-import { Vector4f } from '@engine/math/Vector4f';
+import { Vector4f } from '@engine/math';
 
 export class Dodecahedron extends AbstractGeometricObject {
 

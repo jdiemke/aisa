@@ -1,13 +1,10 @@
-import { LineRenderingPipeline } from '@engine/rendering/pipelines/LineRenderingPipeline';
+import { LineRenderingPipeline } from '@engine/rendering/pipelines';
 import { Noise } from '@effects/noise/Noise';
 import { Particle } from '@effects/particle/Particle';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
-import { Matrix4f, Vector3f } from '@engine/math';
-import { Interpolator } from '@engine/math/Interpolator';
-import { AbstractScene } from '@core/AbstractScene';
-import { TextureUtils } from '@engine/texture';
-import { Texture } from '@engine/texture/Texture';
+import { RandomNumberGenerator, AbstractScene } from '@core';
+import { Matrix4f, Vector3f, Interpolator } from '@engine/math';
+import { TextureUtils, Texture } from '@engine/texture';
 
 export class ParticleWavesScene extends AbstractScene {
 

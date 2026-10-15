@@ -1,9 +1,7 @@
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { CullFace, TextureCoordinate } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { TextureCoordinate } from '@engine/geometry/primitives/TextureCoordinate';
 import { Vector4f } from '@engine/math';
-import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
-import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
+import { TexturedMesh, TexturingRenderingPipeline } from '@engine/rendering/pipelines';
 import { Texture, TextureUtils } from '@engine/texture';
 import { FeedbackRadialBlur } from '@examples/feedback-radial-blur/FeedbackRadialBlur';
 import { ModelViewMatrix } from '@examples/md2/ModelViewMatrix';

@@ -1,4 +1,4 @@
-import { StreamReader } from '@engine/model/formats/md2/StreamReader';
+import { StreamReader } from '@engine/model/formats/md2';
 
 export class MDLTexCoord {
 

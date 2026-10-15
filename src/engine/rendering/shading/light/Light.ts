@@ -1,4 +1,4 @@
-import { Vector4f } from '@engine/math/index';
+import { Vector4f } from '@engine/math';
 
 export abstract class Light {
 

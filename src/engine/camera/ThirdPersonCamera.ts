@@ -1,4 +1,4 @@
-import { Matrix4f, Vector3f } from '@engine/math/index';
+import { Matrix4f, Vector3f } from '@engine/math';
 
 /**
  * http://www.mathforgameprogrammers.com/gdc2016/GDC2016_Eiserloh_Squirrel_JuicingYourCameras.pdf

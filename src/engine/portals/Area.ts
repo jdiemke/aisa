@@ -1,4 +1,4 @@
-import { Color } from '@core/Color';
+import { Color } from '@core';
 import { Portal } from '@engine/portals/Portal';
 
 export class Area {

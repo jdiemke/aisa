@@ -1,4 +1,4 @@
-import { Vector4f } from '@engine/math/Vector4f';
+import { Vector4f } from '@engine/math';
 import { FlatShadedFace } from '@engine/geometry/objects/FlatShadedFace';
 
 export class FlatshadedMesh {

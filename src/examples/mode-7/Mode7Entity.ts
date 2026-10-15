@@ -1,5 +1,5 @@
-import { Vector2f } from '@engine/math/index';
-import { Texture } from '@engine/texture/index';
+import { Vector2f } from '@engine/math';
+import { Texture } from '@engine/texture';
 import { Camera } from './Mode7Renderer';
 
 export abstract class Mode7Entity {

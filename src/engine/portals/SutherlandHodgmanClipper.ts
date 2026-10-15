@@ -1,5 +1,4 @@
-import { Vector4f } from '@engine/math';
-import { Plane } from '@engine/math/Plane';
+import { Vector4f, Plane } from '@engine/math';
 import { Polygon } from '@engine/portals/Polygon';
 
 /**

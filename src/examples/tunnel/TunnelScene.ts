@@ -1,11 +1,9 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Matrix4f } from '@engine/math/Matrix4f';
-import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
-import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '@engine/texture/Texture';
-import { TextureUtils } from '@engine/texture/TextureUtils';
-import { BlenderLoader } from '@engine/model/formats/blender/BlenderLoader';
-import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
+import { Matrix4f } from '@engine/math';
+import { TexturedMesh, TexturingRenderingPipeline } from '@engine/rendering/pipelines';
+import { AbstractScene } from '@core';
+import { Texture, TextureUtils } from '@engine/texture';
+import { BlenderLoader } from '@engine/model/formats/blender';
 
 export class TunnelScene extends AbstractScene {
 

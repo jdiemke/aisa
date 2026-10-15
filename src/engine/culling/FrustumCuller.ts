@@ -1,10 +1,7 @@
 
-import { Vector4f } from '@engine/math/index';
-import { Matrix4f } from '@engine/math/Matrix4f';
-import { Plane } from '@engine/math/Plane';
-import { Sphere } from '@engine/math/Sphere';
-import { Vector3f } from '@engine/math/Vector3f';
+import { Vector4f, Matrix4f, Plane, Sphere, Vector3f } from '@engine/math';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
+import { FOCAL_LENGTH } from '@engine/rendering/Projection';
 
 export class FrustumCuller {
 
@@ -34,12 +31,11 @@ export class FrustumCuller {
 
         const halfWidth =  framebuffer.width / 2;
         const halfHeight = framebuffer.height / 2;
-        const magicWidth =  292;
         const vertices: Array<Vector4f> = [
-            new Vector4f(-halfWidth / 2, -halfHeight / 2, magicWidth),
-            new Vector4f(halfWidth / 2, -halfHeight / 2, magicWidth),
-            new Vector4f(halfWidth / 2, halfHeight / 2, magicWidth),
-            new Vector4f(-halfWidth / 2, halfHeight / 2, magicWidth),
+            new Vector4f(-halfWidth / 2, -halfHeight / 2, FOCAL_LENGTH),
+            new Vector4f(halfWidth / 2, -halfHeight / 2, FOCAL_LENGTH),
+            new Vector4f(halfWidth / 2, halfHeight / 2, FOCAL_LENGTH),
+            new Vector4f(-halfWidth / 2, halfHeight / 2, FOCAL_LENGTH),
         ];
         for (let i: number = 0; i < vertices.length; i++) {
             const normal: Vector4f = vertices[i].cross(vertices[(i + 1) % vertices.length]).normalize().mul(-1);

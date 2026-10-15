@@ -1,12 +1,10 @@
-import { Primitives2D } from '@engine/geometry/primitives/Primitives2D';
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Primitives2D, CullFace } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Torus } from '@engine/geometry/objects/Torus';
-import { Matrix4f } from '@engine/math/Matrix4f';
-import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '@engine/texture/Texture';
-import { TextureUtils } from '@engine/texture/TextureUtils';
-import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
+import { Torus } from '@engine/geometry/objects';
+import { Matrix4f } from '@engine/math';
+import { AbstractScene } from '@core';
+import { Texture, TextureUtils } from '@engine/texture';
+import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines';
 
 export class TorusScene extends AbstractScene {
 

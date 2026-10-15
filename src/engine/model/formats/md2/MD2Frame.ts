@@ -1,7 +1,5 @@
-import { Vector3f } from '@engine/math/index';
-import { MD2Header } from '@engine/model/formats/md2/MD2Header';
-import { MD2Vertex } from '@engine/model/formats/md2/MD2Vertex';
-import { StreamReader } from '@engine/model/formats/md2/StreamReader';
+import { Vector3f } from '@engine/math';
+import { MD2Header, MD2Vertex, StreamReader } from '@engine/model/formats/md2';
 
 export class MD2Frame {
 

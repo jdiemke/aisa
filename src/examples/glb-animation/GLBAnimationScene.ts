@@ -1,12 +1,10 @@
-import { Color } from '@core/Color';
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Color, AbstractScene } from '@core';
+import { CullFace } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
+import { FlatshadedMesh } from '@engine/geometry/objects';
 import { Matrix4f, ModelViewMatrix, Vector4f } from '@engine/math';
-import { GLBAnimatedModel } from '@engine/model/formats/glb/GLBAnimatedModel';
-import { GLBLoader } from '@engine/model/formats/glb/GLBLoader';
-import { SubPixelRenderingPipeline } from '@engine/rendering/pipelines/SubPixelRenderingPipeline';
-import { AbstractScene } from '@core/AbstractScene';
+import { GLBAnimatedModel, GLBLoader } from '@engine/model/formats/glb';
+import { SubPixelRenderingPipeline } from '@engine/rendering/pipelines';
 import { Material } from '@engine/rendering/shading/material/Material';
 import { PointLight } from '@engine/rendering/shading/light/PointLight';
 

@@ -1,11 +1,8 @@
-import { Color } from '@core/Color';
+import { Color, RandomNumberGenerator, AbstractScene } from '@core';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Cube } from '@engine/geometry/objects/Cube';
-import { Matrix4f } from '@engine/math/Matrix4f';
-import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
-import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
-import { AbstractScene } from '@core/AbstractScene';
-import { Vector4f } from '@engine/math';
+import { Cube } from '@engine/geometry/objects';
+import { Matrix4f, Vector4f } from '@engine/math';
+import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines';
 import { Material } from '@engine/rendering/shading/material/Material';
 import { PointLight } from '@engine/rendering/shading/light/PointLight';
 

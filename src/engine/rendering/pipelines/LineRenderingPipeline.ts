@@ -1,10 +1,7 @@
 import type { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Matrix4f } from '@engine/math/Matrix4f';
-import { Vector3f } from '@engine/math/Vector3f';
-import { Vector4f } from '@engine/math/Vector4f';
-import { ComputationalGeometryUtils } from '@engine/math/Geometry';
-import { Sphere } from '@engine/math/Sphere';
-import { CohenSutherlandLineClipper } from '@engine/rendering/clipping/CohenSutherlandLineClipper';
+import { Matrix4f, Vector3f, Vector4f, ComputationalGeometryUtils, Sphere } from '@engine/math';
+import { CohenSutherlandLineClipper } from '@engine/rendering/clipping';
+import { projectToScreen } from '@engine/rendering/Projection';
 
 export class LineRenderingPipeline {
 
@@ -15,9 +12,9 @@ export class LineRenderingPipeline {
     }
 
     public static project(framebuffer: Framebuffer, point: { x: number, y: number, z: number }): Vector3f {
-        return new Vector3f(Math.round((framebuffer.width / 2) + (292 * point.x / (-point.z))),
-            Math.round((framebuffer.height / 2) - (point.y * 292 / (-point.z))),
-            point.z);
+        const result = new Vector3f(0, 0, 0);
+        projectToScreen(framebuffer, point, result, true);
+        return result;
     }
 
     public nearPlaneClipping(t1: Vector3f, t2: Vector3f, color: number): void {

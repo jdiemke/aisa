@@ -28,6 +28,12 @@
 
 ## Code Quality and Testing
 
+Consumers combine imports through the `@core`, `@engine/texture`,
+`@engine/geometry/primitives`, `@engine/geometry/objects`, and
+`@engine/rendering/{pipelines,clipping,rasterizer}` barrels. Within these
+subsystems, retain direct imports instead of importing their own barrel,
+especially for base classes, to avoid circular initialization dependencies.
+
 - [ESLint](https://eslint.org/) and [@eslint/js](https://www.npmjs.com/package/@eslint/js) - JavaScript linting and recommended rules.
 - [typescript-eslint](https://typescript-eslint.io/) - TypeScript linting support.
 - [Playwright](https://playwright.dev/) - Browser smoke tests and example screenshot generation.

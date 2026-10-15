@@ -1,6 +1,5 @@
-import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
-import { ComputationalGeometryUtils } from '@engine/math/Geometry';
-import { Sphere } from '@engine/math/Sphere';
+import { FlatshadedMesh } from '@engine/geometry/objects';
+import { ComputationalGeometryUtils, Sphere } from '@engine/math';
 
 export class BoundingVolumeExpander {
 

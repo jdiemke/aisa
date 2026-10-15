@@ -1,8 +1,8 @@
 
-import { ScaleClipBlitter } from '@engine/geometry/primitives/ScaleClipBlitter';
-import { Color } from '@core/Color';
-import { Vector2f } from '@engine/math/Vector2f';
-import { Texture } from '@engine/texture/Texture';
+import { ScaleClipBlitter } from '@engine/geometry/primitives';
+import { Color } from '@core';
+import { Vector2f } from '@engine/math';
+import { Texture } from '@engine/texture';
 
 export class Framebuffer {
 

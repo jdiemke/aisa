@@ -1,13 +1,12 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Matrix4f, Vector4f, Vector3f } from '@engine/math';
+import { Matrix4f, Vector4f, Vector3f, Plane } from '@engine/math';
 import { Area } from '@engine/portals/Area';
-import { Plane } from '@engine/math/Plane';
 import { Portal } from '@engine/portals/Portal';
 import { SutherlandHodgmanClipper } from '@engine/portals/SutherlandHodgmanClipper';
-import { Color } from '@core/Color';
+import { Color } from '@core';
 import { ControllableCamera } from '@engine/camera';
 import { Polygon } from '@engine/portals/Polygon';
-import { LineRenderingPipeline } from '@engine/rendering/pipelines/LineRenderingPipeline';
+import { LineRenderingPipeline } from '@engine/rendering/pipelines';
 
 export class PortalRenderer {
 

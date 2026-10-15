@@ -1,18 +1,13 @@
-import { LineRenderingPipeline } from '@engine/rendering/pipelines/LineRenderingPipeline';
+import { LineRenderingPipeline, TexturedMesh, TexturingRenderingPipeline, GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines';
 import { Noise } from '@effects/noise/Noise';
 import { SoftParticle } from '@effects/soft-particle/SoftParticle';
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { CullFace } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Matrix4f, Vector3f } from '@engine/math';
-import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
-import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
-import { AbstractScene } from '@core/AbstractScene';
+import { Matrix4f, Vector3f, Interpolator } from '@engine/math';
+import { RandomNumberGenerator, AbstractScene } from '@core';
 import { Texture, TextureUtils } from '@engine/texture';
-import { BlenderLoader } from '@engine/model/formats/blender/BlenderLoader';
-import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
-import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
-import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
-import { Interpolator } from '@engine/math/Interpolator';
+import { BlenderLoader } from '@engine/model/formats/blender';
+import { FlatshadedMesh } from '@engine/geometry/objects';
 
 export class HoodlumScene extends AbstractScene {
 

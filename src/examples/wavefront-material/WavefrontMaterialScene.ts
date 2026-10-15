@@ -1,12 +1,10 @@
-import { Color } from '@core/Color';
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { Color, AbstractScene } from '@core';
+import { CullFace } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
+import { FlatshadedMesh } from '@engine/geometry/objects';
 import { Matrix4f, Vector4f } from '@engine/math';
-import { WavefrontLoader } from '@engine/model/formats/wavefront-obj/WavefrontLoader';
-import { WavefrontMaterialModel } from '@engine/model/formats/wavefront-obj/WavefrontMaterialModel';
-import { SubPixelRenderingPipeline } from '@engine/rendering/pipelines/SubPixelRenderingPipeline';
-import { AbstractScene } from '@core/AbstractScene';
+import { WavefrontLoader, WavefrontMaterialModel } from '@engine/model/formats/wavefront-obj';
+import { SubPixelRenderingPipeline } from '@engine/rendering/pipelines';
 import { Material } from '@engine/rendering/shading/material/Material';
 import { PointLight } from '@engine/rendering/shading/light/PointLight';
 

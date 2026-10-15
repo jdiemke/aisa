@@ -1,8 +1,5 @@
-import { Matrix4f } from '@engine/math/Matrix4f';
-import {
-    AnimationChannel, AnimationClip, NodeHierarchy, NodeTRS,
-    SkinData, SkinningAttributes
-} from '@engine/model/formats/glb/GLBAnimationData';
+import { Matrix4f } from '@engine/math';
+import { AnimationChannel, AnimationClip, NodeHierarchy, NodeTRS, SkinData, SkinningAttributes } from '@engine/model/formats/glb';
 
 /**
  * Parses glTF animation, skin, and node-hierarchy data from a GLB file's

@@ -1,5 +1,4 @@
-import { MD2Header } from '@engine/model/formats/md2/MD2Header';
-import { StreamReader } from '@engine/model/formats/md2/StreamReader';
+import { MD2Header, StreamReader } from '@engine/model/formats/md2';
 
 export class MD2TexCoord {
 

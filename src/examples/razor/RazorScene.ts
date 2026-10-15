@@ -1,16 +1,11 @@
-import { LineRenderingPipeline } from '@engine/rendering/pipelines/LineRenderingPipeline';
+import { LineRenderingPipeline, GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines';
 import { Noise } from '@effects/noise/Noise';
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { CullFace } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Cube } from '@engine/geometry/objects/Cube';
-import { Dodecahedron } from '@engine/geometry/objects/Dodecahedron';
-import { Pyramid } from '@engine/geometry/objects/Pyramid';
-import { Sphere } from '@engine/geometry/objects/Sphere';
+import { Cube, Dodecahedron, Pyramid, Sphere } from '@engine/geometry/objects';
 import { Matrix4f, Vector3f } from '@engine/math';
-import { AbstractScene } from '@core/AbstractScene';
+import { AbstractScene, Color } from '@core';
 import { Texture, TextureUtils } from '@engine/texture';
-import { Color } from '@core/Color';
-import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
 import { LensFlare } from '@effects/lens-flare/LensFlare';
 
 export class RazorScene extends AbstractScene {

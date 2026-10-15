@@ -1,6 +1,6 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
-import { Texture } from '@engine/texture/Texture';
+import { RandomNumberGenerator } from '@core';
+import { Texture } from '@engine/texture';
 
 export class Noise {
 

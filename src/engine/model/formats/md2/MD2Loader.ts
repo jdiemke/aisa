@@ -1,10 +1,4 @@
-import { MD2Frame } from '@engine/model/formats/md2/MD2Frame';
-import { MD2Header } from '@engine/model/formats/md2/MD2Header';
-import { MD2Model } from '@engine/model/formats/md2/MD2Model';
-import { MD2Skin } from '@engine/model/formats/md2/MD2Skin';
-import { MD2TexCoord } from '@engine/model/formats/md2/MD2TexCoord';
-import { MD2Triangle } from '@engine/model/formats/md2/MD2Triangle';
-import { StreamReader } from '@engine/model/formats/md2/StreamReader';
+import { MD2Frame, MD2Header, MD2Model, MD2Skin, MD2TexCoord, MD2Triangle, StreamReader } from '@engine/model/formats/md2';
 
 /**
  * http://tfc.duke.free.fr/coding/md2-specs-en.html

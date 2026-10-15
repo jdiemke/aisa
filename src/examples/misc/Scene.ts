@@ -4,8 +4,7 @@ import { PlaneDeformNoCalc } from '@effects/plane-deform-no-calc/PlaneDeformNoCa
 import { Reflections } from '@effects/reflections/Reflections';
 // import { CullFace } from '@engine/geometry/primitives/CullFace';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
-import { AbstractScene } from '@core/AbstractScene';
+import { RandomNumberGenerator, AbstractScene } from '@core';
 import { Texture, TextureUtils } from '@engine/texture';
 // import { Color } from '@core/Color';
 // import { BunnyScene } from '@examples/bunny/BunnyScene';

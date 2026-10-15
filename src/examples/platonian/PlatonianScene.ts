@@ -1,11 +1,10 @@
 import { Noise } from '@effects/noise/Noise';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
 import { Matrix4f } from '@engine/math';
-import { AbstractScene } from '@core/AbstractScene';
+import { AbstractScene } from '@core';
 import { Texture, TextureUtils } from '@engine/texture';
-import { BlenderLoader } from '@engine/model/formats/blender/BlenderLoader';
-import { TexturedMesh } from '@engine/rendering/pipelines/TexturedMesh';
-import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
+import { BlenderLoader } from '@engine/model/formats/blender';
+import { TexturedMesh, TexturingRenderingPipeline } from '@engine/rendering/pipelines';
 
 /**
  * TODO: extract lens into effect class

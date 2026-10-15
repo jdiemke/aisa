@@ -1,7 +1,6 @@
 import { EulerAngleCamera } from '@engine/camera/EulerAngleCamera';
-import { Utils } from '@core/Utils';
-import { Matrix4f } from '@engine/math/Matrix4f';
-import { Vector3f } from '@engine/math/Vector3f';
+import { Utils } from '@core';
+import { Matrix4f, Vector3f } from '@engine/math';
 import { CameraKeyFrame } from '@engine/animation/CameraKeyFrame';
 
 export class BlenderCameraAnimator {

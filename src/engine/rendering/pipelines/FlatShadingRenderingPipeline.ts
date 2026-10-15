@@ -1,29 +1,15 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
-import { Vector4f } from '@engine/math/index';
-import { Matrix4f } from '@engine/math/Matrix4f';
-import { FlatShadingTriangleRasterizer } from '@engine/rendering/rasterizer/FlatShadingTriangleRasterizer';
-import { Vertex } from '@engine/geometry/primitives/Vertex';
+import { FlatshadedMesh } from '@engine/geometry/objects';
+import { Vector4f, Matrix4f } from '@engine/math';
+import { FlatShadingTriangleRasterizer } from '@engine/rendering/rasterizer';
+import { Vertex } from '@engine/geometry/primitives';
 import { LitRenderingPipeline } from '@engine/rendering/pipelines/LitRenderingPipeline';
+import { projectToScreen } from '@engine/rendering/Projection';
 
 export class FlatShadingRenderingPipeline extends LitRenderingPipeline {
 
     public constructor(framebuffer: Framebuffer) {
         super(framebuffer, new FlatShadingTriangleRasterizer(framebuffer));
-    }
-
-    public project(t1: { x: number, y: number, z: number }): Vector4f {
-        return new Vector4f(
-            Math.round((this.framebuffer.width / 2) + (292 * t1.x / (-t1.z))),
-            Math.round((this.framebuffer.height / 2) - (t1.y * 292 / (-t1.z))),
-            t1.z
-        );
-    }
-
-    public project2(t1: { x: number, y: number, z: number }, result: Vector4f): void {
-        result.x = Math.round((this.framebuffer.width / 2) + (292 * t1.x / (-t1.z)));
-        result.y = Math.round((this.framebuffer.height / 2) - (t1.y * 292 / (-t1.z)));
-        result.z = t1.z;
     }
 
     public draw(framebuffer: Framebuffer, mesh: FlatshadedMesh, modelViewMartrix: Matrix4f): void {
@@ -51,9 +37,9 @@ export class FlatShadingRenderingPipeline extends LitRenderingPipeline {
                 this.isInFrontOfNearPlane(v2) &&
                 this.isInFrontOfNearPlane(v3)) {
 
-                this.project2(v1, this.projectedVertices[0]);
-                this.project2(v2, this.projectedVertices[1]);
-                this.project2(v3, this.projectedVertices[2]);
+                projectToScreen(this.framebuffer, v1, this.projectedVertices[0], true);
+                projectToScreen(this.framebuffer, v2, this.projectedVertices[1], true);
+                projectToScreen(this.framebuffer, v3, this.projectedVertices[2], true);
 
                 this.vertexArray[0].position = v1;
                 this.vertexArray[0].projection = this.projectedVertices[0];
@@ -94,7 +80,8 @@ export class FlatShadingRenderingPipeline extends LitRenderingPipeline {
                 }
 
                 for (let j: number = 0; j < output.length; j++) {
-                    output[j].projection = this.project(output[j].position);
+                    output[j].projection = new Vector4f(0, 0, 0);
+                    projectToScreen(this.framebuffer, output[j].position, output[j].projection, true);
                 }
 
                 this.renderConvexPolygon(framebuffer, output, false);

@@ -1,17 +1,13 @@
 import * as Matter from 'matter-js';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { AbstractScene } from '@core/AbstractScene';
+import { AbstractScene, Color } from '@core';
 import { Vector3f, Vector4f } from '@engine/math';
-import { Color } from '@core/Color';
-import { TexturedTriangleRasterizer } from '@engine/rendering/rasterizer/TexturedTriangleRasterizer';
-import { Vertex } from '@engine/geometry/primitives/Vertex';
-import { TextureCoordinate } from '@engine/geometry/primitives/TextureCoordinate';
+import { TexturedTriangleRasterizer, TexturedTriangleRasterizer2D } from '@engine/rendering/rasterizer';
+import { Vertex, TextureCoordinate } from '@engine/geometry/primitives';
 import { Texture, TextureUtils } from '@engine/texture';
-import { TexturingRenderingPipeline } from '@engine/rendering/pipelines/TexturingRenderingPipeline';
+import { TexturingRenderingPipeline } from '@engine/rendering/pipelines';
 import { SutherlandHodgmanClipper } from '@engine/portals';
-import { ClipMode } from '@engine/rendering/clipping/ClipMode';
-import { SutherlandHodgman2DClipper } from '@engine/rendering/clipping/SutherlandHodgman2DClipper';
-import { TexturedTriangleRasterizer2D } from '@engine/rendering/rasterizer/TexturedTriangleRasterizer2D';
+import { ClipMode, SutherlandHodgman2DClipper } from '@engine/rendering/clipping';
 import { ParallaxScrollingScene } from '@examples/xenusion/ParallaxScrollingScene';
 
 // TODO:

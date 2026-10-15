@@ -1,7 +1,4 @@
-import { Mesh } from '@engine/model/formats/blender/mesh';
-import { Vector } from '@engine/model/formats/blender/vector';
-import { TexCoord } from '@engine/model/formats/blender/tex-coord';
-import { Face } from '@engine/model/formats/blender/face';
+import { Mesh, Vector, TexCoord, Face } from '@engine/model/formats/blender';
 
 /**
  * Resolves an OBJ vertex index which may be positive (1-based absolute)

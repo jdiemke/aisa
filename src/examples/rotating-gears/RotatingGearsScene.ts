@@ -1,13 +1,12 @@
-import { LineRenderingPipeline } from '@engine/rendering/pipelines/LineRenderingPipeline';
+import { LineRenderingPipeline, GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines';
 import { Noise } from '@effects/noise/Noise';
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { CullFace } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
+import { FlatshadedMesh } from '@engine/geometry/objects';
 import { Matrix4f } from '@engine/math';
-import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
-import { AbstractScene } from '@core/AbstractScene';
+import { AbstractScene } from '@core';
 import { Texture, TextureUtils } from '@engine/texture';
-import { BlenderLoader } from '@engine/model/formats/blender/BlenderLoader';
+import { BlenderLoader } from '@engine/model/formats/blender';
 import { FontRenderer } from '@examples/sine-scroller/FontRenderer';
 import { SoundManager } from '@sound/SoundManager';
 

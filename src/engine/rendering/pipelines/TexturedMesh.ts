@@ -1,5 +1,5 @@
-import { Vector4f } from '@engine/math/Vector4f';
-import { TextureCoordinate } from '@engine/geometry/primitives/TextureCoordinate';
+import { Vector4f } from '@engine/math';
+import { TextureCoordinate } from '@engine/geometry/primitives';
 
 export class TexturedMesh {
 

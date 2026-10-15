@@ -1,14 +1,12 @@
 import { Noise } from '@effects/noise/Noise';
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { CullFace } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
-import { Interpolator } from '@engine/math/Interpolator';
-import { Matrix4f } from '@engine/math/Matrix4f';
-import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
-import { AbstractScene } from '@core/AbstractScene';
-import { Texture } from '@engine/texture/Texture';
-import { TextureUtils } from '@engine/texture/TextureUtils';
-import { BlenderLoader } from '@engine/model/formats/blender/BlenderLoader';
+import { FlatshadedMesh } from '@engine/geometry/objects';
+import { Interpolator, Matrix4f } from '@engine/math';
+import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines';
+import { AbstractScene } from '@core';
+import { Texture, TextureUtils } from '@engine/texture';
+import { BlenderLoader } from '@engine/model/formats/blender';
 
 /**
  * TODO: use cube mesh and draw using drawObject2

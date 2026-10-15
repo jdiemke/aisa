@@ -1,4 +1,4 @@
-import { MD2Animation } from '@engine/model/formats/md2/MD2AnimationNames';
+import { MD2Animation } from '@engine/model/formats/md2';
 import { PlayerStandingState } from './PlayerStandingState';
 import { PlayerState } from './PlayerState';
 

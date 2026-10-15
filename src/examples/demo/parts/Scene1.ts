@@ -1,9 +1,8 @@
 import { Noise } from '@effects/noise/Noise';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Interpolator } from '@engine/math/Interpolator';
+import { Interpolator } from '@engine/math';
 import { sceneData } from '@sound/MusicProperties';
-import { Texture } from '@engine/texture/Texture';
-import { TextureUtils } from '@engine/texture/TextureUtils';
+import { Texture, TextureUtils } from '@engine/texture';
 
 export class Scene1 {
 

@@ -1,16 +1,14 @@
-import { LineRenderingPipeline } from '@engine/rendering/pipelines/LineRenderingPipeline';
+import { LineRenderingPipeline, GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines';
 import { Noise } from '@effects/noise/Noise';
 import { ParticleSprite } from '@effects/particle-sprite/ParticleSprite';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Matrix4f, Vector3f, Vector4f } from '@engine/math';
-import { AbstractScene } from '@core/AbstractScene';
+import { Matrix4f, Vector3f, Vector4f, Interpolator } from '@engine/math';
+import { AbstractScene } from '@core';
 import { Texture, TextureUtils } from '@engine/texture';
 import { Material } from '@engine/rendering/shading/material/Material';
-import { BlenderLoader } from '@engine/model/formats/blender/BlenderLoader';
-import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
-import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
+import { BlenderLoader } from '@engine/model/formats/blender';
+import { FlatshadedMesh } from '@engine/geometry/objects';
 import { LensFlare } from '@effects/lens-flare/LensFlare';
-import { Interpolator } from '@engine/math/Interpolator';
 import { SoundManager } from '@sound/SoundManager';
 
 import './style.css';

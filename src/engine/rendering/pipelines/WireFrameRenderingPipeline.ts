@@ -1,10 +1,9 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
-import { Matrix4f } from '@engine/math/Matrix4f';
-import { Vector3f } from '@engine/math/Vector3f';
-import { Vector4f } from '@engine/math/Vector4f';
+import { FlatshadedMesh } from '@engine/geometry/objects';
+import { Matrix4f, Vector3f, Vector4f } from '@engine/math';
 import { AbstractRenderingPipeline } from '@engine/rendering/pipelines/AbstractRenderingPipeline';
 import { LineRenderingPipeline } from '@engine/rendering/pipelines/LineRenderingPipeline';
+import { projectToScreen } from '@engine/rendering/Projection';
 
 /**
  * A rendering pipeline that produces wireframe outlines using the surface-ID
@@ -41,6 +40,12 @@ export class WireFrameRenderingPipeline extends AbstractRenderingPipeline {
 
     /** Cached per-face surface IDs for the current mesh. */
     private faceSurfaceIds: number[] | null = null;
+
+    // Near-plane clipping can expand a triangle to four vertices.
+    private readonly projectedVertices: Vector4f[] = [
+        new Vector4f(0, 0, 0), new Vector4f(0, 0, 0),
+        new Vector4f(0, 0, 0), new Vector4f(0, 0, 0)
+    ];
 
     constructor(framebuffer: Framebuffer) {
         super(framebuffer);
@@ -369,15 +374,6 @@ export class WireFrameRenderingPipeline extends AbstractRenderingPipeline {
         return result;
     }
 
-    // ── Projection ─────────────────────────────────────────────────
-
-    private projectVertex(v: { x: number; y: number; z: number }, out: Vector4f): void {
-        const invZ = 1 / (-v.z);
-        out.x = (this.framebuffer.width / 2) + 292 * v.x * invZ;
-        out.y = (this.framebuffer.height / 2) - v.y * 292 * invZ;
-        out.z = v.z;
-    }
-
     // ── Clear ──────────────────────────────────────────────────────
 
     /** Clears the surface-ID buffer.  Call once per frame before drawing. */
@@ -409,12 +405,12 @@ export class WireFrameRenderingPipeline extends AbstractRenderingPipeline {
         const surfaceId = this.faceSurfaceIds[faceIndex];
 
         if (v1Front && v2Front && v3Front) {
-            const p1 = new Vector4f(0, 0, 0);
-            const p2 = new Vector4f(0, 0, 0);
-            const p3 = new Vector4f(0, 0, 0);
-            this.projectVertex(v1, p1);
-            this.projectVertex(v2, p2);
-            this.projectVertex(v3, p3);
+            const p1 = this.projectedVertices[0];
+            const p2 = this.projectedVertices[1];
+            const p3 = this.projectedVertices[2];
+            projectToScreen(this.framebuffer, v1, p1);
+            projectToScreen(this.framebuffer, v2, p2);
+            projectToScreen(this.framebuffer, v3, p3);
 
             if (!this.isTriangleCCW(p1, p2, p3)) return;
 
@@ -425,17 +421,15 @@ export class WireFrameRenderingPipeline extends AbstractRenderingPipeline {
             const clipped = this.clipToNearPlane(verts);
             if (clipped.length < 3) return;
 
-            const projected: Array<Vector4f> = [];
-            for (const v of clipped) {
-                const p = new Vector4f(0, 0, 0);
-                this.projectVertex(v, p);
-                projected.push(p);
+            const projected = this.projectedVertices;
+            for (let j = 0; j < clipped.length; j++) {
+                projectToScreen(this.framebuffer, clipped[j], projected[j]);
             }
 
             if (!this.isTriangleCCW(projected[0], projected[1], projected[2])) return;
 
             // Triangulate the clipped convex polygon
-            for (let j = 0; j < projected.length - 2; j++) {
+            for (let j = 0; j < clipped.length - 2; j++) {
                 this.rasterizeTriangle(
                     framebuffer,
                     projected[0],

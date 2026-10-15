@@ -1,9 +1,9 @@
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { Torus } from '@engine/geometry/objects/Torus';
-import { Matrix4f } from '@engine/math/index';
-import { AbstractScene } from '@core/AbstractScene';
-import { Texture, TextureUtils } from '@engine/texture/index';
-import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
+import { Torus } from '@engine/geometry/objects';
+import { Matrix4f } from '@engine/math';
+import { AbstractScene } from '@core';
+import { Texture, TextureUtils } from '@engine/texture';
+import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines';
 
 export class MovingTorusScene extends AbstractScene {
 

@@ -1,5 +1,5 @@
-import { Vector2f } from '@engine/math/index';
-import { Texture } from '@engine/texture/Texture';
+import { Vector2f } from '@engine/math';
+import { Texture } from '@engine/texture';
 import { Mode7Entity } from '@examples/mode-7/Mode7Entity';
 import { Camera } from '@examples/mode-7/Mode7Renderer';
 

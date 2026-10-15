@@ -1,5 +1,5 @@
-import { Color } from '@core/Color';
-import { Vector4f } from '@engine/math/index';
+import { Color } from '@core';
+import { Vector4f } from '@engine/math';
 import { TextureCoordinate } from '@engine/geometry/primitives/TextureCoordinate';
 
 export class Vertex {

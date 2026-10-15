@@ -1,7 +1,6 @@
 import { WireframeTerrain } from '@effects/wireframe-terrain/WireframeTerrain';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { RandomNumberGenerator } from '@core/RandomNumberGenerator';
-import { AbstractScene } from '@core/AbstractScene';
+import { RandomNumberGenerator, AbstractScene } from '@core';
 import { Texture, TextureUtils } from '@engine/texture';
 import { SoundManager } from '@sound/SoundManager';
 

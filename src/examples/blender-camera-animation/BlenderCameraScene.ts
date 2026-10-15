@@ -1,18 +1,16 @@
 import { CameraKeyFrame } from '@engine/animation/CameraKeyFrame';
 import { CameraLoader } from '@engine/camera/CameraLoader';
-import { CullFace } from '@engine/geometry/primitives/CullFace';
+import { CullFace } from '@engine/geometry/primitives';
 import { Framebuffer } from '@engine/rendering/Framebuffer';
-import { FlatshadedMesh } from '@engine/geometry/objects/FlatshadedMesh';
+import { FlatshadedMesh, SkyBox } from '@engine/geometry/objects';
 import { Matrix4f, Vector4f } from '@engine/math';
-import { WavefrontLoader } from '@engine/model/formats/wavefront-obj/WavefrontLoader';
-import { AbstractScene } from '@core/AbstractScene';
+import { WavefrontLoader } from '@engine/model/formats/wavefront-obj';
+import { AbstractScene } from '@core';
 import { PointLight } from '@engine/rendering/shading/light/PointLight';
-import { Texture } from '@engine/texture/Texture';
-import { TextureUtils } from '@engine/texture/TextureUtils';
+import { Texture, TextureUtils } from '@engine/texture';
 
 import { BlenderCameraAnimator } from '@engine/animation/BlenderCameraAnimator';
-import { SkyBox } from '@engine/geometry/objects/SkyBox';
-import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines/GouraudShadingRenderingPipeline';
+import { GouraudShadingRenderingPipeline } from '@engine/rendering/pipelines';
 
 export class BlenderCameraScene extends AbstractScene {
 

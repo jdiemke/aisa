@@ -1,6 +1,4 @@
-import { Face } from '@engine/model/formats/blender/face';
-import { TexCoord } from '@engine/model/formats/blender/tex-coord';
-import { Vector } from '@engine/model/formats/blender/vector';
+import { Face, TexCoord, Vector } from '@engine/model/formats/blender';
 
 export class Mesh {
 

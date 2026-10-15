@@ -1,5 +1,4 @@
-import { InvalidFileFormatException } from '@engine/model/formats/md2/InvalidFileFormatException';
-import { StreamReader } from '@engine/model/formats/md2/StreamReader';
+import { InvalidFileFormatException, StreamReader } from '@engine/model/formats/md2';
 
 export class MD2Header {
 
