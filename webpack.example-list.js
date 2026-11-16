@@ -105,6 +105,7 @@ const examples = [
     new Example('xenusion').withTitle('Paralax'),
     new Example('glow2'),
     new Example('texture-trick2'),
+    new Example('skulls'),
 ];
 
 module.exports = examples;
