@@ -228,6 +228,21 @@ export class Framebuffer {
         }
     }
 
+        public drawTextureFullscreenMul(texture: Texture, alpha2: number) {
+
+        let framebufferIndex: number = 0;
+        const inverseAlpha = 1 - alpha2;
+        for (let y: number = 0; y < this.width * this.height; y++) {
+
+            const r = (this.framebuffer[framebufferIndex] >> 0 & 0xff) *  (texture.texture[framebufferIndex] >> 0 & 0xff) /255;
+            const g = (this.framebuffer[framebufferIndex] >> 8 & 0xff) *  (texture.texture[framebufferIndex] >> 8 & 0xff) /255;
+            const b = (this.framebuffer[framebufferIndex] >> 16 & 0xff) * (texture.texture[framebufferIndex] >> 16 & 0xff) /255;
+
+            this.framebuffer[framebufferIndex] = r | (g << 8) | (b << 16) | (255 << 24);
+            framebufferIndex++;
+        }
+    }
+
     public drawTextureNoClipAlpha(x: number, y: number, texture: Texture): void {
         let framebufferIndex: number = x + y * this.width;
         let textureIndex: number = 0;

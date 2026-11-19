@@ -627,7 +627,7 @@ export class WireFrameRenderingPipeline extends AbstractRenderingPipeline {
      * The background is filled with the configured background colour;
      * edges are drawn with the configured outline colour.
      */
-    public postProcessOutlines(framebuffer: Framebuffer): void {
+    public postProcessOutlines(framebuffer: Framebuffer, fill: boolean = true): void {
         const w = framebuffer.width;
         const h = framebuffer.height;
         const fb = framebuffer.framebuffer;
@@ -635,7 +635,9 @@ export class WireFrameRenderingPipeline extends AbstractRenderingPipeline {
         const depth = framebuffer.wBuffer;
 
         // Fill colour buffer with background
-        fb.fill(this.backgroundColor);
+        if ( fill) {
+            fb.fill(this.backgroundColor);
+        }
 
         const threshold = this.depthThreshold;
 
@@ -705,7 +707,7 @@ export class WireFrameRenderingPipeline extends AbstractRenderingPipeline {
      * `mesh.transformedPoints` must already be in view space.
      */
     public drawOutline(
-        framebuffer: Framebuffer, mesh: FlatshadedMesh, modelViewMatrix?: Matrix4f
+        framebuffer: Framebuffer, mesh: FlatshadedMesh, modelViewMatrix?: Matrix4f, fill: boolean= true
     ): void {
         if (modelViewMatrix) {
             this.transformVertices(mesh, modelViewMatrix);
@@ -713,7 +715,7 @@ export class WireFrameRenderingPipeline extends AbstractRenderingPipeline {
         for (let fi = 0; fi < mesh.faces.length; fi++) {
             this.drawFace(framebuffer, mesh, fi);
         }
-        this.postProcessOutlines(framebuffer);
+        this.postProcessOutlines(framebuffer, fill);
     }
 
     /**
